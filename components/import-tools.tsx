@@ -64,7 +64,7 @@ export function ImportProgress({ stage, record, busy, error, warning, progress, 
   stage: ImportStage | null; record: ImportRecord | null; busy: boolean; error: string | null; warning: string | null; progress?: { page: number; total: number } | null;
   cancel: () => Promise<void>; resume: (id?: string) => Promise<void>; analyze: (id?: string) => Promise<void>;
 }) {
-  if (!stage && !error && !warning) return null;
+  if ((!stage || stage === 'ready' || stage === 'complete') && !busy && !error && !warning) return null;
   const currentStep = steps.findIndex(step => stage && (step.stages as string[]).includes(stage));
   const problem = stage === 'failed' || stage === 'uncertain' || stage === 'expired';
   const resumeAllowed = !!record?.job && stage === record.stage && !['complete', 'cancelled', 'expired'].includes(record.stage);

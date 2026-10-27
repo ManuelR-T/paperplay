@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowUp, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { algorithmInputSchema, type FigureSpecification, type SourceDocument } from '@/shared/schema';
 import { engineRegistry, engineMetadata, type EngineRun } from '@/lib/engines';
 import { assessFigureFidelity } from '@/lib/fidelity';
@@ -20,8 +21,9 @@ type Run = EngineRun;
 export type ExperimentState = PreparedExperimentState;
 
 export function FidelityNote({ figure }: { figure: FigureSpecification }) {
+  const [open, setOpen] = useState(false);
   const evidence = assessFigureFidelity(figure);
-  return <div className="fidelity-note"><Badge variant="outline">{evidence.label}</Badge><span>Implementation evidence · synthetic input · not an original benchmark</span><details><summary>Scope & verification</summary><p>{evidence.claim}</p><ul>{evidence.limitations.map((limitation, index) => <li key={index}>{limitation}</li>)}</ul>{evidence.referenceCaseIds.length > 0 && <p>Reference checks: {evidence.referenceCaseIds.join(', ')}</p>}</details></div>;
+  return <div className="fidelity-note"><Badge variant="outline">{evidence.label}</Badge><span>Synthetic example</span><Button variant="ghost" size="sm" onClick={() => setOpen(true)}>Figure details</Button><Dialog open={open} onOpenChange={setOpen}><DialogContent className="reader-dialog"><DialogTitle>Figure details</DialogTitle><DialogDescription>{evidence.claim}</DialogDescription><p>This figure uses a synthetic input. It does not reproduce an original benchmark.</p><ul>{evidence.limitations.map((limitation, index) => <li key={index}>{limitation}</li>)}</ul>{evidence.referenceCaseIds.length > 0 && <p>Reference checks: {evidence.referenceCaseIds.join(', ')}</p>}</DialogContent></Dialog></div>;
 }
 
 export function EngineFigure({ id, document, anchorId, state, setState, reset, mode }: { id: string; document: SourceDocument; anchorId: string; state: ExperimentState; setState: (state: ExperimentState) => void; reset: () => void; mode?: 'plot' }) {
@@ -106,7 +108,7 @@ export function ComparisonFigure({ id, document, anchorId, state, inputFigureId 
       <div className="comparison-traces">{computed.comparison.runs.map((run,runIndex) => independent?<IndependentComparisonRun key={run.engineId} run={run} initialIndex={positions[runIndex]??saved?.stepIndex??0} onIndex={index=>setPositions(old=>{if(old[runIndex]===index)return old;const next=[...old];next[runIndex]=index;return next;})}/>:<div key={run.engineId}><h4>{run.name}</h4><TraceView input={state.input} state={run.trace.steps[Math.min(playback.index,run.trace.steps.length-1)].state} compact/><p className="comparison-step">Step {Math.min(playback.index,run.trace.steps.length-1)+1}: {run.trace.steps[Math.min(playback.index,run.trace.steps.length-1)].description}</p></div>)}</div>
       {!independent&&<PlaybackControls playback={playback} length={maxLength} label="comparison"/>}
       <p className="control-hint">{independent?'Each method has independent playback because these engines do not declare equivalent intermediate semantic checkpoints.':'Trace indices are not equivalent computational work or matching algorithm events. Each method stops at its final state.'} Complete-run metrics remain compatible independently of playback.</p>
-      <div className="comparison-table"><table><caption>Measured totals from these runs</caption><thead><tr><th>Method</th>{computed.comparison.commonMetrics.map(metric => <th key={metric.id}>{metric.label}<small>{metric.unit}</small></th>)}<th>Status</th></tr></thead><tbody>{computed.comparison.runs.map(run => <tr key={run.engineId}><th scope="row">{run.name}</th>{computed.comparison!.commonMetrics.map(metric => <td key={metric.id}>{run.trace.metrics.find(item => item.id === metric.id)?.value ?? '—'}</td>)}<td>{run.trace.status}</td></tr>)}</tbody></table></div>
+      <div className="comparison-table" role="region" aria-label="Comparison measurements" tabIndex={0}><table><caption>Measured totals from these runs</caption><thead><tr><th>Method</th>{computed.comparison.commonMetrics.map(metric => <th key={metric.id}>{metric.label}<small>{metric.unit}</small></th>)}<th>Status</th></tr></thead><tbody>{computed.comparison.runs.map(run => <tr key={run.engineId}><th scope="row">{run.name}</th>{computed.comparison!.commonMetrics.map(metric => <td key={metric.id}>{run.trace.metrics.find(item => item.id === metric.id)?.value ?? '—'}</td>)}<td>{run.trace.status}</td></tr>)}</tbody></table></div>
     </>}
     {independent&&<p className="control-hint">A contextual comparison question needs one shared trace index. <Button variant="outline" onClick={()=>setIndependent(false)}>Use shared index for a contextual question</Button></p>}
     {computed.figure && <><FidelityNote figure={computed.figure}/><div className="figure-tools">{!independent&&<ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={computed.figure} seed={state.seed} stepIndex={playback.index}/>}<ExperimentActions source={document} snapshot={figureSnapshot(document, computed.figure, state.seed)}/></div></>}<SourceReturn document={document} anchorId={anchorId}/>

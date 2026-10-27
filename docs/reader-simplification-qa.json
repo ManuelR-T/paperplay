@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-27",
+  "environment": "local production Next build, native T3 Chromium",
+  "changes": [
+    "Source coverage, attribution and extraction limitations grouped behind About this source.",
+    "Notes, local search, study-pack export, original and figure planning have direct reader buttons.",
+    "Prepared and saved source figures display in the reading flow, with viewport-based loading and explicit Hide/Show buttons.",
+    "Workbench uses named action buttons and one active panel instead of stacked outer accordions.",
+    "Figure scope/provenance and JSON editing use direct buttons and dialogs.",
+    "Completed/ready import banners are quiet when there is no warning or error.",
+    "Example seed controls sit beside the first interactive figure instead of preceding the paper text."
+  ],
+  "browserChecks": {
+    "preparedMobile": {
+      "source": "adaptive-mergesort",
+      "viewport": 320,
+      "documentWidth": 320,
+      "mountedPreparedFigures": 3,
+      "axePasses": 34,
+      "axeViolations": 0
+    },
+    "importedMobile": {
+      "source": "1706.03762v7",
+      "viewport": 320,
+      "documentWidth": 320,
+      "axePasses": 25,
+      "axeViolations": 0,
+      "oldTechnicalBanners": false
+    },
+    "preparedDesktop": {
+      "source": "quadratic-optimization",
+      "viewport": 1280,
+      "documentWidth": 1280,
+      "axePasses": 33,
+      "axeViolations": 0
+    },
+    "galleryMobile": {
+      "viewport": 320,
+      "documentWidth": 320,
+      "axeViolations": 0
+    },
+    "interactions": [
+      "Direct local search opens its input in one click.",
+      "Add figures reveals Meta tools and moves keyboard focus to the tools heading.",
+      "Back to reading restores the originating Add figures button and scroll position.",
+      "About this source exposes all extraction warnings.",
+      "Prepared figure Hide/Show buttons work.",
+      "Reference example opens in one click.",
+      "Figure details and Edit data open the correct dialogs.",
+      "A local experiment computes successfully and survives panel switching."
+    ],
+    "paidModelCreationRequests": 0
+  },
+  "checks": {
+    "command": "npm run check",
+    "tests": 199,
+    "passed": 199,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "finalPresentationChanges": "Strict TypeScript and production build passed again after the final placement/copy changes."
+  },
+  "limits": [
+    "Automated accessibility checks and agent walkthroughs are not the deferred real-reader study.",
+    "No source content, widget execution rules, storage formats or release hosting changed."
+  ]
+}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { SourceDocument } from '../../shared/schema';
 import { validateWidgetEnvelope, prepareWidgetSource, type WidgetEnvelope, type WidgetSpec } from '../../shared/widgets';
 import { getWidgetDescriptor } from '../../lib/widgets/catalog';
@@ -9,19 +9,21 @@ import { executeWidget } from '../../lib/widgets/worker-client';
 import { graphData, type WidgetPoint, type WidgetResult } from '../../lib/widgets/compute';
 import { encodeWidgetSnapshot, parseWidgetFile, MAX_WIDGET_SNAPSHOT_BYTES } from '../../lib/widgets/compatibility';
 import { Button } from '../ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { CustomScene } from './custom-scene';
 
 const panel={minWidth:0,maxWidth:'100%',boxSizing:'border-box' as const,padding:16,border:'1px solid var(--line,#d8dfd1)',borderRadius:10,background:'var(--paper,#fff)',margin:'14px 0',fontSize:16,overflowWrap:'anywhere' as const};
 const controls={minWidth:0,maxWidth:'100%',display:'flex',gap:12,flexWrap:'wrap' as const,alignItems:'end' as const};
 const inputStyle={fontSize:16,padding:8,border:'1px solid var(--line,#b8c1ae)',borderRadius:5,background:'var(--paper,#fff)',color:'inherit',maxWidth:'100%'};
 const format=(v:number|string|null|undefined)=>typeof v==='number'?Number.isInteger(v)?String(v):Number(v.toPrecision(7)).toString():v??'—';
-export function WidgetView(props:{envelope:WidgetEnvelope;source:SourceDocument;onChange?:(envelope:WidgetEnvelope)=>void;compact?:boolean}){
+export function WidgetView(props:{envelope:WidgetEnvelope;source:SourceDocument;onChange?:(envelope:WidgetEnvelope)=>void;compact?:boolean;detailsContent?:ReactNode}){
  const prepared=useMemo(()=>{try{return{source:prepareWidgetSource(props.source)}}catch(error){return{error}}},[props.source]);
  let parsed:WidgetEnvelope;try{if(!prepared.source)throw prepared.error;parsed=validateWidgetEnvelope(props.envelope,prepared.source);}catch(e){return <div role="alert" style={panel}>This widget cannot be activated: {e instanceof Error?e.message:'Invalid specification'}. Its original source remains readable.</div>;}
  return <ActiveWidget key={`${parsed.id}:${parsed.source.documentId}:${parsed.source.sourceVersion}`} {...props} source={prepared.source} envelope={parsed}/>;
 }
-function ActiveWidget({envelope,source,onChange,compact=false}:{envelope:WidgetEnvelope;source:SourceDocument;onChange?:(envelope:WidgetEnvelope)=>void;compact?:boolean}){
+function ActiveWidget({envelope,source,onChange,compact=false,detailsContent}:{envelope:WidgetEnvelope;source:SourceDocument;onChange?:(envelope:WidgetEnvelope)=>void;compact?:boolean;detailsContent?:ReactNode}){
  const [current,setCurrent]=useState(envelope),[message,setMessage]=useState(''),[draft,setDraft]=useState(JSON.stringify(envelope.spec,null,2));const [response,setResponse]=useState<{identity:string;result?:WidgetResult;error?:string}>();const [restart,setRestart]=useState(0);const initial=useRef(envelope);const cancel=useRef<AbortController|null>(null);const fileInput=useRef<HTMLInputElement>(null);const id=useId();
+ const [info,setInfo]=useState<'details'|'edit'|null>(null);
  const incomingIdentity=JSON.stringify(envelope);const identity=JSON.stringify([current.spec,current.seed,restart]);const descriptor=getWidgetDescriptor(current.spec.kind);const validResult=response?.identity===identity?response:undefined;const result=validResult?.result;
  useEffect(()=>{const controller=new AbortController();cancel.current=controller;executeWidget(current.spec,current.seed,{signal:controller.signal}).then(result=>setResponse({identity,result})).catch(e=>{if(!controller.signal.aborted)setResponse({identity,error:e instanceof Error?e.message:'Computation failed.'});});return()=>controller.abort();},[identity]);
  useEffect(()=>{if(JSON.stringify(envelope)!==JSON.stringify(current)){setCurrent(envelope);setDraft(JSON.stringify(envelope.spec,null,2));}},[incomingIdentity]);
@@ -32,8 +34,8 @@ function ActiveWidget({envelope,source,onChange,compact=false}:{envelope:WidgetE
  const step=Math.min(current.view.step,Math.max(0,(result?.states?.length??1)-1));
  return <section style={panel} aria-label={`${current.title} widget`} data-widget-kind={current.spec.kind} data-widget-id={current.id} id={`${current.id}-${id.replace(/[^a-zA-Z0-9]/g,'')}`}>
   <div style={{...controls,justifyContent:'space-between'}}><div><p style={{fontSize:14,color:'var(--soft,#4d5b45)',margin:0}}>ADDED BY PAPERPLAY · {current.spec.kind==='diagram'?'CONCEPTUAL':'BOUNDED TEACHING MODEL'}</p><h3 style={{fontSize:22,margin:'6px 0'}}>{current.title}</h3></div><Button variant="outline" size="sm" onClick={()=>update(structuredClone(initial.current))}>Reset widget</Button></div>
-  <p>{current.spec.mapping}</p><p style={{fontSize:14}}>Authorship: {current.authorship.label} ({current.authorship.kind}). Source location: {current.source.page}.</p>
-  <details><summary>Available controls and scope</summary><p>{descriptor.inputDomain}</p><ul>{descriptor.controls.map(c=><li key={c}>{c}</li>)}</ul><p>{descriptor.evidence}</p></details>
+  <p>{current.spec.mapping}</p>
+
   <WidgetControls envelope={current} setSpec={spec} setView={view} onSeed={seed=>update({seed})}/>
   {!validResult&&<p role="status">Computing in a background worker… <Button variant="outline" size="sm" onClick={()=>{cancel.current?.abort();setResponse({identity,error:'Computation cancelled. Its source and settings remain available.'});}}>Cancel</Button></p>}
   {validResult?.error&&<p role="alert">{validResult.error} <Button variant="outline" size="sm" onClick={()=>setRestart(v=>v+1)}>Recompute</Button></p>}
@@ -42,12 +44,13 @@ function ActiveWidget({envelope,source,onChange,compact=false}:{envelope:WidgetE
    {result.metrics.length>0&&<dl style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(180px,100%),1fr))',gap:12}}>{result.metrics.map(m=><div key={m.label}><dt style={{fontSize:14}}>{m.label}</dt><dd style={{margin:0,fontWeight:600}}>{format(m.value)} {m.unit??''}</dd></div>)}</dl>}
    {result.warnings.map(w=><p key={w} style={{fontSize:14}}>{w}</p>)}
   </>}
-  {!compact&&<details style={{marginTop:16}}><summary>Advanced: inspect or edit the validated teaching configuration</summary><p>Data only. No JavaScript, executable HTML or arbitrary code is accepted.</p><label htmlFor={id}>Widget configuration JSON</label><textarea id={id} style={{...inputStyle,width:'100%',minHeight:200,fontFamily:'monospace'}} value={draft} onChange={e=>setDraft(e.target.value)}/><Button variant="outline" onClick={()=>{try{spec(JSON.parse(draft));}catch(e){setMessage(e instanceof Error?e.message:'Invalid JSON.');}}}>Apply validated configuration</Button></details>}
-  <p style={{fontSize:14}}>Export and sharing include this figure’s data, settings, source reference and quoted passage. They do not include the full paper or original PDF. Share only content you may redistribute.</p>
+
+
   <div style={{...controls,marginTop:16}}><Button variant="outline" size="sm" onClick={()=>download(JSON.stringify(current,null,2),`${current.id}.json`)}>Export widget</Button><Button variant="outline" size="sm" onClick={()=>fileInput.current?.click()}>Import widget state</Button><Button variant="outline" size="sm" onClick={()=>void share()}>Copy widget URL</Button></div>
   <input ref={fileInput} type="file" accept="application/json,.json" aria-label="Import widget state file" style={{display:'none'}} onChange={e=>{const f=e.target.files?.[0];if(f&&f.size>MAX_WIDGET_SNAPSHOT_BYTES){setMessage('Choose a widget file below 64 KiB. The current figure was retained.');e.target.value='';return;}if(f)void f.text().then(text=>update(parseWidgetFile(text,source))).catch(e=>setMessage(e instanceof Error?e.message:'Widget import failed.'));e.target.value='';}}/>
   {message&&<p role="status">{message}</p>}
-  <details style={{marginTop:16}}><summary>Source, provenance and reproducibility</summary><blockquote>{current.source.quote}</blockquote><p>{source.title} · {source.authors.join(' · ')}. {source.source.url&&<a href={source.source.url} target="_blank" rel="noreferrer">Original research reference</a>}</p><p>Source version: {current.source.sourceVersion}. Widget envelope version 2; seed {current.seed}. No original experiment reproduction is claimed. Changes and replay make no model request.</p></details>
+  <div style={{...controls,marginTop:12}}><Button variant="ghost" size="sm" onClick={()=>setInfo('details')}>Figure details</Button>{!compact&&<Button variant="ghost" size="sm" onClick={()=>setInfo('edit')}>Edit data</Button>}</div>
+  <Dialog open={info!==null} onOpenChange={open=>{if(!open)setInfo(null);}}><DialogContent className="reader-dialog"><DialogTitle>{info==='edit'?'Edit figure data':'Figure details'}</DialogTitle><DialogDescription>{current.title} · {current.authorship.label}</DialogDescription>{info==='edit'?<section><h3>Edit figure data</h3><p>Data only. No JavaScript, executable HTML or arbitrary code is accepted.</p><label htmlFor={id}>Widget configuration JSON</label><textarea id={id} style={{...inputStyle,width:'100%',minHeight:200,fontFamily:'monospace'}} value={draft} onChange={e=>setDraft(e.target.value)}/><Button variant="outline" onClick={()=>{try{spec(JSON.parse(draft));}catch(e){setMessage(e instanceof Error?e.message:'Invalid JSON.');}}}>Apply validated configuration</Button></section>:<><section><h3>Controls & scope</h3><p>{descriptor.inputDomain}</p><ul>{descriptor.controls.map(c=><li key={c}>{c}</li>)}</ul><p>{descriptor.evidence}</p></section><section><h3>Source & reproducibility</h3><p>{current.authorship.label} · source location {current.source.page}</p><blockquote>{current.source.quote}</blockquote><p>{source.title} · {source.authors.join(' · ')}. {source.source.url&&<a href={source.source.url} target="_blank" rel="noreferrer">Original research reference</a>}</p><p>Source version: {current.source.sourceVersion}. Widget envelope version 2; seed {current.seed}. No original experiment reproduction is claimed. Changes and replay make no model request.</p></section>{detailsContent}<p style={{fontSize:14}}>Export and sharing include this figure’s data, settings, source reference and quoted passage. They do not include the full paper or original PDF. Share only content you may redistribute.</p></>}{message&&<p role="status">{message}</p>}</DialogContent></Dialog>
   <a href={`#source-${source.id}-${current.source.blockId}`}>Return to original source passage</a>
  </section>;
 }

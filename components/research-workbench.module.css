@@ -3,3 +3,5 @@
 .workbench select{width:100%;min-width:0}.workbench button,.inline button{white-space:normal;height:auto;max-width:100%;overflow-wrap:anywhere}.table{min-width:0}.table:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 
 .workbench button[data-variant=default],.inline button[data-variant=default]{color:var(--primary-foreground)}
+
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}.actions button{font-size:16px;min-height:44px}.saved{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0;padding-top:16px;border-top:1px solid var(--line)}.saved button{text-align:left;justify-content:flex-start}.panelClose{display:flex;justify-content:flex-end;margin:8px 0}.workbench>section:not([hidden]){padding-top:18px;border-top:1px solid var(--line)}.workbench>h2{scroll-margin-top:calc(var(--app-header-height,76px) + 70px)}
