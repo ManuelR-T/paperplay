@@ -1,5 +1,6 @@
 'use client';
 
+import './widgets/widgets.css';
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { SourceDocument } from '@/shared/schema';
 import { validateWidgetEnvelope, type WidgetEnvelope } from '@/shared/widgets';
@@ -25,6 +26,7 @@ function EnrichmentSession({ source, widgets = [], onAcceptWidget, onRemoveWidge
   const [sectionId, setSectionId] = useState(sections[0]?.id ?? ''); const [busy, setBusy] = useState(false); const [paused, setPaused] = useState(false);
   const [storageWarning,setStorageWarning]=useState('');
   const [message, setMessage] = useState(''); const [storageBlocked, setStorageBlocked] = useState(false); const [targetId, setTargetId] = useState(''); const [feedback, setFeedback] = useState('');
+  const [creativeBrief,setCreativeBrief]=useState('');
   const [previewId, setPreviewId] = useState(''); const [showRemoved, setShowRemoved] = useState(false);
   useEffect(() => {
     mounted.current = true;
@@ -100,7 +102,7 @@ function EnrichmentSession({ source, widgets = [], onAcceptWidget, onRemoveWidge
       // before a creation can have an ambiguous network outcome.
       const response = await fetch('/api/enrichment/session', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' });
       if (!response.ok) { const b = await response.json(); throw Error(b.error ?? 'Meta enrichment is unavailable.'); }
-      const pending: PendingEnrichment = { requestId: crypto.randomUUID(), sectionId: chosen.id, action, feedback: action === 'plan' ? '' : feedback.trim(), ...(target && action !== 'plan' ? { target: structuredClone(target) } : {}) };
+      const pending: PendingEnrichment = { requestId: crypto.randomUUID(), sectionId: chosen.id, action, feedback: action === 'plan' ? creativeBrief.trim() : feedback.trim(), ...(target && action !== 'plan' ? { target: structuredClone(target) } : {}) };
       if(!commit({ ...current.current, pending })){const next={...current.current!};delete next.pending;commit(next);throw Error('Browser storage could not save the request reference. No model creation was attempted.');} setBusy(false); void send('start', pending);
     } catch (error) { setBusy(false); setMessage(error instanceof Error ? error.message : 'Could not establish the enrichment session. No creation was attempted.'); }
   }
@@ -118,6 +120,9 @@ function EnrichmentSession({ source, widgets = [], onAcceptWidget, onRemoveWidge
   const pending = data?.pending; const latest = data?.plans.at(-1);
   return <section className="enrichment-workbench" aria-label="Source-linked Meta enrichment" style={{ minWidth: 0, display: 'grid', gap: 16, fontSize: 16 }}>
     <header><h3 style={{ margin: '0 0 8px' }}>Add figures with Meta</h3><p style={{ margin: 0 }}>Choose a section. Meta will suggest interactive figures for you to preview and add to the paper.</p></header>
+    <section className="muse-capabilities" aria-label="Muse widget capabilities"><h4>What can Muse create?</h4><p>Interactive equations and curves, concept diagrams, sortable tables, matrix/vector views, probability experiments, attention heatmaps, pathfinding and convolution.</p><p>For a mechanism that needs a new form, Muse can design a custom animated model: adjustable parameters, evolving state, arrows, shapes, labels, changing visibility, metrics and a recorded curve.</p><p>Each figure cites a passage. Custom models illustrate a bounded mechanism; they do not run arbitrary code, train a model or reproduce the paper’s experiments.</p></section>
+    <label className="muse-brief">What would you like to explore? (optional)<textarea maxLength={1200} value={creativeBrief} onChange={event=>setCreativeBrief(event.target.value)} placeholder="For example: show how two components interact, with clear labels and a parameter I can change."/></label>
+    <div className="muse-brief-examples" role="group" aria-label="Ideas for Muse">{['Show the mechanism step by step','Let me compare the effect of two parameters','Explain the geometry with an animated model'].map(idea=><Button key={idea} variant="outline" onClick={()=>setCreativeBrief(idea)}>{idea}</Button>)}</div>
     <details><summary>Coverage and inference budget</summary><p>When you explicitly ask, the application server receives the normalized source for validation. Meta receives the selected passages, limited neighboring context and, for a repair/edit, the selected widget configuration and your feedback. Original PDF bytes are not included in these requests.</p><p>The complete source stays in the reader. Each explicit request analyzes only the selected bounded section and limited neighboring context. Catalog {WIDGET_CATALOG_VERSION}.</p><p>{data?.budget ? `${data.budget.requests} / ${data.budget.maxRequests} per-paper requests; ${data.budget.accountedTokens.toLocaleString()} / ${data.budget.maxTokens.toLocaleString()} conservatively accounted tokens.` : 'Default per-paper ceiling: 8 requests and 1,000,000 conservatively accounted tokens; shared application quotas also apply. This is not a dollar cap or credit balance.'}</p><ul>{sections.map(s => <li key={s.id}>{s.title} · {s.characters.toLocaleString()} source characters · {data?.coverage[s.id] ?? 'unanalyzed'}{s.partial ? ' · disclosed partial-block segment' : ''}</li>)}</ul></details>
     <label style={fieldStyle}>Source section<select style={inputStyle} value={sectionId} onChange={e => setSectionId(e.target.value)}>{sections.map(s => <option value={s.id} key={s.id}>{s.title} · {data?.coverage[s.id] ?? 'unanalyzed'}{s.partial ? ' · partial block segment' : ''}</option>)}</select></label>
     {section && <p style={{ margin: 0 }}>Selected scope: {section.characters.toLocaleString()} characters in {section.segments.length} source fragment(s). This is section enrichment, not complete-paper analysis.</p>}

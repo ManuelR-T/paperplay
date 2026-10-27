@@ -45,3 +45,15 @@ One explicit official Meta check generated a custom scalar momentum model from G
 `npm run check:custom-design` makes no inference. `-- --live` explicitly allows one creation and retains a private checkpoint; completed or accepted work is reused, and uncertain submission is not replaced automatically. Routine tests/CI never run paid checks. There are no reader-study participants in this evidence.
 
 The final provider-free suite has 192 passing tests, with strict TypeScript and the production Next build checked. At 320 CSS px, the actual Meta-authored widget passed targeted axe WCAG 2/2.1 A/AA checks in light, sepia and contrast themes (23 passes, zero violations per theme). These are developer checks, not assistive-technology certification. [Combined figure/design observations](original-figures-custom-design-qa.json).
+
+## Composition capabilities (2026-10-27)
+
+Muse receives capability discovery version 2, all ten typed widget templates, and two executable custom composition recipes: annotated dynamics and phase/vector composition. Runtime v1 and existing saved inputs remain supported. Added optional fields do not modify old records.
+
+A custom scene can combine circles, rectangles, ellipses, lines, arrows, numeric text and plain labels. Each mark may have an opacity expression in [0,1]; zero removes it from the rendered scene at that frame. Every expression, including opacity, participates in the existing operation budget. Ellipses use a center and full width/height. Labels wrap at roughly 28 characters; text marks append their evaluated numeric value. No executable markup is accepted.
+
+`layout: {fit: "content", padding: 32}` fits the entire recorded trajectory with explicit breathing room. `fit: "canvas"` preserves the nominal 600×320 stage. Padding is bounded to 16–64 units. The same wrapped text measurements inform rendering and camera bounds. A scene scrolls locally on small screens so labels remain readable. This is deterministic layout, not a general collision-avoidance solver; Muse must place labels away from moving objects and keep the composition compact.
+
+The creation panel explains these capabilities and accepts an optional creative brief before generation, with one-click starter ideas. The brief is sent as untrusted feedback to the selected-section planner. No request starts while selecting an idea or typing a brief. The provider output ceiling is 6,000 tokens, shared with the usage reservation; per-paper and application quotas remain enforced.
+
+Verification: deterministic tests execute the new recipes, check phase cancellation independently, validate opacity and geometry, preserve portable state and old frozen Meta designs, and check the provider/ledger allowance. Native Chromium exercised the creative brief, validated JSON editing, two arrowheads, ellipse and wrapped labels on desktop, and a 320-pixel viewport with local scene scrolling and no horizontal document overflow. These are authored fixtures; no fresh paid Muse generation or human-reader study was performed in this pass.

@@ -111,7 +111,7 @@ function WidgetVisual({envelope:e,result:r,setSpec,setView,step}:{envelope:Widge
  if(s.kind==='diagram'||s.kind==='graph')return <GraphVisual envelope={e} result={r} step={step} setSpec={setSpec} setView={setView}/>;
  if(s.kind==='custom'){
    const frame=r.customFrames?.[Math.min(step,(r.customFrames?.length??1)-1)];
-   return <>{frame&&<><CustomScene frame={frame} frames={r.customFrames??[]} selection={e.view.selection} onSelect={id=>setView({selection:`custom:${id}`})}/><dl className="widget-metrics">{frame.values.map(value=><div key={value.label}><dt>{value.label}</dt><dd>{format(value.value)} {value.unit}</dd></div>)}</dl></>}</>;
+   return <>{frame&&<><CustomScene layout={s.layout} frame={frame} frames={r.customFrames??[]} selection={e.view.selection} onSelect={id=>setView({selection:`custom:${id}`})}/><dl className="widget-metrics">{frame.values.map(value=><div key={value.label}><dt>{value.label}</dt><dd>{format(value.value)} {value.unit}</dd></div>)}</dl></>}</>;
  }
  if(s.kind==='equation')return <div className="widget-equation-result"><MathExpression expression={s.expression}/>{r.metrics.map(metric=><p key={metric.label}><span>{metric.label}</span><strong>{format(metric.value)} {metric.unit}</strong></p>)}</div>;
  if(s.kind==='function')return <Plot points={r.points??[]} selected={r.selected} label="Function and selected probe" xLabel={s.xVariable} yLabel="f(x)" onProbe={x=>setSpec({...s,probe:Number(Math.max(s.domain[0],Math.min(s.domain[1],x)).toPrecision(7))})}/>;

@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { customWidgetRuntime } from '../lib/widgets/custom-runtime';
 import { createCustomWidgetPreset } from '../lib/widgets/custom-preset';
 import { getWidgetDesignCapabilities } from '../lib/widgets/design-capabilities';
-import { validateWidgetSpec } from '../shared/widgets';
+import { validateWidgetSpec, validateWidgetEnvelope } from '../shared/widgets';
 import { compileEnrichmentPlan } from '../lib/enrichment/contracts';
 import { buildSourceSections } from '../lib/enrichment/sections';
 import { getWidgetDescriptor, WIDGET_CATALOG_VERSION } from '../lib/widgets/catalog';
@@ -95,4 +95,50 @@ test('capability discovery and portable custom state keep runtime constraints an
   assert.equal(parseEnrichmentState(original,source,state.fingerprint).catalogVersion,'2.1.0');
   assert.equal(JSON.parse(original).catalogVersion,'2.0.0');
   assert.throws(()=>parseEnrichmentState(original.replace('2.0.0','99.0.0'),source,state.fingerprint));
+});
+
+// Capability additions must remain executable through the same trusted runtime.
+test('creative recipes execute, expose new scene primitives, and preserve phase cancellation', async()=>{
+  const { customDesignRecipes }=await import('../lib/widgets/design-recipes');
+  for(const recipe of customDesignRecipes()){
+    const run=customWidgetRuntime.execute(recipe.spec);
+    assert.equal(run.frames.length,recipe.spec.steps+1);
+    assert.ok(run.operations<=80000);
+    assert.ok(run.frames[0].marks.some(mark=>mark.shape==='arrow'));
+    assert.ok(run.frames[0].marks.some(mark=>mark.shape==='label'));
+  }
+  const phase=customDesignRecipes()[1].spec;
+  phase.parameters[1]={...phase.parameters[1],min:-Math.PI,max:Math.PI,value:Math.PI};
+  assert.ok(customWidgetRuntime.execute(phase).frames.every(frame=>Math.abs(frame.values[0].value)<1e-12));
+});
+
+test('opacity is evaluated per frame, validated, and charged to the expression budget',()=>{
+  const spec=createCustomWidgetPreset();spec.steps=2;
+  spec.marks[0].opacity={op:'div',left:{op:'variable',name:'step'},right:{op:'number',value:2}};
+  assert.deepEqual(customWidgetRuntime.execute(spec).frames.map(frame=>frame.marks[0].opacity),[0,.5,1]);
+  spec.marks[0].opacity={op:'number',value:1.1};
+  assert.throws(()=>customWidgetRuntime.execute(spec),/opacity/);
+  spec.marks[0].opacity={op:'variable',name:'unavailable'};
+  assert.throws(()=>customWidgetRuntime.execute(spec),/unavailable/);
+});
+
+test('content camera contains full ellipses, wrapped labels and all frames with declared padding',async()=>{
+  const { customLabelLines }=await import('../lib/widgets/custom-scene-bounds');
+  const frames=[{step:0,values:[],marks:[{id:'e',shape:'ellipse' as const,label:'Ellipse',paint:'ink' as const,x:-100,y:-50,width:80,height:40},{id:'l',shape:'label' as const,label:'A long explanation that must wrap instead of disappearing outside the figure',paint:'ink' as const,x:20,y:20}]}];
+  const bounds=customSceneBounds(frames,{fit:'content',padding:32});
+  assert.equal(bounds.x,-172);assert.ok(bounds.y<=-102);
+  const lines=customLabelLines(frames[0].marks[1]);assert.ok(lines.length>1);assert.ok(lines.every(line=>line.length<=28));
+  assert.ok(bounds.y+bounds.height>=20+(lines.length-1)*24+6+32);
+  const future=structuredClone(frames[0]);future.step=1;future.marks[0].x=800;
+  const whole=customSceneBounds([...frames,future],{fit:'content',padding:32});
+  assert.ok(whole.x+whole.width>=872);
+  assert.ok(customSceneBounds([], {fit:'content',padding:24}).width>0);
+  assert.throws(()=>validateWidgetSpec({...createCustomWidgetPreset(),layout:{fit:'content',padding:-10}}));
+});
+
+test('extended custom widgets retain layout and scene fields through portable state',async()=>{
+  const {customDesignRecipes}=await import('../lib/widgets/design-recipes');
+  const source=preparedPapers[2].document;
+  const envelope={...createWidgetForSource('custom',source),spec:customDesignRecipes()[1].spec};
+  assert.deepEqual(decodeWidgetSnapshot(encodeWidgetSnapshot(envelope),source),validateWidgetEnvelope(envelope,source));
 });

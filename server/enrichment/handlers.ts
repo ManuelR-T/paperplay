@@ -10,7 +10,7 @@ import { usageIdFor, reservedTokensFor, type UsageStore } from '../usage/model';
 import { AnalysisHttpError, requireSameOrigin, sessionFor, signingKey, signToken, verifyToken } from '../analysis/security';
 import { safeProviderError, type ProviderResponse } from '../analysis/provider';
 import type { MetaConfig } from '../meta/config';
-import { createMetaEnrichmentProvider, providerInput, type EnrichmentInput, type EnrichmentProvider } from './provider';
+import { createMetaEnrichmentProvider, providerInput, ENRICHMENT_MAX_OUTPUT_TOKENS, type EnrichmentInput, type EnrichmentProvider } from './provider';
 import { getEnrichmentStore, type EnrichmentStore, type EnrichmentRecord } from './store';
 
 const actionSchema = z.enum(['plan','repair','edit']);
@@ -97,7 +97,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         sessionFor(request, key, now(), false);
         const session = sessionFor(request, key, now(), true); cookie = session.cookie;
         const id = usageIdFor(session.sid, `enrichment-${input.requestId}`);
-        const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: 4500, inputCharacters: prepared.inputText.length, model: config.model, fingerprint: prepared.contextHash };
+        const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: ENRICHMENT_MAX_OUTPUT_TOKENS, inputCharacters: prepared.inputText.length, model: config.model, fingerprint: prepared.contextHash };
         const reserved = store().reserve({ id, owner: session.sid, documentHash: prepared.documentHash, contextHash: prepared.contextHash, action: input.action, sectionId: input.sectionId, reservedTokens: reservedTokensFor(reservationInput) });
         if (!reserved.created) {
           const inProgress = running.get(id); if (inProgress) return json(await inProgress, 200, cookie);

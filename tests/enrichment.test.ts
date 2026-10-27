@@ -165,3 +165,16 @@ test('provider input contains only selected section context, declared capabiliti
   const section=buildSourceSections(source)[0];const selected=sectionContext(source,section.id);const input=JSON.parse(providerInput({action:'plan',context:selected.text,feedback:''}));
   assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.equal(input.templates.length,10);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
 });
+
+test('creative direction reaches the provider and its output allowance fits the shared ledger',async()=>{
+  const {ENRICHMENT_MAX_OUTPUT_TOKENS}=await import('../server/enrichment/provider');
+  const {validateUsageRequest}=await import('../server/usage/model');
+  const section=buildSourceSections(source)[0];
+  const text=providerInput({action:'plan',context:sectionContext(source,section.id).text,feedback:'Explain geometry using an animated model.'});
+  const input=JSON.parse(text);
+  assert.equal(input.feedback,'Explain geometry using an animated model.');
+  assert.ok(input.customRuntime.sceneShapes.includes('arrow'));
+  assert.ok(input.customRuntime.sceneShapes.includes('label'));
+  assert.ok(text.length<70000);
+  assert.doesNotThrow(()=>validateUsageRequest({id:'creative-fixture',sessionId:'fixture',kind:'analysis',maxOutputTokens:ENRICHMENT_MAX_OUTPUT_TOKENS,inputCharacters:text.length,model:'fixture'}));
+});

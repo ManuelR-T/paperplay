@@ -4,12 +4,15 @@ import { expressionSchema, name, text, variableSchema, type Expression } from '.
 export const CUSTOM_RUNTIME_VERSION = 1 as const;
 export const CUSTOM_LIMITS = { steps: 120, registers: 8, marks: 24, expressionTerms: 768, operations: 80_000 } as const;
 const paint = z.enum(['ink', 'accent', 'olive']);
-const base = { id: name, label: text.max(160), paint };
+const base = { id: name, label: text.max(160), paint, opacity: expressionSchema.optional() };
 export const customMarkSchema = z.discriminatedUnion('shape', [
   z.strictObject({ ...base, shape: z.literal('circle'), x: expressionSchema, y: expressionSchema, radius: expressionSchema }),
   z.strictObject({ ...base, shape: z.literal('rect'), x: expressionSchema, y: expressionSchema, width: expressionSchema, height: expressionSchema }),
   z.strictObject({ ...base, shape: z.literal('line'), x: expressionSchema, y: expressionSchema, x2: expressionSchema, y2: expressionSchema }),
   z.strictObject({ ...base, shape: z.literal('text'), x: expressionSchema, y: expressionSchema, value: expressionSchema }),
+  z.strictObject({ ...base, shape: z.literal('label'), x: expressionSchema, y: expressionSchema }),
+  z.strictObject({ ...base, shape: z.literal('arrow'), x: expressionSchema, y: expressionSchema, x2: expressionSchema, y2: expressionSchema }),
+  z.strictObject({ ...base, shape: z.literal('ellipse'), x: expressionSchema, y: expressionSchema, width: expressionSchema, height: expressionSchema }),
 ]);
 export const customWidgetSchema = z.strictObject({
   kind: z.literal('custom'), runtimeVersion: z.literal(CUSTOM_RUNTIME_VERSION),
@@ -20,6 +23,7 @@ export const customWidgetSchema = z.strictObject({
   metrics: z.array(z.strictObject({ name, label: text.max(160), unit: z.string().max(40), expression: expressionSchema })).min(1).max(8),
   plot: z.strictObject({ label: text.max(160), xLabel: text.max(80), yLabel: text.max(80), x: expressionSchema, y: expressionSchema }).optional(),
   marks: z.array(customMarkSchema).max(CUSTOM_LIMITS.marks),
+  layout: z.strictObject({ fit: z.enum(['content','canvas']), padding: z.number().int().min(16).max(64) }).optional(),
 });
 export type CustomWidgetSpec = z.infer<typeof customWidgetSchema>;
 export type CustomMark = z.infer<typeof customMarkSchema>;

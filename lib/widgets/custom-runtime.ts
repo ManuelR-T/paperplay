@@ -1,7 +1,7 @@
 import { CUSTOM_LIMITS, CUSTOM_RUNTIME_VERSION, validateCustomWidget, type CustomWidgetSpec } from '../../shared/custom-widget';
 import type { Expression } from '../../shared/widget-primitives';
 
-export type EvaluatedMark = { id: string; label: string; paint: 'ink'|'accent'|'olive'; shape: 'circle'|'rect'|'line'|'text'; x: number; y: number; radius?: number; width?: number; height?: number; x2?: number; y2?: number; value?: number };
+export type EvaluatedMark = { id: string; label: string; paint: 'ink'|'accent'|'olive'; shape: 'circle'|'rect'|'line'|'text'|'label'|'arrow'|'ellipse'; x: number; y: number; radius?: number; width?: number; height?: number; x2?: number; y2?: number; value?: number; opacity?: number };
 export type CustomFrame = { step: number; values: { name: string; label: string; value: number; unit: string }[]; marks: EvaluatedMark[] };
 
 function execute(input: unknown) {
@@ -35,6 +35,7 @@ function execute(input: unknown) {
       const evaluated: Record<string,unknown>={};
       for(const [key,value]of Object.entries(mark))evaluated[key]=value&&typeof value==='object'?evaluate(value as Expression,outputs):value;
       if(['radius','width','height'].some(k=>typeof evaluated[k]==='number'&&(evaluated[k] as number)<0))throw Error('Custom visual sizes must be nonnegative.');
+      if(typeof evaluated.opacity==='number'&&(evaluated.opacity<0||evaluated.opacity>1))throw Error('Custom opacity must be between 0 and 1.');
       if(['x','y','x2','y2'].some(k=>typeof evaluated[k]==='number'&&Math.abs(evaluated[k] as number)>10000)||['radius','width','height'].some(k=>typeof evaluated[k]==='number'&&(evaluated[k] as number)>2000))throw Error('Custom visual geometry exceeds its bounded canvas allowance.');
       return evaluated as EvaluatedMark;
     });
