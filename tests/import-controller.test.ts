@@ -30,6 +30,17 @@ function controller(store: ReturnType<typeof memoryStore>, fetcher: typeof fetch
 const reply = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 const settle = () => new Promise(resolve => setTimeout(resolve, 20));
 
+test('opening an exploration result imports the pinned arXiv source without starting Meta', async () => {
+  const store = memoryStore(); const imported: string[] = []; const requests: string[] = [];
+  const instance = controller(store, (async (url) => { requests.push(String(url)); throw new Error('No model request expected'); }) as typeof fetch,
+    { importArxiv: async (input: string) => { imported.push(input); return { source }; } });
+  await instance.refresh();
+  const id = await instance.importArxiv('1706.03762v7', { analyze: false });
+  assert.deepEqual(imported, ['1706.03762v7']); assert.deepEqual(requests, []);
+  assert.equal(id, source.id); assert.equal(store.values.get(source.id)?.stage, 'ready');
+  assert.equal(store.values.get(source.id)?.job, undefined);
+});
+
 test('durable source and submitting checkpoints precede a single paid creation; final output is validated and cached', async () => {
   const store = memoryStore([ready()]); const calls: string[] = [];
   const instance = controller(store, (async (url) => {

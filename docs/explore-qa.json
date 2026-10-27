@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-27",
+  "environment": "local production Next build, native T3 Chromium",
+  "search": {
+    "defaultSubject": "cs.AI",
+    "defaultResultCount": 12,
+    "defaultFirstPaper": "2610.35868v1",
+    "titleQuery": "attention is all you need",
+    "field": "title",
+    "titleTotal": 36,
+    "titleFirstPaper": "1706.03762v7",
+    "pagination": "13\u201324 of 36, then browser back restored 1\u201312"
+  },
+  "saved": {
+    "saveAndReload": true,
+    "abstractPreview": true,
+    "scope": "browser metadata only"
+  },
+  "reader": {
+    "paper": "Attention Is All You Need",
+    "version": "1706.03762v7",
+    "stage": "ready",
+    "initialSourceImportRequests": 1,
+    "reopenSourceImportRequests": 0,
+    "paidModelCreationRequests": 0
+  },
+  "accessibility": {
+    "rules": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21aa"
+    ],
+    "mobile": {
+      "viewport": 320,
+      "documentWidth": 320,
+      "passes": 23,
+      "violations": 0
+    },
+    "desktop": {
+      "viewport": 1280,
+      "documentWidth": 1280,
+      "passes": 23,
+      "violations": 0
+    },
+    "abstractDialogAfterTransition": {
+      "viewport": 320,
+      "passes": 22,
+      "violations": 0
+    }
+  },
+  "checks": {
+    "command": "npm run check",
+    "tests": 199,
+    "passed": 199,
+    "typecheck": "passed",
+    "productionBuild": "passed"
+  },
+  "notes": [
+    "Live arXiv metadata and source import; no Meta inference.",
+    "Automated checks do not replace the deferred study with real readers.",
+    "No hosting or release changes."
+  ]
+}

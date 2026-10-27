@@ -107,3 +107,7 @@ Start with the [release notes](docs/release-v1.1.0.md), [acceptance matrix](docs
 Project source is [ISC-licensed](LICENSE). Research sources retain their separate [attribution and CC licenses](public/papers/ATTRIBUTION.md). [Dependency notices](docs/dependency-notices.md) inventory the locked installed tree; upstream license files remain authoritative. See [SECURITY.md](SECURITY.md) for trust and disclosure boundaries.
 
 Created in [T3 Code](https://t3.codes).
+
+## Explore arXiv
+
+Open `/explore` to search arXiv, preview abstracts, save a local reading list and open exact paper versions in the reader. Discovery and source import use no Meta inference; interactive figure generation remains an explicit choice. See [the exploration flow and server limits](docs/explore.md) and [local validation evidence](docs/explore-qa.json).
