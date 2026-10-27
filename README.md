@@ -8,6 +8,10 @@ Read research papers with interactive figures beside the passages they explain. 
 
 [Hosted demonstration](https://paperplay-meta-lab-1027.poeticbadge1024.chatgpt.site) — owner-private, as explicitly requested. [70-second English demo](artifacts/paperplay-demo.mp4) — actual UI footage with English subtitles and no audio. Neither artifact establishes anonymous judge access or a submitted hackathon entry.
 
+## Product roadmap beyond the first release
+
+The first release is a foundation. The [M6–M10 roadmap](docs/next-roadmap.md) defines **32 planned GitHub issues**, PP-046–PP-077: a calmer configurable reader, scoped symbol definitions, manipulable equations, a broader widget catalog, linked experiments, inspectable Meta planning and personal research tools. They are not implemented yet. Start with reading comfort, then one equation/plot/diagram path; expand other families after evidence of usefulness. [Browse the interactive roadmap](docs/next-roadmap.html) or [the GitHub issues](https://github.com/ManuelR-T/paperplay/issues).
+
 ## Run locally
 
 Use Node 24.14 or later in the Node 24 line (`.nvmrc`) and npm:
