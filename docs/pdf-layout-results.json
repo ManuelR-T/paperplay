@@ -1,0 +1,447 @@
+{
+  "normalizer": "source-v2",
+  "reports": [
+    {
+      "file": "paperplay-resnet-v1-layout.pdf",
+      "sha256": "1e0651b6810ecba34a3dbc5b5b0209226f889004607c1f203540a48d64e5a93a",
+      "pageCount": 12,
+      "reorderedPages": 12,
+      "retainedCharacterPages": 12,
+      "unchangedTextPages": 0,
+      "oldCaptionReferences": 0,
+      "newCaptionReferences": 10,
+      "pages": [
+        {
+          "page": 1,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 2,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 3,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 4,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 5,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 2
+        },
+        {
+          "page": 6,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 7,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 8,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 3
+        },
+        {
+          "page": 9,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 10,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 11,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 12,
+          "layout": "two-column",
+          "reordered": true,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": false,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        }
+      ]
+    },
+    {
+      "file": "paperplay-attention-v7-layout.pdf",
+      "sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+      "pageCount": 15,
+      "reorderedPages": 0,
+      "retainedCharacterPages": 15,
+      "unchangedTextPages": 15,
+      "oldCaptionReferences": 0,
+      "newCaptionReferences": 5,
+      "pages": [
+        {
+          "page": 1,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 2,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 3,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 4,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 5,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 6,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 7,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 8,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 9,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 10,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 11,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 12,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 13,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 14,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 15,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        }
+      ]
+    },
+    {
+      "file": "priority-search-trees.pdf",
+      "sha256": "3ee26d48499f643e306a258b07494712c27e0cbf8a0d006cb01a21a2c44fe90e",
+      "pageCount": 18,
+      "reorderedPages": 0,
+      "retainedCharacterPages": 18,
+      "unchangedTextPages": 18,
+      "oldCaptionReferences": 0,
+      "newCaptionReferences": 3,
+      "pages": [
+        {
+          "page": 1,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 2,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 3,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 4,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 5,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 6,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 7,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 8,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 9,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 10,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 11,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 12,
+          "layout": "uncertain",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 13,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 14,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 1
+        },
+        {
+          "page": 15,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 16,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 17,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        },
+        {
+          "page": 18,
+          "layout": "single-column",
+          "reordered": false,
+          "nonWhitespaceCharactersRetained": true,
+          "unchangedText": true,
+          "oldCaptionReferences": 0,
+          "newCaptionReferences": 0
+        }
+      ]
+    }
+  ],
+  "note": "Geometry confidence, exact non-whitespace character retention and caption-reference counts are measured. They do not certify mathematical or semantic reading order. Full source/PDF bodies are not included."
+}

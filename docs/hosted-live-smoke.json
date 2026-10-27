@@ -1,0 +1,54 @@
+{
+  "checkedAt": "2026-10-27T02:17:59.348Z",
+  "origin": "https://paperplay-meta-lab-1027.poeticbadge1024.chatgpt.site",
+  "phase": "live",
+  "health": {
+    "status": "ok",
+    "stage": "M5",
+    "meta": {
+      "configured": true,
+      "model": "muse-spark-1.3"
+    },
+    "hosting": {
+      "runtime": "cloudflare-worker",
+      "quotaStore": "d1"
+    }
+  },
+  "source": {
+    "id": "import-4180be195cf9b5f1eef7037d57ca5d35",
+    "version": "source-v2:4180be195cf9b5f1eef7037d57ca5d35d4b2690255d825390d5264a3cf740d8c",
+    "pages": 18,
+    "blocks": 229
+  },
+  "model": "muse-spark-1.3",
+  "usage": {
+    "inputTokens": 19335,
+    "outputTokens": 2707,
+    "totalTokens": 22042
+  },
+  "figures": [
+    {
+      "id": "meta-priority-search-tree-augmentation",
+      "title": "Priority search trees by augmenting a search tree",
+      "kind": "steps",
+      "sourcePage": 2
+    },
+    {
+      "id": "meta-dijkstra-shortest-distances",
+      "title": "Dijkstra shortest-distance illustration",
+      "kind": "steps",
+      "sourcePage": 14
+    },
+    {
+      "id": "meta-prim-abstract-loop",
+      "title": "Abstract Prim MST growth",
+      "kind": "steps",
+      "sourcePage": 7
+    }
+  ],
+  "warnings": [
+    "Figure dijkstra-shortest-distances is a conceptual fallback: Unknown graph node for role start"
+  ],
+  "sourceBlocksPreserved": true,
+  "newPaidRequests": 1
+}

@@ -1,0 +1,19 @@
+services:
+  paperplay:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      MODEL_API_KEY: ${MODEL_API_KEY:-}
+      META_MODEL: ${META_MODEL:-muse-spark-1.3}
+      META_ANALYSIS_ENABLED: ${META_ANALYSIS_ENABLED:-true}
+      META_CREDITS_EXPIRE_AT: ${META_CREDITS_EXPIRE_AT:-}
+      ANALYSIS_APP_ORIGIN: ${ANALYSIS_APP_ORIGIN:-http://localhost:3000}
+      ANALYSIS_SIGNING_SECRET: ${ANALYSIS_SIGNING_SECRET:-}
+      SHORT_LINKS_SIGNING_SECRET: ${SHORT_LINKS_SIGNING_SECRET:-}
+      USAGE_DAILY_TOKENS: ${USAGE_DAILY_TOKENS:-2000000}
+    volumes:
+      - paperplay-data:/data
+    restart: unless-stopped
+volumes:
+  paperplay-data:

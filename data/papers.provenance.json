@@ -1,0 +1,44 @@
+[
+  {
+    "id": "priority-search-trees",
+    "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05",
+    "pdfUrl": "/papers/priority-search-trees.pdf",
+    "pdfSha256": "3ee26d48499f643e306a258b07494712c27e0cbf8a0d006cb01a21a2c44fe90e",
+    "normalizedDocumentSha256": "ff36daec988fa79f67ffcc58b6bff7d0a22c63e447439447eee15d35f06ec6a5",
+    "preparedAt": "2026-10-27",
+    "license": "CC BY 3.0 Unported",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "publisherPdfUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol141-itp2019/LIPIcs.ITP.2019.23/LIPIcs.ITP.2019.23.pdf",
+    "selectedPages": [
+      1,
+      2,
+      3,
+      12,
+      14,
+      15,
+      16
+    ]
+  },
+  {
+    "id": "adaptive-mergesort",
+    "sourceVersion": "LIPIcs.ESA.2018.63-publisher-2018-08-14",
+    "pdfUrl": "/papers/adaptive-mergesort.pdf",
+    "pdfSha256": "7aa99126cbcdda868aa434d68335f27da216bbe35e6ab5afe961d81987b303cf",
+    "normalizedDocumentSha256": "7e3a423da3d944e2f138f727c316f94aa546078233aca0f0a97634667d044bac",
+    "preparedAt": "2026-10-27",
+    "license": "CC BY 3.0 Unported",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+    "publisherPdfUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol112-esa2018/LIPIcs.ESA.2018.63/LIPIcs.ESA.2018.63.pdf",
+    "selectedPages": [
+      1,
+      2,
+      3,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ]
+  }
+]

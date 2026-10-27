@@ -1,0 +1,214 @@
+{
+  "run": "m4-baseline",
+  "checkedAt": "2026-10-27T01:51:01.873Z",
+  "live": true,
+  "frozen": {
+    "instructionsSha256": "d51a07f488a7f49531e78a8eca591902722f31d700f13fc0d2e3281e53099627",
+    "catalogSha256": "847b7197dd89cd68a7be387a049e17b8b1a29a5492b3cdd49492cc8659585397",
+    "schemaSha256": "e9f361a7a18d1dc705a63c9175acd2cda5758c15b4441240bd3501080fb18f8f",
+    "sourceFiles": {
+      "lib/analysis.ts": "f52876b9305abbd933fce489bae0b4987e2a0482416444101956e4e1b443c48c",
+      "shared/schema.ts": "cc82a025bf71f8d69d1804c3823954a14d6b212d3b8e3b58abd6213ccc4507a8",
+      "lib/engines/index.ts": "295955b3515f439995460f497382785feb74e871c06038c5860e731be11a69de",
+      "lib/import/normalize.ts": "fdaa7ffdfb1217cfe6c7c36cdf52a6fd6549a3cbfb3057f44c87157c9277e075",
+      "lib/import/arxiv.ts": "1adebea3c8da9e6cc5a3982dd77b472d65c61ee50223846b6aa4986ffdaa1793",
+      "lib/import/pdf-core.ts": "6d14c459699d37e4cce8ff484e65cea62a8c06b41ea9e9cfbf0453b802403b12"
+    }
+  },
+  "model": "muse-spark-1.3",
+  "cases": [
+    {
+      "label": "H1",
+      "arxivId": "1401.3843v1",
+      "diagnostic": false,
+      "sourceId": "import-197ad948cf5b6561948583ef6be23d37",
+      "sourceVersion": "source-v1:197ad948cf5b6561948583ef6be23d37c8f04d4d79071dcc3ae61a7ea542ff64",
+      "title": "theta.dvi",
+      "sourceUrl": "https://arxiv.org/pdf/1401.3843v1",
+      "physicalPageCount": 47,
+      "blockCount": 904,
+      "equationCount": 0,
+      "originalFigureReferences": 0,
+      "extractionWarnings": [
+        "PDF extraction preserves text and page references but may lose equation notation, figures, tables and exact reading order. Use the original PDF to verify them.",
+        "Possible multi-column text was detected. Reading order has not been certified; compare with the original page."
+      ],
+      "status": "context-rejected",
+      "error": "This paper exceeds the 70,000-character analysis limit. The extracted source can still be read; import a shorter selection for Meta analysis."
+    },
+    {
+      "label": "H1-excerpt",
+      "arxivId": "1401.3843v1",
+      "diagnostic": true,
+      "sourceId": "import-2be8ae045631d6e0f8e4f01994560456",
+      "sourceVersion": "source-v1:2be8ae045631d6e0f8e4f019945604568b6d5788e49822f0908e69e5acac8fc5",
+      "title": "theta.dvi — explicit first-three-page evaluation excerpt",
+      "sourceUrl": "https://arxiv.org/pdf/1401.3843v1",
+      "physicalPageCount": 47,
+      "blockCount": 44,
+      "equationCount": 0,
+      "originalFigureReferences": 0,
+      "extractionWarnings": [
+        "PDF extraction preserves text and page references but may lose equation notation, figures, tables and exact reading order. Use the original PDF to verify them.",
+        "Possible multi-column text was detected. Reading order has not been certified; compare with the original page.",
+        "Evaluation diagnostic explicitly selects physical PDF pages 1–3; all other pages are excluded, not claimed normalized."
+      ],
+      "contextCharacters": 11675,
+      "elapsedMs": 16443,
+      "usage": {
+        "inputTokens": 4246,
+        "outputTokens": 2601,
+        "totalTokens": 6847
+      },
+      "status": "completed-validated",
+      "proposedFigures": 3,
+      "acceptedFigures": 3,
+      "validationWarnings": [
+        "Figure grid-vs-anyangle-concept is a conceptual fallback: [\n  {\n    \"origin\": \"string\",\n    \"code\": \"invalid_format\",\n    \"format\": \"regex\",\n    \"pattern\": \"/^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/\",\n    \"path\": [\n      \"input\",\n      \"nodeRoles\",\n      \"start\"\n    ],\n    \"message\": \"Invalid string: must match pattern /^[A-Za-z0-9][A-Za-z0-9._:-]{0,99}$/\"\n  }\n]"
+      ],
+      "figures": [
+        {
+          "id": "meta-grid-vs-anyangle-concept",
+          "title": "Grid path versus any-angle shortcut concept",
+          "kind": "steps",
+          "sourcePage": 1,
+          "sourceBlockId": "pdf-p1-b8",
+          "quoteSha256": "ab1948f702bd91f598bb154b9201fe30ea1ad870568e2d7f5d4691bc7f5bd669",
+          "execution": "illustrative",
+          "runs": []
+        },
+        {
+          "id": "meta-theta-variants-tradeoff",
+          "title": "Basic Theta* versus Angle-Propagation Theta* properties",
+          "kind": "steps",
+          "sourcePage": 2,
+          "sourceBlockId": "pdf-p2-b15",
+          "quoteSha256": "09ffabae9294553632da75b943c57848a024a1e970e6b328751e45a1193f3900",
+          "execution": "illustrative",
+          "runs": []
+        },
+        {
+          "id": "meta-line-of-sight-concept",
+          "title": "Line-of-sight validity concept",
+          "kind": "steps",
+          "sourcePage": 2,
+          "sourceBlockId": "pdf-p2-b18",
+          "quoteSha256": "4cb361bb632c3e6bc6c883b8c0f4b6681e180cbbdeb93c090407020a04048193",
+          "execution": "illustrative",
+          "runs": []
+        }
+      ]
+    },
+    {
+      "label": "H2",
+      "arxivId": "2504.17327v2",
+      "diagnostic": false,
+      "sourceId": "import-e50e6b247ddf4d64b5944b98668af838",
+      "sourceVersion": "source-v1:e50e6b247ddf4d64b5944b98668af838b28098eeab0f3df0fe9e22bbe5d557cc",
+      "title": "Simpler Universally Optimal Dijkstra",
+      "sourceUrl": "https://arxiv.org/html/2504.17327v2",
+      "physicalPageCount": null,
+      "blockCount": 141,
+      "equationCount": 4,
+      "originalFigureReferences": 3,
+      "extractionWarnings": [
+        "Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.",
+        "Original illustrations are source-linked placeholders. Inline mathematical notation may remain TeX text; check the original article for exact layout."
+      ],
+      "contextCharacters": 44370,
+      "elapsedMs": 19856,
+      "usage": {
+        "inputTokens": 13721,
+        "outputTokens": 2676,
+        "totalTokens": 16397
+      },
+      "status": "completed-validated",
+      "proposedFigures": 2,
+      "acceptedFigures": 1,
+      "validationWarnings": [
+        "Figure dijkstra-background-example was rejected because its source reference or configuration could not be validated."
+      ],
+      "figures": [
+        {
+          "id": "meta-timestamp-optimality-concept",
+          "title": "Timestamp optimal heap cost idea",
+          "kind": "steps",
+          "sourcePage": 1,
+          "sourceBlockId": "html-47-p1-b1",
+          "quoteSha256": "84b9c401c2925b0f32cdb6ddc66769d7b8e40788cc61f0fde0fdc59cd994f04b",
+          "execution": "illustrative",
+          "runs": []
+        }
+      ]
+    },
+    {
+      "label": "H3",
+      "arxivId": "1706.03762v7",
+      "diagnostic": false,
+      "sourceId": "import-fbf06db8c28cf34bcd7b0aa2f00aead6",
+      "sourceVersion": "source-v1:fbf06db8c28cf34bcd7b0aa2f00aead673c4c69789724803cd030f14bc69c222",
+      "title": "Attention Is All You Need",
+      "sourceUrl": "https://arxiv.org/html/1706.03762v7",
+      "physicalPageCount": null,
+      "blockCount": 114,
+      "equationCount": 9,
+      "originalFigureReferences": 9,
+      "extractionWarnings": [
+        "Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.",
+        "Original illustrations are source-linked placeholders. Inline mathematical notation may remain TeX text; check the original article for exact layout."
+      ],
+      "contextCharacters": 35669,
+      "elapsedMs": 15992,
+      "usage": {
+        "inputTokens": 9757,
+        "outputTokens": 2602,
+        "totalTokens": 12359
+      },
+      "status": "completed-validated",
+      "proposedFigures": 3,
+      "acceptedFigures": 3,
+      "validationWarnings": [],
+      "figures": [
+        {
+          "id": "meta-transformer-encoder-decoder-overview",
+          "title": "Transformer encoder-decoder with stacked self-attention",
+          "kind": "steps",
+          "sourcePage": 1,
+          "sourceBlockId": "html-18-p1-b1",
+          "quoteSha256": "ceb6081456e63bceb6616578fe27f926c0f1fd1e19bc9e5994b2c3175db22c2b",
+          "execution": "illustrative",
+          "runs": []
+        },
+        {
+          "id": "meta-scaled-dot-product-attention-steps",
+          "title": "Scaled dot-product attention computation",
+          "kind": "steps",
+          "sourcePage": 1,
+          "sourceBlockId": "html-27-p1-b1",
+          "quoteSha256": "697423c9959a15e3625230ba8ae20dcc524a30b5295f866589ca19e60bc92fca",
+          "execution": "illustrative",
+          "runs": []
+        },
+        {
+          "id": "meta-sinusoidal-positional-encoding",
+          "title": "Sinusoidal positional encoding for order without recurrence",
+          "kind": "steps",
+          "sourcePage": 1,
+          "sourceBlockId": "html-54-p1-b1",
+          "quoteSha256": "06bedb42ac6353e6803a1af49511eb14407f252d6bdacf2957a2c466609abdef",
+          "execution": "illustrative",
+          "runs": []
+        }
+      ]
+    }
+  ],
+  "note": "Developer self-review only; no participant study. Baseline preserves full-source rejection. Optional Theta excerpt is a separately declared diagnostic, not full-paper success.",
+  "normalizerVersion": "source-v1",
+  "pipelineVersion": "m2-v1",
+  "engineVersions": {
+    "dijkstra-heap": "1.0.0",
+    "dijkstra-scan": "1.0.0",
+    "powersort": "1.0.0",
+    "natural-mergesort": "1.0.0"
+  }
+}

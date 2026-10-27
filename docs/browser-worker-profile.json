@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-27",
+  "surface": "T3 collaborative Chromium, local optimized production app",
+  "engine": "natural-mergesort",
+  "seed": 20261027,
+  "inputSize": 256,
+  "operationLimit": 50000,
+  "directTimerDelayMs": [24.2, 18.9, 15.8],
+  "workerTimerDelayMs": [1.1, 0.8, 1.0],
+  "directMedianMs": 18.9,
+  "workerMedianMs": 1.0,
+  "semanticResultsEqual": true,
+  "fullReactRenderingCheck": {"intervalMs": 8, "observedTicks": 214, "windowMs": 1800, "largestGapMs": 58.6, "completed": true, "errors": 0},
+  "scope": "Local event-loop responsiveness, not an original-paper hardware benchmark or a guarantee of 60fps. Worker startup/result transfer and DOM rendering have separate costs."
+}

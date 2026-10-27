@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-27T02:32:49.279Z",
+  "origin": "http://localhost:3009",
+  "coldBrowser": true,
+  "preparedWithoutInference": true,
+  "realOperatorDisabledImport": {
+    "status": 503,
+    "sourceRetained": true,
+    "error": "New Meta requests are disabled by the operator. Existing sources and results remain readable."
+  },
+  "simulatedProviderUnavailable": {
+    "interceptedCreations": 1,
+    "actualProviderCreations": 0,
+    "status": 503,
+    "sourceRetained": true,
+    "preparedGraphReopened": true
+  },
+  "scope": "Actual browser UI; provider-unavailable response injected in the browser only, not a real provider outage."
+}

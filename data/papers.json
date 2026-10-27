@@ -1,0 +1,598 @@
+[
+  {
+    "id": "priority-search-trees",
+    "document": {
+      "schemaVersion": 1,
+      "id": "priority-search-trees",
+      "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05",
+      "title": "Proof Pearl: Purely Functional, Simple and Efficient Priority Search Trees and Applications to Prim and Dijkstra",
+      "authors": [
+        "Peter Lammich",
+        "Tobias Nipkow"
+      ],
+      "source": {
+        "kind": "prepared",
+        "url": "https://doi.org/10.4230/LIPIcs.ITP.2019.23"
+      },
+      "pageCount": 18,
+      "blocks": [
+        {
+          "id": "g-abstract",
+          "kind": "heading",
+          "page": 1,
+          "text": "Abstract",
+          "level": 2
+        },
+        {
+          "id": "g-abstract-text",
+          "kind": "paragraph",
+          "page": 1,
+          "sectionId": "g-abstract",
+          "text": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm."
+        },
+        {
+          "id": "g-introduction",
+          "kind": "heading",
+          "page": 1,
+          "text": "1 Introduction",
+          "level": 2
+        },
+        {
+          "id": "g-introduction-text",
+          "kind": "paragraph",
+          "page": 1,
+          "sectionId": "g-introduction",
+          "text": "The standard implementations (e.g. [6]) of a number of efficient algorithms (e.g. Prim [26] and Dijkstra [7]) require a priority queue with a decrease-key operation. The latter operation is easy to realize efficiently in an imperative setting but harder in a functional one because one cannot use a pointer into the priority queue. The starting point of this paper is an extremely simple and yet efficient functional data structure that supports the usual search tree operations plus the priority queue operations including decrease-key. It can be realized on top of any kind of binary search tree by augmenting it with priority information. We call it a priority search tree. Based on this data structure we implement and verify two classic efficient algorithms, Prim and Dijkstra, in a purely functional manner. This is the first formal verification of an executable version of Prim’s algorithm and we discuss its details. The work is carried out in the theorem prover Isabelle/HOL [20, 21]."
+        },
+        {
+          "id": "g-priority-maps",
+          "kind": "heading",
+          "page": 2,
+          "text": "3.1 Priority Maps",
+          "level": 2
+        },
+        {
+          "id": "g-priority-definition",
+          "kind": "paragraph",
+          "page": 2,
+          "sectionId": "g-priority-maps",
+          "text": "A priority map is a map from keys (type 'a) to values (type 'b) where the values (“priorities”) are linearly ordered and a key with minimal value can be extracted. This is the interface:"
+        },
+        {
+          "id": "g-priority-interface",
+          "kind": "equation",
+          "page": 2,
+          "sectionId": "g-priority-maps",
+          "latex": "\\operatorname{getmin} :: 'm \\Rightarrow 'a \\times 'b"
+        },
+        {
+          "id": "g-priority-operations",
+          "kind": "paragraph",
+          "page": 2,
+          "sectionId": "g-priority-maps",
+          "text": "The first five operations are the canonical ones for maps (which is why we omit their specification); function update subsumes decrease-key (which should be called decrease-priority). Function getmin extracts the key with the minimal value. Its specification is:"
+        },
+        {
+          "id": "g-getmin-specification",
+          "kind": "equation",
+          "page": 2,
+          "sectionId": "g-priority-maps",
+          "latex": "\\begin{gathered}\\operatorname{getmin}(m)=(k,p)\\land\\operatorname{invar}(m)\\land\\operatorname{lookup}(m)\\ne(\\lambda x.\\mathrm{None})\\\\\\Longrightarrow\\operatorname{lookup}(m,k)=\\mathrm{Some}(p)\\land(\\forall p'\\in\\operatorname{ran}(\\operatorname{lookup}(m)).\\;p\\le p')\\end{gathered}"
+        },
+        {
+          "id": "g-search-trees",
+          "kind": "heading",
+          "page": 2,
+          "text": "3.2 Priority Search Trees",
+          "level": 2
+        },
+        {
+          "id": "g-search-trees-text",
+          "kind": "paragraph",
+          "page": 2,
+          "sectionId": "g-search-trees",
+          "text": "The first contribution of this paper is a truly simple implementation of priority maps by means of augmented binary search trees. That is, the basic data structure is some arbitrary binary search tree, e.g. a red-black tree, implementing the map from 'a to 'b by storing pairs (k,p) in each node. At this point we need to assume that the keys are also linearly ordered. To implement getmin efficiently we annotate/augment each node with another pair (k′,p′), the intended result of getmin when applied to that subtree. The specification of getmin tells us that (k′,p′) must be in that subtree and that p′ is the minimal priority in that subtree. Thus the annotation can be computed by passing the (k′,p′) with the minimal p′ up the tree. We will now make this more precise for balanced binary trees in general."
+        },
+        {
+          "id": "g-complexity",
+          "kind": "paragraph",
+          "page": 3,
+          "sectionId": "g-search-trees",
+          "text": "Note that this transformation does not affect the asymptotic complexity of f. Therefore the priority search tree operations have the same complexity as the underlying search tree operations, i.e. typically logarithmic (update, delete, lookup) and constant time (empty, is_empty). For brevity we simply speak of efficient in the rest of the paper."
+        },
+        {
+          "id": "g-data-structures",
+          "kind": "heading",
+          "page": 12,
+          "text": "5.5 Data Structures",
+          "level": 2
+        },
+        {
+          "id": "g-data-structures-text",
+          "kind": "paragraph",
+          "page": 12,
+          "sectionId": "g-data-structures",
+          "text": "The next step towards an executable algorithm is to implement the graph, priority queue, and predecessor map by actual data structures. We do this in a two-step approach: First, we implement the algorithm parameterized over the interfaces of graphs, maps, and priority maps, and, in a second step, we instantiate these interfaces to actual data structures. This approach has two advantages: First, it is easy to exchange the used data structures by simply exchanging the instantiation. Second, not knowing the actual data structures when proving the implementation correct prevents accidental breaking of the interface and looking into data structure details. Note that this actually happens in practice, e.g., due to “forgotten” simplifier setup, or automated tools like sledgehammer, which do not know about interfaces."
+        },
+        {
+          "id": "g-original-figure-3",
+          "kind": "original-figure",
+          "page": 14,
+          "sectionId": "g-data-structures",
+          "caption": "Figure 3 Implementation of Prim’s algorithm, parameterized over a graph, map, and priority map interface.",
+          "alt": "Original Figure 3 contains the functional Prim implementation. Open the cited original page to inspect its complete pseudocode; it is not redrawn here.",
+          "sourceUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol141-itp2019/LIPIcs.ITP.2019.23/LIPIcs.ITP.2019.23.pdf#page=14"
+        },
+        {
+          "id": "g-dijkstra",
+          "kind": "heading",
+          "page": 14,
+          "text": "6 Dijkstra’s Algorithm",
+          "level": 2
+        },
+        {
+          "id": "g-dijkstra-introduction",
+          "kind": "paragraph",
+          "page": 14,
+          "sectionId": "g-dijkstra",
+          "text": "Dijkstra’s algorithm [7] is a classical algorithm to determine the shortest paths from a root node to all other nodes in a weighted directed graph. Although it solves a different problem, and works on a different type of graphs, its structure is very similar to Prim’s algorithm."
+        },
+        {
+          "id": "g-dijkstra-priority",
+          "kind": "paragraph",
+          "page": 15,
+          "sectionId": "g-dijkstra",
+          "text": "In particular, like Prim’s algorithm, it has a simple loop structure and can be efficiently implemented by a priority queue. This makes Dijkstra’s algorithm another good example to illustrate the main points of this proof pearl: Functional implementations of algorithms that use priority queues with a decrease-key operation."
+        },
+        {
+          "id": "g-abstract-algorithm",
+          "kind": "heading",
+          "page": 15,
+          "text": "6.1 Abstract Algorithm",
+          "level": 2
+        },
+        {
+          "id": "g-distances-not-paths",
+          "kind": "paragraph",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "text": "Again, our formalization of Dijkstra’s algorithm follows the presentation of Cormen et al. [6]. However, for the sake of simplicity, our algorithm does not compute actual shortest paths, but only their weights."
+        },
+        {
+          "id": "g-fixed-graph",
+          "kind": "paragraph",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "text": "For the rest of this section, we fix a weighted directed graph w and a source node s. We define δ u v to be the minimum distance from node u to node v."
+        },
+        {
+          "id": "g-finished-set",
+          "kind": "paragraph",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "text": "Abstractly, Dijkstra’s algorithm keeps track of a set of finished nodes S:: 'v set, and an estimate of the shortest path weights D:: 'v ⇒ enat. The invariant D_invar D S states that"
+        },
+        {
+          "id": "g-upper-bound",
+          "kind": "equation",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "latex": "\\delta(s,u)\\le D(u)",
+          "label": "Invariant 1"
+        },
+        {
+          "id": "g-finished-exact",
+          "kind": "equation",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "latex": "u\\in S\\;\\Longrightarrow\\;D(u)=\\delta(s,u)",
+          "label": "Invariant 2"
+        },
+        {
+          "id": "g-distance-consistency",
+          "kind": "equation",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "latex": "v\\in S\\;\\Longrightarrow\\;D(u)\\le\\delta(s,v)+w(v,u)",
+          "label": "Invariant 3"
+        },
+        {
+          "id": "g-initial-or-finished",
+          "kind": "equation",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "latex": "s\\in S\\;\\lor\\;[D=(\\lambda\\_.\\infty)(s:=0)\\land S=\\emptyset]",
+          "label": "Invariant 4"
+        },
+        {
+          "id": "g-minimum-estimate",
+          "kind": "paragraph",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "text": "The main idea of the algorithm is that the least estimate D u among all unfinished nodes u ∉ S is already precise:"
+        },
+        {
+          "id": "g-selection-equation",
+          "kind": "equation",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "latex": "u\\notin S\\;\\land\\;(\\forall v\\notin S:\\;D(u)\\le D(v))\\;\\Longrightarrow\\;D(u)=\\delta(s,u)"
+        },
+        {
+          "id": "g-update-successors",
+          "kind": "paragraph",
+          "page": 15,
+          "sectionId": "g-abstract-algorithm",
+          "text": "Thus, adding an unfinished node u ∉ S with minimal D u to the finished set S, and updating the estimates of all successor nodes to accommodate for paths over u, will preserve the invariant. We iterate this until all nodes are finished, and thus all estimates are precise."
+        },
+        {
+          "id": "g-refined-algorithm",
+          "kind": "heading",
+          "page": 16,
+          "text": "6.2 Refined Algorithm",
+          "level": 2
+        },
+        {
+          "id": "g-refined-queue",
+          "kind": "paragraph",
+          "page": 16,
+          "sectionId": "g-refined-algorithm",
+          "text": "Like for Prim’s algorithm, a priority map Q:: 'v ⇒ nat option from unfinished nodes to estimates is used to efficiently obtain a node with minimum estimate. Moreover, we use another map V :: 'v ⇒ nat option to map finished nodes to their minimum distances from the source. The relation between a refined state (Q,V ) and an abstract state (D,S) is defined as:"
+        },
+        {
+          "id": "g-coupling",
+          "kind": "equation",
+          "page": 16,
+          "sectionId": "g-refined-algorithm",
+          "latex": "\\begin{gathered}\\operatorname{coupling}(Q,V,D,S)\\equiv\\\\D=\\operatorname{enat\\_of\\_option}\\circ(V\\mathbin{++}Q)\\land S=\\operatorname{dom}(V)\\\\{}\\land\\operatorname{dom}(V)\\cap\\operatorname{dom}(Q)=\\emptyset\\end{gathered}"
+        },
+        {
+          "id": "g-refinement-text",
+          "kind": "paragraph",
+          "page": 16,
+          "sectionId": "g-refined-algorithm",
+          "text": "The rest of the formalization proceeds analogously to the formalization of Prim’s algorithm: We implement the update of the successor nodes by iteration over a successor list, refine the algorithm to use the interfaces of directed graphs, priority maps and maps, and finally instantiate it with concrete, red-black-tree based implementations."
+        }
+      ],
+      "anchors": [
+        {
+          "id": "priority-search-trees-primary",
+          "blockId": "g-update-successors",
+          "page": 15,
+          "quote": "Thus, adding an unfinished node u ∉ S with minimal D u to the finished set S, and updating the estimates of all successor nodes to accommodate for paths over u, will pres"
+        },
+        {
+          "id": "priority-search-trees-comparison",
+          "blockId": "g-dijkstra-priority",
+          "page": 15,
+          "quote": "In particular, like Prim’s algorithm, it has a simple loop structure and can be efficiently implemented by a priority queue. This makes Dijkstra’s algorithm another good "
+        },
+        {
+          "id": "priority-search-trees-walkthrough",
+          "blockId": "g-priority-definition",
+          "page": 2,
+          "quote": "A priority map is a map from keys (type 'a) to values (type 'b) where the values (“priorities”) are linearly ordered and a key with minimal value can be extracted. This i"
+        }
+      ],
+      "extractionWarnings": [
+        "This is a manually prepared selection, not a full normalized edition or an automatic import. Unselected source content remains available in the complete original PDF.",
+        "Selected equations are semantic TeX transcriptions of the cited original equations; PDF typography and bound-variable spacing have been normalized.",
+        "Original figures and pseudocode are retained as explicit page-linked placeholders, not redrawn or automatically extracted.",
+        "PDF text-extraction artifacts in primes, type variables, non-membership, footnote markers and line-end hyphenation were corrected against the original notation. Bibliographic numbers refer to the complete original PDF reference list."
+      ]
+    },
+    "sourceUrl": "https://doi.org/10.4230/LIPIcs.ITP.2019.23",
+    "pdfUrl": "/papers/priority-search-trees.pdf",
+    "attribution": {
+      "authors": "Peter Lammich and Tobias Nipkow",
+      "venue": "ITP 2019 · LIPIcs 141, article 23",
+      "license": "CC BY 3.0 Unported",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "notice": "Original publisher edition licensed CC BY 3.0. Paperplay selected and reformatted passages, normalized line wrapping, and transcribed selected mathematical notation to TeX. Original figure/algorithm placeholders link to the unchanged original PDF page. Interactive figures and explanations are separate Paperplay additions."
+    },
+    "coverage": "Selected original passages from PDF pages 1, 2, 3, 12, 14, 15, 16. Full original PDF included; omitted sections are not claimed to be normalized.",
+    "illustrationAnchors": {
+      "primary": "priority-search-trees-primary",
+      "comparison": "priority-search-trees-comparison",
+      "walkthrough": "priority-search-trees-walkthrough"
+    }
+  },
+  {
+    "id": "adaptive-mergesort",
+    "document": {
+      "schemaVersion": 1,
+      "id": "adaptive-mergesort",
+      "sourceVersion": "LIPIcs.ESA.2018.63-publisher-2018-08-14",
+      "title": "Nearly-Optimal Mergesorts: Fast, Practical Sorting Methods That Optimally Adapt to Existing Runs",
+      "authors": [
+        "J. Ian Munro",
+        "Sebastian Wild"
+      ],
+      "source": {
+        "kind": "prepared",
+        "url": "https://doi.org/10.4230/LIPIcs.ESA.2018.63"
+      },
+      "pageCount": 16,
+      "blocks": [
+        {
+          "id": "s-abstract",
+          "kind": "heading",
+          "page": 1,
+          "text": "Abstract",
+          "level": 2
+        },
+        {
+          "id": "s-abstract-text",
+          "kind": "paragraph",
+          "page": 1,
+          "sectionId": "s-abstract",
+          "text": "We present two stable mergesort variants, “peeksort” and “powersort”, that exploit existing runs and find nearly-optimal merging orders with negligible overhead. Previous methods either require substantial effort for determining the merging order (Takaoka 2009; Barbay & Navarro 2013) or do not have an optimal worst-case guarantee (Peters 2002; Auger, Nicaud & Pivoteau 2015; Buss & Knop 2018). We demonstrate that our methods are competitive in terms of running time with state-of-the-art implementations of stable sorting methods."
+        },
+        {
+          "id": "s-introduction",
+          "kind": "heading",
+          "page": 1,
+          "text": "1 Introduction",
+          "level": 2
+        },
+        {
+          "id": "s-introduction-text",
+          "kind": "paragraph",
+          "page": 1,
+          "sectionId": "s-introduction",
+          "text": "Sorting is a fundamental building block for numerous tasks and ubiquitous in both the theory and practice of computing. While practical and theoretically (close-to) optimal comparison-based sorting methods are known, instance-optimal sorting, i.e., methods that adapt to the actual input and exploit specific structural properties if present, is still an area of active research. We survey some recent developments in Section 1.1."
+        },
+        {
+          "id": "s-natural-mergesort",
+          "kind": "paragraph",
+          "page": 2,
+          "sectionId": "s-introduction",
+          "text": "Making use of existing runs in the input is a well-known option in mergesort; e.g., Knuth [17] discusses a bottom-up mergesort variant that does this. He calls it “natural mergesort” and we will use this as an umbrella term for any mergesort variant that picks up existing runs in the input (instead of blindly starting with runs of size 1). The Java library uses Timsort [25, 15], a natural mergesort originally developed as Python’s new library sort."
+        },
+        {
+          "id": "s-stability",
+          "kind": "paragraph",
+          "page": 3,
+          "sectionId": "s-introduction",
+          "text": "Moreover, Huffman-Merge leads to an unstable sorting method since it merges non-adjacent runs. The main motivation for Timsort was to find a fast general-purpose sorting method that is stable [24], and the Java library even dictates the sorting method used for objects to be stable.³ It is conceptually easy to modify the idea of Huffman-Merge to sort stably: replace the Huffman tree by an optimal binary search tree and otherwise proceed as before."
+        },
+        {
+          "id": "s-preliminaries",
+          "kind": "heading",
+          "page": 5,
+          "text": "2 Preliminaries",
+          "level": 2
+        },
+        {
+          "id": "s-runs",
+          "kind": "paragraph",
+          "page": 5,
+          "sectionId": "s-preliminaries",
+          "text": "In the literature, a run usually means a maximal (contiguous) weakly increasing (i.e., nondecreasing) region, but we adopt the convention from Timsort in this paper: a run is either a maximal weakly increasing region or a maximal strictly decreasing region. Decreasing runs are reversed upon detection; allowing only strictly decreasing runs makes their stable reversal trivial. (Note that the algorithms are not affected by these details of what constitutes a “run”; they only rely on a unique partition of the input into sorted segments that can be found by sequential scans.)"
+        },
+        {
+          "id": "s-search-trees",
+          "kind": "heading",
+          "page": 5,
+          "text": "2.1 Nearly-Optimal Binary Search Trees",
+          "level": 2
+        },
+        {
+          "id": "s-original-figure-1",
+          "kind": "original-figure",
+          "page": 6,
+          "sectionId": "s-search-trees",
+          "caption": "Figure 1 The two versions of weight-balancing for computing nearly-optimal alphabetic trees. The gap probabilities in the example are proportional to 5, 3, 3, 14, 1, 2. Left: Mehlhorn’s “Method 1” chooses the split closest to the midpoint of the subtree’s actual weights (1/2 after renormalization). Right: “Method 2” continues to cut the original interval in half, irrespective of the total weight of the subtrees. The italic numbers are the powers of the nodes (see Definition 3 on page 8).",
+          "alt": "Original Figure 1 illustrates two weighted alphabetic trees. The original diagram remains available on the cited PDF page.",
+          "sourceUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol112-esa2018/LIPIcs.ESA.2018.63/LIPIcs.ESA.2018.63.pdf#page=6"
+        },
+        {
+          "id": "s-merge-costs",
+          "kind": "heading",
+          "page": 6,
+          "text": "2.2 Merge Costs",
+          "level": 2
+        },
+        {
+          "id": "s-merge-cost-definition",
+          "kind": "paragraph",
+          "page": 6,
+          "sectionId": "s-merge-costs",
+          "text": "In this paper, we are primarily concerned with finding a good order of binary merges for the existing runs in the input. Following [2] and [9], we define the merge cost M for merging two runs of lengths m resp. n as M = m + n, i.e., the size of the result."
+        },
+        {
+          "id": "s-merge-cost-equation",
+          "kind": "equation",
+          "page": 6,
+          "sectionId": "s-merge-costs",
+          "latex": "M=m+n"
+        },
+        {
+          "id": "s-merge-cost-meaning",
+          "kind": "paragraph",
+          "page": 6,
+          "sectionId": "s-merge-costs",
+          "text": "This quantity has been studied earlier by Golin and Sedgewick [14] without giving it a name. Merge costs abstract away from key comparisons and element moves and simplify computations (see next subsection)."
+        },
+        {
+          "id": "s-merge-trees",
+          "kind": "heading",
+          "page": 6,
+          "text": "2.3 Merge Trees",
+          "level": 2
+        },
+        {
+          "id": "s-merge-tree-mechanism",
+          "kind": "paragraph",
+          "page": 6,
+          "sectionId": "s-merge-trees",
+          "text": "Any natural mergesort can be described as a rule to select some of the remaining runs, which are then merged and replaced by the merge result. If we always merge two runs this corresponds to a binary tree with the original runs at leaves 1 , . . . , r . Internal nodes correspond to the result of merging their children."
+        },
+        {
+          "id": "s-total-merge-cost",
+          "kind": "equation",
+          "page": 7,
+          "sectionId": "s-merge-trees",
+          "latex": "M=\\sum_j M_j=\\sum_{i=1}^{r}d_iL_i"
+        },
+        {
+          "id": "s-orders",
+          "kind": "heading",
+          "page": 7,
+          "text": "3 Nearly-Optimal Merging Orders",
+          "level": 2
+        },
+        {
+          "id": "s-orders-text",
+          "kind": "paragraph",
+          "page": 7,
+          "sectionId": "s-orders",
+          "text": "We now describe two new nearly-optimal mergesort variants that simulate nearly-optimal search-tree algorithms, but do so without ever storing the entire merge tree or run lengths."
+        },
+        {
+          "id": "s-peeksort",
+          "kind": "heading",
+          "page": 7,
+          "text": "3.1 Peeksort: A Simple Top-Down Method",
+          "level": 2
+        },
+        {
+          "id": "s-peeksort-mechanism",
+          "kind": "paragraph",
+          "page": 7,
+          "sectionId": "s-peeksort",
+          "text": "The first method is similar to standard top-down mergesort in that it implicitly constructs a merge tree on the call stack. Instead of blindly cutting the input in half, however, we mimic Mehlhorn’s Method 1. For that we need the run boundary closest to the middle of the input: this will become the root of the merge tree. Since we want to detect existing runs anyway at some point, we start by finding the run that contains the middle position. The end point closer to the middle determines the top-level cut and we recursively sort the parts left and right of it. A final merge completes the sort."
+        },
+        {
+          "id": "s-powersort",
+          "kind": "heading",
+          "page": 8,
+          "text": "3.2 Powersort: A Cache-Friendly Stack-Based Method",
+          "level": 2
+        },
+        {
+          "id": "s-powersort-cache",
+          "kind": "paragraph",
+          "page": 8,
+          "sectionId": "s-powersort",
+          "text": "One little blemish remains in PeekSort: we have to use “random accesses” into the middle of the array to decide how to proceed. Even though we only use cache-friendly sequential scans, the I/O operations to load the middle run are effectively wasted, since it will often be merged only much later (after further recursive calls). Timsort proceeds in one left-to-right scan over the input and merges the top runs on the stack. This increases the likelihood to still have (parts of) the most recently detected run in cache when it is merged subsequently."
+        },
+        {
+          "id": "s-node-power",
+          "kind": "heading",
+          "page": 8,
+          "text": "3.2.1 The power of top-down in a bottom-up method",
+          "level": 2
+        },
+        {
+          "id": "s-node-power-introduction",
+          "kind": "paragraph",
+          "page": 8,
+          "sectionId": "s-node-power",
+          "text": "In Method 2 for nearly-optimal search trees, we can unfold the recursion since all its potential cut points are predetermined: they have the form c · 2^−ℓ for ℓ ∈ ℕ≥1 and odd c. The following definition characterizes the recursion depth ℓ, at which an internal node j is considered."
+        },
+        {
+          "id": "s-original-figure-2",
+          "kind": "original-figure",
+          "page": 9,
+          "sectionId": "s-node-power",
+          "caption": "Figure 2 Illustration of node powers. The power of a run boundary is the smallest ℓ so that a multiple of 2^−ℓ lies between the midpoints of the runs it separates.",
+          "alt": "Original Figure 2 shows dyadic boundaries between run midpoints. Open the original PDF page to inspect the diagram.",
+          "sourceUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol112-esa2018/LIPIcs.ESA.2018.63/LIPIcs.ESA.2018.63.pdf#page=9"
+        },
+        {
+          "id": "s-node-power-equation",
+          "kind": "equation",
+          "page": 9,
+          "sectionId": "s-node-power",
+          "latex": "P_j=\\min\\{\\ell\\in\\mathbb N:\\lfloor a2^{\\ell}\\rfloor<\\lfloor b2^{\\ell}\\rfloor\\}"
+        },
+        {
+          "id": "s-node-midpoints",
+          "kind": "equation",
+          "page": 9,
+          "sectionId": "s-node-power",
+          "latex": "a=\\sum_{i=0}^{j-1}\\alpha_i-\\tfrac12\\alpha_{j-1},\\qquad b=\\sum_{i=0}^{j-1}\\alpha_i+\\tfrac12\\alpha_j"
+        },
+        {
+          "id": "s-on-the-fly",
+          "kind": "heading",
+          "page": 9,
+          "text": "3.2.2 Merging on-the-fly",
+          "level": 2
+        },
+        {
+          "id": "s-powersort-mechanism",
+          "kind": "paragraph",
+          "page": 9,
+          "sectionId": "s-on-the-fly",
+          "text": "Our second algorithm, “powersort”, constructs the merge tree from left to right. Whenever the next internal node has a smaller power than the preceding one, we are following an edge from a left child up to its parent. That means that this subtree does not change anymore and we can execute any pending merges in it before continuing; the subtree then corresponds to the single resulting run. If we are instead following an edge down to a right child of a node, that subtree is still “open” and we only push the corresponding run onto the stack."
+        },
+        {
+          "id": "s-cartesian-tree",
+          "kind": "paragraph",
+          "page": 9,
+          "sectionId": "s-on-the-fly",
+          "text": "The tree constructed by Method 2′ for leaf probabilities α0 , . . . , αm is the (unique, min-oriented) Cartesian tree⁶ for the sequence of node powers P1 , . . . , Pm . It can be constructed iteratively (left to right) by the algorithm of Gabow, Bentley, and Tarjan [13], which effectively coincides with the procedure sketched above, except that we immediately collapse (merge) completed subtrees instead of keeping the entire tree."
+        },
+        {
+          "id": "s-original-algorithm-2",
+          "kind": "original-figure",
+          "page": 10,
+          "sectionId": "s-on-the-fly",
+          "caption": "Algorithm 2 Powersort: A one-pass stack-based nearly-optimal natural mergesort. Procedure ExtendRunRight scans right as long as the run continues.",
+          "alt": "The original Algorithm 2 and NodePower pseudocode is on PDF page 10. This placeholder preserves the source reference rather than replacing the pseudocode with generated code.",
+          "sourceUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol112-esa2018/LIPIcs.ESA.2018.63/LIPIcs.ESA.2018.63.pdf#page=10"
+        },
+        {
+          "id": "s-node-power-midpoints",
+          "kind": "equation",
+          "page": 10,
+          "sectionId": "s-on-the-fly",
+          "latex": "a=\\frac{s_1+n_1/2-1}{n},\\qquad b=\\frac{s_2+n_2/2-1}{n}"
+        }
+      ],
+      "anchors": [
+        {
+          "id": "adaptive-mergesort-primary",
+          "blockId": "s-powersort-mechanism",
+          "page": 9,
+          "quote": "Our second algorithm, “powersort”, constructs the merge tree from left to right. Whenever the next internal node has a smaller power than the preceding one, we are follow"
+        },
+        {
+          "id": "adaptive-mergesort-comparison",
+          "blockId": "s-merge-cost-definition",
+          "page": 6,
+          "quote": "In this paper, we are primarily concerned with finding a good order of binary merges for the existing runs in the input. Following [2] and [9], we define the merge cost M"
+        },
+        {
+          "id": "adaptive-mergesort-walkthrough",
+          "blockId": "s-orders-text",
+          "page": 7,
+          "quote": "We now describe two new nearly-optimal mergesort variants that simulate nearly-optimal search-tree algorithms, but do so without ever storing the entire merge tree or run"
+        }
+      ],
+      "extractionWarnings": [
+        "This is a manually prepared selection, not a full normalized edition or an automatic import. Unselected source content remains available in the complete original PDF.",
+        "Selected equations are semantic TeX transcriptions of the cited original equations; PDF typography and bound-variable spacing have been normalized.",
+        "Original figures and pseudocode are retained as explicit page-linked placeholders, not redrawn or automatically extracted.",
+        "PDF text-extraction artifacts in primes, type variables, non-membership, footnote markers and line-end hyphenation were corrected against the original notation. Bibliographic numbers refer to the complete original PDF reference list."
+      ]
+    },
+    "sourceUrl": "https://doi.org/10.4230/LIPIcs.ESA.2018.63",
+    "pdfUrl": "/papers/adaptive-mergesort.pdf",
+    "attribution": {
+      "authors": "J. Ian Munro and Sebastian Wild",
+      "venue": "ESA 2018 · LIPIcs 112, article 63",
+      "license": "CC BY 3.0 Unported",
+      "licenseUrl": "https://creativecommons.org/licenses/by/3.0/",
+      "notice": "Original publisher edition licensed CC BY 3.0. Paperplay selected and reformatted passages, normalized line wrapping, and transcribed selected mathematical notation to TeX. Original figure/algorithm placeholders link to the unchanged original PDF page. Interactive figures and explanations are separate Paperplay additions."
+    },
+    "coverage": "Selected original passages from PDF pages 1, 2, 3, 5, 6, 7, 8, 9, 10. Full original PDF included; omitted sections are not claimed to be normalized.",
+    "illustrationAnchors": {
+      "primary": "adaptive-mergesort-primary",
+      "comparison": "adaptive-mergesort-comparison",
+      "walkthrough": "adaptive-mergesort-walkthrough"
+    }
+  }
+]

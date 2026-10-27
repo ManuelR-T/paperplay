@@ -1,0 +1,134 @@
+{
+  "checkedAt": "2026-10-27T01:58:38.292Z",
+  "source": "https://github.com/sebawild/nearly-optimal-mergesort-code/tree/4418605e48a9598a7980e4c432ecc79cf11a38e1",
+  "commit": "4418605e48a9598a7980e4c432ecc79cf11a38e1",
+  "license": "MIT",
+  "paper": "https://doi.org/10.4230/LIPIcs.ESA.2018.63",
+  "originalProtocol": "Figure 5 / section 4.4; Timsort-drag, n=2^24, minimum run 32, author seed248442268.",
+  "scope": "Deterministic merge-cost subexperiment replay, not a hardware runtime reproduction or verification of the browser TypeScript implementation.",
+  "environment": {
+    "java": "openjdk version \"21.0.12.1\" 2026-08-18\nOpenJDK Runtime Environment (build 21.0.12.1+1-1-24.04.4-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.12.1+1-1-24.04.4-Ubuntu, mixed mode, sharing)",
+    "os": "linux 6.6.87.2-microsoft-standard-WSL2",
+    "cpu": "Intel(R) Core(TM) Ultra 9 285H",
+    "heapLimitMiB": 512,
+    "core": 0
+  },
+  "modifications": [
+    "Unmodified author algorithms and generator at the paper tag.",
+    "Own bounded harness: three generated inputs per method, first excluded, no timed warmup or runtime claim.",
+    "Installed JDK compiles source/target8; original Oracle8u161 and hardware not recreated."
+  ],
+  "driverSha256": "2d9345def54b0b59c32112b1742c1a02a3771829aa84220dba56d9fdd50c457d",
+  "elapsedMs": 35074,
+  "rows": [
+    {
+      "algorithm": "PowerSort+minRunLen=24+msb=true+onlyIncRuns=false",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 0,
+      "mergeCost": 301730336,
+      "sorted": true
+    },
+    {
+      "algorithm": "PowerSort+minRunLen=24+msb=true+onlyIncRuns=false",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 1,
+      "mergeCost": 301730336,
+      "sorted": true
+    },
+    {
+      "algorithm": "PowerSort+minRunLen=24+msb=true+onlyIncRuns=false",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 2,
+      "mergeCost": 301730336,
+      "sorted": true
+    },
+    {
+      "algorithm": "PeekSort+iscutoff=24+onlyIncRuns=false",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 0,
+      "mergeCost": 311256766,
+      "sorted": true
+    },
+    {
+      "algorithm": "PeekSort+iscutoff=24+onlyIncRuns=false",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 1,
+      "mergeCost": 311256766,
+      "sorted": true
+    },
+    {
+      "algorithm": "PeekSort+iscutoff=24+onlyIncRuns=false",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 2,
+      "mergeCost": 311256766,
+      "sorted": true
+    },
+    {
+      "algorithm": "TopDownMergesort+iscutoff=24+checkSorted=true",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 0,
+      "mergeCost": 322320512,
+      "sorted": true
+    },
+    {
+      "algorithm": "TopDownMergesort+iscutoff=24+checkSorted=true",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 1,
+      "mergeCost": 322313856,
+      "sorted": true
+    },
+    {
+      "algorithm": "TopDownMergesort+iscutoff=24+checkSorted=true",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 2,
+      "mergeCost": 322322304,
+      "sorted": true
+    },
+    {
+      "algorithm": "TimsortTrot",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 0,
+      "mergeCost": 419432256,
+      "sorted": true
+    },
+    {
+      "algorithm": "TimsortTrot",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 1,
+      "mergeCost": 419432256,
+      "sorted": true
+    },
+    {
+      "algorithm": "TimsortTrot",
+      "n": 16777216,
+      "seed": 248442268,
+      "repetition": 2,
+      "mergeCost": 419432256,
+      "sorted": true
+    }
+  ],
+  "meanMergeCosts": {
+    "PowerSort+minRunLen=24+msb=true+onlyIncRuns=false": 301730336,
+    "PeekSort+iscutoff=24+onlyIncRuns=false": 311256766,
+    "TopDownMergesort+iscutoff=24+checkSorted=true": 322318080,
+    "TimsortTrot": 419432256
+  },
+  "comparison": {
+    "paperTimsortOverheadApprox": 0.3,
+    "observedTimsortTrotOverTopDown": 0.3012991886772223,
+    "powersortToTopDown": 0.9361260032325832,
+    "tolerance": "Qualitative rounded-paper check only: 25–35% overhead; not a preregistered statistical tolerance or equality to inaccessible original CSVs.",
+    "consistentWithRoundedPaperClaim": true
+  }
+}

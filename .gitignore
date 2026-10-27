@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.next/
+out/
+coverage/
+*.tsbuildinfo
+.env.local
+
+# Rebuilt from pinned pdfjs-dist by npm ci/postinstall.
+public/pdf.worker.min.mjs
+public/pdfjs/
+
+# Private durable usage ledger
+.paperplay/
+
+# Isolated hosted source checkout and build outputs
+.paperplay-sites/
+
+.hosting-build/
+
+# Rebuilt trusted engine worker (esbuild/browser ESM).
+public/engine.worker.mjs

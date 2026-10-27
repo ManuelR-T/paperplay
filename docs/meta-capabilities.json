@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-26T23:36:29.975Z",
+  "endpoint": "https://api.meta.ai/v1",
+  "model": "muse-spark-1.3",
+  "mode": "live",
+  "configured": true,
+  "accountCredits": "Not exposed by this probe. Successful requests establish ability to bill, not remaining credits.",
+  "result": "verified",
+  "checks": [
+    {
+      "name": "structured-output",
+      "passed": true,
+      "status": "completed",
+      "usage": {
+        "inputTokens": 20,
+        "outputTokens": 224,
+        "totalTokens": 244
+      }
+    },
+    {
+      "name": "background-create",
+      "passed": true,
+      "status": "queued"
+    },
+    {
+      "name": "background-retrieve",
+      "passed": true,
+      "status": "completed",
+      "usage": {
+        "inputTokens": 20,
+        "outputTokens": 253,
+        "totalTokens": 273
+      }
+    },
+    {
+      "name": "background-cancel",
+      "passed": true,
+      "status": "cancelled",
+      "observedStatus": "cancelled",
+      "note": "Cancellation observed after retrieve.",
+      "usage": null
+    }
+  ]
+}

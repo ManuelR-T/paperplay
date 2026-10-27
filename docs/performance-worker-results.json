@@ -1,0 +1,75 @@
+{
+  "runtime": "v24.14.0",
+  "input": {
+    "kind": "array",
+    "length": 256,
+    "seed": 20261027,
+    "engine": "natural-mergesort",
+    "operationLimit": 50000
+  },
+  "direct": [
+    {
+      "elapsedMs": 36.24,
+      "timerDelayMs": 36.61,
+      "maxHeartbeatGapMs": 36.65,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 24.44,
+      "timerDelayMs": 25.21,
+      "maxHeartbeatGapMs": 25.27,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 14.69,
+      "timerDelayMs": 14.74,
+      "maxHeartbeatGapMs": 14.8,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 13.4,
+      "timerDelayMs": 13.45,
+      "maxHeartbeatGapMs": 13.51,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 13.69,
+      "timerDelayMs": 13.73,
+      "maxHeartbeatGapMs": 13.77,
+      "steps": 219
+    }
+  ],
+  "worker": [
+    {
+      "elapsedMs": 238.86,
+      "timerDelayMs": 3.48,
+      "maxHeartbeatGapMs": 7.25,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 178.6,
+      "timerDelayMs": 2.01,
+      "maxHeartbeatGapMs": 6.86,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 189.28,
+      "timerDelayMs": 0.66,
+      "maxHeartbeatGapMs": 6.4,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 176.76,
+      "timerDelayMs": 0.77,
+      "maxHeartbeatGapMs": 7.38,
+      "steps": 219
+    },
+    {
+      "elapsedMs": 197.16,
+      "timerDelayMs": 1.72,
+      "maxHeartbeatGapMs": 6.95,
+      "steps": 219
+    }
+  ],
+  "note": "Node event-loop timing only; worker startup includes TSX loader. Browser worker responsiveness is checked separately."
+}

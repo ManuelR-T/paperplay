@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-10-27T02:34:07.425Z",
+  "id": "appgdep_6ae00d7e1c1c8191934a7685a8b7d68c",
+  "project_id": "appgprj_6ae003ee3d4c8191b2dd2e0c74274be9",
+  "title": "Paperplay",
+  "version_id": "appgprj_6ae003ee3d4c8191b2dd2e0c74274be9~appgver_8e5795fdc4b081919c6648a6f7a7f807",
+  "type": "publish",
+  "status": "succeeded",
+  "url": "https://paperplay-meta-lab-1027.poeticbadge1024.chatgpt.site",
+  "has_mcp": false,
+  "screenshot_asset_pointer": null,
+  "provider_deployment_id": "site---6ae003ee3d4c8191b2dd2e0c74274be9",
+  "failure_message": null,
+  "env_set_revision": 2,
+  "updated_at": "2026-10-27T02:33:50.370809+00:00",
+  "sourceCommit": "a7cf7a5966a9245dcb2a02837d2a56c6e640ad6a",
+  "audience": "owner-private; explicitly retained by the user",
+  "docker": {
+    "image": "sha256:192b3681d92cc979e89bd413d3a01019dedafb7ad25f0dede25dc1abb170d557",
+    "tag": "paperplay:1.1.0",
+    "health": "M5, configured false",
+    "statuses": {
+      "frontend": 200,
+      "health": 200,
+      "pdfWorker": 200,
+      "engineWorker": 200
+    },
+    "containerStopped": true
+  },
+  "tests": {
+    "typecheck": true,
+    "providerFree": 134,
+    "productionBuild": true
+  },
+  "submittedToHackathon": false
+}
