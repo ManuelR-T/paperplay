@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import type { ImportRecord } from '@/shared/import-types';
 import type { SourceDocument } from '@/shared/schema';
 import { PassageTools, ReadingDesk, DeferredFigure, openOriginal } from './reading/reader-tools';
+import { OriginalSourceFigure } from './reading/original-source-figure';
 import { ResearchWorkbench } from './research-workbench';
 import { useReadingSession } from './reading-session';
 import { GeneratedFigureView } from './figures/generated-figure';
@@ -45,7 +46,7 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource 
     {!record.analysis && !restored.length && <p className="source-awaiting">The source is ready to read. Use ‘Plan interactive figures’ to choose source sections and review catalog-based additions. Source reading and local experiments do not request inference.</p>}
     <div className="source-blocks">{source.blocks.map(block => {
       const additions = anchored.filter(item => item.anchor?.blockId === block.id);
-      return <div className="passage-row" key={block.id}><ImportedSourceBlock block={block} source={source} originalUrl={originalUrl} htmlSource={htmlSource}/>{block.kind !== 'heading' && <PassageTools source={source} blockId={block.id}/>}
+      return <div className="passage-row" key={block.id}><ImportedSourceBlock block={block} source={source} originalUrl={originalUrl} original={record.original} htmlSource={htmlSource}/>{block.kind !== 'heading' && <PassageTools source={source} blockId={block.id}/>}
         {additions.length > 0 && <div className="passage-actions">{additions.map(({ entry }) => <a href={`#${entry.figure.id}`} key={entry.figure.id} onClick={() => requestAnimationFrame(() => document.getElementById(entry.figure.id)?.focus())}>Explore: {entry.figure.title} <ArrowDown size={14}/></a>)}</div>}
         {additions.map(({ entry }) => <DeferredFigure key={entry.figure.id} id={entry.figure.id} title={entry.figure.title}><GeneratedFigureView key={entry.figure.id} entry={entry} source={source} htmlSource={htmlSource} origin={analyzed.some(item => item.figure.id === entry.figure.id) ? 'meta' : 'bundle'} original={record.original} originalName={record.originalName} attribution={record.attribution}/></DeferredFigure>)}
       </div>;
@@ -57,7 +58,7 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource 
   </article>;
 }
 
-function ImportedSourceBlock({ block, source, originalUrl, htmlSource }: { block: SourceDocument['blocks'][number]; source: SourceDocument; originalUrl?: string | null; htmlSource: boolean }) {
+function ImportedSourceBlock({ block, source, originalUrl, original, htmlSource }: { block: SourceDocument['blocks'][number]; source: SourceDocument; originalUrl?: string | null; original?: Blob; htmlSource: boolean }) {
   const id = `source-${source.id}-${block.id}`;
   const location = htmlSource ? 'HTML source' : `p. ${block.page}`;
   const link = originalUrl ? htmlSource ? originalUrl : `${originalUrl}#page=${block.page}` : undefined;
@@ -68,5 +69,5 @@ function ImportedSourceBlock({ block, source, originalUrl, htmlSource }: { block
     const html = katex.renderToString(block.latex, { displayMode: true, throwOnError: false, trust: false, strict: 'ignore', maxExpand: 100, output: 'htmlAndMathml' });
     return <figure className="source-equation source-block" data-latex={block.latex} id={id} tabIndex={-1}><div className="equation-scroll" tabIndex={0} role="region" aria-label={`Original equation ${block.label ?? block.id}; scroll horizontally when needed`} dangerouslySetInnerHTML={{ __html: html }}/><figcaption>{block.label ? `${block.label} · ` : 'Source equation · '}{reference}</figcaption></figure>;
   }
-  return <figure className="original-figure-placeholder source-block" id={id} tabIndex={-1}><div><FileText size={25}/><strong>Original figure reference</strong><p>{block.alt}</p>{link && <a href={link} target="_blank" rel="noreferrer">View in original source <ArrowUpRight size={14}/></a>}</div><figcaption>{block.caption}</figcaption></figure>;
+  return <OriginalSourceFigure block={block} source={source} original={original} url={originalUrl??undefined} htmlSource={htmlSource}/>;
 }

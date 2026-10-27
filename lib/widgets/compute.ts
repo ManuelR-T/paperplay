@@ -1,7 +1,8 @@
+import { customWidgetRuntime, type CustomFrame } from './custom-runtime';
 import { validateWidgetSpec, type WidgetSpec } from '../../shared/widgets';
 import { evaluateExpression, expressionIntervalDefined, formatUnit } from './expression';
 export type WidgetPoint={x:number;y:number|null;breakBefore?:boolean};
-export type WidgetResult={summary:string;metrics:{label:string;value:number|string;unit?:string}[];points?:WidgetPoint[];secondaryPoints?:WidgetPoint[];likelihoodPoints?:WidgetPoint[];rows?:{label:string;values:(number|string|null)[]}[];columns?:string[];states?:{label:string;activeIds:string[];values?:number[]}[];samples?:number[];matrices?:{label:string;values:number[][]}[];selected?:{x:number;y:number|null};warnings:string[]};
+export type WidgetResult={summary:string;customFrames?:CustomFrame[];metrics:{label:string;value:number|string;unit?:string}[];points?:WidgetPoint[];secondaryPoints?:WidgetPoint[];likelihoodPoints?:WidgetPoint[];rows?:{label:string;values:(number|string|null)[]}[];columns?:string[];states?:{label:string;activeIds:string[];values?:number[]}[];samples?:number[];matrices?:{label:string;values:number[][]}[];selected?:{x:number;y:number|null};warnings:string[]};
 export const RNG_VERSION='xorshift32-boxmuller-gamma-v1';
 export function seededRandom(seed:number){let state=(seed>>>0)||0x6d2b79f5;return ()=>{state^=state<<13;state^=state>>>17;state^=state<<5;return ((state>>>0)+0.5)/4_294_967_296;};}
 function normal(random:()=>number){return Math.sqrt(-2*Math.log(random()))*Math.cos(2*Math.PI*random());}
@@ -11,6 +12,10 @@ const mean=(a:number[])=>a.reduce((x,y)=>x+y,0)/a.length;
 const clean=(n:number)=>{if(!Number.isFinite(n)||Math.abs(n)>1e15)throw Error('A numerical result exceeded the finite computation domain.');return n;};
 export function computeWidget(specification:WidgetSpec,seed=42):WidgetResult {
  const s=validateWidgetSpec(specification);const base:WidgetResult={summary:'Computed on supplied teaching data.',metrics:[],warnings:[]};
+ if(s.kind==='custom'){
+  const run=customWidgetRuntime.execute(s);
+  return {...base,summary:'Model-designed teaching program evaluated locally with a bounded simultaneous recurrence. Scientific correctness is not independently verified.',customFrames:run.frames,points:run.points,states:run.frames.map(frame=>({label:`Custom model step ${frame.step}`,activeIds:[],values:frame.values.map(v=>v.value)})),metrics:[{label:'Executed operations',value:run.operations},{label:'Runtime version',value:s.runtimeVersion},{label:'Recorded frames',value:run.frames.length}],rows:run.frames.map(frame=>({label:String(frame.step),values:frame.values.map(v=>v.value)})),columns:s.metrics.map(m=>`${m.label} (${m.unit||'unit unspecified'})`),warnings:['This model was designed for explanation, not independently verified against the paper. Unit labels are descriptive; the runtime evaluates dimensionless arithmetic.']};
+ }
  if(s.kind==='equation'){const q=evaluateExpression(s.expression,s.variables);return {...base,summary:`${s.resultLabel} = ${q.value}`,metrics:[{label:s.resultLabel,value:q.value,unit:formatUnit(q.dimensions)}],rows:s.variables.map(v=>({label:v.name,values:[v.value,v.definition,v.sourceSymbol??'Unmapped teaching variable',v.unit]})),columns:['Value','Definition','Source symbol','Unit']};}
  if(s.kind==='function'){
   const calc=(x:number)=>{try{return evaluateExpression(s.expression,s.variables.map(v=>v.name===s.xVariable?{...v,value:x}:v)).value;}catch{return null;}};

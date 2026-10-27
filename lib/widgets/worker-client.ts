@@ -6,7 +6,7 @@ export function executeWidget(spec:WidgetSpec,seed:number,options:{signal?:Abort
   if(options.signal?.aborted){reject(new DOMException('Widget computation cancelled.','AbortError'));return;}
   let validated:WidgetSpec;try{validated=validateWidgetSpec(spec);if(new TextEncoder().encode(JSON.stringify(validated)).length>128*1024)throw Error('Widget input exceeds its transfer budget.');if(!Number.isInteger(seed)||seed<0||seed>4_294_967_295)throw Error('A widget needs a valid 32-bit seed.');}catch(e){reject(e);return;}
   if(typeof Worker==='undefined'){reject(Error('Browser workers are unavailable. No blocking main-thread fallback was run.'));return;}
-  const id=crypto.randomUUID();let worker:Worker;try{worker=new Worker('/widget.worker.mjs?v=2.0.0',{type:'module'});}catch{reject(Error('The widget computation worker could not start.'));return;}
+  const id=crypto.randomUUID();let worker:Worker;try{worker=new Worker('/widget.worker.mjs?v=2.1.0',{type:'module'});}catch{reject(Error('The widget computation worker could not start.'));return;}
   let settled=false;const finish=(fn:()=>void)=>{if(settled)return;settled=true;clearTimeout(timer);options.signal?.removeEventListener('abort',abort);worker.terminate();fn();};
   const abort=()=>finish(()=>reject(new DOMException('Widget computation cancelled.','AbortError')));
   const timer=setTimeout(()=>finish(()=>reject(Error('Widget computation exceeded its time limit.'))),Math.min(30_000,Math.max(1,options.timeoutMs??15_000)));

@@ -64,6 +64,7 @@ function texOf($: cheerio.CheerioAPI, element: Parameters<cheerio.CheerioAPI>[0]
 }
 export async function parseArxivHtml(html: string, arxivId: string, url: string): Promise<SourceDocument> {
   const $ = cheerio.load(html);
+  const imageBase = $('base[href]').first().attr('href');
   $('script,style,nav,header,footer,form,iframe,object,svg,canvas,.ltx_page_header,.ltx_page_footer').remove();
   const article = $('article.ltx_document').first().length ? $('article.ltx_document').first() : $('article').first();
   if (!article.length) throw new Error('No structured arXiv article was available.');
@@ -84,7 +85,14 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
     if (tag === 'figure' || node.hasClass('ltx_figure')) {
       const caption = cleanText(node.find('figcaption,.ltx_caption').first().text());
       if (caption.length > 5_000) throw new Error('An HTML figure caption exceeds the supported source length.');
-      if (caption) blocks.push({ id, kind: 'original-figure', page: 1, caption, alt: 'Original HTML illustration; view the source article for its image and layout.', sourceUrl: url });
+      const images = node.find('img').toArray().map(image => {
+        const src = $(image).attr('src'); if (!src) return undefined;
+        try { const asset = new URL(src, imageBase ? new URL(imageBase,url) : url); const paper = new URL(url);
+          return asset.protocol === 'https:' && asset.origin === paper.origin && !asset.username && !asset.password && asset.pathname.startsWith(paper.pathname.replace(/\/$/, '') + '/') ? asset.href : undefined;
+        } catch { return undefined; }
+      }).filter((asset): asset is string => !!asset);
+      if (images.length > 8) throw Error('This source figure exceeds the eight-image display limit.');
+      if (caption) blocks.push({ id, kind: 'original-figure', page: 1, caption, alt: cleanText(node.find('img').first().attr('alt') || caption).slice(0,1000), sourceUrl: url, ...(images.length ? { imageUrls: [...new Set(images)] } : {}) });
       return;
     }
     if (node.hasClass('ltx_equation') || node.hasClass('ltx_equationgroup')) {
@@ -100,7 +108,7 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
   });
   if (blocks.filter(block => block.kind === 'paragraph').length < 2) throw new Error('The structured article did not contain enough readable source text.');
   return normalizeSource({ kind: 'arxiv', title, authors, url, pageCount: 1, blocks, identity: arxivId,
-    warnings: ['Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.', 'Original illustrations are source-linked placeholders. Inline mathematical notation may remain TeX text; check the original article for exact layout.'] });
+    warnings: ['Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.', 'Available original image asset locations are retained; illustrations without usable image assets keep the original article reference. Inline mathematical notation may remain TeX text; check the original article for exact layout.'] });
 }
 
 export async function resolveArxiv(input: string, options: { signal?: AbortSignal; fetcher?: typeof fetch } = {}): Promise<ArxivPayload> {

@@ -1,0 +1,371 @@
+{
+  "checkedAt": "2026-10-27T05:15:38.379Z",
+  "scope": "Actual official Meta targeted design on a selected Distill equation. Developer check, no participants, not a full-paper evaluation.",
+  "status": "complete",
+  "recordedCreations": 1,
+  "model": "muse-spark-1.3",
+  "usage": {
+    "inputTokens": 5564,
+    "outputTokens": 3000,
+    "totalTokens": 8564
+  },
+  "proposals": [
+    {
+      "kind": "custom",
+      "title": "Concept and state diagram",
+      "source": {
+        "documentId": "quadratic-optimization",
+        "sourceVersion": "distill.00006-selected-2017-04-04-v1",
+        "blockId": "q-recurrence",
+        "page": 1,
+        "quote": "z^{k+1}=\\beta z^k+(Aw^k-b),\\qquad w^{k+1}=w^k-\\alpha z^{k+1}",
+        "citation": {
+          "title": "Why Momentum Really Works",
+          "authors": [
+            "Gabriel Goh"
+          ],
+          "url": "https://distill.pub/2017/momentum/"
+        }
+      },
+      "reason": "A static diagram cannot show coupled evolution where w next depends on z next. A bounded custom phase-space scene with two simultaneous registers and a step slider directly teaches the quoted recurrence.",
+      "objective": "Let learners edit alpha/beta/lambda/b and step through 20 coupled updates to see w and z move together in phase space and read exact numerical values.",
+      "limitations": [
+        "One-dimensional synthetic restriction A=lambda; vector/matrix structure of Aw^k is not represented.",
+        "Simultaneous-update substitution w-alpha*zNext is an authored teaching rearrangement, not source execution.",
+        "Canvas mapping is fixed linear scaling and may clip for extreme parameter choices; use small values.",
+        "No reproduction of source experiments, proofs, or trained models.",
+        "Model-designed teaching program. Local evaluation does not independently validate scientific correctness."
+      ],
+      "spec": {
+        "kind": "custom",
+        "runtimeVersion": 1,
+        "purpose": "Teach the scalar momentum recurrence w/z co-evolution in phase space.",
+        "catalogGap": "No catalog form exposes two simultaneously updated registers with substituted zNext in the w update plus an editable w-z phase-space scene. Equation/function show one expression; diagram is static explanation.",
+        "mapping": "Authored synthetic teaching model. Scalar restriction A=lambda with dimensionless alpha/beta/lambda/b; simultaneous updates substitute zNext into wNext. Not source measurements and not a reproduction of the paper.",
+        "parameters": [
+          {
+            "name": "alpha",
+            "value": 0.1,
+            "min": 0.01,
+            "max": 0.5,
+            "step": 0.01,
+            "definition": "Dimensionless step size multiplying new momentum.",
+            "unit": "scalar"
+          },
+          {
+            "name": "beta",
+            "value": 0.9,
+            "min": 0,
+            "max": 0.99,
+            "step": 0.01,
+            "definition": "Dimensionless momentum retention.",
+            "unit": "scalar"
+          },
+          {
+            "name": "lambda",
+            "value": 1,
+            "min": 0.1,
+            "max": 2,
+            "step": 0.1,
+            "definition": "Dimensionless scalar curvature replacing A.",
+            "unit": "scalar"
+          },
+          {
+            "name": "b",
+            "value": 0,
+            "min": -1,
+            "max": 1,
+            "step": 0.1,
+            "definition": "Dimensionless scalar offset replacing b.",
+            "unit": "scalar"
+          }
+        ],
+        "registers": [
+          {
+            "name": "z",
+            "definition": "Synthetic scalar momentum.",
+            "initial": {
+              "op": "number",
+              "value": 0
+            },
+            "update": {
+              "op": "add",
+              "left": {
+                "op": "mul",
+                "left": {
+                  "op": "variable",
+                  "name": "beta"
+                },
+                "right": {
+                  "op": "variable",
+                  "name": "z"
+                }
+              },
+              "right": {
+                "op": "sub",
+                "left": {
+                  "op": "mul",
+                  "left": {
+                    "op": "variable",
+                    "name": "lambda"
+                  },
+                  "right": {
+                    "op": "variable",
+                    "name": "w"
+                  }
+                },
+                "right": {
+                  "op": "variable",
+                  "name": "b"
+                }
+              }
+            }
+          },
+          {
+            "name": "w",
+            "definition": "Synthetic scalar position.",
+            "initial": {
+              "op": "number",
+              "value": 1
+            },
+            "update": {
+              "op": "sub",
+              "left": {
+                "op": "variable",
+                "name": "w"
+              },
+              "right": {
+                "op": "mul",
+                "left": {
+                  "op": "variable",
+                  "name": "alpha"
+                },
+                "right": {
+                  "op": "add",
+                  "left": {
+                    "op": "mul",
+                    "left": {
+                      "op": "variable",
+                      "name": "beta"
+                    },
+                    "right": {
+                      "op": "variable",
+                      "name": "z"
+                    }
+                  },
+                  "right": {
+                    "op": "sub",
+                    "left": {
+                      "op": "mul",
+                      "left": {
+                        "op": "variable",
+                        "name": "lambda"
+                      },
+                      "right": {
+                        "op": "variable",
+                        "name": "w"
+                      }
+                    },
+                    "right": {
+                      "op": "variable",
+                      "name": "b"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "steps": 20,
+        "metrics": [
+          {
+            "name": "wPos",
+            "label": "Position w",
+            "unit": "dimensionless",
+            "expression": {
+              "op": "variable",
+              "name": "w"
+            }
+          },
+          {
+            "name": "zMom",
+            "label": "Momentum z",
+            "unit": "dimensionless",
+            "expression": {
+              "op": "variable",
+              "name": "z"
+            }
+          },
+          {
+            "name": "grad",
+            "label": "Scalar gradient",
+            "unit": "dimensionless",
+            "expression": {
+              "op": "sub",
+              "left": {
+                "op": "mul",
+                "left": {
+                  "op": "variable",
+                  "name": "lambda"
+                },
+                "right": {
+                  "op": "variable",
+                  "name": "w"
+                }
+              },
+              "right": {
+                "op": "variable",
+                "name": "b"
+              }
+            }
+          }
+        ],
+        "plot": {
+          "label": "Synthetic w over recorded steps",
+          "xLabel": "Step",
+          "yLabel": "w",
+          "x": {
+            "op": "variable",
+            "name": "step"
+          },
+          "y": {
+            "op": "variable",
+            "name": "w"
+          }
+        },
+        "marks": [
+          {
+            "id": "haxis",
+            "label": "w axis",
+            "paint": "ink",
+            "shape": "line",
+            "x": {
+              "op": "number",
+              "value": 50
+            },
+            "y": {
+              "op": "number",
+              "value": 160
+            },
+            "x2": {
+              "op": "number",
+              "value": 550
+            },
+            "y2": {
+              "op": "number",
+              "value": 160
+            }
+          },
+          {
+            "id": "vaxis",
+            "label": "z axis",
+            "paint": "ink",
+            "shape": "line",
+            "x": {
+              "op": "number",
+              "value": 300
+            },
+            "y": {
+              "op": "number",
+              "value": 40
+            },
+            "x2": {
+              "op": "number",
+              "value": 300
+            },
+            "y2": {
+              "op": "number",
+              "value": 280
+            }
+          },
+          {
+            "id": "target",
+            "label": "Synthetic equilibrium",
+            "paint": "olive",
+            "shape": "circle",
+            "x": {
+              "op": "add",
+              "left": {
+                "op": "number",
+                "value": 300
+              },
+              "right": {
+                "op": "mul",
+                "left": {
+                  "op": "number",
+                  "value": 150
+                },
+                "right": {
+                  "op": "div",
+                  "left": {
+                    "op": "variable",
+                    "name": "b"
+                  },
+                  "right": {
+                    "op": "variable",
+                    "name": "lambda"
+                  }
+                }
+              }
+            },
+            "y": {
+              "op": "number",
+              "value": 160
+            },
+            "radius": {
+              "op": "number",
+              "value": 8
+            }
+          },
+          {
+            "id": "point",
+            "label": "Current w,z state",
+            "paint": "accent",
+            "shape": "circle",
+            "x": {
+              "op": "add",
+              "left": {
+                "op": "number",
+                "value": 300
+              },
+              "right": {
+                "op": "mul",
+                "left": {
+                  "op": "number",
+                  "value": 150
+                },
+                "right": {
+                  "op": "variable",
+                  "name": "w"
+                }
+              }
+            },
+            "y": {
+              "op": "sub",
+              "left": {
+                "op": "number",
+                "value": 160
+              },
+              "right": {
+                "op": "mul",
+                "left": {
+                  "op": "number",
+                  "value": 100
+                },
+                "right": {
+                  "op": "variable",
+                  "name": "z"
+                }
+              }
+            },
+            "radius": {
+              "op": "number",
+              "value": 12
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "rejected": []
+}

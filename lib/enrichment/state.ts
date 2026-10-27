@@ -17,9 +17,9 @@ export function emptyEnrichmentState(fingerprint: string): EnrichmentState { ret
 export function parseEnrichmentState(raw: string, source: SourceDocument, fingerprint: string): EnrichmentState {
   if (new TextEncoder().encode(raw).byteLength > 2_000_000) throw Error('The saved enrichment exceeds the local cache limit.');
   const state = schema.parse(JSON.parse(raw));
-  if (state.fingerprint !== fingerprint || state.catalogVersion !== WIDGET_CATALOG_VERSION) throw Error('This saved enrichment belongs to a different source or catalog version. Its original record was retained.');
+  if (state.fingerprint !== fingerprint || !['2.0.0',WIDGET_CATALOG_VERSION].includes(state.catalogVersion)) throw Error('This saved enrichment belongs to a different source or catalog version. Its original record was retained.');
   for (const e of [...state.accepted, ...Object.values(state.history).flat(), ...state.plans.flatMap(p => p.proposals.map(v => v.envelope)), ...(state.pending?.target ? [state.pending.target] : [])]) validateWidgetEnvelope(e, source);
-  return state;
+  return {...state,catalogVersion:WIDGET_CATALOG_VERSION};
 }
 export function acceptEnrichmentWidget(state: EnrichmentState, envelope: WidgetEnvelope): EnrichmentState {
   const previous = state.accepted.find(e => e.id === envelope.id); const history = { ...state.history };

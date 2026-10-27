@@ -102,7 +102,7 @@ test('cached plans keep source/catalog identity, signed pending references stay 
   const fingerprint = 'b'.repeat(64); let state = emptyEnrichmentState(fingerprint); state.plans = [compile(plan(source))];
   const text = serializeEnrichmentState(state); assert.equal(parseEnrichmentState(text,source,fingerprint).plans.length,1);
   assert.throws(() => parseEnrichmentState(text,source,'c'.repeat(64)));
-  assert.throws(() => parseEnrichmentState(text.replace('"catalogVersion":"2.0.0"','"catalogVersion":"99.0.0"'),source,fingerprint));
+  assert.throws(() => parseEnrichmentState(text.replace(`"catalogVersion":"${WIDGET_CATALOG_VERSION}"`,'"catalogVersion":"99.0.0"'),source,fingerprint));
   const altered = structuredClone(source); altered.sourceVersion = 'changed'; assert.throws(() => parseEnrichmentState(text,altered,fingerprint));
   assert.equal('job' in state.plans[0].proposals[0].envelope,false);
 });
@@ -163,5 +163,5 @@ test('document/global quota, ledger failure and executable edits stop before pai
 });
 test('provider input contains only selected section context, declared capabilities and a bounded target',()=>{
   const section=buildSourceSections(source)[0];const selected=sectionContext(source,section.id);const input=JSON.parse(providerInput({action:'plan',context:selected.text,feedback:''}));
-  assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.equal(input.templates.length,9);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
+  assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.equal(input.templates.length,10);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
 });

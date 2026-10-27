@@ -1,4 +1,5 @@
 'use client';
+import { OriginalSourceFigure } from './reading/original-source-figure';
 
 import { useEffect, useState, useRef, useMemo } from 'react';
 import katex from 'katex';
@@ -217,5 +218,5 @@ function SourceBlock({ block, paper }: { block: SourceDocument['blocks'][number]
     const html = katex.renderToString(block.latex, { displayMode: true, throwOnError: false, trust: false, strict: 'ignore', maxExpand: 100, output: 'htmlAndMathml' });
     return <figure className="source-equation source-block" data-latex={block.latex} id={id} tabIndex={-1}><div className="equation-scroll" tabIndex={0} role="region" aria-label={`Original equation ${block.label ?? block.id}; scroll horizontally when needed`} dangerouslySetInnerHTML={{ __html: html }}/><figcaption>{block.label ? `Equation ${block.label} · ` : 'Original equation · '}<a href={pageLink} target="_blank" rel="noreferrer" onClick={event => { if (!event.metaKey && !event.ctrlKey) { event.preventDefault(); openOriginal(paper.document, block.id); } }}>{location}</a></figcaption></figure>;
   }
-  return <figure className="original-figure-placeholder source-block" id={id} tabIndex={-1}><div><FileText size={25}/><strong>Original figure reference</strong><p>{block.alt}</p><a href={pageLink} target="_blank" rel="noreferrer">View original on page {block.page} <ArrowUpRight size={13}/></a></div><figcaption>{block.caption}</figcaption></figure>;
+  return <OriginalSourceFigure block={block} source={paper.document} url={paper.pdfUrl} htmlSource={htmlSource}/>;
 }

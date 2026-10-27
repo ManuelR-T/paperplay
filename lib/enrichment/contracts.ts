@@ -1,6 +1,7 @@
+import type { CustomWidgetSpec } from '../../shared/custom-widget';
 import { z } from 'zod';
 import type { SourceDocument } from '../../shared/schema';
-import { validateWidgetEnvelope, validateWidgetSpec, widgetEnvelopeSchema, WIDGET_KINDS, type WidgetEnvelope } from '../../shared/widgets';
+import { validateWidgetEnvelope, validateWidgetSpec, prepareWidgetSource, widgetEnvelopeSchema, WIDGET_KINDS, type WidgetEnvelope } from '../../shared/widgets';
 import { sectionContext, sourceBlockText, type SourceSection } from './sections';
 import { getWidgetDescriptor } from '../widgets/catalog';
 import { computeWidget } from '../widgets/compute';
@@ -23,6 +24,8 @@ export const enrichmentPlanSchema = z.strictObject({
     interactions: z.array(plain.max(100)).max(12), specJson: z.string().min(2).max(20_000), limitations: z.array(plain.max(500)).max(8) })).max(4),
   warnings: z.array(plain.max(1000)).max(12), repetitionReason: z.string().max(1000),
 });
+/** Trusted application hook; throwing rejects only this candidate, never mutates source or grants fidelity. */
+export type CustomWidgetReview = (candidate: CustomWidgetSpec, context: { source: SourceDocument; quote: string; blockId: string }) => void;
 export type EnrichmentAction = 'plan' | 'repair' | 'edit';
 export type EnrichmentProposal = { id: string; concept: string; reason: string; objective: string; neededData: string[]; provenance: 'synthetic' | 'illustrative'; interactions: string[]; limitations: string[]; envelope: WidgetEnvelope; diff?: Array<{ path: string; before: string; after: string }> };
 export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number } };
@@ -47,7 +50,7 @@ export function configurationDiff(before: unknown, after: unknown) {
   visit(before, after, '', 0); return changes;
 }
 
-export function compileEnrichmentPlan(input: unknown, options: { source: SourceDocument; section: SourceSection; action: EnrichmentAction; target?: WidgetEnvelope; model: string; catalogVersion: string; allowedInteractions: (kind: typeof WIDGET_KINDS[number]) => readonly string[]; usage?: EnrichmentResult['usage'] }): EnrichmentResult {
+export function compileEnrichmentPlan(input: unknown, options: { source: SourceDocument; section: SourceSection; action: EnrichmentAction; target?: WidgetEnvelope; model: string; catalogVersion: string; allowedInteractions: (kind: typeof WIDGET_KINDS[number]) => readonly string[]; usage?: EnrichmentResult['usage']; reviewCustom?: CustomWidgetReview }): EnrichmentResult {
   const plan = enrichmentPlanSchema.parse(input); const { source, section, action, target } = options;
   const boundedSourceContext = sectionContext(source,section.id,target?.source.blockId).text;
   const proposals: EnrichmentProposal[] = []; const rejected: EnrichmentResult['rejected'] = []; const seen = new Set<string>();
@@ -63,6 +66,11 @@ export function compileEnrichmentPlan(input: unknown, options: { source: SourceD
       const conceptHints = getWidgetDescriptor(spec.kind).sourceConceptHints ?? [];
       if (conceptHints.length && !conceptHints.some(pattern => new RegExp(pattern,'i').test(boundedSourceContext))) throw Error('This computed widget has no declared concept support in the selected source context. Use an illustrative diagram or supply an appropriate source.');
       if (spec.kind === 'table' && spec.provenance !== 'illustrative') throw Error('Generated tables must be labeled illustrative; source/computed provenance needs separate verified data.');
+      if(spec.kind==='custom'&&options.reviewCustom){
+        const candidate=structuredClone(spec);
+        const freeze=(value:unknown)=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}};freeze(candidate);
+        options.reviewCustom(candidate,{source:prepareWidgetSource(source),quote:proposal.quote,blockId:block.id});
+      }
       const initial = computeWidget(spec,target?.seed ?? 42);
       if (spec.kind === 'function' && initial.points?.every(p=>p.y === null)) throw Error('The proposed function is undefined across its entire declared plotting domain.');
       const controls = options.allowedInteractions(spec.kind);
@@ -75,7 +83,7 @@ export function compileEnrichmentPlan(input: unknown, options: { source: SourceD
         ...(target ? { view: { ...target.view, step: 0, selection: '' } } : {}) }, source);
       const diff = target ? configurationDiff(target.spec, spec) : undefined;
       if (diff && !diff.length) throw Error('The proposal is unchanged; the existing valid widget is retained.');
-      proposals.push({ id: proposal.id, concept: proposal.concept, reason: proposal.reason, objective: proposal.objective, neededData: proposal.neededData, provenance: proposal.provenance, interactions: proposal.interactions, limitations: proposal.limitations, envelope, ...(diff ? { diff } : {}) });
+      proposals.push({ id: proposal.id, concept: proposal.concept, reason: proposal.reason, objective: proposal.objective, neededData: proposal.neededData, provenance: proposal.provenance, interactions: proposal.interactions, limitations: spec.kind==='custom'?[...proposal.limitations.slice(0,7),'Model-designed teaching program. Local evaluation does not independently validate scientific correctness.']:proposal.limitations, envelope, ...(diff ? { diff } : {}) });
       if (action !== 'plan') break;
     } catch (error) { rejected.push({ id: proposal.id, reason: error instanceof z.ZodError ? 'The proposed configuration does not match the bounded widget catalog schema.' : error instanceof SyntaxError ? 'The proposed configuration is not valid JSON.' : error instanceof Error ? error.message.slice(0,1000) : 'This proposal failed validation.' }); }
   }

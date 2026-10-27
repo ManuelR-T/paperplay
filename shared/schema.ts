@@ -20,7 +20,7 @@ export const sourceBlockSchema = z.discriminatedUnion('kind', [
   z.strictObject({ ...sourceBlockBase, kind: z.literal('heading'), text: text.max(500), level: z.number().int().min(1).max(6) }),
   z.strictObject({ ...sourceBlockBase, kind: z.literal('paragraph'), text: text.max(20_000) }),
   z.strictObject({ ...sourceBlockBase, kind: z.literal('equation'), latex: text.max(5_000), label: text.max(100).optional() }),
-  z.strictObject({ ...sourceBlockBase, kind: z.literal('original-figure'), caption: text.max(5_000), alt: text.max(1_000), sourceUrl: sourceUrl.optional() }),
+  z.strictObject({ ...sourceBlockBase, kind: z.literal('original-figure'), caption: text.max(5_000), alt: text.max(1_000), sourceUrl: sourceUrl.optional(), imageUrls: z.array(sourceUrl).max(8).optional() }),
 ]);
 export const sourceAnchorSchema = z.strictObject({ id, blockId: id, page, quote: text.max(1_000) });
 export const sourceDocumentSchema = z.strictObject({

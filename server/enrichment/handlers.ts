@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { sourceDocumentSchema, validateDocument, type SourceDocument } from '../../shared/schema';
 import { widgetEnvelopeSchema, validateWidgetEnvelope, type WidgetEnvelope, type WidgetKind } from '../../shared/widgets';
 import { widgetCatalog, WIDGET_CATALOG_VERSION } from '../../lib/widgets/catalog';
-import { compileEnrichmentPlan, type EnrichmentAction, type EnrichmentJob, type EnrichmentReply } from '../../lib/enrichment/contracts';
+import { compileEnrichmentPlan, type CustomWidgetReview, type EnrichmentAction, type EnrichmentJob, type EnrichmentReply } from '../../lib/enrichment/contracts';
 import { sectionContext } from '../../lib/enrichment/sections';
 import { getUsageStore } from '../usage/service';
 import { usageIdFor, reservedTokensFor, type UsageStore } from '../usage/model';
@@ -28,7 +28,7 @@ async function readEnrichmentJson(request: Request) {
     try { return JSON.parse(Buffer.concat(chunks).toString('utf8')) as unknown; } catch { throw new AnalysisHttpError(400, 'The enrichment request contains invalid JSON.'); }
   } finally { reader.releaseLock(); }
 }
-type Dependencies = { getConfig: () => MetaConfig; usage?: UsageStore; store?: EnrichmentStore; provider?: (config: MetaConfig) => EnrichmentProvider; signingSecret?: string; allowedOrigin?: string; now?: () => number };
+type Dependencies = { reviewCustom?: CustomWidgetReview; getConfig: () => MetaConfig; usage?: UsageStore; store?: EnrichmentStore; provider?: (config: MetaConfig) => EnrichmentProvider; signingSecret?: string; allowedOrigin?: string; now?: () => number };
 
 export function createEnrichmentHandlers(dependencies: Dependencies) {
   const now = dependencies.now ?? Date.now;
@@ -58,7 +58,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
       try {
         const measured = response.usage ? { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, totalTokens: response.usage.total_tokens } : undefined;
         const result = compileEnrichmentPlan(JSON.parse(response.output_text || ''), { source: input.source, section: input.context.section, action: input.request.action, target: input.target, model, catalogVersion: WIDGET_CATALOG_VERSION,
-          allowedInteractions: (kind: WidgetKind) => widgetCatalog.find(c => c.format === 'paperplay-widget' && c.kind === kind)?.controls ?? [], usage: measured });
+          reviewCustom: dependencies.reviewCustom, allowedInteractions: (kind: WidgetKind) => widgetCatalog.find(c => c.format === 'paperplay-widget' && c.kind === kind)?.controls ?? [], usage: measured });
         return { status: 'complete', result };
       } catch { return { status: 'failed', error: 'Meta output did not match the bounded plan/source contract. The previous widget is retained.' }; }
     }

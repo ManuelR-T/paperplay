@@ -120,7 +120,7 @@ test('actual worker client cancellation and timeout terminate obsolete workers w
  const descriptor=Object.getOwnPropertyDescriptor(globalThis,'Worker');const stopped:Promise<number>[]=[];let terminated=0;
  class BrowserWorkerAdapter{
   worker:Worker;onmessage:((event:{data:unknown})=>void)|null=null;onerror:(()=>void)|null=null;
-  constructor(url:string){assert.equal(url,'/widget.worker.mjs?v=2.0.0');this.worker=new Worker(new URL('./widget-bundled-worker.mjs',import.meta.url));this.worker.on('message',data=>this.onmessage?.({data}));this.worker.on('error',()=>this.onerror?.());}
+  constructor(url:string){assert.equal(url,'/widget.worker.mjs?v=2.1.0');this.worker=new Worker(new URL('./widget-bundled-worker.mjs',import.meta.url));this.worker.on('message',data=>this.onmessage?.({data}));this.worker.on('error',()=>this.onerror?.());}
   postMessage(data:unknown){this.worker.postMessage(data);}terminate(){terminated++;stopped.push(this.worker.terminate());}
  }
  Object.defineProperty(globalThis,'Worker',{configurable:true,writable:true,value:BrowserWorkerAdapter});

@@ -1,0 +1,140 @@
+{
+  "checkedAt": "2026-10-27T05:27:26.679Z",
+  "scope": "Developer native Chromium checks; no participants or learning-effectiveness claim.",
+  "viewport": {
+    "width": 320,
+    "height": 850
+  },
+  "preparedSorting": [
+    {
+      "id": "source-adaptive-mergesort-s-original-figure-1",
+      "canvas": {
+        "width": 492,
+        "height": 158,
+        "nonwhite": 10295
+      },
+      "cropAvailable": true,
+      "documentWidth": 320,
+      "passes": 13,
+      "violations": [],
+      "errors": []
+    },
+    {
+      "id": "source-adaptive-mergesort-s-original-figure-2",
+      "canvas": {
+        "width": 492,
+        "height": 127,
+        "nonwhite": 4096
+      },
+      "cropAvailable": true,
+      "documentWidth": 320,
+      "passes": 13,
+      "violations": [],
+      "errors": []
+    },
+    {
+      "id": "source-adaptive-mergesort-s-original-algorithm-2",
+      "canvas": {
+        "width": 493,
+        "height": 377,
+        "nonwhite": 16905
+      },
+      "cropAvailable": true,
+      "documentWidth": 320,
+      "passes": 13,
+      "violations": [],
+      "errors": []
+    }
+  ],
+  "preparedPriority": {
+    "id": "source-priority-search-trees-g-original-figure-3",
+    "canvas": {
+      "width": 493,
+      "height": 347,
+      "nonwhite": 10152
+    },
+    "status": [
+      "Original PDF · page 14 · reviewed figure region"
+    ],
+    "documentWidth": 320,
+    "errors": []
+  },
+  "importedPdf": {
+    "figureCount": 6,
+    "firstId": "source-import-f0c30750cb8ff682f325af95ffcf55f8-pdf-p6-b11",
+    "canvas": {
+      "width": 492,
+      "height": 696
+    },
+    "hasCropToggle": false,
+    "status": [
+      "Original PDF · page 6 · complete page"
+    ],
+    "documentWidth": 320,
+    "errors": [],
+    "paidRequests": 0
+  },
+  "actualMetaWidget": {
+    "source": "quadratic-optimization / q-recurrence",
+    "authorship": "meta",
+    "runtimeVersion": 1,
+    "frameTest": {
+      "step": 2,
+      "expectedPosition": 0.72,
+      "expectedMomentum": 1.8
+    },
+    "themeChecks": [
+      {
+        "theme": "light",
+        "documentWidth": 320,
+        "axePasses": 23,
+        "violations": []
+      },
+      {
+        "theme": "sepia",
+        "documentWidth": 320,
+        "axePasses": 23,
+        "violations": []
+      },
+      {
+        "theme": "contrast",
+        "documentWidth": 320,
+        "axePasses": 23,
+        "violations": []
+      }
+    ],
+    "fixedViewBox": "-16 -127.19999999999999 632 471.19978635392005",
+    "reopenedFromSharedState": true,
+    "persistedAcrossReload": true,
+    "newPaidCallsForReopeningAndPlayback": 0
+  },
+  "paidCheck": {
+    "creations": 1,
+    "inputTokens": 5564,
+    "outputTokens": 3000,
+    "totalTokens": 8564,
+    "model": "muse-spark-1.3"
+  },
+  "limits": [
+    "Prepared crops were reviewed manually against exact bundled editions.",
+    "Imported figure regions remain complete original pages; automatic exact segmentation is not claimed.",
+    "The Meta scalar recurrence was independently checked under three parameter configurations; other generated programs still require review."
+  ],
+  "actualArxivAssets": {
+    "source": "https://arxiv.org/html/1706.03762v7",
+    "figuresWithAssets": 2,
+    "imageCount": 3,
+    "headStatuses": [
+      200,
+      200,
+      200
+    ],
+    "imageType": "image/png",
+    "assetNames": [
+      "ModalNet-21.png",
+      "ModalNet-19.png",
+      "ModalNet-20.png"
+    ],
+    "note": "Standard browser URL resolution was checked against the actual versioned article; relative paths must not duplicate its version directory."
+  }
+}

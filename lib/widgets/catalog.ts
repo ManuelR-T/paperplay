@@ -1,8 +1,9 @@
 import { figureSpecificationSchema } from '../../shared/schema';
 import { WIDGET_KINDS, type WidgetKind } from '../../shared/widgets';
-export const WIDGET_CATALOG_VERSION='2.0.0';
+export const WIDGET_CATALOG_VERSION='2.1.0';
 export type WidgetDescriptor={id:string;kind:string;format:'paperplay-widget'|'legacy-figure';version:string;label:string;description:string;controls:string[];inputDomain:string;evidence:string;accessibleEquivalent:string;sourceConceptHints?:string[]};
 const descriptors:Record<WidgetKind,Omit<WidgetDescriptor,'id'|'kind'|'format'|'version'>>={
+ custom:{label:'Custom model-designed widget',description:'Design a new bounded state model and visual scene when no existing form fits.',controls:['Edit declared custom parameters','Seek custom model step','Select custom visual elements','Reset','Export/import validated state'],inputDomain:'Runtime v1: 8 parameters/registers, 120 steps, 24 primitive marks, 768 AST terms and 80,000 operations. No arbitrary code or network.',evidence:'Model-authored teaching program; local deterministic evaluation is not independent scientific validation.',accessibleEquivalent:'Every frame has named numerical metrics, register state and visual-element values.'},
  equation:{label:'Manipulable equation',description:'Substitute defined scalar/vector terms in a bounded expression.',controls:['Edit declared variables','Reset','Export/import validated state'],inputDomain:'128 AST terms, depth 12, up to 12 defined variables; unit/domain validation.',evidence:'Trusted arithmetic on explicit teaching values; source-symbol mapping is disclosed.',accessibleEquivalent:'Substitution table and exact numerical result with units.'},
  function:{label:'Function and probe',description:'Sample a trusted expression and inspect its domain.',controls:['Edit variables','Move probe by pointer or keyboard','Adjust the probe slider','Toggle approximate derivative','Reset','Export/import validated state'],inputDomain:'16–257 samples on a bounded finite domain.',evidence:'Computed samples; connecting lines interpolate, derivatives use finite differences.',accessibleEquivalent:'Sample table and exact probe value/domain errors.'},
  diagram:{label:'Concept and state diagram',description:'Inspect authored relationships and conceptual transitions.',controls:['Select nodes','Step conceptual transitions','Seek conceptual step slider','Zoom','Reset','Export/import validated state'],inputDomain:'At most 20 nodes, 40 edges and 20 authored steps.',evidence:'Illustrative; transitions do not execute an algorithm.',accessibleEquivalent:'Relationship table and step descriptions.'},
@@ -21,7 +22,7 @@ const conceptHints:Record<WidgetKind,string[]>={
  attention:['attention|softmax|QK|query.{0,80}key'],
  graph:['graph|dijkstra|shortest|vertices|vertex|nodes?|edges?|path|prim'],
  signal:['convol|kernel|signal|stride|padding|filter|frequency|fourier'],
- diagram:[],table:[],
+ custom:[],diagram:[],table:[],
 };
 export const widgetCatalog:WidgetDescriptor[]=[
  ...figureSpecificationSchema.options.map(option=>option.shape.kind.value).map(kind=>({id:`legacy-${kind}`,kind,format:'legacy-figure' as const,version:'1.0.0',label:`Existing ${kind} figure`,description:'Version-1 reading/snapshot compatibility.',controls:kind==='steps'?['Navigate explanatory steps']:['Inspect values','Replay/seek a compatible trace','Edit declared parameters where supplied'],inputDomain:'Existing source/figure/engine schema version 1.',evidence:kind==='steps'?'Conceptual explanation':'Legacy registry-owned evidence policy; no original experiment promotion.',accessibleEquivalent:'Existing captions, numerical values and trace descriptions.'})),

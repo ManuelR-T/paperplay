@@ -14,6 +14,12 @@ The [M6–M11 roadmap](docs/next-roadmap.md) tracks 34 GitHub issues. Thirty fea
 
 **Release hosting:** Railway is the selected target, with provisioning and hosted checks deferred until the final release. [Railway release plan](docs/railway-release.md). The existing private Sites demonstration is a retained experiment; no Railway service is configured yet.
 
+## Original figures and new widget designs
+
+Original figures now appear in the reading flow. The four prepared PDF figures/algorithm regions use reviewed crops, with a complete-page toggle. Imported PDFs display the original page at detected captions when no reviewed crop exists. New structured arXiv imports retain same-article image assets; older saved HTML sources need reimport to gain missing asset locations.
+
+Meta can now propose a **custom declarative teaching program** when the standard catalog cannot express a concept: editable parameters, bounded simultaneous state updates, numerical metrics, an interactive scene and an optional plot. Its catalog gap, source quote and assumptions are inspectable before acceptance. The runtime supports arithmetic expressions and palette-controlled primitives; it does not run generated JavaScript or load packages. [Architecture, hooks and verification](docs/custom-widget-design.md). [Original-figure behavior](docs/original-figures.md).
+
 ## Run locally
 
 Use Node 24.14 or later in the Node 24 line (`.nvmrc`) and npm:

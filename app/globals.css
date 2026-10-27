@@ -441,3 +441,5 @@
 .reader-dialog button[data-variant=default],[data-widget-kind] button[data-variant=default]{color:var(--primary-foreground)}
 
 .research-article :is(.enrichment-workbench,[data-widget-kind],[aria-label="Research workbench"],.paperplay-figure) p{color:var(--ink)}
+
+.original-source-figure{margin:26px 0;padding:16px;border:1px solid var(--line);border-radius:8px;min-width:0}.original-source-figure img{display:block;max-width:100%;height:auto;margin:12px auto;background:white}.original-source-label{font:600 14px/1.6 var(--sans)!important;color:var(--soft)!important}.original-source-figure figcaption{font:16px/1.65 var(--sans);margin:14px 0}.original-source-figure>a{font:14px/1.6 var(--sans)}.original-source-loading{min-height:220px;display:grid;place-items:center;background:var(--chrome);padding:20px}.original-source-figure .original-page-scroll{max-height:none}.original-source-figure .reader-choice{flex-wrap:wrap}

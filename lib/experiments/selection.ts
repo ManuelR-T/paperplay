@@ -5,11 +5,12 @@ export function widgetRevision(widget:WidgetEnvelope) {
   return (hash>>>0).toString(16);
 }
 export function semanticSelection(widget:WidgetEnvelope) {
-  const labels={equation:'symbol/substitution',function:'function probe',diagram:'concept node/step',table:'row',linear:'matrix/vector coordinate',probability:'distribution/sample',attention:'query',graph:'vertex/search operation',signal:'output product'};
+  const labels={custom:'custom model frame/element',equation:'symbol/substitution',function:'function probe',diagram:'concept node/step',table:'row',linear:'matrix/vector coordinate',probability:'distribution/sample',attention:'query',graph:'vertex/search operation',signal:'output product'};
   return {sourceId:widget.source.documentId,sourceVersion:widget.source.sourceVersion,widgetId:widget.id,revision:widgetRevision(widget),type:labels[widget.spec.kind],selection:widget.view.selection||'whole model',step:widget.view.step,mapping:widget.spec.mapping};
 }
 export function semanticAlgorithm(widget:WidgetEnvelope):string[] {
   switch(widget.spec.kind){
+    case 'custom':return ['Read the generated model and its declared catalog gap.','Initialize registers from parameters; update every register simultaneously from the previous state.','Compute the scene and metrics from the same recorded frame.','Compare this interpretation with the source; the model is not independently verified.'];
     case 'attention':return ['scores = Q Kᵀ / (sqrt(d) × temperature)','weights = masked stable softmax(scores)','output = weights V'];
     case 'linear':return ['Read the explicit 2×2 matrix A and vector x.','Transform each basis vector by A.','Compute y = Ax; inspect singularity and determinant.'];
     case 'graph':return ['Use the supplied graph/grid and nonnegative weights.','Choose the unsettled vertex with smallest tentative distance.','Relax its admissible outgoing edges; retain predecessor links.'];

@@ -1,3 +1,4 @@
+import { createCustomWidgetPreset } from './custom-preset';
 import { validateDocument, type SourceDocument } from '../../shared/schema';
 import { validateWidgetEnvelope, type WidgetKind, type WidgetEnvelope, type WidgetSpec, type Expression } from '../../shared/widgets';
 import { getWidgetDescriptor } from './catalog';
@@ -7,6 +8,7 @@ const vars=()=>[{name:'a',value:2,min:0.1,max:8,step:0.1,definition:'Scalar curv
 const mapping='Authored synthetic teaching data. Inspect its assumptions against the cited passage; these values are not measurements reported by the source.';
 export function createWidgetPreset(kind:WidgetKind):WidgetSpec {
  switch(kind){
+  case'custom':return createCustomWidgetPreset();
   case'equation':return {kind,expression:structuredClone(quadratic),variables:vars(),resultLabel:'Quadratic objective',mapping};
   case'function':return {kind,expression:structuredClone(quadratic),variables:vars(),xVariable:'x',domain:[-4,4],samples:97,probe:1,derivative:true,mapping};
   case'diagram':return {kind,nodes:[{id:'source',label:'Read the source',x:15,y:50},{id:'model',label:'State the model',x:50,y:50},{id:'inspect',label:'Inspect assumptions',x:85,y:50}],edges:[{id:'source-model',source:'source',target:'model',label:'motivates',weight:1},{id:'model-inspect',source:'model',target:'inspect',label:'must be checked against',weight:1}],steps:[{label:'Source',description:'Read the quoted passage before interpreting the added diagram.',activeNodeIds:['source']},{label:'Model',description:'Identify explicit inputs and the model used by the teaching figure.',activeNodeIds:['model']},{label:'Inspect',description:'Compare assumptions and omissions with the original text. These are authored conceptual steps, not execution.',activeNodeIds:['inspect']}],mapping};
