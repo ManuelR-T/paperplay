@@ -1,0 +1,694 @@
+{
+  "date": "2026-10-27",
+  "method": "Agent walkthrough in native T3 Chromium, not a human participant study.",
+  "checks": {
+    "tests": 205,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "paidModelCalls": 0
+  },
+  "baseline": [
+    {
+      "kind": "equation",
+      "width": 320,
+      "height": 2182,
+      "numberFields": 3,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "function",
+      "width": 320,
+      "height": 2308,
+      "numberFields": 3,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "diagram",
+      "width": 320,
+      "height": 1902,
+      "numberFields": 1,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "table",
+      "width": 320,
+      "height": 1670,
+      "numberFields": 0,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "linear",
+      "width": 320,
+      "height": 2211,
+      "numberFields": 6,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "probability",
+      "width": 320,
+      "height": 4134,
+      "numberFields": 6,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "attention",
+      "width": 320,
+      "height": 2717,
+      "numberFields": 13,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "graph",
+      "width": 320,
+      "height": 3461,
+      "numberFields": 3,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "signal",
+      "width": 320,
+      "height": 2953,
+      "numberFields": 12,
+      "violations": [],
+      "alerts": []
+    },
+    {
+      "kind": "custom",
+      "width": 320,
+      "height": 3845,
+      "numberFields": 3,
+      "violations": [],
+      "alerts": []
+    }
+  ],
+  "matrix": [
+    {
+      "viewport": 1280,
+      "kind": "equation",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "equation",
+          "width": 1280,
+          "height": 1039,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "equation",
+          "width": 1280,
+          "height": 922,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "equation",
+          "width": 1280,
+          "height": 762,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "function",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "function",
+          "width": 1280,
+          "height": 1202,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "function",
+          "width": 1280,
+          "height": 983,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "function",
+          "width": 1280,
+          "height": 933,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "diagram",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "diagram",
+          "width": 1280,
+          "height": 1093,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "diagram",
+          "width": 1280,
+          "height": 449,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "diagram",
+          "width": 1280,
+          "height": 600,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "table",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "table",
+          "width": 1280,
+          "height": 962,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "table",
+          "width": 1280,
+          "height": 530,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "table",
+          "width": 1280,
+          "height": 560,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "linear",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "linear",
+          "width": 1280,
+          "height": 1053,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "linear",
+          "width": 1280,
+          "height": 716,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "linear",
+          "width": 1280,
+          "height": 1103,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "probability",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "probability",
+          "width": 1280,
+          "height": 1479,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "probability",
+          "width": 1280,
+          "height": 787,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "probability",
+          "width": 1280,
+          "height": 2474,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "attention",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "attention",
+          "width": 1280,
+          "height": 1225,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "attention",
+          "width": 1280,
+          "height": 1188,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "attention",
+          "width": 1280,
+          "height": 1036,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "graph",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "graph",
+          "width": 1280,
+          "height": 1258,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "graph",
+          "width": 1280,
+          "height": 1037,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "graph",
+          "width": 1280,
+          "height": 1024,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "signal",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "signal",
+          "width": 1280,
+          "height": 1495,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "signal",
+          "width": 1280,
+          "height": 934,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "signal",
+          "width": 1280,
+          "height": 2030,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 1280,
+      "kind": "custom",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "custom",
+          "width": 1280,
+          "height": 1285,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "custom",
+          "width": 1280,
+          "height": 767,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "custom",
+          "width": 1280,
+          "height": 2049,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "equation",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "equation",
+          "width": 320,
+          "height": 1328,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "equation",
+          "width": 320,
+          "height": 1192,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "equation",
+          "width": 320,
+          "height": 1040,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "function",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "function",
+          "width": 320,
+          "height": 1584,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "function",
+          "width": 320,
+          "height": 1235,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "function",
+          "width": 320,
+          "height": 1206,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "diagram",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "diagram",
+          "width": 320,
+          "height": 1468,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "diagram",
+          "width": 320,
+          "height": 747,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "diagram",
+          "width": 320,
+          "height": 929,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "table",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "table",
+          "width": 320,
+          "height": 1235,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "table",
+          "width": 320,
+          "height": 750,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "table",
+          "width": 320,
+          "height": 786,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "linear",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "linear",
+          "width": 320,
+          "height": 1614,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "linear",
+          "width": 320,
+          "height": 876,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "linear",
+          "width": 320,
+          "height": 1508,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "probability",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "probability",
+          "width": 320,
+          "height": 2036,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "probability",
+          "width": 320,
+          "height": 1413,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "probability",
+          "width": 320,
+          "height": 3008,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "attention",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "attention",
+          "width": 320,
+          "height": 1481,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "attention",
+          "width": 320,
+          "height": 1585,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "attention",
+          "width": 320,
+          "height": 1189,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "graph",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "graph",
+          "width": 320,
+          "height": 1601,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "graph",
+          "width": 320,
+          "height": 1976,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "graph",
+          "width": 320,
+          "height": 1131,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "signal",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "signal",
+          "width": 320,
+          "height": 1787,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "signal",
+          "width": 320,
+          "height": 1318,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "signal",
+          "width": 320,
+          "height": 2282,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    },
+    {
+      "viewport": 320,
+      "kind": "custom",
+      "states": [
+        {
+          "tab": "Explore",
+          "kind": "custom",
+          "width": 320,
+          "height": 1775,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Inputs",
+          "kind": "custom",
+          "width": 320,
+          "height": 1225,
+          "violations": [],
+          "alerts": []
+        },
+        {
+          "tab": "Values",
+          "kind": "custom",
+          "width": 320,
+          "height": 2669,
+          "violations": [],
+          "alerts": []
+        }
+      ]
+    }
+  ]
+}

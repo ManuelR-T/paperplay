@@ -1,11 +1,51 @@
 'use client';
-import {useEffect,useMemo,useState}from'react';
-import dynamic from'next/dynamic';
-import{preparedPapers}from'@/data/papers';import{widgetReferenceSources}from'@/data/widget-sources';
-import{WIDGET_KINDS,type WidgetKind,type WidgetEnvelope}from'@/shared/widgets';import{getWidgetDescriptor}from'@/lib/widgets/catalog';import{createWidgetForSource}from'@/lib/widgets/presets';
-import{decodeWidgetSnapshot}from'@/lib/widgets/compatibility';import{peekWidgetLocation}from'@/lib/experiments/widget-location';
-const WidgetView=dynamic(()=>import('./widgets/widget-view').then(m=>m.WidgetView),{ssr:false});
-export function WidgetGallery({embedded=false,active=true}:{embedded?:boolean;active?:boolean}={}){const[kind,setKind]=useState<WidgetKind>('attention');const[open,setOpen]=useState(embedded);const[restored,setRestored]=useState<WidgetEnvelope|null>(null);const[message,setMessage]=useState('');const source=useMemo(()=>{const original=kind==='attention'?widgetReferenceSources[0]:kind==='probability'?widgetReferenceSources[1]:kind==='signal'?widgetReferenceSources[2]:['equation','function','linear','custom'].includes(kind)?preparedPapers.find(p=>p.document.id==='quadratic-optimization')!.document:preparedPapers[0].document;return {...original,id:`gallery-${original.id}`};},[kind]);const initial=useMemo(()=>restored?.source.documentId===source.id?restored:createWidgetForSource(kind,source),[kind,source,restored]);useEffect(()=>{function restore(){if(!location.hash.startsWith('#widget='))return;try{const encoded=location.hash.slice(8),ref=peekWidgetLocation(encoded);if(!ref.documentId.startsWith('gallery-'))return;if(!WIDGET_KINDS.includes(ref.kind as WidgetKind))throw Error('This reference widget kind is not supported; the existing example remains available.');if(ref.kind!==kind){setKind(ref.kind as WidgetKind);return;}const value=decodeWidgetSnapshot(encoded,source);setRestored(value);setOpen(true);history.replaceState(history.state,'',location.pathname+location.search);setMessage('Shared reference example restored; no model request was made.');}catch(error){setMessage(error instanceof Error?error.message:'Reference snapshot rejected.');}}restore();window.addEventListener('hashchange',restore);return()=>window.removeEventListener('hashchange',restore)},[kind,source]);
- const Container=embedded?'section':'details';
- return <Container {...(!embedded?{open,onToggle:(e:React.SyntheticEvent<HTMLDetailsElement>)=>setOpen(e.currentTarget.open)}:{})}>{embedded?<h3>Widget examples</h3>:<summary>Browse the widget reference gallery</summary>}<p>These separate reference examples demonstrate the catalog. They are not additions inferred from the paper you are currently reading. New attention, probability and convolution notes are independently authored and link to the original research.</p><label>Reference widget<select value={kind} onChange={e=>{setRestored(null);setKind(e.target.value as WidgetKind)}}>{WIDGET_KINDS.map(k=><option key={k} value={k}>{getWidgetDescriptor(k).label}</option>)}</select></label><h3>{source.title}</h3><p>{source.authors.join(' · ')}</p>{source.source.url&&<a href={source.source.url} target="_blank" rel="noreferrer">Original research reference</a>}<div>{source.blocks.filter(b=>b.id===initial.source.blockId).map(b=><blockquote key={b.id} id={`source-${source.id}-${b.id}`} tabIndex={-1}>{b.kind==='equation'?b.latex:b.kind==='original-figure'?b.caption:b.text}</blockquote>)}</div><p>{source.extractionWarnings[0]}</p>{message&&<p role="status">{message}</p>}{open&&active&&<WidgetView key={kind} envelope={initial} source={source}/>}</Container>;
+
+import { useEffect, useMemo, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { preparedPapers } from '@/data/papers';
+import { widgetReferenceSources } from '@/data/widget-sources';
+import { WIDGET_KINDS, type WidgetKind, type WidgetEnvelope } from '@/shared/widgets';
+import { createWidgetForSource } from '@/lib/widgets/presets';
+import { widgetGuides } from '@/lib/widgets/interaction';
+import { decodeWidgetSnapshot } from '@/lib/widgets/compatibility';
+import { peekWidgetLocation } from '@/lib/experiments/widget-location';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog';
+
+const WidgetView = dynamic(() => import('./widgets/widget-view').then(module => module.WidgetView), { ssr: false, loading: () => <p role="status">Loading the example…</p> });
+const shortDescriptions: Record<WidgetKind, string> = { equation: 'Change variables', function: 'Probe a curve', diagram: 'Connect ideas', table: 'Filter and sort', linear: 'Move a vector', probability: 'Update a belief', attention: 'Inspect query weights', graph: 'Find a path', signal: 'Apply a kernel', custom: 'Play a new model' };
+
+export function WidgetGallery({ embedded = false, active = true }: { embedded?: boolean; active?: boolean } = {}) {
+  const [kind, setKind] = useState<WidgetKind>('attention');
+  const [open, setOpen] = useState(embedded); const [info, setInfo] = useState(false);
+  const [restored, setRestored] = useState<WidgetEnvelope | null>(null); const [message, setMessage] = useState('');
+  const example = useRef<HTMLDivElement>(null);
+  const source = useMemo(() => {
+    const original = kind === 'attention' ? widgetReferenceSources[0] : kind === 'probability' ? widgetReferenceSources[1] : kind === 'signal' ? widgetReferenceSources[2] : ['equation', 'function', 'linear', 'custom'].includes(kind) ? preparedPapers.find(paper => paper.document.id === 'quadratic-optimization')!.document : preparedPapers[0].document;
+    return { ...original, id: `gallery-${original.id}` };
+  }, [kind]);
+  const initial = useMemo(() => restored?.source.documentId === source.id ? restored : {...createWidgetForSource(kind, source),title:widgetGuides[kind].name}, [kind, source, restored]);
+  useEffect(() => {
+    function restore() {
+      if (!location.hash.startsWith('#widget=')) return;
+      try {
+        const encoded = location.hash.slice(8), reference = peekWidgetLocation(encoded);
+        if (!reference.documentId.startsWith('gallery-')) return;
+        if (!WIDGET_KINDS.includes(reference.kind as WidgetKind)) throw Error('This example type is unavailable in this version.');
+        if (reference.kind !== kind) { setKind(reference.kind as WidgetKind); return; }
+        setRestored(decodeWidgetSnapshot(encoded, source)); setOpen(true);
+        history.replaceState(history.state, '', location.pathname + location.search); setMessage('Shared example restored. No model request was made.');
+      } catch (error) { setMessage(error instanceof Error ? error.message : 'This shared example could not be opened.'); }
+    }
+    restore(); window.addEventListener('hashchange', restore); return () => window.removeEventListener('hashchange', restore);
+  }, [kind, source]);
+  const content = <>
+    <p className="widget-hint">Try an independent example. These examples are separate from the paper you are reading.</p>
+    <div className="widget-gallery-options" role="group" aria-label="Choose a widget example">{WIDGET_KINDS.map(value => <Button key={value} variant={kind === value ? 'secondary' : 'outline'} aria-pressed={kind === value} aria-label={`Try ${widgetGuides[value].name}`} onClick={() => { setRestored(null); setKind(value); requestAnimationFrame(() => { example.current?.scrollIntoView({ block: 'start', behavior: 'instant' }); example.current?.focus(); }); }}><span>{widgetGuides[value].name}</span><small>{shortDescriptions[value]}</small></Button>)}</div>
+    <div className="widget-gallery-source"><span>Reference: {source.title}</span><Button variant="ghost" onClick={() => setInfo(true)}>About this example</Button></div>
+    {message && <p role="status">{message}</p>}
+    <div ref={example} className="widget-gallery-active" tabIndex={-1}>{open && active && <WidgetView key={kind} envelope={initial} source={source} onSource={() => setInfo(true)}/>}</div>
+    <Dialog open={info} onOpenChange={setInfo}><DialogContent className="reader-dialog"><DialogTitle>About this example</DialogTitle><DialogDescription>{source.title} · {source.authors.join(' · ')}</DialogDescription><p>This is an authored teaching example linked to the original research. It is not an interpretation of the currently open paper.</p>{source.blocks.filter(block => block.id === initial.source.blockId).map(block => <blockquote key={block.id} id={`source-${source.id}-${block.id}`}>{block.kind === 'equation' ? block.latex : block.kind === 'original-figure' ? block.caption : block.text}</blockquote>)}<ul>{source.extractionWarnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul>{source.source.url && <a href={source.source.url} target="_blank" rel="noreferrer">Read the original research ↗</a>}</DialogContent></Dialog>
+  </>;
+  return embedded ? <section aria-label="Widget gallery"><h3>Try an example</h3>{content}</section> : <section><Button variant="outline" aria-expanded={open} onClick={() => setOpen(!open)}>Try widget examples</Button>{open && content}</section>;
 }

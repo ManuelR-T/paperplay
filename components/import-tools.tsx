@@ -28,7 +28,6 @@ export function ImportDialog({ open, onOpenChange, busy, ...actions }: Actions &
   const [arxiv, setArxiv] = useState('');
   const [error, setError] = useState('');
   const [legacyGuide,setLegacyGuide]=useState(false);
-  function prepared(id:unknown){if(!legacyGuide&&typeof id==='string')window.setTimeout(()=>window.dispatchEvent(new CustomEvent('paperplay:open-planner',{detail:{documentId:id}})),100);}
   function submit() {
     setError('');
     if (mode === 'pdf') {
@@ -36,17 +35,17 @@ export function ImportDialog({ open, onOpenChange, busy, ...actions }: Actions &
       if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') { setError('Choose a PDF file.'); return; }
       if (file.size > 10 * 1024 * 1024) { setError('Choose a PDF smaller than 10 MB.'); return; }
       onOpenChange(false);
-      void actions.importPdf(file,{analyze:legacyGuide}).then(prepared).catch(() => {});
+      void actions.importPdf(file,{analyze:legacyGuide}).catch(() => {});
     } else {
       if (!arxiv.trim()) { setError('Enter an arXiv link or identifier.'); return; }
       onOpenChange(false);
-      void actions.importArxiv(arxiv.trim(),{analyze:legacyGuide}).then(prepared).catch(() => {});
+      void actions.importArxiv(arxiv.trim(),{analyze:legacyGuide}).catch(() => {});
     }
   }
   return <Dialog open={open} onOpenChange={onOpenChange}><DialogContent className="import-dialog">
     <div className="dialog-heading"><span className="dialog-icon"><FilePlus2 size={22}/></span></div>
     <DialogTitle>Add a research paper</DialogTitle>
-    <DialogDescription>Prepare the source, then choose sections and review a plan of interactive figures with Meta.</DialogDescription>
+    <DialogDescription>Open a PDF or arXiv paper to start reading. Add interactive figures whenever you are ready.</DialogDescription>
     <div className="import-mode" role="group" aria-label="Document source">
       <Button variant={mode === 'pdf' ? 'secondary' : 'outline'} aria-pressed={mode === 'pdf'} onClick={() => { setMode('pdf'); setError(''); }}>PDF file</Button>
       <Button variant={mode === 'arxiv' ? 'secondary' : 'outline'} aria-pressed={mode === 'arxiv'} onClick={() => { setMode('arxiv'); setError(''); }}>arXiv link</Button>
@@ -54,9 +53,9 @@ export function ImportDialog({ open, onOpenChange, busy, ...actions }: Actions &
     {mode === 'pdf' ? <label className="import-field">Research PDF<input aria-label="Research PDF" type="file" accept="application/pdf,.pdf" onChange={event => setFile(event.target.files?.[0] ?? null)}/><span>Text-based PDF · up to 10 MB. Scanned documents need a text transcription.</span></label> : <label className="import-field">arXiv link or identifier<input aria-label="arXiv link or identifier" type="text" placeholder="https://arxiv.org/abs/1805.04154" value={arxiv} onChange={event => setArxiv(event.target.value)} autoComplete="off"/><span>Paperplay tries the structured article first and uses the PDF when needed.</span></label>}
     <p className="import-disclosure">The document is saved in this browser. Importing for reading does not request inference. Generating a figure plan explicitly sends the selected source context to Meta; the original PDF is not uploaded by this flow.</p>
     <details><summary>Optional immediate guide</summary><label className="inclusion-choice"><input type="checkbox" checked={legacyGuide} onChange={e=>setLegacyGuide(e.target.checked)}/><span>Also create the original automatic guide with Meta. This starts a paid analysis on import and requires the full source to fit the 70,000-character context.</span></label></details>
-    <p className="control-hint">The new figure planner can cover selected sections of a long source with explicit budgets. Original text and incomplete coverage remain visible.</p>
+    <p className="control-hint">After opening, use Add figures to choose a section and review suggestions from Meta.</p>
     {error && <p role="alert" className="figure-error">{error}</p>}
-    <Button className="import-submit" onClick={submit} disabled={busy}><Upload size={17}/>{busy ? 'An import is already running' : legacyGuide?'Import & analyze with Meta':'Import & choose interactive figures'}</Button>
+    <Button className="import-submit" onClick={submit} disabled={busy}><Upload size={17}/>{busy ? 'An import is already running' : legacyGuide?'Import & analyze with Meta':'Open paper'}</Button>
   </DialogContent></Dialog>;
 }
 

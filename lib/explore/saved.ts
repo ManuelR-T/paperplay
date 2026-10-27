@@ -20,3 +20,10 @@ export function toggleSavedPaper(storage: Storage, paper: ArxivPaper): ArxivPape
   storage.setItem(SAVED_PAPERS_KEY, JSON.stringify({ version: 1, papers: next }));
   return next;
 }
+
+export function filterSavedPapers(papers: ArxivPaper[], query: string): ArxivPaper[] {
+  const fold = (text: string) => text.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+  const terms = fold(query).trim().split(/\s+/).filter(Boolean);
+  if (!terms.length) return papers;
+  return papers.filter(paper => { const text = fold([paper.title, ...paper.authors, ...paper.categories, paper.abstract].join(' ')); return terms.every(term => text.includes(term)); });
+}

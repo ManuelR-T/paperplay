@@ -16,7 +16,6 @@ export function CustomScene({ frame, frames, selection, onSelect }: { frame: Cus
         :<text x={mark.x} y={mark.y} fill="var(--ink)" fontSize={18}>{mark.label}: {Number(mark.value?.toPrecision(6))}</text>}
       </g>)}
     </svg>
-    <p>Model coordinates use a 600 × 320 reference frame. The view fits the entire recorded trajectory with a fixed camera across steps. Numerical values below remain available independently of the drawing.</p>
-    <div role="region" tabIndex={0} aria-label="Custom scene numerical equivalent" style={{overflowX:'auto',maxWidth:'100%'}}><table style={{width:'100%'}}><caption>Visible elements at step {frame.step}</caption><thead><tr><th>Element</th><th>Shape</th><th>Coordinates and values</th></tr></thead><tbody>{frame.marks.map(mark=><tr key={mark.id}><th scope="row"><button onClick={()=>onSelect(mark.id)}>{mark.label}</button></th><td>{mark.shape}</td><td>{Object.entries(mark).filter(([,v])=>typeof v==='number').map(([k,v])=>`${k}=${Number((v as number).toPrecision(7))}`).join(', ')}</td></tr>)}</tbody></table></div>
+    {frame.marks.find(mark=>selection===`custom:${mark.id}`)&&<p className="widget-selection" aria-live="polite">Selected: {frame.marks.find(mark=>selection===`custom:${mark.id}`)!.label}</p>}
   </div>;
 }
