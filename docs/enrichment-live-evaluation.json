@@ -1,0 +1,326 @@
+{
+  "checkedAt": "2026-10-27T03:49:26.801Z",
+  "scope": "Actual official Meta catalog planning on frozen source selections/authored research notes; developer review, no participant study or full-paper success claim.",
+  "cases": [
+    {
+      "id": "optimization-quadratic",
+      "family": "numerical optimization",
+      "scope": "Attributed selected Distill equation and text, not complete article.",
+      "checkedAt": "2026-10-27T03:46:51.709Z",
+      "status": "complete",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 3736,
+        "outputTokens": 2887,
+        "totalTokens": 6623
+      },
+      "score": {
+        "validProposals": 2,
+        "rejectedProposals": 0,
+        "distinctKinds": [
+          "function",
+          "table"
+        ],
+        "alignedKinds": 1,
+        "unsupportedControlRejections": 0,
+        "syntheticOrIllustrativeLabels": true,
+        "warnings": [
+          "This is a selected HTML reading edition, not a PDF transcription; page 1 is a logical location.",
+          "All numbers are synthetic/illustrative teaching values; no original experiment, trained model, proof, or benchmark was run.",
+          "Function widget simplifies matrix A to scalar curvature a in 1D; inspect assumption against source.",
+          "Table illustrates the inequality only and does not simulate gradient-descent iterates."
+        ],
+        "scope": "Structural validation/proposal variety only; scientific usefulness requires source review and understanding requires actual readers."
+      },
+      "proposals": [
+        {
+          "kind": "function",
+          "title": "Explore the convex quadratic teaching objective",
+          "concept": "Convex quadratic objective in one-dimensional restriction",
+          "reason": "Function-and-probe fits because the source defines a scalar-valued objective over a continuous domain; sampling and probing shows shape, minimum location, and finite-difference slope without claiming an experiment.",
+          "sourceBlockId": "q-objective",
+          "quote": "f(w)=\\tfrac{1}{2}w^{T}Aw-b^{T}w,\\qquad w\\in\\mathbb{R}^{n}",
+          "mapping": "1D restriction f(x)=0.5*a*x^2-b*x of source f(w)=0.5 w^T A w - b^T w; a stands in for positive eigenvalue; authored synthetic teaching data, not source measurements.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Edit variables",
+            "Move probe by pointer or keyboard",
+            "Adjust the probe slider",
+            "Toggle approximate derivative",
+            "Reset",
+            "Export/import validated state"
+          ]
+        },
+        {
+          "kind": "table",
+          "title": "Check which step sizes satisfy stability",
+          "concept": "Gradient-descent stability condition on step size",
+          "reason": "Explorable table fits because stability is an inequality over discrete parameter choices; explicit rows make filtering and sorting the condition inspectable without running an original benchmark.",
+          "sourceBlockId": "q-stability",
+          "quote": "0<\\alpha\\lambda_i<2",
+          "mapping": "Illustrates source condition 0<alpha lambda_i<2 with synthetic alpha, lambda_i pairs; product column computed for teaching; not source measurements.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Filter rows",
+            "Sort a column",
+            "Select a row",
+            "Export CSV",
+            "Reset",
+            "Export/import validated state"
+          ]
+        }
+      ],
+      "rejected": [],
+      "newCreationsThisInvocation": 1,
+      "recordedProviderCreation": true
+    },
+    {
+      "id": "graph-priority-maps",
+      "family": "graph algorithms",
+      "scope": "Licensed prepared source selection, not complete paper.",
+      "checkedAt": "2026-10-27T03:48:36.463Z",
+      "status": "complete",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 3846,
+        "outputTokens": 1730,
+        "totalTokens": 5576
+      },
+      "score": {
+        "validProposals": 1,
+        "rejectedProposals": 0,
+        "distinctKinds": [
+          "graph"
+        ],
+        "alignedKinds": 1,
+        "unsupportedControlRejections": 0,
+        "syntheticOrIllustrativeLabels": true,
+        "warnings": [
+          "Selected coverage only; unselected algorithm details, code, and proofs remain in the full original PDF.",
+          "All numbers, graphs, and steps are authored synthetic teaching data, not source-reported measurements or an original benchmark.",
+          "Diagram transitions are illustrative conceptual steps and do not execute the functional algorithm."
+        ],
+        "scope": "Structural validation/proposal variety only; scientific usefulness requires source review and understanding requires actual readers."
+      },
+      "proposals": [
+        {
+          "kind": "graph",
+          "title": "Dijkstra root-to-all shortest paths explorer",
+          "concept": "Shortest paths from a root node in a weighted directed graph",
+          "reason": "A graph widget fits because the quoted passage defines Dijkstra by root-to-all shortest paths on weighted directed graphs; stepping deterministic Dijkstra on a small synthetic directed graph makes paths, distances, and predecessors inspectable without claiming the source experiment.",
+          "sourceBlockId": "g-dijkstra-introduction",
+          "quote": "shortest paths from a root node to all other nodes in a weighted directed graph",
+          "mapping": "Authored synthetic teaching data. Small directed nonnegative-weight graph to illustrate root-to-all shortest paths; weights and layout are not measurements reported by the source. Inspect assumptions against the cited passage.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Add/remove/move nodes",
+            "Add/remove/edit edges",
+            "Select start and target",
+            "Step actual search",
+            "Seek search step slider",
+            "Reset"
+          ]
+        }
+      ],
+      "rejected": [],
+      "newCreationsThisInvocation": 1,
+      "recordedProviderCreation": true
+    },
+    {
+      "id": "sorting-powersort",
+      "family": "adaptive sorting",
+      "scope": "Licensed prepared source selection, not complete paper.",
+      "checkedAt": "2026-10-27T03:48:54.952Z",
+      "status": "complete",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 3954,
+        "outputTokens": 2278,
+        "totalTokens": 6232
+      },
+      "score": {
+        "validProposals": 2,
+        "rejectedProposals": 0,
+        "distinctKinds": [
+          "diagram",
+          "table"
+        ],
+        "alignedKinds": 2,
+        "unsupportedControlRejections": 0,
+        "syntheticOrIllustrativeLabels": true,
+        "warnings": [
+          "All widget content is synthetic/illustrative teaching material, not source-reported measurements or cache benchmarks.",
+          "Only selected passages are analyzed; full paper and Powersort power rule remain in the original PDF.",
+          "No sorting execution, cache simulation, trained model, or formal proof is claimed."
+        ],
+        "scope": "Structural validation/proposal variety only; scientific usefulness requires source review and understanding requires actual readers."
+      },
+      "proposals": [
+        {
+          "kind": "diagram",
+          "title": "Scan and Stack Merge Flow",
+          "concept": "Left-to-right scan with stack merges keeps recent runs cache-resident",
+          "reason": "A state/relationship diagram fits because the passage contrasts access order and merge timing, not a formula; nodes make the scan-to-merge path inspectable without claiming a cache simulation.",
+          "sourceBlockId": "s-powersort-cache",
+          "quote": "Timsort proceeds in one left-to-right scan over the input and merges the top runs on the stack.",
+          "mapping": "Authored synthetic teaching data. Illustrates the quoted contrast: left-to-right scan plus stack merges versus deferred merge after middle access. Not source measurements and not a cache simulation.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Select nodes",
+            "Step conceptual transitions",
+            "Seek conceptual step slider",
+            "Zoom",
+            "Reset",
+            "Export/import validated state"
+          ]
+        },
+        {
+          "kind": "table",
+          "title": "Access Pattern Comparison",
+          "concept": "PeekSort middle accesses versus sequential stack merging",
+          "reason": "An explorable table fits because the passage makes a categorical comparison of methods; rows keep method, access, and timing side-by-side for selection and sorting without implying measured data.",
+          "sourceBlockId": "s-powersort-cache",
+          "quote": "we have to use “random accesses” into the middle of the array to decide how to proceed.",
+          "mapping": "Authored synthetic teaching data. Organizes the quoted access-pattern contrast into comparable rows. These values are not measurements reported by the source.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Filter rows",
+            "Sort a column",
+            "Select a row",
+            "Export CSV",
+            "Reset",
+            "Export/import validated state"
+          ]
+        }
+      ],
+      "rejected": [],
+      "newCreationsThisInvocation": 1,
+      "recordedProviderCreation": true
+    },
+    {
+      "id": "attention-mechanism",
+      "family": "attention",
+      "scope": "Independently authored source-linked note and mathematical formula, not original paper prose/pagination.",
+      "checkedAt": "2026-10-27T03:49:10.164Z",
+      "status": "complete",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 3594,
+        "outputTokens": 1293,
+        "totalTokens": 4887
+      },
+      "score": {
+        "validProposals": 1,
+        "rejectedProposals": 0,
+        "distinctKinds": [
+          "attention"
+        ],
+        "alignedKinds": 1,
+        "unsupportedControlRejections": 0,
+        "syntheticOrIllustrativeLabels": true,
+        "warnings": [
+          "This is an independently authored teaching note and formula, not original-paper prose; logical location 1 is not a physical PDF page.",
+          "All matrices are synthetic teaching values, not learned embeddings or original experiments."
+        ],
+        "scope": "Structural validation/proposal variety only; scientific usefulness requires source review and understanding requires actual readers."
+      },
+      "proposals": [
+        {
+          "kind": "attention",
+          "title": "Toy Scaled Dot-Product Attention Explorer",
+          "concept": "Scaled dot-product attention as QK^T scaling, softmax, and weighting by V",
+          "reason": "Toy attention tensors widget directly implements the quoted expression as editable small-matrix computation with inspectable scores, weights, and outputs, rather than summarizing it.",
+          "sourceBlockId": "attention-equation",
+          "quote": "\\operatorname{Attention}(Q,K,V)=\\operatorname{softmax}(QK^T/\\sqrt{d_k})V",
+          "mapping": "Authored synthetic teaching data. Implements quoted Attention(Q,K,V)=softmax(QK^T/sqrt(d_k))V on 2x2 toy Q/K/V with d_k=2; temperature 1 stands in for 1/sqrt(d_k) scaling to show mechanics. Not source measurements.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Edit Q/K/V matrices",
+            "Toggle individual mask cells",
+            "Change temperature",
+            "Select a query",
+            "Seek query step slider",
+            "Reset",
+            "Export/import validated state"
+          ]
+        }
+      ],
+      "rejected": [],
+      "newCreationsThisInvocation": 1,
+      "recordedProviderCreation": true
+    },
+    {
+      "id": "probability-update",
+      "family": "Bayesian updating",
+      "scope": "Independently authored source-linked note and mathematical formula, not original paper prose/pagination.",
+      "checkedAt": "2026-10-27T03:49:26.801Z",
+      "status": "complete",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 3576,
+        "outputTokens": 1241,
+        "totalTokens": 4817
+      },
+      "score": {
+        "validProposals": 1,
+        "rejectedProposals": 0,
+        "distinctKinds": [
+          "probability"
+        ],
+        "alignedKinds": 1,
+        "unsupportedControlRejections": 0,
+        "syntheticOrIllustrativeLabels": true,
+        "warnings": [
+          "Independently authored teaching note; no original paper prose, figures or PDF redistributed.",
+          "All values are illustrative teaching data, not source-reported measurements."
+        ],
+        "scope": "Structural validation/proposal variety only; scientific usefulness requires source review and understanding requires actual readers."
+      },
+      "proposals": [
+        {
+          "kind": "probability",
+          "title": "Beta-Bernoulli posterior explorer",
+          "concept": "Beta-Bernoulli conjugate updating with seeded sampling",
+          "reason": "Probability widget fits because the passage defines a beta-Bernoulli conjugate update; analytic density plus seeded sampling makes prior-to-posterior change inspectable without claiming an original experiment.",
+          "sourceBlockId": "beta-note",
+          "quote": "beta–Bernoulli updating provides a small conjugate model",
+          "mapping": "Authored synthetic teaching data illustrating p|s,f ~ Beta(alpha+s, beta+f). Inspect assumptions against cited passage; values are not measurements reported by the source.",
+          "authorship": {
+            "kind": "meta",
+            "label": "Meta-proposed teaching model"
+          },
+          "interactions": [
+            "Choose distribution",
+            "Edit supported parameters",
+            "Edit observation counts",
+            "Choose sample count",
+            "Change seed",
+            "Reset",
+            "Export/import validated state"
+          ]
+        }
+      ],
+      "rejected": [],
+      "newCreationsThisInvocation": 1,
+      "recordedProviderCreation": true
+    }
+  ]
+}

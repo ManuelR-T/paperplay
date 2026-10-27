@@ -1,0 +1,158 @@
+{
+  "checkedAt": "2026-10-27T04:21:29.852Z",
+  "rows": "Actual trial results · select a point to reopen its exact setting\nSetting\tStatus\tMeasurements\tInspect\noperationLimit=10000, iterations=10, stepSize=0.1\tcompleted · tolerance not reached\titerations: 10 count; matrixProducts: 11 count; residual: 0.35201789157968894 norm\tOpen point\noperationLimit=10000, iterations=20, stepSize=0.1\tcompleted · tolerance not reached\titerations: 20 count; matrixProducts: 21 count; residual: 0.12157700643378098 norm\tOpen point\noperationLimit=10000, iterations=10, stepSize=0.2\tcompleted · tolerance not reached\titerations: 10 count; matrixProducts: 11 count; residual: 0.10737418240312485 norm\tOpen point\noperationLimit=10000, iterations=20, stepSize=0.2\tcompleted · tolerance not reached\titerations: 20 count; matrixProducts: 21 count; residual: 0.011529215046068408 norm\tOpen point\noperationLimit=10000, iterations=10, stepSize=0.8\tfailed · This step size is outside the conservative stability bound. Reduce α or the matrix curvature.\tNo valid measurement\tOpen point\noperationLimit=10000, iterations=20, stepSize=0.8\tfailed · This step size is outside the conservative stability bound. Reduce α or the matrix curvature.\tNo valid measurement\tOpen point",
+  "statuses": [
+    "Computed 6 actual trials. Failed and nonconverged points remain visible."
+  ],
+  "svg": "Actual parameter sweep: horizontal stepSize, vertical iterations, color residual. Failed points have no invented measurement. Exact values are in the table.",
+  "metaCaches": [
+    {
+      "action": "plan",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 4059,
+        "outputTokens": 2584,
+        "totalTokens": 6643
+      },
+      "sectionTitle": "14. 3.2 Powersort: A Cache-Friendly Stack-Based Method",
+      "proposals": [
+        {
+          "kind": "diagram",
+          "source": {
+            "documentId": "import-f0c30750cb8ff682f325af95ffcf55f8",
+            "sourceVersion": "source-v3:f0c30750cb8ff682f325af95ffcf55f865faf22f794f3795d79606f672bde089",
+            "blockId": "pdf-p8-b11",
+            "page": 8,
+            "quote": "Timsort proceeds in one left-to-right scan over the input and merges the top runs on the stack.",
+            "citation": {
+              "title": "adaptive-mergesort",
+              "authors": [
+                "Author metadata unavailable"
+              ]
+            }
+          },
+          "title": "Left-to-right scan and stack merges"
+        },
+        {
+          "kind": "table",
+          "source": {
+            "documentId": "import-f0c30750cb8ff682f325af95ffcf55f8",
+            "sourceVersion": "source-v3:f0c30750cb8ff682f325af95ffcf55f865faf22f794f3795d79606f672bde089",
+            "blockId": "pdf-p8-b11",
+            "page": 8,
+            "quote": "we have to use “random accesses” into the middle of the array to decide how to proceed.",
+            "citation": {
+              "title": "adaptive-mergesort",
+              "authors": [
+                "Author metadata unavailable"
+              ]
+            }
+          },
+          "title": "Synthetic stack trace for one pass"
+        }
+      ],
+      "rejected": [],
+      "pending": false,
+      "accepted": 2
+    },
+    {
+      "action": "edit",
+      "model": "muse-spark-1.3",
+      "usage": {
+        "inputTokens": 4429,
+        "outputTokens": 1497,
+        "totalTokens": 5926
+      },
+      "sectionTitle": "14. 3.2 Powersort: A Cache-Friendly Stack-Based Method",
+      "proposals": [
+        {
+          "kind": "table",
+          "source": {
+            "documentId": "import-f0c30750cb8ff682f325af95ffcf55f8",
+            "sourceVersion": "source-v3:f0c30750cb8ff682f325af95ffcf55f865faf22f794f3795d79606f672bde089",
+            "blockId": "pdf-p8-b11",
+            "page": 8,
+            "quote": "we have to use “random accesses” into the middle of the array to decide how to proceed.",
+            "citation": {
+              "title": "adaptive-mergesort",
+              "authors": [
+                "Author metadata unavailable"
+              ]
+            }
+          },
+          "title": "Synthetic stack trace for one pass",
+          "diff": [
+            {
+              "path": "columns",
+              "before": "[{\"id\":\"step\",\"label\":\"Scan step\",\"unit\":\"ordinal\"},{\"id\":\"detected\",\"label\":\"Newly detected run\",\"unit\":\"synthetic id\"},{\"id\":\"stack\",\"label\":\"Stack after action\",\"unit\":\"synthetic ids\"},{\"id\":\"action\",\"label\":\"Action\",\"unit\":\"label\"},{\"id\":\"cache_note\",\"label\":\"Cache note\",\"unit\":\"illustrative label\"}]",
+              "after": "[{\"id\":\"step\",\"label\":\"Illustrative scan step\",\"unit\":\"ordinal\"},{\"id\":\"detected\",\"label\":\"Newly detected run\",\"unit\":\"synthetic id\"},{\"id\":\"stack\",\"label\":\"Stack after action\",\"unit\":\"synthetic ids\"},{\"id\":\"action\",\"label\":\"Action\",\"unit\":\"label\"},{\"id\":\"cache_note\",\"label\":\"Cache note\",\"unit\":\"illustrative label\"}]"
+            }
+          ]
+        }
+      ],
+      "rejected": [],
+      "pending": false,
+      "accepted": 2
+    }
+  ],
+  "scope": "Developer native-browser verification. Imported source snapshot was saved before the later heading-heuristic refinement; old source versions remain immutable.",
+  "additionalObserved": {
+    "acceptedBothPlansInlineAtPage8": true,
+    "reloadedTwoClosedFiguresWithZeroNewInference": true,
+    "acceptedEditFirstColumn": "Illustrative scan step",
+    "undoRestoredFirstColumn": "Scan step",
+    "duplicateDomIdsAfterAcceptUndo": 0,
+    "measuredSweepExportClicked": true,
+    "measuredSweepDownloadVerified": {
+      "bytes": 4097,
+      "trials": 6,
+      "failed": 2,
+      "allowedOperations": 60000,
+      "fullInputSeedVersionAxesPresent": true
+    },
+    "pinnedBranchChanges": {
+      "seed": {
+        "before": 42,
+        "after": 43
+      },
+      "stepSize": {
+        "before": 0.2,
+        "after": 0.1
+      },
+      "baselineIterations": 83,
+      "branchIterations": 100,
+      "newInference": 0
+    },
+    "unsavedComposer": {
+      "previewAbsentFromSavedFigures": true,
+      "explicitSaveCreatedReaderAuthoredInlineFigure": true,
+      "exactSourceReturnPresent": true
+    },
+    "storageFailure": {
+      "injection": "Storage.setItem throws; actual session bootstrap retained",
+      "enrichmentStartRequests": 0,
+      "visibleFailure": true
+    }
+  },
+  "totalPaidWork": {
+    "frozenPlanningCases": {
+      "creations": 5,
+      "totalTokens": 28135
+    },
+    "importedPlanning": {
+      "creations": 1,
+      "totalTokens": 6643
+    },
+    "importedSettingsEdit": {
+      "creations": 1,
+      "totalTokens": 5926
+    },
+    "legacyHmrImport": {
+      "creations": 1,
+      "totalTokens": 22625,
+      "note": "A stale development controller retained the earlier import-and-analyze behavior once. Full reload verified the new read-first import creates no inference. This actual provider usage is counted separately."
+    },
+    "creations": 8,
+    "totalTokens": 63329
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-27T04:18:20.304Z",
+  "scope": "Warm development browser: scroll a saved 16-page / 175-block PDF and open one deferred Meta-authored table. Programmatic interaction, no participants.",
+  "viewport": {
+    "width": 1280,
+    "height": 850
+  },
+  "hardware": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+    "logicalThreads": 16
+  },
+  "before": {
+    "views": 0,
+    "blocks": 175
+  },
+  "after": {
+    "views": 1,
+    "blocks": 175
+  },
+  "timer": {
+    "samples": 68,
+    "targetMs": 16,
+    "maxIntervalMs": 32.599999994039536,
+    "p95IntervalMs": 16.599999994039536
+  },
+  "observedLongTasksMs": [],
+  "observedLayoutShiftSum": 0.08791749320310706,
+  "anchorDeltaPx": 0,
+  "workerSummary": "illustrative table. View sorting/filtering never changes the underlying values.",
+  "paidRequests": 0,
+  "limits": "Single warm development run; not field CLS, cold-device performance, universal smoothness, or a 60fps claim."
+}

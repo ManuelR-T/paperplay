@@ -1,0 +1,89 @@
+{
+  "checkedAt": "2026-10-27T03:54:32.785Z",
+  "origin": "http://localhost:3011",
+  "viewport": {
+    "width": 320,
+    "height": 850
+  },
+  "before": {
+    "signalDocumentScrollWidth": 761,
+    "rootCause": "fieldset min-width:min-content expanded eight-cell input beyond its parent despite max-width and overflow:auto"
+  },
+  "after": [
+    {
+      "kind": "equation",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "function",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "diagram",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "table",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "linear",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "probability",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "attention",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "graph",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    },
+    {
+      "kind": "signal",
+      "width": 320,
+      "viewport": 320,
+      "errors": []
+    }
+  ],
+  "keyboardEdit": {
+    "field": "Input signal / synthetic pixels row 1 column 8",
+    "value": 3,
+    "documentScrollWidth": 320,
+    "documentScrollLeft": 0,
+    "localFieldset": {
+      "clientWidth": 180,
+      "scrollWidth": 690,
+      "scrollLeft": 437.5
+    }
+  },
+  "twoDimensionalSignal": {
+    "documentScrollWidth": 320,
+    "computedOutputRegion": {
+      "clientWidth": 216,
+      "scrollWidth": 220,
+      "tabIndex": 0
+    }
+  },
+  "change": "Bound fieldset min-width/inline-size to zero; keep raw cells and output tables locally scrollable and keyboard reachable. No page-level overflow hiding.",
+  "newPaidRequests": 0
+}

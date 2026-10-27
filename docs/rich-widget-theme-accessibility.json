@@ -1,0 +1,217 @@
+{
+  "checkedAt": "2026-10-27T04:30:26.100Z",
+  "origin": "http://localhost:3011",
+  "viewport": {
+    "width": 320,
+    "height": 850
+  },
+  "scope": "Native Chromium, nine reference forms across three settled reader themes and whole-document checks. Targeted WCAG 2/2.1 A/AA automation, no certification.",
+  "rows": [
+    {
+      "theme": "contrast",
+      "kind": "equation",
+      "width": 320,
+      "passes": 21,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "function",
+      "width": 320,
+      "passes": 20,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "diagram",
+      "width": 320,
+      "passes": 24,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "table",
+      "width": 320,
+      "passes": 20,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "linear",
+      "width": 320,
+      "passes": 22,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "probability",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "attention",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "graph",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "contrast",
+      "kind": "signal",
+      "width": 320,
+      "passes": 25,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "equation",
+      "width": 320,
+      "passes": 21,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "function",
+      "width": 320,
+      "passes": 20,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "diagram",
+      "width": 320,
+      "passes": 24,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "table",
+      "width": 320,
+      "passes": 20,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "linear",
+      "width": 320,
+      "passes": 22,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "probability",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "attention",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "graph",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "kind": "signal",
+      "width": 320,
+      "passes": 25,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "equation",
+      "width": 320,
+      "passes": 21,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "function",
+      "width": 320,
+      "passes": 20,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "diagram",
+      "width": 320,
+      "passes": 24,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "table",
+      "width": 320,
+      "passes": 20,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "linear",
+      "width": 320,
+      "passes": 22,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "probability",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "attention",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "graph",
+      "width": 320,
+      "passes": 23,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "kind": "signal",
+      "width": 320,
+      "passes": 25,
+      "violations": []
+    }
+  ],
+  "documents": [
+    {
+      "theme": "contrast",
+      "passes": 34,
+      "violations": []
+    },
+    {
+      "theme": "sepia",
+      "passes": 34,
+      "violations": []
+    },
+    {
+      "theme": "light",
+      "passes": 34,
+      "violations": []
+    }
+  ]
+}

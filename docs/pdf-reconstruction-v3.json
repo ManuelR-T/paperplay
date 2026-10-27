@@ -1,0 +1,95 @@
+{
+  "checkedAt": "2026-10-27T04:15:02.125Z",
+  "kind": "developer extraction review, not participant study",
+  "normalizer": "source-v3",
+  "results": [
+    {
+      "sourceFile": "priority-search-trees.pdf",
+      "physicalPages": 18,
+      "beforeHeadings": 0,
+      "afterHeadings": 30,
+      "rawNonWhitespaceCharacters": 40617,
+      "retainedRawNonWhitespaceCharacters": 40617,
+      "allRawCharactersRetained": true,
+      "lineEndHyphensBefore": 7,
+      "spacedHyphensAfter": 3,
+      "joinedParagraphs": 121,
+      "recordedRegions": 1013,
+      "newSourceVersion": "source-v3:69d27ad56ec017788696969c821798113783babb2303c38db6c21eac88266d9c",
+      "blocks": 243,
+      "requestBytes": 358516,
+      "limitations": [
+        "Heading detection and joins remain heuristic.",
+        "Non-witnessed hyphenation is deliberately retained.",
+        "No image, table or equation transcription is invented.",
+        "Coordinate regions are page-space mappings, not proof of semantic correctness."
+      ]
+    },
+    {
+      "sourceFile": "adaptive-mergesort.pdf",
+      "physicalPages": 16,
+      "beforeHeadings": 0,
+      "afterHeadings": 23,
+      "rawNonWhitespaceCharacters": 41698,
+      "retainedRawNonWhitespaceCharacters": 41698,
+      "allRawCharactersRetained": true,
+      "lineEndHyphensBefore": 9,
+      "spacedHyphensAfter": 5,
+      "joinedParagraphs": 88,
+      "recordedRegions": 1017,
+      "newSourceVersion": "source-v3:129e2d8bb0a84aed0a338b445ce2709253fd39dcc7141320b4a21a8e010db1d5",
+      "blocks": 172,
+      "requestBytes": 326942,
+      "limitations": [
+        "Heading detection and joins remain heuristic.",
+        "Non-witnessed hyphenation is deliberately retained.",
+        "No image, table or equation transcription is invented.",
+        "Coordinate regions are page-space mappings, not proof of semantic correctness."
+      ]
+    },
+    {
+      "sourceFile": "paperplay-resnet-v1-layout.pdf",
+      "physicalPages": 12,
+      "beforeHeadings": 0,
+      "afterHeadings": 19,
+      "rawNonWhitespaceCharacters": 49683,
+      "retainedRawNonWhitespaceCharacters": 49683,
+      "allRawCharactersRetained": true,
+      "lineEndHyphensBefore": 152,
+      "spacedHyphensAfter": 36,
+      "joinedParagraphs": 181,
+      "recordedRegions": 1647,
+      "newSourceVersion": "source-v3:c0f07a55990d26247b91dd46475efc537c5b9c22aa48c0b7132718559e0c4fc9",
+      "blocks": 246,
+      "requestBytes": 482530,
+      "limitations": [
+        "Heading detection and joins remain heuristic.",
+        "Non-witnessed hyphenation is deliberately retained.",
+        "No image, table or equation transcription is invented.",
+        "Coordinate regions are page-space mappings, not proof of semantic correctness."
+      ]
+    },
+    {
+      "sourceFile": "paperplay-attention-v7-layout.pdf",
+      "physicalPages": 15,
+      "beforeHeadings": 0,
+      "afterHeadings": 25,
+      "rawNonWhitespaceCharacters": 33486,
+      "retainedRawNonWhitespaceCharacters": 33486,
+      "allRawCharactersRetained": true,
+      "lineEndHyphensBefore": 14,
+      "spacedHyphensAfter": 10,
+      "joinedParagraphs": 131,
+      "recordedRegions": 889,
+      "newSourceVersion": "source-v3:0be1097fe4c9ebb4f8bccac83a64e74652d74c0e4e727908471bd8e6c29972e6",
+      "blocks": 218,
+      "requestBytes": 292725,
+      "limitations": [
+        "Heading detection and joins remain heuristic.",
+        "Non-witnessed hyphenation is deliberately retained.",
+        "No image, table or equation transcription is invented.",
+        "Coordinate regions are page-space mappings, not proof of semantic correctness."
+      ]
+    }
+  ]
+}

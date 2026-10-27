@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-27T04:19:27.029Z",
+  "scope": "Actual Chromium native preview, 320 CSS px, all nine settled reference forms. Axe WCAG 2/2.1 A/AA; focus reachability, not complete keyboard/assistive-technology certification.",
+  "rows": [
+    {
+      "kind": "equation",
+      "width": 320,
+      "viewport": 320,
+      "passes": 21,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "function",
+      "width": 320,
+      "viewport": 320,
+      "passes": 20,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "diagram",
+      "width": 320,
+      "viewport": 320,
+      "passes": 24,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "table",
+      "width": 320,
+      "viewport": 320,
+      "passes": 20,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "linear",
+      "width": 320,
+      "viewport": 320,
+      "passes": 22,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "probability",
+      "width": 320,
+      "viewport": 320,
+      "passes": 23,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "attention",
+      "width": 320,
+      "viewport": 320,
+      "passes": 23,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "graph",
+      "width": 320,
+      "viewport": 320,
+      "passes": 23,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    },
+    {
+      "kind": "signal",
+      "width": 320,
+      "viewport": 320,
+      "passes": 25,
+      "violations": [],
+      "keyboardFocus": true,
+      "errors": []
+    }
+  ],
+  "fixedDuringReview": [
+    "SVG graph/diagram now groups individually accessible node buttons rather than hiding them under an image role; accessible names include visible abbreviated labels.",
+    "Wrapped the long read-first planner action and constrained source selects instead of clipping document overflow."
+  ]
+}

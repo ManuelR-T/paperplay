@@ -19,7 +19,10 @@
     "stage:site": "node scripts/stage-site.mjs",
     "worker:build": "node scripts/build-engine-worker.mjs",
     "prebuild": "node scripts/build-engine-worker.mjs",
-    "predev": "node scripts/build-engine-worker.mjs"
+    "predev": "node scripts/build-engine-worker.mjs",
+    "eval:enrichment": "tsx scripts/evaluate-enrichment.ts",
+    "check:reconstruction": "tsx scripts/check-pdf-reconstruction.ts",
+    "benchmark:widgets": "tsx scripts/benchmark-widget-validation.ts"
   },
   "repository": {
     "type": "git",

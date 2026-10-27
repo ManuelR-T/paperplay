@@ -24,3 +24,5 @@ public/pdfjs/
 
 # Rebuilt trusted engine worker (esbuild/browser ESM).
 public/engine.worker.mjs
+public/widget.worker.mjs
+public/library.worker.mjs

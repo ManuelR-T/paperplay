@@ -15,6 +15,7 @@ import { useEngineExecution } from '../use-engine-execution';
 import { NumericView } from './numeric-view';
 import { TraceView } from './trace-view';
 import { PlaybackControls, usePlayback } from './playback';
+import { IndependentComparisonRun } from './experiment';
 
 function illustrativeState(figure: Extract<FigureSpecification, { kind: 'graph' | 'array' }>, selected: string): ExecutionTrace['steps'][number]['state'] {
   return figure.kind === 'graph' ? { kind: 'graph', activeNodeIds: selected ? [selected] : [], visitedNodeIds: [], activeEdgeIds: [] }
@@ -29,6 +30,8 @@ export function GeneratedFigureView({ entry, source, htmlSource, origin = 'meta'
   const previousEntry = useRef(entry.figure);
   const [stepIndex, setStepIndex] = useState(saved?.stepIndex ?? 0);
   const [selected, setSelected] = useState(saved?.selection ?? '');
+  const [independent,setIndependent]=useState(saved?.selection!=='index');
+  const [runPositions,setRunPositions]=useState<number[]>(()=>{try{const x=JSON.parse(saved?.selection?.replace(/^independent:/,'')??'[]');return Array.isArray(x)?x.slice(0,4).map(n=>Number.isInteger(n)&&n>=0&&n<10000?n:0):[];}catch{return[];}});
   const [arrayDraft, setArrayDraft] = useState(figure.kind === 'array' ? figure.input.values.join(', ') : '');
   const [inputError, setInputError] = useState('');
   const [resetVersion, setResetVersion] = useState(0);
@@ -46,8 +49,8 @@ export function GeneratedFigureView({ entry, source, htmlSource, origin = 'meta'
   const length = Math.max(1, ...computed.runs.map(run => run.trace.steps.length));
   const playback = usePlayback(length, execution.identity, saved?.stepIndex ?? 0);
   useEffect(() => {
-    if (session?.ready && !computed.error && (figure.kind === 'steps' || figure.kind !== 'comparison' && figure.execution.mode === 'illustrative' || execution.status === 'complete')) session.putFigure({ snapshot: figureSnapshot(source, figure, saved?.snapshot.seed ?? 42), stepIndex: figure.kind === 'steps' ? stepIndex : playback.index, selection: selected });
-  }, [figure, stepIndex, playback.index, selected, session?.ready, execution.status]);
+    if (session?.ready && !computed.error && (figure.kind === 'steps' || figure.kind !== 'comparison' && figure.execution.mode === 'illustrative' || execution.status === 'complete')) session.putFigure({ snapshot: figureSnapshot(source, figure, saved?.snapshot.seed ?? 42), stepIndex: figure.kind === 'steps' ? stepIndex : playback.index, selection: figure.kind==='comparison'?(independent?`independent:${JSON.stringify(runPositions)}`:'index'):selected });
+  }, [figure, stepIndex, playback.index, selected, session?.ready, execution.status,independent,runPositions]);
   const anchor = source.anchors.find(item => item.id === figure.sourceAnchorIds[0]);
   const explanatory = figure.kind === 'steps' || figure.kind !== 'comparison' && figure.execution.mode === 'illustrative';
   function reset() { setFigure(structuredClone(entry.figure)); setSelected(''); setInputError(''); setResetVersion(value => value + 1); setStepIndex(0); if (entry.figure.kind === 'array') setArrayDraft(entry.figure.input.values.join(', ')); playback.reset(); }
@@ -86,14 +89,16 @@ export function GeneratedFigureView({ entry, source, htmlSource, origin = 'meta'
       </>}
       {!computed.error && (figure.kind === 'matrix' || figure.kind === 'plot') && figure.execution.mode === 'illustrative' && <NumericView input={figure.input} mode={figure.kind} illustrative/>}
       {!computed.error && computed.runs.length > 0 && <>
-        <div className={computed.runs.length > 1 ? 'comparison-traces' : 'generated-single-trace'}>{computed.runs.map(run => { const step = run.trace.steps[Math.min(playback.index, run.trace.steps.length - 1)]; return <div key={run.engineId}><h4>{run.name}</h4><div className="trace-surface">{run.trace.input.kind === 'matrix' && step.state.kind === 'matrix' ? <NumericView input={run.trace.input} state={step.state} mode={figure.kind === 'plot' ? 'plot' : 'matrix'} history={figure.kind === 'plot' && run.trace.steps.at(-1)?.state.kind === 'matrix' ? (run.trace.steps.at(-1)!.state as Extract<typeof step.state, {kind:'matrix'}>).history : undefined}/> : <TraceView input={run.trace.input} state={step.state} compact={computed.runs.length > 1}/>}</div><p className="comparison-step">{step.description}</p><Badge variant="outline">{run.trace.status}</Badge></div>; })}</div>
-        <PlaybackControls playback={playback} length={length} label={`generated ${figure.id}`}/>
-        {computed.runs.length > 1 && <p className="control-hint">Playback aligns trace indexes, not equal computational work. Each method keeps its own configured parameters.</p>}
+        {computed.runs.length>1&&<label className="control-hint"><input type="checkbox" checked={!independent} onChange={e=>setIndependent(!e.target.checked)}/> Move both by trace index (visual convenience only)</label>}
+        <div className={computed.runs.length > 1 ? 'comparison-traces' : 'generated-single-trace'}>{computed.runs.map((run,runIndex) => { if(computed.runs.length>1&&independent)return <IndependentComparisonRun key={run.engineId} run={run} initialIndex={runPositions[runIndex]??saved?.stepIndex??0} onIndex={index=>setRunPositions(old=>{if(old[runIndex]===index)return old;const next=[...old];next[runIndex]=index;return next;})}/>;const step = run.trace.steps[Math.min(playback.index, run.trace.steps.length - 1)]; return <div key={run.engineId}><h4>{run.name}</h4><div className="trace-surface">{run.trace.input.kind === 'matrix' && step.state.kind === 'matrix' ? <NumericView input={run.trace.input} state={step.state} mode={figure.kind === 'plot' ? 'plot' : 'matrix'} history={figure.kind === 'plot' && run.trace.steps.at(-1)?.state.kind === 'matrix' ? (run.trace.steps.at(-1)!.state as Extract<typeof step.state, {kind:'matrix'}>).history : undefined}/> : <TraceView input={run.trace.input} state={step.state} compact={computed.runs.length > 1}/>}</div><p className="comparison-step">{step.description}</p><Badge variant="outline">{run.trace.status}</Badge></div>; })}</div>
+        {(computed.runs.length===1||!independent)&&<PlaybackControls playback={playback} length={length} label={`generated ${figure.id}`}/>}
+        {computed.runs.length > 1 && <p className="control-hint">{independent?'Each method has independent playback; these engines do not declare equivalent intermediate semantic checkpoints.':'Trace indices are visual convenience, not equal computational work or matching events.'} Each method keeps its own configured parameters.</p>}
         <div className="comparison-table"><table><caption>Actual {computed.runs.some(run => run.trace.status !== 'completed') ? 'partial' : 'complete-run'} totals on synthetic input</caption><thead><tr><th>Method</th>{metrics.map(metric => <th key={metric.id}>{engineRegistry.find(engine => engine.id === computed.runs[0].engineId)?.metrics.find(item => item.id === metric.id)?.label ?? metric.id}<small>{metric.unit}</small></th>)}</tr></thead><tbody>{computed.runs.map(run => <tr key={run.engineId}><th scope="row">{engineMetadata[run.engineId].name}</th>{metrics.map(metric => <td key={metric.id}>{run.trace.metrics.find(item => item.id === metric.id)?.value ?? '—'}</td>)}</tr>)}</tbody></table></div>
       </>}
     </>}
     <div className="fidelity-note"><Badge variant="outline">{explanatory ? 'Illustrative explanation' : 'Illustrative simulation'}</Badge><span>{origin === 'meta' ? 'Model-selected addition' : 'Imported snapshot'} · no original experiment reproduction</span><p className="control-hint">{explanatory ? 'This figure does not execute the paper’s algorithm.' : 'A supported implementation computes these synthetic inputs. Its selection does not verify the paper’s full method or reported results.'}</p></div>
-    <div className="figure-tools">{anchor && <ContextualQuestion source={source} blockId={anchor.blockId} figure={figure} seed={saved?.snapshot.seed ?? 42} stepIndex={figure.kind === 'steps' ? stepIndex : playback.index}/>}<ExperimentActions source={source} snapshot={figureSnapshot(source, figure, saved?.snapshot.seed ?? 42)} original={original} originalName={originalName} attribution={attribution}/></div>
+    {figure.kind==='comparison'&&independent&&<p className="control-hint">A figure question needs one shared trace index. <Button variant="outline" onClick={()=>setIndependent(false)}>Use shared index for a contextual question</Button></p>}
+    <div className="figure-tools">{anchor && (figure.kind!=='comparison'||!independent) && <ContextualQuestion source={source} blockId={anchor.blockId} figure={figure} seed={saved?.snapshot.seed ?? 42} stepIndex={figure.kind === 'steps' ? stepIndex : playback.index}/>}<ExperimentActions source={source} snapshot={figureSnapshot(source, figure, saved?.snapshot.seed ?? 42)} original={original} originalName={originalName} attribution={attribution}/></div>
     <details className="generated-source-quote"><summary>Quoted source passage</summary><blockquote>{entry.sourceQuote}</blockquote></details>
     {anchor ? <a className="return-to-source" href={`#source-${source.id}-${anchor.blockId}`} onClick={() => requestAnimationFrame(() => document.getElementById(`source-${source.id}-${anchor.blockId}`)?.focus())}><ArrowUp size={14}/>Return to source · {htmlSource ? 'HTML section' : `page ${entry.sourcePage}`}</a> : <p role="alert" className="figure-error">Source anchor unavailable. This addition has not been reassigned to another passage.</p>}
   </section>;

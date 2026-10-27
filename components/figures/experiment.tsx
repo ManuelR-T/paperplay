@@ -93,20 +93,30 @@ export function ComparisonFigure({ id, document, anchorId, state, inputFigureId 
   const session = useReadingSession();
   const saved = session?.ready ? session.state.figures.find(item => item.snapshot.figure.id === id) : undefined;
   const playback = usePlayback(maxLength, execution.identity, saved?.stepIndex ?? 0);
+  const [independent,setIndependent]=useState(saved?.selection!=='index');
+  const [positions,setPositions]=useState<number[]>(()=>{try{const raw=saved?.selection?.replace(/^independent:/,'');const value=raw?JSON.parse(raw):[];return Array.isArray(value)?value.slice(0,4).map(n=>Number.isInteger(n)&&n>=0&&n<10000?n:0):[];}catch{return[];}});
   useEffect(() => {
-    if (session?.ready && computed.figure && computed.comparison) session.putFigure({ snapshot: figureSnapshot(document, computed.figure, state.seed), stepIndex: playback.index, selection: '' });
-  }, [computed.figure, computed.comparison, playback.index, session?.ready]);
+    if (session?.ready && computed.figure && computed.comparison) session.putFigure({ snapshot: figureSnapshot(document, computed.figure, state.seed), stepIndex: playback.index, selection: independent?`independent:${JSON.stringify(positions)}`:'index' });
+  }, [computed.figure, computed.comparison, playback.index, session?.ready,independent,positions]);
   return <section id={id} tabIndex={-1} className="paperplay-figure comparison-figure" aria-labelledby={`${id}-title`}>
     <div className="added-figure-label"><span className="tiny-dot"/> ADDED BY PAPERPLAY <span>Method comparison</span></div><h3 id={`${id}-title`}>Same input. Two ways to solve it.</h3><p className="experiment-lead">These runs use the same input, seed and operation limit. <a href={`#${inputFigureId}`}>Edit the mechanism figure’s input</a> or use the shared seed controls to recompute both methods.</p>
     <ExecutionStatus execution={execution}/>
     {computed.error ? <p role="alert" className="figure-error">{computed.error} This comparison is unavailable rather than estimated.</p> : computed.comparison && <>
-      <div className="comparison-traces">{computed.comparison.runs.map(run => { const index = Math.min(playback.index, run.trace.steps.length - 1); return <div key={run.engineId}><h4>{run.name}</h4><TraceView input={state.input} state={run.trace.steps[index].state} compact/><p className="comparison-step">Step {index + 1}: {run.trace.steps[index].description}</p></div>; })}</div>
-      <PlaybackControls playback={playback} length={maxLength} label="comparison"/>
-      <p className="control-hint">Playback aligns trace indexes, not equal amounts of computational work. Each method stops at its final state.</p>
+      <label className="control-hint"><input type="checkbox" checked={!independent} onChange={event=>setIndependent(!event.target.checked)}/> Move both by trace index (visual convenience only)</label>
+      <div className="comparison-traces">{computed.comparison.runs.map((run,runIndex) => independent?<IndependentComparisonRun key={run.engineId} run={run} initialIndex={positions[runIndex]??saved?.stepIndex??0} onIndex={index=>setPositions(old=>{if(old[runIndex]===index)return old;const next=[...old];next[runIndex]=index;return next;})}/>:<div key={run.engineId}><h4>{run.name}</h4><TraceView input={state.input} state={run.trace.steps[Math.min(playback.index,run.trace.steps.length-1)].state} compact/><p className="comparison-step">Step {Math.min(playback.index,run.trace.steps.length-1)+1}: {run.trace.steps[Math.min(playback.index,run.trace.steps.length-1)].description}</p></div>)}</div>
+      {!independent&&<PlaybackControls playback={playback} length={maxLength} label="comparison"/>}
+      <p className="control-hint">{independent?'Each method has independent playback because these engines do not declare equivalent intermediate semantic checkpoints.':'Trace indices are not equivalent computational work or matching algorithm events. Each method stops at its final state.'} Complete-run metrics remain compatible independently of playback.</p>
       <div className="comparison-table"><table><caption>Measured totals from these runs</caption><thead><tr><th>Method</th>{computed.comparison.commonMetrics.map(metric => <th key={metric.id}>{metric.label}<small>{metric.unit}</small></th>)}<th>Status</th></tr></thead><tbody>{computed.comparison.runs.map(run => <tr key={run.engineId}><th scope="row">{run.name}</th>{computed.comparison!.commonMetrics.map(metric => <td key={metric.id}>{run.trace.metrics.find(item => item.id === metric.id)?.value ?? '—'}</td>)}<td>{run.trace.status}</td></tr>)}</tbody></table></div>
     </>}
-    {computed.figure && <><FidelityNote figure={computed.figure}/><div className="figure-tools"><ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={computed.figure} seed={state.seed} stepIndex={playback.index}/><ExperimentActions source={document} snapshot={figureSnapshot(document, computed.figure, state.seed)}/></div></>}<SourceReturn document={document} anchorId={anchorId}/>
+    {independent&&<p className="control-hint">A contextual comparison question needs one shared trace index. <Button variant="outline" onClick={()=>setIndependent(false)}>Use shared index for a contextual question</Button></p>}
+    {computed.figure && <><FidelityNote figure={computed.figure}/><div className="figure-tools">{!independent&&<ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={computed.figure} seed={state.seed} stepIndex={playback.index}/>}<ExperimentActions source={document} snapshot={figureSnapshot(document, computed.figure, state.seed)}/></div></>}<SourceReturn document={document} anchorId={anchorId}/>
   </section>;
+}
+
+export function IndependentComparisonRun({run,initialIndex,onIndex}:{run:Run;initialIndex:number;onIndex:(index:number)=>void}){
+  const playback=usePlayback(run.trace.steps.length,run.trace,initialIndex);const step=run.trace.steps[playback.index];
+  useEffect(()=>onIndex(playback.index),[playback.index]);
+  return <div><h4>{run.name}</h4><TraceView input={run.trace.input} state={step.state} compact/><p className="comparison-step">Step {playback.index+1}: {step.description}</p><PlaybackControls playback={playback} length={run.trace.steps.length} label={run.name}/></div>;
 }
 
 export function WalkthroughFigure({ id, document, anchorId, family }: { id: string; document: SourceDocument; anchorId: string; family: ExperimentState['input']['kind'] }) {

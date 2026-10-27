@@ -150,3 +150,10 @@ test('cancelling a new extraction does not cancel the previously selected comple
   assert.equal(instance.getSnapshot().records[0].stage, 'complete');
   assert.equal(instance.getSnapshot().stage, 'cancelled');
 });
+
+test('read-first import prepares a long source and returns its identity without any paid analysis',async()=>{
+ const long=structuredClone(source);for(let i=0;i<5;i++)long.blocks.push({id:`long-${i}`,kind:'paragraph',page:2,text:'A source passage retained in full. '.repeat(500)});
+ const store=memoryStore();let calls=0;const instance=controller(store,(async()=>{calls++;throw Error('No inference was requested')}) as typeof fetch,{extractPdf:async()=>({source:long})});
+ await instance.refresh();const id=await instance.importPdf(new File(['unused'],'long.pdf'),{analyze:false});
+ assert.equal(id,long.id);assert.equal(calls,0);assert.equal(instance.getSnapshot().stage,'ready');assert.equal(instance.getSnapshot().busy,false);assert.deepEqual(store.values.get(long.id)?.source.blocks,long.blocks);
+});

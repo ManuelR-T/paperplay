@@ -1,0 +1,91 @@
+{
+  "checkedAt": "2026-10-27T04:23:39.465Z",
+  "scope": "Node validation seam before/after immutable source preparation; seven batches of 24 widgets each. No whole-UI or hardware-speedup claim.",
+  "environment": {
+    "node": "v24.14.0",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "Intel(R) Core(TM) Ultra 9 285H",
+    "logicalCpus": 16
+  },
+  "source": {
+    "file": "paperplay-resnet-v1-layout.pdf",
+    "version": "source-v3:c0f07a55990d26247b91dd46475efc537c5b9c22aa48c0b7132718559e0c4fc9",
+    "blocks": 246,
+    "bytes": 482530
+  },
+  "prepareMs": 4.060762000000068,
+  "beforeMs": [
+    54.77152699999988,
+    52.74045899999987,
+    55.63307400000008,
+    52.00991299999987,
+    60.56284800000003,
+    54.562932000000046,
+    52.967440000000124
+  ],
+  "afterMs": [
+    0.39145699999994577,
+    0.33662900000012996,
+    0.6242700000000241,
+    0.8979930000000422,
+    0.705306999999948,
+    0.4130579999998645,
+    0.33957699999996294
+  ],
+  "beforeMedianMs": 54.562932000000046,
+  "afterMedianMs": 0.4130579999998645,
+  "transfers": [
+    {
+      "kind": "equation",
+      "inputBytes": 1110,
+      "resultBytes": 578
+    },
+    {
+      "kind": "function",
+      "inputBytes": 1147,
+      "resultBytes": 4129
+    },
+    {
+      "kind": "diagram",
+      "inputBytes": 994,
+      "resultBytes": 572
+    },
+    {
+      "kind": "table",
+      "inputBytes": 492,
+      "resultBytes": 317
+    },
+    {
+      "kind": "linear",
+      "inputBytes": 212,
+      "resultBytes": 744
+    },
+    {
+      "kind": "probability",
+      "inputBytes": 322,
+      "resultBytes": 18632
+    },
+    {
+      "kind": "attention",
+      "inputBytes": 269,
+      "resultBytes": 918
+    },
+    {
+      "kind": "graph",
+      "inputBytes": 576,
+      "resultBytes": 553
+    },
+    {
+      "kind": "signal",
+      "inputBytes": 278,
+      "resultBytes": 1548
+    }
+  ],
+  "budget": {
+    "maxInputBytes": 131072,
+    "maxResultBytes": 2097152,
+    "maxRunMs": 15000
+  },
+  "safety": "Only privately marked, deeply frozen validated copies bypass repeated document cloning. Mutable foreign source objects always pass full source validation."
+}

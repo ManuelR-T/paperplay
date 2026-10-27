@@ -11,7 +11,11 @@ const page = z.number().int().min(1);
 const parameterValues = z.record(id, finite).refine(value => Object.keys(value).length <= 16, 'At most 16 parameters');
 const versioned = { schemaVersion: z.literal(CONTRACT_VERSION) };
 
-const sourceBlockBase = { id, page, sectionId: id.optional() };
+const sourceBlockBase = { id, page, sectionId: id.optional(), reconstruction: z.strictObject({
+  rawText: z.string().max(25_000), regionIds: z.array(id).max(256),
+  operations: z.array(z.enum(['join-lines', 'witnessed-dehyphenation', 'heading-detection', 'caption-detection'])).max(4),
+  confidence: z.enum(['source-text', 'heuristic']), notice: z.string().max(1000).optional(),
+}).optional() };
 export const sourceBlockSchema = z.discriminatedUnion('kind', [
   z.strictObject({ ...sourceBlockBase, kind: z.literal('heading'), text: text.max(500), level: z.number().int().min(1).max(6) }),
   z.strictObject({ ...sourceBlockBase, kind: z.literal('paragraph'), text: text.max(20_000) }),
@@ -30,6 +34,10 @@ export const sourceDocumentSchema = z.strictObject({
   blocks: z.array(sourceBlockSchema).min(1).max(5_000),
   anchors: z.array(sourceAnchorSchema).max(1_000),
   extractionWarnings: z.array(text.max(1_000)).max(100),
+  reconstruction: z.strictObject({ version: z.literal('pdf-layout-v3'), pages: z.array(z.strictObject({ page, width: finite.positive(), height: finite.positive().optional(),
+    regions: z.array(z.strictObject({ id, text: z.string().max(5000), x: finite, y: finite, width: finite.min(0), height: finite.positive() })).max(500),
+    coordinatesComplete: z.boolean(),
+  })).max(50) }).optional(),
 });
 export type SourceDocument = z.infer<typeof sourceDocumentSchema>;
 export type SourceAnchor = z.infer<typeof sourceAnchorSchema>;
@@ -156,7 +164,12 @@ export function validateDocument(input: unknown): SourceDocument {
   for (const block of document.blocks) {
     assert(block.page <= document.pageCount, `Block ${block.id} exceeds page count`);
     if (block.sectionId) assert(blocks.get(block.sectionId)?.kind === 'heading', `Invalid section reference ${block.sectionId}`);
+    if (block.reconstruction?.regionIds.length) {
+      const geometry=document.reconstruction?.pages.find(p=>p.page===block.page);
+      assert(geometry && block.reconstruction.regionIds.every(id=>geometry.regions.some(r=>r.id===id)),`Invalid raw-region reference in ${block.id}`);
+    }
   }
+  if(document.reconstruction){unique(document.reconstruction.pages.map(p=>String(p.page)),'reconstruction page');for(const p of document.reconstruction.pages){assert(p.page<=document.pageCount,'Reconstruction page exceeds source');unique(p.regions.map(r=>r.id),'raw-region identity');}}
   for (const anchor of document.anchors) {
     const block = blocks.get(anchor.blockId);
     assert(block, `Unknown source block ${anchor.blockId}`);

@@ -3,7 +3,7 @@ import { validateDocument, type SourceDocument } from '../../shared/schema';
 export const MAX_PDF_BYTES = 10 * 1024 * 1024;
 export const MAX_PDF_PAGES = 50;
 export const MAX_SOURCE_CHARACTERS = 200_000;
-export const NORMALIZER_VERSION = 'source-v2';
+export const NORMALIZER_VERSION = 'source-v3';
 export type RawSourceBlock = SourceDocument['blocks'][number];
 
 export function abortIfNeeded(signal?: AbortSignal) {
@@ -19,7 +19,7 @@ export async function sha256(value: string | Uint8Array): Promise<string> {
 
 export async function normalizeSource(input: {
   kind: 'pdf' | 'arxiv'; title: string; authors?: string[]; url?: string;
-  pageCount: number; blocks: RawSourceBlock[]; warnings?: string[]; identity?: string;
+  pageCount: number; blocks: RawSourceBlock[]; warnings?: string[]; identity?: string; reconstruction?: SourceDocument['reconstruction'];
 }): Promise<SourceDocument> {
   if (!input.blocks.length) throw new Error('No readable source content was found. Import a text PDF rather than a scanned image.');
   const count = input.blocks.reduce((sum, block) => sum + (block.kind === 'equation' ? block.latex.length : block.kind === 'original-figure' ? block.caption.length : block.text.length), 0);
@@ -40,6 +40,7 @@ export async function normalizeSource(input: {
     anchors: normalized.filter(block => block.kind !== 'heading').map((block, index) => ({ id: `source-anchor-${index + 1}`, blockId: block.id, page: block.page,
       quote: (block.kind === 'equation' ? block.latex : block.kind === 'original-figure' ? block.caption : block.text).slice(0, 300) })),
     extractionWarnings: [...new Set(input.warnings ?? [])],
+    ...(input.reconstruction ? { reconstruction: input.reconstruction } : {}),
   });
 }
 
@@ -145,7 +146,7 @@ export function pdfItemsToText(items: PdfTextItem[], width: number) {
   }
   // Retain uncertainty warnings even when a strong layout repair was possible.
   const legacy = pdfItemsToTextLegacy(items, width);
-  return { text: reordered ? text : legacy.text, possibleColumns: strongColumns || legacy.possibleColumns, columnsReordered: reordered, layout: reordered ? 'two-column' as const : (legacy.possibleColumns ? 'uncertain' as const : 'single-column' as const), lineCount: ordered.length };
+  return { text: reordered ? text : legacy.text, possibleColumns: strongColumns || legacy.possibleColumns, columnsReordered: reordered, layout: reordered ? 'two-column' as const : (legacy.possibleColumns ? 'uncertain' as const : 'single-column' as const), lineCount: ordered.length, regions: ordered };
 }
 
 export function pdfBlocksFromText(text: string, page: number, prefix = 'pdf'): RawSourceBlock[] {

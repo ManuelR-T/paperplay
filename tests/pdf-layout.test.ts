@@ -34,16 +34,16 @@ test('single-column text and uncertain column evidence preserve content without 
 });
 
 test('new layout identities explicitly invalidate source-v1 analyses and preserve physical-page caption anchors', async () => {
-  assert.equal(NORMALIZER_VERSION,'source-v2');
+  assert.equal(NORMALIZER_VERSION,'source-v3');
   const doc=await normalizeSource({kind:'pdf',title:'Layout fixture',pageCount:3,blocks:pdfBlocksFromText('Figure 2: Original caption with physical provenance.\n\nA source statement about an unchanged mechanism.',3),identity:'fixture'});
-  assert.match(doc.sourceVersion,/^source-v2:/);assert.equal(doc.anchors[0].page,3);assert.equal(doc.blocks[0].kind,'original-figure');
+  assert.match(doc.sourceVersion,/^source-v3:/);assert.equal(doc.anchors[0].page,3);assert.equal(doc.blocks[0].kind,'original-figure');
   assert.equal(doc.anchors[0].quote,'Figure 2: Original caption with physical provenance.');
 });
 
 test('actual single-column publisher control remains page-linked and nonempty after geometry repair',async()=>{
   const pdfjs=await import('pdfjs-dist/legacy/build/pdf.mjs');const bytes=await readFile('public/papers/priority-search-trees.pdf');
   const result=await extractPdfWithLibrary(new Blob([bytes]),{name:'control.pdf'},pdfjs);
-  assert.equal(result.source.pageCount,18);assert.ok(result.source.blocks.length>100);assert.match(result.source.sourceVersion,/^source-v2:/);
+  assert.equal(result.source.pageCount,18);assert.ok(result.source.blocks.length>100);assert.match(result.source.sourceVersion,/^source-v3:/);
   assert.ok(result.source.blocks.some(block=>block.page===15));
   assert.ok(result.source.extractionWarnings.some(warning=>warning.includes('equation')));
 });

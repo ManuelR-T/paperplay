@@ -105,9 +105,9 @@ export class ImportController {
     } catch (error) { if (!this.disposed && lifecycle === this.lifecycle) this.update({ warning: message(error) }); }
   };
 
-  importPdf = async (file: File) => this.importSource(options => this.dependencies.extractPdf(file, options));
-  importArxiv = async (input: string) => this.importSource(options => this.dependencies.importArxiv(input, options));
-  private async importSource(extract: (options: SourceOptions) => Promise<ImportedSource>) {
+  importPdf = async (file: File, options?:{analyze?:boolean}) => this.importSource(config => this.dependencies.extractPdf(file, config),options?.analyze!==false);
+  importArxiv = async (input: string, options?:{analyze?:boolean}) => this.importSource(config => this.dependencies.importArxiv(input, config),options?.analyze!==false);
+  private async importSource(extract: (options: SourceOptions) => Promise<ImportedSource>,analyzeAfter=true) {
     if (this.state.busy) { this.update({ error: 'Another import or analysis is already running.' }); return; }
     const { operation, signal } = this.begin('extracting', null);
     try {
@@ -118,11 +118,11 @@ export class ImportController {
       // The original source record is immutable input; a generated result has its own anchored document copy.
       if (existing?.source.sourceVersion === extracted.source.sourceVersion && existing.pipelineVersion === ANALYSIS_PIPELINE_VERSION) {
         this.select(existing.id);
-        if (existing.analysis && existing.stage === 'complete') { this.update({ stage: 'complete' }); return; }
+        if (existing.analysis && existing.stage === 'complete') { this.update({ stage: 'complete' }); return existing.id; }
         if (existing.job || existing.stage === 'uncertain' || existing.stage === 'submitting') {
           this.update({ stage: existing.stage, error: existing.error ?? null });
-          if (existing.job && pendingStages.has(existing.stage)) { this.finish(operation); await this.resume(existing.id); }
-          return;
+          if (analyzeAfter && existing.job && pendingStages.has(existing.stage)) { this.finish(operation); await this.resume(existing.id); }
+          return existing.id;
         }
       }
       const record: ImportRecord = { ...extracted, id: extracted.source.id, pipelineVersion: ANALYSIS_PIPELINE_VERSION, stage: 'ready', updatedAt: this.now() };
@@ -130,6 +130,7 @@ export class ImportController {
       this.update({ currentId: record.id });
       await this.save(record);
       if (!this.active(operation)) return;
+      if(!analyzeAfter){this.update({stage:'ready',error:null});return record.id;}
       // A too-large document stays readable even though analysis preparation is rejected.
       prepareAnalysisContext(record.source);
       this.finish(operation);
