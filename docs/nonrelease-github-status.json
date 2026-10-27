@@ -1,0 +1,181 @@
+{
+  "checkedAt": "2026-10-27",
+  "sourceCommit": "930978e48cfc7b08177d5b989117c31f10c44d83",
+  "ci": {
+    "url": "https://github.com/ManuelR-T/paperplay/actions/runs/40450258554",
+    "conclusion": "success"
+  },
+  "issues": [
+    {
+      "number": 1,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:34Z"
+    },
+    {
+      "number": 2,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:36Z"
+    },
+    {
+      "number": 3,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:39Z"
+    },
+    {
+      "number": 4,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:41Z"
+    },
+    {
+      "number": 5,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:44Z"
+    },
+    {
+      "number": 6,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:46Z"
+    },
+    {
+      "number": 7,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:48Z"
+    },
+    {
+      "number": 8,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:51Z"
+    },
+    {
+      "number": 9,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:53Z"
+    },
+    {
+      "number": 10,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:55Z"
+    },
+    {
+      "number": 11,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:32:58Z"
+    },
+    {
+      "number": 12,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:00Z"
+    },
+    {
+      "number": 13,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:02Z"
+    },
+    {
+      "number": 14,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:05Z"
+    },
+    {
+      "number": 15,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:07Z"
+    },
+    {
+      "number": 16,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:10Z"
+    },
+    {
+      "number": 17,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:12Z"
+    },
+    {
+      "number": 18,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:14Z"
+    },
+    {
+      "number": 19,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:17Z"
+    },
+    {
+      "number": 20,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:19Z"
+    },
+    {
+      "number": 21,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:22Z"
+    },
+    {
+      "number": 22,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:24Z"
+    },
+    {
+      "number": 23,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:27Z"
+    },
+    {
+      "number": 24,
+      "state": "open",
+      "updatedAt": "2026-10-27T04:33:54Z"
+    },
+    {
+      "number": 25,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:30Z"
+    },
+    {
+      "number": 26,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:32Z"
+    },
+    {
+      "number": 27,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:34Z"
+    },
+    {
+      "number": 28,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:37Z"
+    },
+    {
+      "number": 29,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:39Z"
+    },
+    {
+      "number": 30,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:41Z"
+    },
+    {
+      "number": 31,
+      "state": "open",
+      "updatedAt": "2026-10-27T03:16:51Z"
+    },
+    {
+      "number": 32,
+      "state": "closed",
+      "updatedAt": "2026-10-27T04:33:44Z"
+    },
+    {
+      "number": 33,
+      "state": "open",
+      "updatedAt": "2026-10-27T03:16:49Z"
+    },
+    {
+      "number": 34,
+      "state": "open",
+      "updatedAt": "2026-10-27T03:16:50Z"
+    }
+  ],
+  "releaseIssuesUnchanged": true
+}

@@ -2,7 +2,7 @@
   "version": 1,
   "createdAt": "2026-10-27",
   "repository": "ManuelR-T/paperplay",
-  "status": "planned",
+  "status": "implemented-nonrelease-awaiting-reader-study",
   "baseline": "1.1.0; M0–M5 implemented with external PP-037/038 acceptance gates",
   "priorities": {
     "P0": "Next product foundations and release gates",
@@ -42,8 +42,15 @@
       "id": "M10",
       "title": "Compatibility and release quality",
       "label": "Qualité durable",
-      "subtitle": "Migrations, hébergement et performances",
-      "gate": "Old experiments survive supported upgrades and actual hosted behavior has release evidence."
+      "subtitle": "Migrations et performances",
+      "gate": "Old experiments survive supported upgrades and the richer reader stays responsive."
+    },
+    {
+      "id": "M11",
+      "title": "Final Railway release",
+      "label": "Release Railway",
+      "subtitle": "À la fin : service, stockage, accès et vérifications",
+      "gate": "Provision and verify the final Railway Node deployment only when the product is ready for release."
     }
   ],
   "issues": [
@@ -73,11 +80,11 @@
       ],
       "evidencePolicy": "presentation",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 1,
         "url": "https://github.com/ManuelR-T/paperplay/issues/1",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-033"
@@ -85,7 +92,8 @@
       "labels": [
         "milestone:m6",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-1"
     },
     {
       "id": "PP-047",
@@ -113,11 +121,11 @@
       ],
       "evidencePolicy": "presentation",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 2,
         "url": "https://github.com/ManuelR-T/paperplay/issues/2",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-046"
@@ -125,7 +133,8 @@
       "labels": [
         "milestone:m6",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-2"
     },
     {
       "id": "PP-048",
@@ -153,11 +162,11 @@
       ],
       "evidencePolicy": "presentation",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 3,
         "url": "https://github.com/ManuelR-T/paperplay/issues/3",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-046",
@@ -166,7 +175,8 @@
       "labels": [
         "milestone:m6",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-3"
     },
     {
       "id": "PP-049",
@@ -194,11 +204,11 @@
       ],
       "evidencePolicy": "source-linked interpretation",
       "inferencePolicy": "Authored/cached definitions are free; requesting missing Meta definitions is explicit, bounded, quota-accounted and cached per source version.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 4,
         "url": "https://github.com/ManuelR-T/paperplay/issues/4",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-046"
@@ -206,7 +216,8 @@
       "labels": [
         "milestone:m6",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-4"
     },
     {
       "id": "PP-050",
@@ -234,11 +245,11 @@
       ],
       "evidencePolicy": "source-linked interpretation",
       "inferencePolicy": "Generate only on explicit request or as part of one bounded import; selecting an already available layer never invokes Meta.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 5,
         "url": "https://github.com/ManuelR-T/paperplay/issues/5",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-049",
@@ -247,7 +258,8 @@
       "labels": [
         "milestone:m6",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-5"
     },
     {
       "id": "PP-051",
@@ -275,11 +287,11 @@
       ],
       "evidencePolicy": "bounded deterministic computation",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 6,
         "url": "https://github.com/ManuelR-T/paperplay/issues/6",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-049",
@@ -288,7 +300,8 @@
       "labels": [
         "milestone:m6",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-6"
     },
     {
       "id": "PP-052",
@@ -316,11 +329,11 @@
       ],
       "evidencePolicy": "source rendering",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 7,
         "url": "https://github.com/ManuelR-T/paperplay/issues/7",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-048",
@@ -329,7 +342,8 @@
       "labels": [
         "milestone:m6",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-7"
     },
     {
       "id": "PP-053",
@@ -358,11 +372,11 @@
       ],
       "evidencePolicy": "application-owned capabilities",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 8,
         "url": "https://github.com/ManuelR-T/paperplay/issues/8",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-003",
@@ -371,7 +385,8 @@
       "labels": [
         "milestone:m7",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-8"
     },
     {
       "id": "PP-054",
@@ -399,11 +414,11 @@
       ],
       "evidencePolicy": "illustrative unless bound to an existing verified trace",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 9,
         "url": "https://github.com/ManuelR-T/paperplay/issues/9",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053"
@@ -411,7 +426,8 @@
       "labels": [
         "milestone:m7",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-9"
     },
     {
       "id": "PP-055",
@@ -439,11 +455,11 @@
       ],
       "evidencePolicy": "explicitly source-reported, computed or illustrative",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 10,
         "url": "https://github.com/ManuelR-T/paperplay/issues/10",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053"
@@ -451,7 +467,8 @@
       "labels": [
         "milestone:m7",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-10"
     },
     {
       "id": "PP-056",
@@ -479,11 +496,11 @@
       ],
       "evidencePolicy": "bounded deterministic computation",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 11,
         "url": "https://github.com/ManuelR-T/paperplay/issues/11",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -492,7 +509,8 @@
       "labels": [
         "milestone:m7",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-11"
     },
     {
       "id": "PP-057",
@@ -520,11 +538,11 @@
       ],
       "evidencePolicy": "bounded deterministic computation; no claim to reproduce all linear algebra in a paper",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 12,
         "url": "https://github.com/ManuelR-T/paperplay/issues/12",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -533,7 +551,8 @@
       "labels": [
         "milestone:m7",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-12"
     },
     {
       "id": "PP-058",
@@ -561,11 +580,11 @@
       ],
       "evidencePolicy": "analytic deterministic results plus explicitly seeded stochastic samples",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 13,
         "url": "https://github.com/ManuelR-T/paperplay/issues/13",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053"
@@ -573,7 +592,8 @@
       "labels": [
         "milestone:m7",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-13"
     },
     {
       "id": "PP-059",
@@ -601,11 +621,11 @@
       ],
       "evidencePolicy": "reference-checked small attention mechanism only",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 14,
         "url": "https://github.com/ManuelR-T/paperplay/issues/14",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -614,7 +634,8 @@
       "labels": [
         "milestone:m7",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-14"
     },
     {
       "id": "PP-060",
@@ -643,11 +664,11 @@
       ],
       "evidencePolicy": "computed only through a declared compatible engine; layouts are presentation",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 15,
         "url": "https://github.com/ManuelR-T/paperplay/issues/15",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -656,7 +677,8 @@
       "labels": [
         "milestone:m7",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-15"
     },
     {
       "id": "PP-061",
@@ -684,11 +706,11 @@
       ],
       "evidencePolicy": "bounded deterministic teaching operators; no inferred private image uploads",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 16,
         "url": "https://github.com/ManuelR-T/paperplay/issues/16",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053"
@@ -696,7 +718,8 @@
       "labels": [
         "milestone:m7",
         "priority:p2"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-16"
     },
     {
       "id": "PP-062",
@@ -725,11 +748,11 @@
       ],
       "evidencePolicy": "semantic events must come from source mappings or actual engine traces",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 17,
         "url": "https://github.com/ManuelR-T/paperplay/issues/17",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -739,7 +762,8 @@
       "labels": [
         "milestone:m8",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-17"
     },
     {
       "id": "PP-063",
@@ -768,11 +792,11 @@
       ],
       "evidencePolicy": "actual bounded engine measurements; interpolation is separately labeled",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 18,
         "url": "https://github.com/ManuelR-T/paperplay/issues/18",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-062",
@@ -782,7 +806,8 @@
       "labels": [
         "milestone:m8",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-18"
     },
     {
       "id": "PP-064",
@@ -810,11 +835,11 @@
       ],
       "evidencePolicy": "measured differences in declared models, not general causal claims",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 19,
         "url": "https://github.com/ManuelR-T/paperplay/issues/19",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-062",
@@ -823,7 +848,8 @@
       "labels": [
         "milestone:m8",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-19"
     },
     {
       "id": "PP-065",
@@ -852,11 +878,11 @@
       ],
       "evidencePolicy": "Meta proposes; application validation and trusted engines own activation and scientific labels",
       "inferencePolicy": "Explicit import only, source-versioned plan cache, per-document request/token ceilings and actual usage reporting; no inference on widget interaction.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 20,
         "url": "https://github.com/ManuelR-T/paperplay/issues/20",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -866,7 +892,8 @@
       "labels": [
         "milestone:m8",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-20"
     },
     {
       "id": "PP-066",
@@ -895,11 +922,11 @@
       ],
       "evidencePolicy": "new generated interpretation with the same independent execution/citation guards",
       "inferencePolicy": "One explicit paid action per repair attempt, deduplicated and quota-accounted; no automatic paid retry loop.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 21,
         "url": "https://github.com/ManuelR-T/paperplay/issues/21",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-065"
@@ -907,7 +934,8 @@
       "labels": [
         "milestone:m8",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-21"
     },
     {
       "id": "PP-067",
@@ -935,11 +963,11 @@
       ],
       "evidencePolicy": "validated data/configuration proposals only; no generated executable code",
       "inferencePolicy": "Explicit bounded request only; preview/apply/reject do not call Meta again.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 22,
         "url": "https://github.com/ManuelR-T/paperplay/issues/22",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-066"
@@ -947,7 +975,8 @@
       "labels": [
         "milestone:m8",
         "priority:p2"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-22"
     },
     {
       "id": "PP-068",
@@ -976,11 +1005,11 @@
       ],
       "evidencePolicy": "grounded partial coverage with explicit incompleteness; no silent truncation",
       "inferencePolicy": "Plan and disclose bounded section requests, require explicit selected enrichment, reserve shared quotas and per-document budgets before new work; cache by section/source/catalog version.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 23,
         "url": "https://github.com/ManuelR-T/paperplay/issues/23",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-065",
@@ -989,7 +1018,8 @@
       "labels": [
         "milestone:m8",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-23"
     },
     {
       "id": "PP-069",
@@ -1017,7 +1047,7 @@
       ],
       "evidencePolicy": "observed formative evidence, not a statistical effectiveness claim",
       "inferencePolicy": "Reuse cached analyses during sessions where possible; any additional paid test run is explicit and measured.",
-      "status": "planned",
+      "status": "awaiting-real-participants",
       "github": {
         "number": 24,
         "url": "https://github.com/ManuelR-T/paperplay/issues/24",
@@ -1031,7 +1061,8 @@
       "labels": [
         "milestone:m8",
         "priority:p0"
-      ]
+      ],
+      "remaining": "Run 3–5 consented real sessions; owner confirmed no participants available."
     },
     {
       "id": "PP-070",
@@ -1059,11 +1090,11 @@
       ],
       "evidencePolicy": "personal annotation, never source-author text",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 25,
         "url": "https://github.com/ManuelR-T/paperplay/issues/25",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-048",
@@ -1072,7 +1103,8 @@
       "labels": [
         "milestone:m9",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-25"
     },
     {
       "id": "PP-071",
@@ -1100,11 +1132,11 @@
       ],
       "evidencePolicy": "captured actual or explicitly illustrative states, not fresh invented results",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 26,
         "url": "https://github.com/ManuelR-T/paperplay/issues/26",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-047",
@@ -1114,7 +1146,8 @@
       "labels": [
         "milestone:m9",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-26"
     },
     {
       "id": "PP-072",
@@ -1142,11 +1175,11 @@
       ],
       "evidencePolicy": "local indexed source/user text, not generated external search results",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 27,
         "url": "https://github.com/ManuelR-T/paperplay/issues/27",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-049",
@@ -1155,7 +1188,8 @@
       "labels": [
         "milestone:m9",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-27"
     },
     {
       "id": "PP-073",
@@ -1184,11 +1218,11 @@
       ],
       "evidencePolicy": "user-authored figures; computed status only through trusted bindings",
       "inferencePolicy": "Manual authoring is provider-free; a separate optional Meta suggestion action is explicit and budgeted.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 28,
         "url": "https://github.com/ManuelR-T/paperplay/issues/28",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -1197,7 +1231,8 @@
       "labels": [
         "milestone:m9",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-28"
     },
     {
       "id": "PP-074",
@@ -1226,11 +1261,11 @@
       ],
       "evidencePolicy": "source reconstruction with provenance and disclosed uncertainty; OCR stays outside this tranche",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 29,
         "url": "https://github.com/ManuelR-T/paperplay/issues/29",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-052",
@@ -1239,7 +1274,8 @@
       "labels": [
         "milestone:m9",
         "priority:p1"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-29"
     },
     {
       "id": "PP-075",
@@ -1268,11 +1304,11 @@
       ],
       "evidencePolicy": "compatibility preservation, never automatic fidelity promotion",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 30,
         "url": "https://github.com/ManuelR-T/paperplay/issues/30",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-053",
@@ -1281,30 +1317,32 @@
       "labels": [
         "milestone:m10",
         "priority:p0"
-      ]
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-30"
     },
     {
       "id": "PP-076",
       "key": "hosted-checks",
-      "phase": "M10",
+      "phase": "M11",
       "priority": "P0",
       "estimateHours": [
         5,
         9
       ],
-      "title": "Verify the complete hosted workflow and release handoff",
+      "title": "Verify the final Railway workflow and release handoff",
       "goal": "Trust that the richer reader, background jobs and sharing behave on the actual private hosted runtime.",
-      "scope": "Extend hosted release checks to source/worker assets, questions, accepted-job resume/cancel, disabled inference, shared quotas, snapshot deletion and authorized access. Use deterministic provider stubs for routine CI and bounded real checks separately.",
+      "scope": "At final release only, adapt hosted checks to the Railway Node service: source/worker assets, questions, accepted-job resume/cancel, disabled inference, durable SQLite quotas on its volume, short-link deletion and authorized access. Use deterministic provider stubs for routine CI and bounded real checks separately. Existing Sites/D1 smoke evidence does not verify Railway.",
       "acceptanceCriteria": [
         "A documented hosted smoke covers start/retrieve/cancel/question ownership and one reload recovery without duplicated creation.",
         "Routine CI uses provider stubs and no secrets; an explicit authorized real-provider check reports actual requests/tokens separately.",
-        "Private audience checks, D1 failure behavior, expiry and deletion are tested on the intended origin without weakening access controls.",
+        "Private audience checks, Railway-volume/SQLite failure behavior, expiry and deletion are tested on the actual release origin without weakening access controls.",
         "Release notes identify exact source commit, artifact, environment revision and remaining manual submission constraints."
       ],
       "verification": "Run the hosted suite on a staging/test context and the minimal authorized production checks; retain redacted evidence and fail the release gate on unresolved regressions.",
       "implementationSeams": [
         "scripts/verify-hosted.ts",
-        "tests/hosted-worker.test.ts",
+        "app/api/analysis/start/route.ts",
+        "tests/analysis-handlers.test.ts",
         ".github/workflows/checks.yml",
         "docs/acceptance-matrix.md"
       ],
@@ -1318,12 +1356,14 @@
       },
       "dependsOn": [
         "PP-075",
-        "PP-036"
+        "PP-078",
+        "PP-079"
       ],
       "labels": [
-        "milestone:m10",
+        "milestone:m11",
         "priority:p0"
-      ]
+      ],
+      "schedule": "release-only: defer provisioning/configuration until the final release; do not block M6–M10 feature work"
     },
     {
       "id": "PP-077",
@@ -1352,11 +1392,11 @@
       ],
       "evidencePolicy": "measured app responsiveness; no comparison to paper hardware timings",
       "inferencePolicy": "No inference for reading, interaction, parameter edits or playback.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 32,
         "url": "https://github.com/ManuelR-T/paperplay/issues/32",
-        "state": "open"
+        "state": "closed"
       },
       "dependsOn": [
         "PP-047",
@@ -1365,6 +1405,93 @@
       ],
       "labels": [
         "milestone:m10",
+        "priority:p1"
+      ],
+      "evidence": "docs/nonrelease-implementation-report.md#issue-32"
+    },
+    {
+      "id": "PP-078",
+      "key": "railway-service",
+      "phase": "M11",
+      "priority": "P1",
+      "estimateHours": [
+        3,
+        5
+      ],
+      "title": "Prepare the final Railway deployment from the existing Node container",
+      "goal": "Serve the final application on Railway without rebuilding the frontend or porting the Sites Worker adapter.",
+      "scope": "At release time, prepare the existing Docker/Next standalone target for Railway: runtime PORT binding, /api/health readiness, pinned build, server-only variables, exact origin and a persistent /data mount. Keep one instance initially; resolve the existing USER node versus mounted-volume ownership before enabling writes.",
+      "acceptanceCriteria": [
+        "The released revision builds and starts on Railway, honors its runtime PORT and serves HTML, PDF worker, engine worker and prepared source assets.",
+        "A persistent /data mount is writable by the intended runtime identity; permission handling is explicitly reviewed and tested rather than assumed from image-time chown.",
+        "MODEL_API_KEY and stable signing secrets exist only as runtime variables, ANALYSIS_APP_ORIGIN matches the final HTTPS origin, and the initial deployment has new inference disabled.",
+        "No Sites-specific static export or D1 binding is required by this Node deployment; the existing private Site remains untouched unless separately requested."
+      ],
+      "verification": "At final release only: verify on the actual Railway service, retain redacted evidence, and record exact source revision, environment and remaining limitations. No provisioning, domain change or paid inference is needed to plan this issue.",
+      "implementationSeams": [
+        "Dockerfile",
+        "next.config.ts",
+        "app/api/health/route.ts",
+        ".env.example",
+        "docs/deployment.md"
+      ],
+      "evidencePolicy": "actual Railway runtime evidence required; existing Sites/D1 and local Docker checks are historical evidence only",
+      "inferencePolicy": "No paid calls while preparing the release plan. Start with inference disabled; any bounded real Meta smoke at release is explicit and quota-accounted.",
+      "status": "planned",
+      "schedule": "release-only: defer provisioning/configuration until the final release; do not block M6–M10 feature work",
+      "github": {
+        "number": 33,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/33",
+        "state": "open"
+      },
+      "dependsOn": [
+        "PP-075"
+      ],
+      "labels": [
+        "milestone:m11",
+        "priority:p1"
+      ]
+    },
+    {
+      "id": "PP-079",
+      "key": "railway-operations",
+      "phase": "M11",
+      "priority": "P1",
+      "estimateHours": [
+        3,
+        5
+      ],
+      "title": "Verify Railway persistence, access and operating limits before release",
+      "goal": "Keep quotas and shared links durable and make the final deployment accessible to the intended audience without unexpected exposure or spend.",
+      "scope": "At release, configure SQLite quota/short-link paths on the mounted volume, test restart/redeploy and backup restoration, confirm the actual Railway plan/resource allowances, document a conservative operating budget and select explicit access controls. Existing Sites authentication does not automatically protect a Railway URL. Multi-instance storage is a separate later decision.",
+      "acceptanceCriteria": [
+        "Quota reservations, short links and deletion/expiry state survive restart and redeploy on the actual mounted storage; a missing or unwritable store fails closed before paid work.",
+        "A backup/restore drill is recorded, including how quota history and deleted/expired links are handled; the release runbook records volume-backed redeployment downtime limits.",
+        "The chosen Railway plan, limits and operator alerts are reviewed at release without assuming Meta credits cover hosting or that an application token quota is a billing cap.",
+        "Private access remains the current requirement; verify intended-reader/judge access and unauthorized-user denial before sharing the URL. Any future public exposure requires an explicit user decision."
+      ],
+      "verification": "At final release only: verify on the actual Railway service, retain redacted evidence, and record exact source revision, environment and remaining limitations. No provisioning, domain change or paid inference is needed to plan this issue.",
+      "implementationSeams": [
+        "server/usage/store.ts",
+        "server/short-links/sqlite.ts",
+        "server/usage/service.ts",
+        "docs/operations.md",
+        "docs/submission-draft.md"
+      ],
+      "evidencePolicy": "actual Railway runtime evidence required; existing Sites/D1 and local Docker checks are historical evidence only",
+      "inferencePolicy": "No paid calls while preparing the release plan. Start with inference disabled; any bounded real Meta smoke at release is explicit and quota-accounted.",
+      "status": "planned",
+      "schedule": "release-only: defer provisioning/configuration until the final release; do not block M6–M10 feature work",
+      "github": {
+        "number": 34,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/34",
+        "state": "open"
+      },
+      "dependsOn": [
+        "PP-078"
+      ],
+      "labels": [
+        "milestone:m11",
         "priority:p1"
       ]
     }
@@ -1390,7 +1517,6 @@
     "PP-048",
     "PP-050",
     "PP-051",
-    "PP-076",
     "PP-052",
     "PP-056",
     "PP-062",
@@ -1406,7 +1532,10 @@
     "PP-069",
     "PP-067",
     "PP-068",
-    "PP-073"
+    "PP-073",
+    "PP-078",
+    "PP-079",
+    "PP-076"
   ],
   "readingReferences": [
     {
@@ -1428,6 +1557,26 @@
       "title": "Olah and Carter — Research Debt",
       "url": "https://distill.pub/2017/research-debt/",
       "application": "Treat explanation quality and notation as substantive product work, with real-reader validation."
+    },
+    {
+      "title": "Railway — Healthchecks",
+      "url": "https://docs.railway.com/deployments/healthchecks",
+      "application": "Recheck runtime PORT/readiness and volume-backed deployment interruption at release."
+    },
+    {
+      "title": "Railway — Volumes",
+      "url": "https://docs.railway.com/volumes",
+      "application": "Recheck runtime mount availability and non-root permission handling before configuring /data."
+    },
+    {
+      "title": "Railway — Volume limits",
+      "url": "https://docs.railway.com/volumes/reference",
+      "application": "The initial proposal is one volume-backed instance, not replicas sharing SQLite."
+    },
+    {
+      "title": "Railway — Volume backups",
+      "url": "https://docs.railway.com/volumes/backups",
+      "application": "Plan a real backup/restore drill at release; do not claim it has occurred."
     }
   ],
   "deliverySlices": [
@@ -1459,10 +1608,9 @@
         "PP-065",
         "PP-066",
         "PP-068",
-        "PP-069",
-        "PP-076"
+        "PP-069"
       ],
-      "outcome": "Linked views and budgeted per-section plans, targeted repair, actual reader observations and hosted evidence."
+      "outcome": "Linked views and budgeted per-section plans, targeted repair and actual reader observations."
     },
     {
       "title": "D — Breadth and personal workflow",
@@ -1486,6 +1634,15 @@
         "PP-077"
       ],
       "outcome": "Add remaining families and authoring/library tools incrementally after demonstrated usefulness."
+    },
+    {
+      "title": "E — Final Railway release",
+      "ids": [
+        "PP-078",
+        "PP-079",
+        "PP-076"
+      ],
+      "outcome": "Only at release time: provision Railway, verify durable storage and access, then smoke-test the actual release origin."
     }
   ],
   "definitionOfDone": [
@@ -1495,5 +1652,25 @@
     "Portable state has validated compatibility and provenance; no private paper is silently uploaded.",
     "Meta calls are explicit, cached and quota-accounted; local interaction is provider-free.",
     "The issue closes only with actual evidence and known limits, not a screenshot or a model assertion alone."
-  ]
+  ],
+  "releaseTarget": {
+    "provider": "Railway",
+    "runtime": "Existing Next.js Node/Docker target",
+    "schedule": "final release only; user explicitly deferred hosting work",
+    "provisioned": false,
+    "currentSite": "Retain the existing owner-private Sites deployment unchanged; historical evidence, not the final release target"
+  },
+  "updatedAt": "2026-10-27",
+  "implementationReport": "docs/nonrelease-implementation-report.md",
+  "sourceCommit": "930978e48cfc7b08177d5b989117c31f10c44d83",
+  "verification": {
+    "providerFreeTests": 184,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "ci": {
+      "url": "https://github.com/ManuelR-T/paperplay/actions/runs/40450258554",
+      "conclusion": "success"
+    },
+    "report": "docs/nonrelease-implementation-report.md"
+  }
 }

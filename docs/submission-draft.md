@@ -44,6 +44,8 @@ PDF reading order, math and diagram recovery remain bounded and visibly qualifie
 
 ## Links and required assets
 
+The final release URL will come from Railway, which the user chose to configure only at release time. It does not exist yet. The current private Sites URL below is a historical demonstration; replace it with the verified Railway URL and access instructions when ready. No current Site access control should be assumed to transfer to Railway.
+
 Complete these fields only after verification:
 
 | Field | Draft state |

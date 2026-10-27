@@ -1,5 +1,9 @@
 # Deployment
 
+## Final release target — Railway, deferred
+
+Railway is the user-selected final hosting target. Provisioning, runtime configuration and production checks are deferred until the release, after feature development. Reuse the existing Next.js Node/Docker target; see [Railway release plan](railway-release.md) and issues [#33](https://github.com/ManuelR-T/paperplay/issues/33), [#34](https://github.com/ManuelR-T/paperplay/issues/34), then [#31](https://github.com/ManuelR-T/paperplay/issues/31). No Railway service has been provisioned or verified. The current private Sites deployment stays as it is; its implementation and observations below are historical, not instructions to invest in that target for release.
+
 Paperplay has a normal Next.js Node deployment and a Sites artifact using a static Next frontend plus a Cloudflare Worker API. Both use the same authored UI, validated analysis handlers and simulation contracts. The Sites adapter changes packaging and persistence; it does not replace the application with another frontend framework.
 
 ## Local production
@@ -21,7 +25,7 @@ The isolated [clean-install proof](clean-install-report.md) passed strict TypeSc
 
 Distributed Node replicas require shared Redis for quotas as described in [operations](operations.md). That quota adapter does not provide a distributed short-link database. Use the D1 hosting target for the implemented shared short-link path, or keep that Node route unavailable until a shared adapter is supplied.
 
-## Hosted Sites artifact
+## Existing Sites experiment — historical target
 
 The application is deployed at [the private Sites URL](https://paperplay-meta-lab-1027.poeticbadge1024.chatgpt.site). Actual [hosted infrastructure smoke](hosted-quota-smoke.json) records frontend and engine-worker HTTP 200, Worker/D1 health, quota rejection before paid work and short-link creation/resolution/deletion. One [real hosted Meta import](hosted-live-smoke.json) preserved an 18-page source and produced three cited conceptual figures using 22,042 reported tokens. These are deployment observations, not load or judge-access certification.
 

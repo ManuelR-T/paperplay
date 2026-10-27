@@ -1,16 +1,16 @@
-# Paperplay after the MVP — M6–M10
+# Paperplay after the MVP — M6–M11
 
-Status: **planned**, 27 October 2026. These are new follow-up issues, not implemented features or a claim that the first evening produced the finished product. Release 1.1.0 is the functional foundation; the earlier [M0–M5 backlog](backlog.md), evidence and PP-037/038 external acceptance gates remain unchanged.
+Status: **30 feature issues implemented; reader study and release remain open**, 27 October 2026. [Implementation and evidence](nonrelease-implementation-report.md). The owner has no available testers: #24 has a protocol and zero real sessions. #31/#33/#34 are deferred to the final Railway release. The earlier [M0–M5 backlog](backlog.md) and PP-037/038 external acceptance gates retain their historical scope.
 
 The product direction is an article that is pleasant to read and useful to think with: change a symbol, inspect a transformation, challenge an assumption, and see every related view respond beside the source. An unsupported algorithm can still have a meaningful conceptual diagram. A computed result always needs a declared model, valid data and a checked implementation.
 
-## Problems visible in the current implementation
+## Problems recorded at planning time
 
-The equation view is static KaTeX. Paragraph-level Ask actions and full control/evidence stacks interrupt the reading flow. The graph layout is fixed and imported figures have fewer data-editing controls than prepared examples. Numeric figures cover small SPD matrices and residual curves; there is no probability, attention-tensor, geometric-transformation or signal widget. Comparisons align trace indices, not necessarily comparable semantic events. The held-out Meta baseline mostly produced conceptual step cards and rejected unsupported computed proposals.
+The baseline 1.1.0 equation view was static KaTeX. Paragraph-level Ask actions and full control/evidence stacks interrupt the reading flow. The graph layout is fixed and imported figures have fewer data-editing controls than prepared examples. Numeric figures cover small SPD matrices and residual curves; there is no probability, attention-tensor, geometric-transformation or signal widget. Comparisons align trace indices, not necessarily comparable semantic events. The held-out Meta baseline mostly produced conceptual step cards and rejected unsupported computed proposals.
 
-These observations come from the code and recorded evaluation. They are not a participant study or evidence that a particular new UI will improve learning. M6 designs and M8 reader sessions must test that assumption.
+These historical observations came from the 1.1.0 code and recorded evaluation. The implemented changes and current technical checks are in the implementation report. They are not a participant study or evidence that a particular new UI will improve learning. Real M8 reader sessions must still test that assumption.
 
-## Deliver in vertical slices
+## Original delivery slices
 
 Do not finish the whole catalog before a reader sees a better experience. The first slice changes the reading surface; the second makes one source equation and its explanation explorable; the third connects useful automatic placement to those capabilities. New families can then be added incrementally.
 
@@ -32,11 +32,11 @@ Estimated work: 36–63 focused hours, excluding external waiting. Respect the d
 
 ### C — Useful automatic enrichment
 
-Linked views and budgeted per-section plans, targeted repair, actual reader observations and hosted evidence.
+Linked views and budgeted per-section plans, targeted repair and actual reader observations.
 
-[PP-062 · #17](https://github.com/ManuelR-T/paperplay/issues/17) → [PP-065 · #20](https://github.com/ManuelR-T/paperplay/issues/20) → [PP-066 · #21](https://github.com/ManuelR-T/paperplay/issues/21) → [PP-068 · #23](https://github.com/ManuelR-T/paperplay/issues/23) → [PP-069 · #24](https://github.com/ManuelR-T/paperplay/issues/24) → [PP-076 · #31](https://github.com/ManuelR-T/paperplay/issues/31)
+[PP-062 · #17](https://github.com/ManuelR-T/paperplay/issues/17) → [PP-065 · #20](https://github.com/ManuelR-T/paperplay/issues/20) → [PP-066 · #21](https://github.com/ManuelR-T/paperplay/issues/21) → [PP-068 · #23](https://github.com/ManuelR-T/paperplay/issues/23) → [PP-069 · #24](https://github.com/ManuelR-T/paperplay/issues/24)
 
-Estimated work: 43–74 focused hours, excluding external waiting. Respect the dependency graph; migrations and hosted gates are integrated into the slice that needs them.
+Estimated work: 38–65 focused hours, excluding external waiting. Respect the dependency graph; migrations and hosted gates are integrated into the slice that needs them.
 
 ### D — Breadth and personal workflow
 
@@ -45,6 +45,18 @@ Add remaining families and authoring/library tools incrementally after demonstra
 [PP-050 · #5](https://github.com/ManuelR-T/paperplay/issues/5) → [PP-052 · #7](https://github.com/ManuelR-T/paperplay/issues/7) → [PP-055 · #10](https://github.com/ManuelR-T/paperplay/issues/10) → [PP-057 · #12](https://github.com/ManuelR-T/paperplay/issues/12) → [PP-058 · #13](https://github.com/ManuelR-T/paperplay/issues/13) → [PP-059 · #14](https://github.com/ManuelR-T/paperplay/issues/14) → [PP-060 · #15](https://github.com/ManuelR-T/paperplay/issues/15) → [PP-061 · #16](https://github.com/ManuelR-T/paperplay/issues/16) → [PP-063 · #18](https://github.com/ManuelR-T/paperplay/issues/18) → [PP-064 · #19](https://github.com/ManuelR-T/paperplay/issues/19) → [PP-067 · #22](https://github.com/ManuelR-T/paperplay/issues/22) → [PP-070 · #25](https://github.com/ManuelR-T/paperplay/issues/25) → [PP-071 · #26](https://github.com/ManuelR-T/paperplay/issues/26) → [PP-072 · #27](https://github.com/ManuelR-T/paperplay/issues/27) → [PP-073 · #28](https://github.com/ManuelR-T/paperplay/issues/28) → [PP-074 · #29](https://github.com/ManuelR-T/paperplay/issues/29) → [PP-077 · #32](https://github.com/ManuelR-T/paperplay/issues/32)
 
 Estimated work: 112–194 focused hours, excluding external waiting. Respect the dependency graph; migrations and hosted gates are integrated into the slice that needs them.
+
+### E — Final Railway release
+
+Only at release time: provision Railway, verify durable storage and access, then smoke-test the actual release origin.
+
+[PP-078 · #33](https://github.com/ManuelR-T/paperplay/issues/33) → [PP-079 · #34](https://github.com/ManuelR-T/paperplay/issues/34) → [PP-076 · #31](https://github.com/ManuelR-T/paperplay/issues/31)
+
+Estimated work: 11–19 focused hours, excluding external waiting. Respect the dependency graph; migrations and hosted gates are integrated into the slice that needs them.
+
+## Release timing
+
+Railway is the selected final release target. Provisioning, configuration, storage/access checks and production smoke are deliberately deferred to slice E, after feature work. PP-076 moved to M11 and depends on the two Railway issues. The existing private Sites experiment remains unchanged and its checks do not verify Railway. Do not spend time on further Sites integration.
 
 ## Scope, budget and architecture
 
@@ -56,7 +68,7 @@ Interaction, playback, preference changes, search and manual authoring stay prov
 
 For every new source/teaching fixture, establish attribution and redistribution permissions before bundling it. Do not infer a license from an arXiv URL or successful import. New parameter controls, assumptions and pedagogical simplifications must stay visible near the figure without overwhelming the source.
 
-The 32 issue estimates sum to **202–351 focused hours** before contingency. A provisional 25% margin gives roughly 252–439 hours. These are solo planning estimates, not measured historical effort or a promised hackathon delivery date. Actual reader/participant availability and uncertain extraction work can change them. Re-estimate after each vertical slice.
+The 34 issue estimates sum to **208–361 focused hours** before contingency. A provisional 25% margin gives roughly 260–451 hours. These are solo planning estimates, not measured historical effort or a promised hackathon delivery date. Actual reader/participant availability and uncertain extraction work can change them. Re-estimate after each vertical slice.
 
 ## Shared completion criteria
 
@@ -812,7 +824,7 @@ Extend source-v2 beyond column order: conservative paragraph joining, line-break
 
 ### M10 — Compatibility and release quality
 
-Old experiments survive supported upgrades and actual hosted behavior has release evidence.
+Old experiments survive supported upgrades and the richer reader stays responsive.
 
 #### PP-075 — Version the richer widget catalog and preserve existing experiments
 
@@ -839,31 +851,6 @@ Define additive versus breaking catalog/source/snapshot changes, explicit migrat
 
 **Start in:** `shared/schema.ts`, `lib/snapshots.ts`, `lib/import-storage.ts`, `lib/reading-state.ts`.
 
-#### PP-076 — Verify the complete hosted workflow and release handoff
-
-[GitHub #31](https://github.com/ManuelR-T/paperplay/issues/31) · P0 · planned · 5–9 focused hours
-
-Trust that the richer reader, background jobs and sharing behave on the actual private hosted runtime.
-
-Extend hosted release checks to source/worker assets, questions, accepted-job resume/cancel, disabled inference, shared quotas, snapshot deletion and authorized access. Use deterministic provider stubs for routine CI and bounded real checks separately.
-
-**Acceptance:**
-
-- [ ] A documented hosted smoke covers start/retrieve/cancel/question ownership and one reload recovery without duplicated creation.
-- [ ] Routine CI uses provider stubs and no secrets; an explicit authorized real-provider check reports actual requests/tokens separately.
-- [ ] Private audience checks, D1 failure behavior, expiry and deletion are tested on the intended origin without weakening access controls.
-- [ ] Release notes identify exact source commit, artifact, environment revision and remaining manual submission constraints.
-
-**Verification:** Run the hosted suite on a staging/test context and the minimal authorized production checks; retain redacted evidence and fail the release gate on unresolved regressions.
-
-**Evidence policy:** actual runtime evidence, distinct from local fixtures and provider stubs.
-
-**Inference policy:** No paid calls in CI; real smoke requires explicit operator action, bounded request counts and shared quota enforcement.
-
-**Dependencies:** [PP-075](https://github.com/ManuelR-T/paperplay/issues/30), [PP-036](backlog.md#pp-036).
-
-**Start in:** `scripts/verify-hosted.ts`, `tests/hosted-worker.test.ts`, `.github/workflows/checks.yml`, `docs/acceptance-matrix.md`.
-
 #### PP-077 — Keep rich papers responsive and accessible as widgets grow
 
 [GitHub #32](https://github.com/ManuelR-T/paperplay/issues/32) · P1 · planned · 6–10 focused hours
@@ -889,13 +876,105 @@ Measure cold reading, deferred figure mounting, worker transfer and rendering co
 
 **Start in:** `components/figures`, `components/reading-session.tsx`, `lib/execution`, `docs/performance-worker.md`.
 
-## Design references and limits
+### M11 — Final Railway release
+
+Provision and verify the final Railway Node deployment only when the product is ready for release.
+
+#### PP-076 — Verify the final Railway workflow and release handoff
+
+[GitHub #31](https://github.com/ManuelR-T/paperplay/issues/31) · P0 · planned · 5–9 focused hours
+
+Trust that the richer reader, background jobs and sharing behave on the actual private hosted runtime.
+
+At final release only, adapt hosted checks to the Railway Node service: source/worker assets, questions, accepted-job resume/cancel, disabled inference, durable SQLite quotas on its volume, short-link deletion and authorized access. Use deterministic provider stubs for routine CI and bounded real checks separately. Existing Sites/D1 smoke evidence does not verify Railway.
+
+**Acceptance:**
+
+- [ ] A documented hosted smoke covers start/retrieve/cancel/question ownership and one reload recovery without duplicated creation.
+- [ ] Routine CI uses provider stubs and no secrets; an explicit authorized real-provider check reports actual requests/tokens separately.
+- [ ] Private audience checks, Railway-volume/SQLite failure behavior, expiry and deletion are tested on the actual release origin without weakening access controls.
+- [ ] Release notes identify exact source commit, artifact, environment revision and remaining manual submission constraints.
+
+**Verification:** Run the hosted suite on a staging/test context and the minimal authorized production checks; retain redacted evidence and fail the release gate on unresolved regressions.
+
+**Evidence policy:** actual runtime evidence, distinct from local fixtures and provider stubs.
+
+**Inference policy:** No paid calls in CI; real smoke requires explicit operator action, bounded request counts and shared quota enforcement.
+
+**Dependencies:** [PP-075](https://github.com/ManuelR-T/paperplay/issues/30), [PP-078](https://github.com/ManuelR-T/paperplay/issues/33), [PP-079](https://github.com/ManuelR-T/paperplay/issues/34).
+
+**Start in:** `scripts/verify-hosted.ts`, `app/api/analysis/start/route.ts`, `tests/analysis-handlers.test.ts`, `.github/workflows/checks.yml`, `docs/acceptance-matrix.md`.
+
+#### PP-078 — Prepare the final Railway deployment from the existing Node container
+
+[GitHub #33](https://github.com/ManuelR-T/paperplay/issues/33) · P1 · planned · 3–5 focused hours
+
+Serve the final application on Railway without rebuilding the frontend or porting the Sites Worker adapter.
+
+At release time, prepare the existing Docker/Next standalone target for Railway: runtime PORT binding, /api/health readiness, pinned build, server-only variables, exact origin and a persistent /data mount. Keep one instance initially; resolve the existing USER node versus mounted-volume ownership before enabling writes.
+
+**Acceptance:**
+
+- [ ] The released revision builds and starts on Railway, honors its runtime PORT and serves HTML, PDF worker, engine worker and prepared source assets.
+- [ ] A persistent /data mount is writable by the intended runtime identity; permission handling is explicitly reviewed and tested rather than assumed from image-time chown.
+- [ ] MODEL_API_KEY and stable signing secrets exist only as runtime variables, ANALYSIS_APP_ORIGIN matches the final HTTPS origin, and the initial deployment has new inference disabled.
+- [ ] No Sites-specific static export or D1 binding is required by this Node deployment; the existing private Site remains untouched unless separately requested.
+
+**Verification:** At final release only: verify on the actual Railway service, retain redacted evidence, and record exact source revision, environment and remaining limitations. No provisioning, domain change or paid inference is needed to plan this issue.
+
+**Evidence policy:** actual Railway runtime evidence required; existing Sites/D1 and local Docker checks are historical evidence only.
+
+**Inference policy:** No paid calls while preparing the release plan. Start with inference disabled; any bounded real Meta smoke at release is explicit and quota-accounted.
+
+**Dependencies:** [PP-075](https://github.com/ManuelR-T/paperplay/issues/30).
+
+**Start in:** `Dockerfile`, `next.config.ts`, `app/api/health/route.ts`, `.env.example`, `docs/deployment.md`.
+
+#### PP-079 — Verify Railway persistence, access and operating limits before release
+
+[GitHub #34](https://github.com/ManuelR-T/paperplay/issues/34) · P1 · planned · 3–5 focused hours
+
+Keep quotas and shared links durable and make the final deployment accessible to the intended audience without unexpected exposure or spend.
+
+At release, configure SQLite quota/short-link paths on the mounted volume, test restart/redeploy and backup restoration, confirm the actual Railway plan/resource allowances, document a conservative operating budget and select explicit access controls. Existing Sites authentication does not automatically protect a Railway URL. Multi-instance storage is a separate later decision.
+
+**Acceptance:**
+
+- [ ] Quota reservations, short links and deletion/expiry state survive restart and redeploy on the actual mounted storage; a missing or unwritable store fails closed before paid work.
+- [ ] A backup/restore drill is recorded, including how quota history and deleted/expired links are handled; the release runbook records volume-backed redeployment downtime limits.
+- [ ] The chosen Railway plan, limits and operator alerts are reviewed at release without assuming Meta credits cover hosting or that an application token quota is a billing cap.
+- [ ] Private access remains the current requirement; verify intended-reader/judge access and unauthorized-user denial before sharing the URL. Any future public exposure requires an explicit user decision.
+
+**Verification:** At final release only: verify on the actual Railway service, retain redacted evidence, and record exact source revision, environment and remaining limitations. No provisioning, domain change or paid inference is needed to plan this issue.
+
+**Evidence policy:** actual Railway runtime evidence required; existing Sites/D1 and local Docker checks are historical evidence only.
+
+**Inference policy:** No paid calls while preparing the release plan. Start with inference disabled; any bounded real Meta smoke at release is explicit and quota-accounted.
+
+**Dependencies:** [PP-078](https://github.com/ManuelR-T/paperplay/issues/33).
+
+**Start in:** `server/usage/store.ts`, `server/short-links/sqlite.ts`, `server/usage/service.ts`, `docs/operations.md`, `docs/submission-draft.md`.
+
+## Design and release references
 
 - [W3C WCAG 2.2 — Text Spacing (AA)](https://www.w3.org/WAI/WCAG22/Understanding/text-spacing.html): Check that reader content survives user spacing overrides; this does not prescribe the application default.
 - [W3C — Visual Presentation (AAA)](https://www.w3.org/WAI/WCAG21/Understanding/visual-presentation.html): Use adjustable measure and presentation as design guidance; do not label the current app AAA conformant.
 - [Bret Victor — Explorable Explanations](https://worrydream.com/ExplorableExplanations/): Prefer interventions in explicit models and low-friction context beside the text; this is a design direction, not a measured learning result.
 - [Olah and Carter — Research Debt](https://distill.pub/2017/research-debt/): Treat explanation quality and notation as substantive product work, with real-reader validation.
+- [Railway — Healthchecks](https://docs.railway.com/deployments/healthchecks): Recheck runtime PORT/readiness and volume-backed deployment interruption at release.
+- [Railway — Volumes](https://docs.railway.com/volumes): Recheck runtime mount availability and non-root permission handling before configuring /data.
+- [Railway — Volume limits](https://docs.railway.com/volumes/reference): The initial proposal is one volume-backed instance, not replicas sharing SQLite.
+- [Railway — Volume backups](https://docs.railway.com/volumes/backups): Plan a real backup/restore drill at release; do not claim it has occurred.
 
 The W3C AA spacing criterion concerns preserving content/function when users override spacing; it does not require the proposed default typography. Visual Presentation is AAA guidance, not a certification of this app. Explorable explanations and research distillation motivate the product direction; they do not establish learning benefits for Paperplay. No source text from these references is bundled or quoted in this roadmap.
 
 Machine-readable source: [next-backlog.json](next-backlog.json). Interactive view: [next-roadmap.html](next-roadmap.html). GitHub issue numbers and local PP planning IDs are distinct and mapped explicitly.
+
+
+## Current issue disposition
+
+The feature interactions for #1–23, #25–30 and #32 are implemented and their GitHub issues are closed, with provider-free tests and targeted real-browser checks. See [per-issue evidence](nonrelease-implementation-report.md#per-issue-implementation-evidence). This does not establish learning gains or universal automatic paper understanding.
+
+#24 awaits 3–5 consenting real participants; its [protocol](reader-study-protocol.md) is ready and its [observation ledger](reader-study-observations.json) is empty. Release #31/#33/#34 remain untouched and unverified on Railway.
+
+Source commit: `930978e`. [GitHub CI](https://github.com/ManuelR-T/paperplay/actions/runs/40450258554) passed. [Issue-state snapshot](nonrelease-github-status.json) confirms 30 closed issues and four open issues; the three release issues were not modified.

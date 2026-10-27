@@ -1,5 +1,7 @@
 # Operations and post-credit mode
 
+Final release target: Railway, deferred until release. The [Railway plan](railway-release.md) proposes one Node instance with persistent SQLite and explicit access/operating checks; this is not yet configured. Existing Sites/D1 observations remain historical.
+
 Checked against the implementation on 27 October 2026. See [deployment](deployment.md) for the two runtime targets and [Meta setup](meta-setup.md) for provider configuration.
 
 ## Stop new inference work
