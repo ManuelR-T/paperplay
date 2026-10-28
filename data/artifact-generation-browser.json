@@ -1,0 +1,62 @@
+{
+  "format": "paperplay-generation-browser-qa",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-28T05:44:59.490Z",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "provider": "intercepted fake responses; zero paid model calls",
+  "requests": [
+    {
+      "path": "prepare"
+    },
+    {
+      "path": "start",
+      "attempt": 1
+    },
+    {
+      "path": "start",
+      "attempt": 2,
+      "compilerCode": "syntax"
+    }
+  ],
+  "history": [
+    {
+      "heading": "Attempt 1 · complete",
+      "checks": [
+        "passed · Exact source, manifest and SDK bindings checked.",
+        "failed · Syntax or execution policy admission failed; inspect the bounded diagnostic codes."
+      ]
+    },
+    {
+      "heading": "Attempt 2 · complete",
+      "checks": [
+        "passed · Exact source, manifest and SDK bindings checked.",
+        "passed · The synchronous script passed syntax and dependency admission.",
+        "passed · Initial frame, values and source links validated.",
+        "passed · A declared interaction returned a valid bounded frame.",
+        "skipped · These smoke scenarios do not verify equations, experimental claims or scientific accuracy."
+      ]
+    }
+  ],
+  "previewOpenedExplicitly": true,
+  "savedExplicitly": true,
+  "narrowWidth": 320,
+  "pageOverflow": false,
+  "restoration": {
+    "restored": "air\n3 — allow two automatic repairs\n\nUp to 3 paid Meta calls, 18000 output tokens and 666,000 conservatively reserved tokens. New calls stop five minutes after preparation. The shared paper allowance is 8 calls / 1,000,000 accounted tokens; global limits also apply.\n\nPlan, code and engineering checks remain unverified scientific teaching content. No figure is saved automatically.\n\nModel: provider-free-QA-fixture. Run allowance: 2/3 attempts claimed.\n\nCreate with Meta\nStop generation\n\nSaved run restored and paused. Retrieve its result or explicitly resume; opening this panel starts no model request.\n\nAttempt 1 · complete\n\nProvider-free browser workflow test\n\nAuthored dynamic sequence fixture\n\nRepresentation: conceptual · scientific evidence unverified\n\nInspect preview\nCheck locally\nSave figure locally\nDownload figure\nPlan, assumptions and missing details\npassed · Exact source, manifest and SDK bindings checked.\nfailed · Syntax or execution policy admission failed; inspect the bounded diagnostic codes.\nBounded repair diagnostics\nAttempt 2 · complete\n\nProvider-free browser workflow test\n\nAuthored dynamic sequence fixture\n\nRepresentation: conceptual · scientific evidence unverified\n\nInspect preview\nCheck locally\nSave figure locally\nDownload figure\nPlan, assumptions and missing details\npassed · Exact source, manifest and SDK bindings checked.\npassed · The synchronous script passed syntax and dependency admission.\npassed · Initial frame, values and source links validated.\npassed · A declared interaction returned a valid bounded frame.\nskipped · These smoke scenarios do not verify equations, experimental claims or scientific accuracy.\nBounded repair diagnostics\nSaved generated figures\nProvider-free generated interaction QA\nDownload\nRemove Provider-free generated interaction QA",
+    "apiRequests": [],
+    "savedCount": 3,
+    "overflow": false
+  },
+  "storageFailure": {
+    "simulated": "QuotaExceededError after inference-free prepare",
+    "requests": [
+      "prepare"
+    ],
+    "paidStartCount": 0
+  },
+  "limitations": [
+    "Provider responses were simulated; this is workflow engineering evidence, not Meta generation quality.",
+    "Local checks validate selected SDK scenarios, not scientific correctness.",
+    "Actual paid API execution was not exercised."
+  ]
+}

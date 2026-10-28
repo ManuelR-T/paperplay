@@ -554,10 +554,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 52,
         "url": "https://github.com/ManuelR-T/paperplay/issues/52"
+      },
+      "evidence": {
+        "document": "docs/artifact-generation-design.md",
+        "checks": "npm run check: TypeScript, 341 tests and production build; fake-provider novel polymer binding through real compiler/interpreter, durable deduplication/concurrency, frozen source/feedback, shared quotas, terminal accounting, cache and safe repair classification",
+        "browser": "Chromium154 actual reader with intercepted fake responses: syntax-failed first attempt, bounded automatic repair, real local compile/runtime, explicit save/preview, 320px no overflow; reload made zero generation requests; simulated storage failure sent prepare only. Report: data/artifact-generation-browser.json",
+        "limitations": "No paid model requests or actual Meta generation-quality claim; conceptual/synthetic SDK figures only, no external assets, app-owned engineering smoke scenarios are not scientific tests. Per-paper/run ledger requires one persistent host; human review remains unavailable."
       }
     },
     {

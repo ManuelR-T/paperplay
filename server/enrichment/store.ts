@@ -5,11 +5,18 @@ import { AnalysisHttpError } from '../analysis/security';
 import type { EnrichmentAction, EnrichmentBudget } from '../../lib/enrichment/contracts';
 
 export const DOCUMENT_LIMITS = { maxRequests: 8, maxTokens: 1_000_000 } as const;
-export type EnrichmentRecord = { id: string; owner: string; documentHash: string; contextHash: string; action: EnrichmentAction; sectionId: string; createdAt: number; reservedTokens: number; status: 'reserved' | 'accepted' | 'completed' | 'cancelled' | 'failed' | 'incomplete' | 'validation_failed' | 'uncertain' | 'rejected'; providerId?: string; actualTokens?: number };
+export type EnrichmentRecord = { id: string; owner: string; documentHash: string; contextHash: string; action: EnrichmentAction | 'artifact'; sectionId: string; createdAt: number; reservedTokens: number; status: 'reserved' | 'accepted' | 'completed' | 'cancelled' | 'failed' | 'incomplete' | 'validation_failed' | 'uncertain' | 'rejected'; providerId?: string; actualTokens?: number };
+export type GenerationRunRecord = { runId: string; owner: string; documentHash: string; contextHash: string; model: string; sectionId: string; maxAttempts: number; createdAt: number; deadlineAt: number; reservedTokens: number; closed: boolean; attempts: Array<{ id: string; fingerprint: string; candidateSha256?: string }> };
 export type EnrichmentStore = {
   reserve(input: Omit<EnrichmentRecord, 'status' | 'createdAt'>): { created: boolean; record: EnrichmentRecord };
   settle(id: string, update: { status: EnrichmentRecord['status']; providerId?: string; actualTokens?: number }): void;
   budget(owner: string, documentHash: string): EnrichmentBudget;
+  prepareGenerationRun(input: Omit<GenerationRunRecord, 'createdAt' | 'deadlineAt' | 'reservedTokens' | 'closed' | 'attempts'>): GenerationRunRecord;
+  generationRun(runId: string, owner: string): GenerationRunRecord;
+  generationAttempt(runId: string, owner: string, attempt: number): EnrichmentRecord;
+  claimGenerationAttempt(runId: string, owner: string, attempt: number, input: Omit<EnrichmentRecord, 'status' | 'createdAt'>): { created: boolean; record: EnrichmentRecord };
+  recordGenerationCandidate(runId: string, owner: string, attempt: number, sha256: string): void;
+  closeGenerationRun(runId: string, owner: string): GenerationRunRecord;
   close(): void;
 };
 function unavailable(): never { throw new AnalysisHttpError(503, 'The durable per-paper allowance is unavailable. No new paid enrichment was started.'); }
@@ -22,15 +29,28 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
   let db: DatabaseSync;
   try {
     if (options.path !== ':memory:') mkdirSync(dirname(options.path), { recursive: true, mode: 0o700 });
-    db = new DatabaseSync(options.path); db.exec('PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS enrichment_records(id TEXT PRIMARY KEY,owner TEXT NOT NULL,document_hash TEXT NOT NULL,record TEXT NOT NULL); CREATE INDEX IF NOT EXISTS enrichment_document ON enrichment_records(owner,document_hash);');
+    db = new DatabaseSync(options.path); db.exec('PRAGMA busy_timeout=5000; PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS enrichment_records(id TEXT PRIMARY KEY,owner TEXT NOT NULL,document_hash TEXT NOT NULL,record TEXT NOT NULL); CREATE INDEX IF NOT EXISTS enrichment_document ON enrichment_records(owner,document_hash); CREATE TABLE IF NOT EXISTS artifact_generation_runs(id TEXT PRIMARY KEY,record TEXT NOT NULL);');
   } catch { return unavailable(); }
   const records = (owner: string, documentHash: string) => (db.prepare('SELECT record FROM enrichment_records WHERE owner=? AND document_hash=?').all(owner, documentHash) as { record: string }[]).map(r => JSON.parse(r.record) as EnrichmentRecord);
   function budget(owner: string, documentHash: string): EnrichmentBudget { const all = records(owner, documentHash).filter(r => r.status !== 'rejected'); return { requests: all.length, maxRequests: limits.maxRequests, accountedTokens: all.reduce((sum,r) => sum + tokens(r),0), maxTokens: limits.maxTokens }; }
   function transaction<T>(work: () => T): T { let began = false; try { db.exec('BEGIN IMMEDIATE'); began = true; const result = work(); db.exec('COMMIT'); return result; } catch (error) { if (began) db.exec('ROLLBACK'); if (error instanceof AnalysisHttpError) throw error; return unavailable(); } }
-  return {
-    reserve(input) {
+  function readRun(runId: string, owner: string): GenerationRunRecord {
+    const row = db.prepare('SELECT record FROM artifact_generation_runs WHERE id=?').get(runId) as { record: string } | undefined;
+    if (!row) throw new AnalysisHttpError(404, 'The generation run is unavailable. No replacement was created.');
+    const run = JSON.parse(row.record) as GenerationRunRecord;
+    if (run.owner !== owner) throw new AnalysisHttpError(403, 'This generation run belongs to another session.');
+    return run;
+  }
+  function writeRun(run: GenerationRunRecord) { db.prepare('UPDATE artifact_generation_runs SET record=? WHERE id=?').run(JSON.stringify(run), run.runId); }
+  function readAttempt(run: GenerationRunRecord, attempt: number): EnrichmentRecord {
+    const item = run.attempts[attempt - 1];
+    if (!item) throw new AnalysisHttpError(409, 'This generation attempt has not been claimed.');
+    const row = db.prepare('SELECT record FROM enrichment_records WHERE id=?').get(item.id) as { record: string } | undefined;
+    if (!row) return unavailable();
+    return JSON.parse(row.record) as EnrichmentRecord;
+  }
+  function reserve(input: Omit<EnrichmentRecord, 'status' | 'createdAt'>) {
       if (!/^[a-f0-9]{64}$/.test(input.id) || !/^[a-f0-9]{48}$/.test(input.owner) || !/^[a-f0-9]{64}$/.test(input.documentHash) || !/^[a-f0-9]{64}$/.test(input.contextHash) || !Number.isSafeInteger(input.reservedTokens) || input.reservedTokens < 1 || input.reservedTokens > limits.maxTokens) throw new AnalysisHttpError(400, 'Invalid bounded paper reservation.');
-      return transaction(() => {
         const existing = db.prepare('SELECT record FROM enrichment_records WHERE id=?').get(input.id) as { record: string } | undefined;
         if (existing) {
           const record = JSON.parse(existing.record) as EnrichmentRecord;
@@ -42,8 +62,39 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
         const record: EnrichmentRecord = { ...input, createdAt: now(), status: 'reserved' };
         db.prepare('INSERT INTO enrichment_records(id,owner,document_hash,record) VALUES(?,?,?,?)').run(record.id, record.owner, record.documentHash, JSON.stringify(record));
         return { created: true, record };
+  }
+  return {
+    reserve(input) { return transaction(() => reserve(input)); },
+    prepareGenerationRun(input) {
+      if (!/^[a-f0-9-]{36}$/i.test(input.runId) || !/^[a-f0-9]{48}$/.test(input.owner) || !/^[a-f0-9]{64}$/.test(input.documentHash) || !/^[a-f0-9]{64}$/.test(input.contextHash) || !Number.isInteger(input.maxAttempts) || input.maxAttempts < 1 || input.maxAttempts > 3) throw new AnalysisHttpError(400, 'Invalid generation run.');
+      return transaction(() => {
+        const existing = db.prepare('SELECT record FROM artifact_generation_runs WHERE id=?').get(input.runId);
+        if (existing) { const run = readRun(input.runId, input.owner); if (run.contextHash !== input.contextHash || run.documentHash !== input.documentHash || run.maxAttempts !== input.maxAttempts || run.model !== input.model || run.sectionId !== input.sectionId) throw new AnalysisHttpError(409, 'The run identifier belongs to different frozen context.'); return run; }
+        const createdAt = now(); const run: GenerationRunRecord = { ...input, createdAt, deadlineAt: createdAt + 300_000, reservedTokens: 0, closed: false, attempts: [] };
+        db.prepare('INSERT INTO artifact_generation_runs(id,record) VALUES(?,?)').run(run.runId, JSON.stringify(run)); return run;
       });
     },
+    generationRun(runId, owner) { return readRun(runId, owner); },
+    generationAttempt(runId, owner, attempt) { return readAttempt(readRun(runId, owner), attempt); },
+    claimGenerationAttempt(runId, owner, attempt, input) {
+      return transaction(() => {
+        const run = readRun(runId, owner);
+        if (!Number.isInteger(attempt) || attempt < 1 || attempt > run.maxAttempts || input.owner !== owner || input.documentHash !== run.documentHash || input.sectionId !== run.sectionId || input.action !== 'artifact') throw new AnalysisHttpError(409, 'Invalid generation attempt scope.');
+        const existing = run.attempts[attempt - 1];
+        if (existing) { if (existing.id !== input.id || existing.fingerprint !== input.contextHash) throw new AnalysisHttpError(409, 'This attempt already belongs to different input.'); return { created: false, record: readAttempt(run, attempt) }; }
+        if (run.closed || now() >= run.deadlineAt) throw new AnalysisHttpError(410, 'The generation run is closed or its five-minute creation budget expired.');
+        if (attempt !== run.attempts.length + 1) throw new AnalysisHttpError(409, 'Generation attempts must be sequential.');
+        if (attempt > 1 && ['reserved','accepted','uncertain'].includes(readAttempt(run, attempt - 1).status)) throw new AnalysisHttpError(409, 'Resolve the previous accepted or uncertain attempt before repairing.', true);
+        if (run.reservedTokens + input.reservedTokens > 666_000) throw new AnalysisHttpError(429, 'The generation token budget is exhausted.');
+        const result = reserve(input); if (!result.created) throw new AnalysisHttpError(409, 'This attempt reference already exists.', true);
+        run.attempts.push({ id: input.id, fingerprint: input.contextHash }); run.reservedTokens += input.reservedTokens; writeRun(run); return result;
+      });
+    },
+    recordGenerationCandidate(runId, owner, attempt, sha256) {
+      if (!/^[a-f0-9]{64}$/.test(sha256)) throw new AnalysisHttpError(400, 'Invalid candidate digest.');
+      transaction(() => { const run = readRun(runId, owner); const item = run.attempts[attempt - 1]; if (!item) throw new AnalysisHttpError(409, 'Unknown attempt.'); if (item.candidateSha256 && item.candidateSha256 !== sha256) throw new AnalysisHttpError(409, 'The accepted response candidate changed.'); item.candidateSha256 = sha256; writeRun(run); });
+    },
+    closeGenerationRun(runId, owner) { return transaction(() => { const run = readRun(runId, owner); run.closed = true; writeRun(run); return run; }); },
     settle(id, update) {
       if (update.actualTokens !== undefined && (!Number.isSafeInteger(update.actualTokens) || update.actualTokens < 0)) throw new AnalysisHttpError(400, 'Invalid measured enrichment usage.');
       if (update.providerId !== undefined && !/^resp_[a-zA-Z0-9_-]{1,250}$/.test(update.providerId)) throw new AnalysisHttpError(400, 'Invalid provider reference.');
@@ -52,7 +103,11 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
         const previous = JSON.parse(stored.record) as EnrichmentRecord;
         const terminal = !['reserved','accepted','uncertain'].includes(previous.status);
         if (terminal && ['reserved','accepted','uncertain'].includes(update.status)) return;
-        db.prepare('UPDATE enrichment_records SET record=? WHERE id=?').run(JSON.stringify({ ...previous, ...update }), id);
+        // Provider cancellation/late polls must not rewrite a final artifact outcome
+        // or reduce already measured spend. Existing catalog settlement stays compatible.
+        const artifactTerminal = terminal && previous.action === 'artifact';
+        const actualTokens = update.actualTokens === undefined ? previous.actualTokens : Math.max(previous.actualTokens ?? 0, update.actualTokens);
+        db.prepare('UPDATE enrichment_records SET record=? WHERE id=?').run(JSON.stringify({ ...previous, ...update, ...(artifactTerminal ? { status: previous.status } : {}), ...(actualTokens === undefined ? {} : { actualTokens }) }), id);
       });
     },
     budget(owner, documentHash) { try { return budget(owner, documentHash); } catch { return unavailable(); } },

@@ -50,6 +50,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
     return { source, target, context, request, inputText, documentHash: digest({ ...source, anchors: [] }), contextHash: digest({ request, catalog: WIDGET_CATALOG_VERSION, model: config.model }) };
   }
   function jobFor(record: EnrichmentRecord, responseId: string, model: string, key: string): EnrichmentJob {
+    if (record.action === 'artifact') throw new AnalysisHttpError(403, 'Generated artifact jobs use their own bounded retrieval route.');
     return { action: record.action, sectionId: record.sectionId, createdAt: record.createdAt, model,
       token: signToken({ kind: 'enrichment-job', owner: record.owner, id: record.id, documentHash: record.documentHash, contextHash: record.contextHash, responseId, model, action: record.action, sectionId: record.sectionId, createdAt: record.createdAt, exp: record.createdAt + 86_400_000 }, key) };
   }
