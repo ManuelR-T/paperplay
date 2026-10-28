@@ -27,5 +27,22 @@
     "passed": 6,
     "failed": 0
   },
-  "policy": "First failed run retained; no production checker/prompt/runtime changes during frozen paper evaluation. Any test correction is a separate post-freeze commit."
+  "policy": "First failed run retained; no production checker/prompt/runtime changes during frozen paper evaluation. Any test correction is a separate post-freeze commit.",
+  "postFreezeTestCorrection": {
+    "path": "tests/scheduler-generated.test.ts",
+    "sha256": "542cc25c61a4c3964c801d23a989dc4488122569efbbd2150926da0baa975f2a",
+    "change": "Wait for the first completed admitted request with Promise.race, then cancel and count the two pending requests; do not assume asynchronous pre-admission hashes preserve array order.",
+    "productionChange": false,
+    "timeoutsChanged": false,
+    "focused": {
+      "tests": 6,
+      "passed": 6
+    },
+    "completeSuite": {
+      "tests": 726,
+      "passed": 726,
+      "failed": 0
+    },
+    "firstFrozenFailureRetained": true
+  }
 }

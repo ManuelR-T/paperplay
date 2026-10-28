@@ -1102,7 +1102,7 @@
       "evidence": {
         "document": "docs/frozen-evaluation-results.md",
         "freeze": "7af5f4c;379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c;548frozen files unchanged through outcomes",
-        "checks": "11focused evaluator tests+5guards and TypeScript pass; initialfullsuite725/726 with existingtest ordering timeout retained; unchanged focused scheduler6/6, separate post-freeze correction pending",
+        "checks": "11focused evaluator tests+5guards and TypeScript pass; initialfullsuite725/726 ordering failure retained, separate post-freeze test-only correction followed by6/6 focused and726/726 fullsuite; production timeout/runtime unchanged",
         "browser": "Fresh authored adversarial fixtures and actualB3/C4 model outputs; source/controls/layout/cancellation/worker cleanup measured. B3layout fails; C4observed bounded controls work. P4source blockID rejected.",
         "cost": "3actualMuse creates, no repairs/retries/replacements;19869measured tokens;276700conservative reservations",
         "limitations": "10saved excerpts are not10substantive paper explanations. P2/P3not accessible. No paper scientifically verified or human reviewed. Fullscripted quality of custom imports not exposed in frozenUI; actualnative manual scope recorded."
