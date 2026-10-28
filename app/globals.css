@@ -468,3 +468,19 @@
 
 /* Keep semantic MathML available to assistive technology without selecting its duplicate visual text. */
 .katex .katex-mathml{-webkit-user-select:none;user-select:none}
+
+/* Passage notes live in the margin instead of reserving an empty toolbar below every paragraph. */
+.research-article .passage-row{margin-bottom:1em}
+.research-article .passage-row>.source-paragraph p{margin-bottom:0}
+.passage-row>.passage-tools{position:absolute;top:0;right:-42px;display:flex;min-height:0;margin:0;gap:0;z-index:1}
+.passage-tools>.passage-note-button{position:relative;width:36px;height:36px;min-height:36px;padding:8px;opacity:1;color:var(--soft);border-radius:8px;background:transparent}
+.passage-tools>.passage-note-button:hover,.passage-tools[data-has-notes=true]>.passage-note-button{background:var(--accent);color:var(--olive)}
+.passage-note-count{position:absolute;top:-4px;right:-3px;min-width:16px;height:16px;padding:0 3px;border-radius:8px;background:var(--olive);color:var(--paper);font:11px/16px var(--sans)}
+.passage-dialog>.passage-quotation{max-height:130px;margin:4px 0;font-size:16px;line-height:1.6}
+.passage-dialog>.reader-fieldset{margin:0}
+.passage-dialog>.reader-fieldset .reader-field{margin:8px 0}
+@media(max-width:620px){
+  .passage-row>.passage-tools{right:-12px}
+  .passage-tools>.passage-note-button{width:44px;height:44px;min-height:44px}
+  .passage-row:has(>.passage-tools)>.source-block{margin-right:30px}
+}

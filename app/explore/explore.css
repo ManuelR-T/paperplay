@@ -86,3 +86,18 @@
 .explore-category-tags button:hover{border-color:var(--olive)}.explore-category-tags button:focus-visible,.explore-card h3 a:focus-visible{outline:2px solid var(--olive);outline-offset:3px}
 .explore-card h3 a{color:inherit;text-decoration:none}.explore-card h3 a:hover{text-decoration:underline;text-underline-offset:4px}
 @media(max-width:700px){.explore-subjects{padding:16px}.explore-subject-groups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.explore-subject-groups button{justify-content:flex-start}.explore-archives{gap:6px}.explore-subjects-heading h2{font-size:23px}}
+
+/* Search first; visual subject landmarks support a second, exploratory path. */
+.explore-intro .explore-eyebrow{display:none}
+.explore-search{margin-bottom:20px}
+.explore-filter-toggle{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;margin-top:12px;font-size:14px;color:var(--soft)}
+.explore-filter-toggle button{min-height:44px;font-size:15px}
+.explore-filters[hidden]{display:none}
+.explore-search-actions{margin-top:8px}
+.explore-subjects{padding:16px;margin-bottom:16px}
+.explore-subjects-heading{margin-bottom:12px}
+.explore-subjects-heading span{font-size:14px}
+.explore-subject-groups button svg{flex-shrink:0;color:var(--olive)}
+.explore-subject-groups button[aria-pressed=true]{box-shadow:inset 0 0 0 1px var(--olive)}
+.explore-topics{margin:12px 0 20px;gap:8px}
+@media(max-width:700px){.explore-filter-toggle>span{flex-basis:100%}.explore-subject-groups button{padding:10px;gap:8px;font-size:14px}.explore-subjects-heading span{display:none}.explore-topics>span{flex-basis:100%}.explore-search-actions>span{font-size:14px}}
