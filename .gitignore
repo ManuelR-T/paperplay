@@ -28,3 +28,7 @@ public/widget.worker.mjs
 public/library.worker.mjs
 # Rebuilt trusted interpreter/compiler infrastructure; no generated artifact code.
 public/artifact-compiler.worker.mjs
+public/artifact-runtime.worker.mjs
+
+public/artifact-*.worker.mjs
+public/artifact-workers.json

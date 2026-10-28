@@ -26,6 +26,8 @@ export function validateSdkFrame(input:unknown,limits:{maxOutputBytes:number;max
  for(const ids of [frame.marks.map(m=>m.id),frame.controls.map(c=>c.id)])if(new Set(ids).size!==ids.length)throw Error('Duplicate SDK mark/control.');
  if(frame.marks.length&&!capabilities.includes('draw-2d')||frame.controls.length&&!capabilities.includes('controls'))throw Error('SDK frame requests an undeclared drawing/control capability.');
  for(const mark of frame.marks){if(mark.anchorId&&(!capabilities.includes('source-return')||!anchors.includes(mark.anchorId)))throw Error('SDK mark source is undeclared.');if(mark.entityId&&!capabilities.includes('entity-selection'))throw Error('SDK entity interaction is undeclared.');}
+ const inside=(point:readonly number[])=>point[0]>=0&&point[1]>=0&&point[0]<=frame.coordinateSpace.width&&point[1]<=frame.coordinateSpace.height;
+ for(const mark of frame.marks){const bounds=mark.kind==='circle'?[[mark.center[0]-mark.radius,mark.center[1]-mark.radius],[mark.center[0]+mark.radius,mark.center[1]+mark.radius]]:mark.kind==='line'?[mark.from,mark.to]:mark.kind==='rectangle'?[mark.at,[mark.at[0]+mark.size[0],mark.at[1]+mark.size[1]]]:[mark.at];if(bounds.some(point=>!inside(point)))throw Error('SDK marks must fit their declared drawing area; reserve space for padding.');}
  for(const control of frame.controls)if(control.kind==='slider'&&(control.min>=control.max||control.value<control.min||control.value>control.max))throw Error('SDK slider is outside its declared domain.');
  if(frame.table.rows.some(row=>row.length!==frame.table.columns.length))throw Error('SDK table rows must match columns.');
  return frame;

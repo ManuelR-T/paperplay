@@ -1,6 +1,6 @@
 # Scientific representation architecture — M12–M16
 
-Status: **implementation in progress — PP-081–095 implemented (15/36)**, 28 October 2026. Parent epic: [PP-080 · #35](https://github.com/ManuelR-T/paperplay/issues/35). Completed work and evidence: [representation contracts](representation-contracts.md), [scientific provenance](research-evidence.md) [typed local data](scientific-assets.md) and [scientific quantities](scientific-quantities.md) and [approved capability registry](representation-capabilities.md) and [scientific intake corpus](scientific-corpus.md) and [composed figure layouts](composed-scenes.md) and [linked semantic selections](semantic-selections.md) and [process/network explanations](process-networks.md) and [statistical charts](statistical-charts.md) and [spatial images and fields](spatial-views.md) and [arguments and protocols](reasoning-guides.md) and [figure artifacts / SDK](figure-artifacts.md) and [measured isolation decision](artifact-isolation.md) and [isolated source compilation](artifact-compiler.md). The 36 implementation issues and their GitHub references are also recorded in [scientific-backlog.json](scientific-backlog.json). This program extends the existing [M6–M11 delivery](next-roadmap.md); it does not reopen completed issues or change the deferred Railway release.
+Status: **implementation in progress — PP-081–096 implemented (16/36)**, 28 October 2026. Parent epic: [PP-080 · #35](https://github.com/ManuelR-T/paperplay/issues/35). Completed work and evidence: [representation contracts](representation-contracts.md), [scientific provenance](research-evidence.md) [typed local data](scientific-assets.md) and [scientific quantities](scientific-quantities.md) and [approved capability registry](representation-capabilities.md) and [scientific intake corpus](scientific-corpus.md) and [composed figure layouts](composed-scenes.md) and [linked semantic selections](semantic-selections.md) and [process/network explanations](process-networks.md) and [statistical charts](statistical-charts.md) and [spatial images and fields](spatial-views.md) and [arguments and protocols](reasoning-guides.md) and [figure artifacts / SDK](figure-artifacts.md) and [measured isolation decision](artifact-isolation.md) and [isolated source compilation](artifact-compiler.md) and [generated figure execution](figure-runtime.md). The 36 implementation issues and their GitHub references are also recorded in [scientific-backlog.json](scientific-backlog.json). This program extends the existing [M6–M11 delivery](next-roadmap.md); it does not reopen completed issues or change the deferred Railway release.
 
 ## Product objective
 
@@ -24,7 +24,7 @@ This is an open-ended extension architecture and a measurable coverage program. 
 - Official Meta Muse section planning, inspectable proposals, acceptance, local editing, repair and inference quotas.
 - Local notes, library, portable state, study packs, recovery and source/evidence distinctions.
 
-The current custom runtime has 8 parameters, 8 state registers, at most 120 steps, 24 scene elements and 80,000 operations. It has seven primitives plus optional opacity and layout. These are current limits, not a proposed universal scientific language. Generated code is not executed by the current product.
+The current custom runtime has 8 parameters, 8 state registers, at most 120 steps, 24 scene elements and 80,000 operations. It has seven primitives plus optional opacity and layout. These are current limits, not a proposed universal scientific language. Generated figure artifacts use the separately admitted QuickJS/WASM SDK execution path described in [figure-runtime.md](figure-runtime.md).
 
 ## Proposed modules and interfaces
 
@@ -53,7 +53,7 @@ A generated test can help detect coding errors. It does not independently valida
 
 ## Generated-artifact scope expansion
 
-Earlier product scope and [CONTRIBUTING.md](../CONTRIBUTING.md) exclude running model-provided JavaScript. The owner requested this new architecture program on 28 October 2026. M14 plans a separate, explicitly gated execution path; it does not authorize bypassing the current trusted-worker policy or claim that a sandbox has already been selected or implemented.
+Earlier product scope and [CONTRIBUTING.md](../CONTRIBUTING.md) exclude running model-provided JavaScript. The owner requested this new architecture program on 28 October 2026. PP-093–096 provide a separate, explicitly gated QuickJS/WASM execution path with pinned compilation, typed bridge and measured adversarial probes. This does not bypass the existing trusted-worker policy or establish scientific validity.
 
 The isolation spike must evaluate compilation, runtime, rendering and host communication. Model-authored code must not run in the application server process or existing trusted worker. A normal iframe, Worker, Node vm or container is not accepted as sufficient isolation by itself. Select actual adapters only after primary-source investigation and adversarial tests establish the required guarantees.
 

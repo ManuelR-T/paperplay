@@ -1,0 +1,62 @@
+{
+  "format": "paperplay-production-bridge-spike",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-28T05:36:41.994Z",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "origin": "http://127.0.0.1:3002",
+  "growth": [
+    [
+      [
+        1,
+        1
+      ]
+    ],
+    [
+      [
+        1,
+        1
+      ],
+      [
+        2,
+        2
+      ]
+    ]
+  ],
+  "cancelled": "cancelled",
+  "parallel": [
+    {
+      "status": "failed"
+    },
+    {
+      "status": "ready",
+      "rows": [
+        [
+          1,
+          1
+        ]
+      ]
+    }
+  ],
+  "authority": "ready",
+  "malformed": "failed",
+  "active": 0,
+  "bootstrapFetches": [
+    {
+      "url": "http://127.0.0.1:3002/artifact-workers.json",
+      "bytes": 837
+    },
+    {
+      "url": "http://127.0.0.1:3002/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+      "bytes": 1583341
+    },
+    {
+      "url": "http://127.0.0.1:3002/artifact-workers.json",
+      "bytes": 837
+    },
+    {
+      "url": "http://127.0.0.1:3002/artifact-runtime.f693b091a5e17c4a88049155997177fd7bc15db2e49dabecfaba0585a9fef7c3.worker.mjs",
+      "bytes": 1371593
+    }
+  ],
+  "elapsedMs": 2015
+}

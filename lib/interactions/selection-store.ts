@@ -12,7 +12,7 @@ export function createSemanticSelectionStore({revision,initial,isValid,onLimit}:
    if(remember){history.push(state);if(history.length>32)history.shift();}
    state=freeze(checked);for(const notify of [...listeners])notify();return true;
  }
- return Object.freeze({getSnapshot:()=>state,subscribe:(notify:()=>void)=>{listeners.add(notify);return()=>{listeners.delete(notify);};},
+ return Object.freeze({canUndo:()=>history.length>0,getSnapshot:()=>state,subscribe:(notify:()=>void)=>{listeners.add(notify);return()=>{listeners.delete(notify);};},
    select(value:SemanticSelection){const selection=semanticSelectionSchema.parse(value);if(!validate(selection))throw Error('Selection is unavailable for these inputs.');const channel=selectionChannel(selection);if(state.selections.some(s=>selectionChannel(s)===channel&&JSON.stringify(s)===JSON.stringify(selection)))return false;return apply({...state,selections:[...state.selections.filter(s=>selectionChannel(s)!==channel),selection]});},
    replaceScope(viewId:string,scopeId:string,values:SemanticSelection[]){
      const parsed=values.map(value=>semanticSelectionSchema.parse(value));

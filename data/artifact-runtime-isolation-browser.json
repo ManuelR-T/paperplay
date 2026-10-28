@@ -1,0 +1,323 @@
+{
+  "format": "paperplay-browser-isolation-spike",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-28T05:37:12.380Z",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "origin": "http://127.0.0.1:3002",
+  "metadata": {
+    "workerSha256": "e8e8be676c37ca221ab8ccee2ff7bb3477c3eb96fd0c4e2d51c442b9cdf650c3",
+    "engineSha256": "1e51c47b03516a7706333145091fd405d77030c69d1697c12a7f4837175c6836",
+    "casesSha256": "e38ef0e2a257b8c0395d9c91ad1790b4533714246558073d63cf387a3baad142",
+    "fixtureSourceSha256": "20f74e912e917b306bfdab4c6abff695174b869e9ce2894b7fdd7b33e8aa990b",
+    "sdkSha256": "a25e9d981c863bf3c0186d958bc35e9a1177896d0e64ee2e873356977f8abfb3",
+    "interpreter": "quickjs-emscripten-core@0.32.0 / singlefile-browser-release-sync@0.32.0",
+    "wasmMaxBytes": 67108864
+  },
+  "results": [
+    {
+      "id": "ambient-authority",
+      "expected": "ready",
+      "status": "ready",
+      "elapsedMs": 102,
+      "result": [
+        [
+          "No ambient authority"
+        ]
+      ]
+    },
+    {
+      "id": "constructor-escape",
+      "expected": "ready",
+      "status": "ready",
+      "elapsedMs": 98,
+      "result": [
+        [
+          "undefinedundefinedundefined"
+        ]
+      ]
+    },
+    {
+      "id": "numerical-workload",
+      "expected": "ready",
+      "status": "ready",
+      "elapsedMs": 82,
+      "result": [
+        [
+          332833500
+        ]
+      ]
+    },
+    {
+      "id": "syntax-error",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 73
+    },
+    {
+      "id": "module-import",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 71
+    },
+    {
+      "id": "loop",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 100
+    },
+    {
+      "id": "recursion",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 75
+    },
+    {
+      "id": "heap-array",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 106
+    },
+    {
+      "id": "typed-array",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 72
+    },
+    {
+      "id": "huge-string",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 73
+    },
+    {
+      "id": "regexp-cpu",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 98
+    },
+    {
+      "id": "serialization-getter",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 99
+    },
+    {
+      "id": "serialization-tojson",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 99
+    },
+    {
+      "id": "malformed-frame",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 76
+    },
+    {
+      "id": "oversized-frame",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 72
+    },
+    {
+      "id": "promise-storm",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 74
+    },
+    {
+      "id": "fetch",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 76
+    },
+    {
+      "id": "socket",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 75
+    },
+    {
+      "id": "beacon",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 71
+    },
+    {
+      "id": "parent-dom",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 76
+    },
+    {
+      "id": "cookie-read",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 71
+    },
+    {
+      "id": "storage-read",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 74
+    },
+    {
+      "id": "navigation",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 71
+    },
+    {
+      "id": "download",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 73
+    },
+    {
+      "id": "shared-worker",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 75
+    },
+    {
+      "id": "service-worker",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 70
+    },
+    {
+      "id": "script-import",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 73
+    },
+    {
+      "id": "image-request",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 82
+    },
+    {
+      "id": "stylesheet-request",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 75
+    },
+    {
+      "id": "nested-workers",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 75
+    },
+    {
+      "id": "message-flood",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 71
+    },
+    {
+      "id": "popup-navigation-download",
+      "expected": "blocked",
+      "status": "failed",
+      "elapsedMs": 72
+    },
+    {
+      "id": "guest-prototype-pollution",
+      "expected": "ready",
+      "status": "ready",
+      "elapsedMs": 78,
+      "result": [
+        [
+          "Guest prototype modified locally"
+        ]
+      ]
+    }
+  ],
+  "cancelled": {
+    "status": "cancelled",
+    "elapsedMs": 150,
+    "instanceId": "8eced2d8-d0d5-4f79-99c0-f36ab622aba3"
+  },
+  "killed": {
+    "status": "watchdog-killed",
+    "elapsedMs": 140,
+    "instanceId": "21e81bf4-7f01-4d0f-b788-514851399716"
+  },
+  "parallel": [
+    {
+      "status": "watchdog-killed",
+      "instanceId": "7088b9e6-5fa4-4fab-a45b-02cbbb502701",
+      "elapsedMs": 140
+    },
+    {
+      "status": "ready",
+      "instanceId": "87005e7a-98f7-45cd-9a6e-800186488e3f",
+      "elapsedMs": 82,
+      "rows": [
+        [
+          1,
+          1
+        ]
+      ]
+    }
+  ],
+  "heartbeatDelta": 62,
+  "active": 0,
+  "hostPrototypePolluted": false,
+  "hostStorageRetained": true,
+  "requests": [
+    "/",
+    "/host.mjs",
+    "/bridge-client.mjs",
+    "/artifact-workers.json",
+    "/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+    "/artifact-workers.json",
+    "/artifact-runtime.f693b091a5e17c4a88049155997177fd7bc15db2e49dabecfaba0585a9fef7c3.worker.mjs",
+    "/fixture.json",
+    "/cases.json",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/worker.mjs",
+    "/metadata",
+    "/requests"
+  ],
+  "limitations": [
+    "Chromium measurement only; not cross-browser certification.",
+    "64 MiB capped WASM memory and guest allocator limits do not cap total browser process memory.",
+    "Fresh compilation and the production bridge are required; generation and scientific evidence remain separate gates."
+  ]
+}

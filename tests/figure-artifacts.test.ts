@@ -38,7 +38,7 @@ test('built source changes, invalid state and cancellation remain recoverable wi
 test('generated data bindings require exact checked asset bytes and source identity',async()=>{
  const {artifact,source}=await createDynamicSequenceArtifact();
  const asset=await sealScientificAsset({format:'paperplay-scientific-asset',schemaVersion:1,id:'points',label:'Authored points fixture',kind:'table',shape:[1,1],coordinates:{system:'Authored rows',axes:[]},missingValues:'reject',provenance:{origin:'illustrative',attribution:'Paperplay reference fixture',rights:'Project-authored'},transformations:[],data:{columns:[{id:'value',label:'Value',type:'number',unit:'index'}],rows:[{id:'row1',values:[1]}]}});
- const bound={...artifact,assetIds:['points'],assetBindings:[{id:'points',kind:'table' as const,sha256:asset.checksum.value}]};
+ const bound={...artifact,interfaces:{...artifact.interfaces,input:[{id:'assets',kind:'object' as const,description:'Declared checked data'}]},assetIds:['points'],assetBindings:[{id:'points',kind:'table' as const,sha256:asset.checksum.value}]};
  assert.equal((await buildFigureArtifact(bound,source)).status,'invalid');assert.equal((await buildFigureArtifact(bound,source,{assets:[asset]})).status,'ready');
  assert.equal((await buildFigureArtifact({...bound,assetBindings:[{...bound.assetBindings[0],sha256:'0'.repeat(64)}]},source,{assets:[asset]})).status,'invalid');
  assert.equal((await buildFigureArtifact(bound,source,{assets:[structuredClone(asset)]})).status,'invalid');

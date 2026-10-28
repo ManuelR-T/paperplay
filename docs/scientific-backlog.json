@@ -521,10 +521,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 51,
         "url": "https://github.com/ManuelR-T/paperplay/issues/51"
+      },
+      "evidence": {
+        "document": "docs/figure-runtime.md",
+        "checks": "npm run check: TypeScript, 316 tests and production build; strict identity/payload/interface/frame bounds, local compile receipts, checked data, stale selection and pinned bootstrap validation",
+        "browser": "Chromium154/Linux production bridge growth, cancellation, parallel healthy/hostile, ambient authority and malformed output; 33 isolation probes repeated. Actual Next mobile320/200% reflow, sliders, data binding, source return and last-valid fallback exercised; immutable hashed worker caching verified. Reports: data/artifact-runtime-browser.json and data/artifact-runtime-isolation-browser.json",
+        "limitations": "QuickJS/WASM synchronous SDK only; browser measurements are not security certification, cross-browser or scientific validation. No generated-code Meta calls until PP-097; total browser process memory is not capped."
       }
     },
     {

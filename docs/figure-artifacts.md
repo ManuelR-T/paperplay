@@ -1,6 +1,6 @@
 # Figure artifacts and SDK (PP-093)
 
-This deliberately expands the old “never execute model JavaScript” scope in [CONTRIBUTING.md](../CONTRIBUTING.md), with an explicit boundary: generated source remains inert in the product until PP-094 isolation, PP-095 compiler and PP-096 host gates pass. It is never evaluated by JavaScript in the host, an ordinary worker, Node or an iframe. No generation endpoint or paid action is added here.
+This deliberately expands the old “never execute model JavaScript” scope in [CONTRIBUTING.md](../CONTRIBUTING.md), with an explicit boundary: PP-093 initially kept generated source inert. PP-094 isolation, PP-095 compilation and the [PP-096 production bridge](figure-runtime.md) now admit only validated synchronous SDK figures after a fresh local compile. It is never evaluated by JavaScript in the host, an ordinary worker, Node or an iframe. No generation endpoint or paid action is added here.
 
 ## Two implementations, one lifecycle
 
@@ -9,7 +9,7 @@ This deliberately expands the old “never execute model JavaScript” scope in 
 | Kind | Build | Run |
 | --- | --- | --- |
 | Declarative | Validate original representation/source and checked asset bindings | Delegate to existing approved representation lifecycle without altering v2 widgets |
-| Generated | Validate bounded source manifest, exact source/SDK hashes, interface/resource/capability declarations | Return `disabled` unless trusted host code explicitly supplies an execution adapter; the product supplies none at this milestone |
+| Generated | Validate bounded source manifest, exact source/SDK hashes, interface/resource/capability declarations | Return `disabled` unless trusted host code explicitly supplies an execution adapter; the current product supplies only the fresh-compile-gated PP-096 adapter |
 
 Both return structured recoverable outcomes; source version and hashes are rechecked at run time. Manifest fields cannot supply executable adapters, privileges, approval or verified evidence. Declarative trust means an approved grammar/adapter, not scientific validity. Generated code remains `untrusted-source` and `unverified` even when a reference interaction runs successfully.
 
@@ -27,10 +27,10 @@ Declared array interfaces carry explicit length limits. State and input are seri
 
 `lib/artifacts/fixtures/dynamic-sequence.ts` contains inert generated JavaScript using the SDK. Its event reducer adds/removes/resets a sequence of zero to 32 stable-ID items, regenerates circles/labels and exposes every current item in a table. Removing an item preserves the remaining IDs. This growing/shrinking structured state is absent from the old fixed-register custom runtime. The fixture is project-authored teaching content, not a research result or a model-generated success claim.
 
-The reference tests run declarative and generated implementations through the same lifecycle, supply only the restricted-interpreter test adapter, and verify sequence lengths 0→1→2→1 and the surviving ID. Without that trusted adapter the same generated artifact returns `disabled`. Product preview imports/downloads inert manifests and shows pending execution with source attribution; existing source reading and declarative figures remain usable.
+The reference tests run declarative and generated implementations through the same lifecycle, supply only the restricted-interpreter test adapter, and verify sequence lengths 0→1→2→1 and the surviving ID. Without that trusted adapter the same generated artifact returns `disabled`. The PP-093 preview was inert. The PP-096 preview now accepts exact checked data and opens only the approved isolated bridge; source reading and declarative figures remain usable.
 
 ## Dependencies and evidence
 
-Exactly pinned `quickjs-emscripten-core@0.32.0` and `@jitl/quickjs-singlefile-browser-release-sync@0.32.0` are MIT licensed; notices include their FFI dependency. The selected variant embeds WASM, avoiding a runtime WASM fetch in the reference adapter. It is not imported by the production preview/lifecycle path. [Primary-source research and unresolved gates](generated-artifact-research.md) explains why this is preferable to exposing native browser JavaScript, while preserving its limitations.
+Exactly pinned `quickjs-emscripten-core@0.32.0` and `@jitl/quickjs-singlefile-browser-release-sync@0.32.0` are MIT licensed; notices include their FFI dependency. The selected variant embeds WASM, avoiding a runtime WASM fetch in the reference adapter. It is loaded only by the separate compiler/runtime Workers, not the reader JavaScript environment. [Primary-source research and unresolved gates](generated-artifact-research.md) explains why this is preferable to exposing native browser JavaScript, while preserving its limitations.
 
 `npm run check` covers TypeScript, 295 tests and production build. New reference checks cover the two implementations, dynamic state, integrity/SDK locks, source mismatch, strict privilege/evidence fields, output and interface budgets, missing ambient APIs, loop interruption and cancellation. Native-browser verification checks disabled product behavior, attribution and inert manifest download. No complete sandbox, scientific verification or model generation is claimed at this milestone.

@@ -1,3 +1,7 @@
+import { FigureRuntimeError,type FigureRuntimeErrorCode } from '../../shared/figure-runtime';
+import { freezeFigureValue } from '../../shared/figure-json';
+import { validateArtifactInterface } from '../../shared/figure-interfaces';
+export { validateArtifactInterface } from '../../shared/figure-interfaces';
 import type { SourceDocument } from '../../shared/schema';
 import { validateFigureArtifact,type FigureArtifact,type GeneratedArtifact } from '../../shared/figure-artifacts';
 import { sdkEventSchema,validateSdkFrame,type SdkEvent,type SdkFrame } from '../../shared/figure-sdk';
@@ -5,7 +9,7 @@ import type { ScientificAsset } from '../../shared/scientific-assets';
 import { buildRepresentation,executeRepresentation,type RepresentationRun,type RepresentationArtifact } from '../representations/lifecycle';
 import { hasCheckedAssetIntegrity } from '../assets/local';
 import { FIGURE_SDK_SOURCE,sha256Text } from './sdk-source';
-type Failure={status:'invalid'|'disabled'|'cancelled'|'failed';reason:string;original:unknown};
+type Failure={status:'invalid'|'disabled'|'cancelled'|'failed';reason:string;original:unknown;code?:FigureRuntimeErrorCode};
 export type BuiltFigureArtifact={format:'paperplay-built-figure';schemaVersion:1;manifest:FigureArtifact;contentSha256:string;trust:'untrusted-source'|'approved-declarative';evidence:'unverified';declarative?:RepresentationArtifact;assets?:readonly ScientificAsset[]};
 export type FigureBuildResult={status:'ready';value:BuiltFigureArtifact}|Failure;
 export type FigureExecutionAdapter={id:string;execute:(artifact:GeneratedArtifact,input:unknown,state:unknown,event:SdkEvent,signal?:AbortSignal)=>Promise<SdkFrame>};
@@ -29,11 +33,6 @@ export async function runFigureArtifact(built:BuiltFigureArtifact,source:SourceD
    if(!options.executionAdapter)return {status:'disabled',reason:'Generated execution is disabled: no approved isolation adapter is installed in this host.',original:manifest};
    const event=sdkEventSchema.parse(options.event??{kind:'initialize'});validateArtifactInterface(options.input??{},manifest.interfaces.input,manifest.resources.maxInputBytes);if(options.state!==undefined&&options.state!==null)validateArtifactInterface(options.state,manifest.interfaces.state,manifest.resources.maxStateBytes);
    const frame=await options.executionAdapter.execute(manifest,options.input??{},options.state??null,event,options.signal);if(options.signal?.aborted)return {status:'cancelled',reason:'Figure execution cancelled.',original:manifest};
-   validateArtifactInterface(frame.state,manifest.interfaces.state,manifest.resources.maxStateBytes);return {status:'ready',value:validateSdkFrame(frame,manifest.resources,manifest.anchors.map(a=>a.id),manifest.capabilityRequests),evidence:'unverified'};
- }catch{return {status:'failed',reason:'Figure execution failed validation or exceeded its policy. The source remains available.',original:built.manifest};}
-}
-export function validateArtifactInterface(input:unknown,fields:GeneratedArtifact['interfaces']['input'],maxBytes:number){
- if(new TextEncoder().encode(JSON.stringify(input)).length>maxBytes)throw Error('Artifact data exceeds its byte budget.');if(!input||typeof input!=='object'||Array.isArray(input))throw Error('Artifact interface requires an object.');const data=input as Record<string,unknown>;
- if(Object.keys(data).length!==fields.length||Object.keys(data).some(id=>!fields.some(field=>field.id===id)))throw Error('Artifact fields differ from the declared interface.');
- for(const field of fields){const value=data[field.id];if(field.kind==='array'){if(!Array.isArray(value)||value.length>field.maxItems!)throw Error('Artifact array exceeds its declared shape.');}else if(field.kind==='number'){if(typeof value!=='number'||!Number.isFinite(value))throw Error('Artifact scalar must be finite.');}else if(field.kind==='object'){if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Artifact object differs.');}else if(typeof value!==field.kind)throw Error('Artifact field type differs.');}
+   validateArtifactInterface(frame.state,manifest.interfaces.state,manifest.resources.maxStateBytes);return {status:'ready',value:freezeFigureValue(validateSdkFrame(frame,manifest.resources,manifest.anchors.map(a=>a.id),manifest.capabilityRequests)),evidence:'unverified'};
+ }catch(error){if(options.signal?.aborted)return {status:'cancelled',reason:'Figure execution cancelled.',original:built.manifest};if(error instanceof FigureRuntimeError)return {status:'failed',code:error.code,reason:error.message,original:built.manifest};return {status:'failed',reason:'Figure execution failed validation or exceeded its policy. The source remains available.',original:built.manifest};}
 }

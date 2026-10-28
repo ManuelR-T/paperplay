@@ -1,6 +1,6 @@
 # Isolated reproducible source admission (PP-095)
 
-The selected compiler prepares a **content-addressed source envelope**, not native executable code or serialized QuickJS bytecode. The artifact manifest and SDK remain unchanged; only a source that passes exact integrity, grammar and interpreter compilation checks gets an admission result. Product execution remains disabled until PP-096 hosting passes. [Primary-source research](artifact-compiler-research.md) and [captured Chromium measurements](../data/artifact-compiler-browser.json) record the design and actual limits.
+The selected compiler prepares a **content-addressed source envelope**, not native executable code or serialized QuickJS bytecode. The artifact manifest and SDK remain unchanged; only a source that passes exact integrity, grammar and interpreter compilation checks gets an admission result. The [PP-096 host](figure-runtime.md) now uses fresh local admission receipts for the limited isolated execution path. [Primary-source research](artifact-compiler-research.md) and [captured Chromium measurements](../data/artifact-compiler-browser.json) record the design and actual limits.
 
 ## Pipeline and authority
 
@@ -26,7 +26,7 @@ Acorn, its AST and model strings are inside the restricted interpreter, rather t
 
 Diagnostics contain only a finite public code, generic message and optional numeric source position. They omit parser exception text, source snippets, identifiers, stack traces, private paper content and host paths. The source remains explicitly stored in its user-visible manifest and compiled envelope; that is separate from a diagnostic log. Build success remains `syntax-and-policy-only` with `scientificEvidence:'unverified'`.
 
-**Prepare preview** runs this local compiler in the generated-figure preview. It supports cancellation and keeps source attribution accessible. Success reports preparation while execution remains unavailable. Wrong source versions, SDK/parser digests, malformed responses and unsupported browsers retain an explicit fallback. No inference, npm installation, server execution or scientific verification is triggered.
+**Open interactive preview** uses this compiler before the PP-096 host starts its limited runtime. The advanced **Check code only** action still performs compilation without execution. Both support cancellation and keep source attribution accessible. Wrong source versions, SDK/parser digests, malformed responses and unsupported browsers retain an explicit fallback. No inference, npm installation, server execution or scientific verification is triggered.
 
 ## Validation
 
