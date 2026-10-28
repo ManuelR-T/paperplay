@@ -1,0 +1,16 @@
+.chart { min-width:0; width:100%; display:grid; gap:16px; font-size:1rem; line-height:1.6; overflow-wrap:anywhere; }
+.chart * { min-width:0; }
+.scroll { max-width:100%; overflow:auto; border:1px solid var(--border); border-radius:8px; }
+.svg { display:block; width:760px; height:380px; max-width:none; background:var(--background); }
+.svg [role=button] { cursor:pointer; }
+.svg [role=button]:focus-visible { outline:3px solid var(--ring); outline-offset:4px; }
+.legend { margin:0; padding:0; display:grid; gap:12px; list-style:none; }
+.legend li { border-left:4px solid var(--border); padding-left:12px; }
+.legend p { margin:4px 0; }
+.table { min-width:760px; width:100%; border-collapse:collapse; }
+.table th,.table td { text-align:left; vertical-align:top; padding:10px; border-bottom:1px solid var(--border); overflow-wrap:normal; }
+.table button { display:block; width:100%; height:auto; min-height:44px; white-space:normal; overflow-wrap:anywhere; text-align:left; }
+.table tr[data-selected=true],.selected { background:var(--accent); }
+.selected { padding:12px; border:1px solid var(--border); border-radius:8px; }
+.controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.controls button { height:auto; white-space:normal; min-height:44px; }

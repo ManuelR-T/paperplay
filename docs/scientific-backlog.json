@@ -328,10 +328,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 45,
         "url": "https://github.com/ManuelR-T/paperplay/issues/45"
+      },
+      "evidence": {
+        "document": "docs/statistical-charts.md",
+        "checks": "npm run check: TypeScript, 277 tests, production build; pinned public-source extract and independent numerical references",
+        "browser": "Native Chromium: real biological/physical data, linked values/source focus, log scales and recoverable invalid bars, computed histogram membership, keyboard selection, study export/reopen, generic embedded-data chart binding; 320 px and 200% text/spacing; zero model requests",
+        "limitations": "Descriptive displays, fits and matched arithmetic only; no significance, causality, experiment reproduction or expert approval. Source uncertainties keep their supplied meaning; units are matched explicitly, never inferred or silently converted."
       }
     },
     {

@@ -8,6 +8,11 @@ export function representationInputRevision(plan:RepresentationPlan){
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='statistical-chart'){
+   if(selection.kind!=='entity'||selection.scopeId!=='chart')return false;const [seriesId,rowId,...extra]=selection.entityId.split(':');if(extra.length||!rowId)return false;const series=view.chart.series.find(s=>s.id===seriesId);if(!series)return false;
+   if(view.chart.kind==='distribution')return /^bin\d+$/.test(rowId)&&Number(rowId.slice(3))<(view.chart.bins??0);
+   const asset=plan.assetManifests?.find(asset=>asset.id===series.assetId);return asset?.kind==='table'?asset.data.rows.some(row=>row.id===rowId&&(!series.filter||row.values[asset.data.columns.findIndex(column=>column.id===series.filter!.column)]===series.filter.equals)):/^[A-Za-z][A-Za-z0-9_-]{0,39}$/.test(rowId);
+ }
  if(view.kind==='composed-scene'){
    if(selection.kind==='entity')return selection.scopeId==='composition'&&!!view.scene.entities?.some(entity=>entity.id===selection.entityId);
    const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(!node||(node.kind!=='scene'&&node.kind!=='process'))return false;
@@ -30,7 +35,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='composed-scene'&&selection.kind==='entity')view.scene.entities?.find(entity=>entity.id===selection.entityId)?.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='statistical-chart'&&selection.kind==='entity')view.chart.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='composed-scene'&&selection.kind==='entity')view.scene.entities?.find(entity=>entity.id===selection.entityId)?.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='composed-scene'&&selection.kind==='time'){const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(node?.kind==='scene'||node?.kind==='process')(node.kind==='process'?node.steps:node.frames).find(frame=>frame.id===selection.frameId)?.anchorIds?.forEach(id=>ids.add(id));}
    else if(view.kind==='widget')plan.anchors.filter(anchor=>anchor.blockId===view.widget.source.blockId).forEach(anchor=>ids.add(anchor.id));
  }

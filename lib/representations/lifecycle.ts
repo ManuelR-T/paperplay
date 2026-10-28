@@ -1,3 +1,4 @@
+import { buildChartModel,type ChartModel } from '../charts/model';
 import { representationRegistry } from './adapters';
 import type { CapabilityRegistry } from './registry';
 import type { CapabilityEnvironment } from '../../shared/representation-capabilities';
@@ -14,7 +15,7 @@ export type RepresentationFailure = { status:'invalid'|'unsupported'|'missing-da
 export type RepresentationOutcome<T> = { status:'ready'; value:T } | RepresentationFailure;
 export type RepresentationArtifact = { format:'paperplay-representation-artifact'; schemaVersion:1; plan:RepresentationPlan; assets?:readonly ScientificAsset[] };
 export type RepresentationView = RepresentationPlan['views'][number];
-export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'|'composed-scene'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity};
+export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'|'composed-scene'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity} | {kind:'statistical-chart';id:string;model:ChartModel};
 export type RepresentationRun = { artifact:RepresentationArtifact; views:ExecutedRepresentationView[]; evidence:{requested:RepresentationPlan['requestedEvidence']; verified:false} };
 
 export function representationCapabilities() { return representationRegistry.list().map(({id,version})=>({id,version})); }
@@ -33,8 +34,9 @@ export function buildRepresentation(input:unknown,source:SourceDocument,options:
     for(const asset of supplied){const ref=asset.provenance.source;if(ref&&(ref.documentId!==source.id||ref.sourceVersion!==source.sourceVersion))throw Error('Supplied source assets belong to another document version.');const expected=plan.assets.find(item=>item.id===asset.id)?.checksum;if(expected&&expected!==asset.checksum.value)throw Error('The supplied dataset does not match the required checksum.');const embedded=plan.assetManifests?.find(item=>item.id===asset.id);if(embedded&&JSON.stringify(embedded)!==JSON.stringify(asset))throw Error('Embedded and supplied asset content differ.');}
     const missing=plan.execution.assetIds.filter(id=>!supplied.some(asset=>asset.id===id));
     if(missing.length)return {status:'missing-data',reason:'This representation needs explicitly supplied assets.',nextAction:'Supply the listed assets before computing; the source remains readable.',original:input,gaps:missing};
-    const unbound=plan.execution.assetIds.filter(id=>!plan.views.some(view=>view.kind==='asset'&&view.assetId===id));
+    const unbound=plan.execution.assetIds.filter(id=>!plan.views.some(view=>view.kind==='asset'&&view.assetId===id||view.kind==='statistical-chart'&&view.chart.series.some(series=>series.assetId===id)));
     if(unbound.length)return {status:'unsupported',reason:'The selected adapter does not consume these external assets.',nextAction:'Add an asset inspector or use an adapter with an explicit data binding. Existing widgets compute only their declared inline inputs.',original:input,gaps:unbound};
+    for(const view of plan.views)if(view.kind==='statistical-chart'){const model=buildChartModel(view.chart,supplied);for(const selection of plan.navigation?.selections??[])if(selection.kind==='entity'&&selection.viewId===view.id&&!model.series.some(series=>series.points.some(point=>point.id===selection.entityId)))throw Error('Saved chart selection is unavailable in the bound data.');}
     return {status:'ready',value:{format:'paperplay-representation-artifact',schemaVersion:1,plan:{...plan,assets:plan.assets.map(ref=>{const bound=supplied.find(asset=>asset.id===ref.id);return bound?{...ref,checksum:bound.checksum.value}:ref;})},...(supplied.length?{assets:supplied}:{})}};
   }catch(error){return {status:'invalid',reason:error instanceof Error?error.message:'Invalid representation.',nextAction:'Check the source anchors and configuration. The original file was retained.',original:input};}
 }

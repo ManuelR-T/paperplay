@@ -1,0 +1,222 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-28",
+  "biology": {
+    "sourceSha256": "98833cf34fda5b598ed0dbb390386abf1797e26b5e9393f5df8a1266c2ff5e68",
+    "sourceQuote": "Biomass and area of Col-0 and 35S:miR156 Arabidopsis rosette and leaves",
+    "sourceUrl": "https://fairdomhub.org/data_files/2212?version=1",
+    "edition": "Version 1, 22 August 2018; Summary!A5:E14; day 37 after sowing",
+    "license": "CC0-1.0 for data; CC-BY-4.0 for site metadata",
+    "rows": [
+      {
+        "rank": 1,
+        "colMean": "4.2000000000000923E-4",
+        "colSE": "1.2409673645989936E-4",
+        "mirMean": "1.2000000000000123E-3",
+        "mirSE": "1.3038404810405353E-4",
+        "contributors": 5
+      },
+      {
+        "rank": 2,
+        "colMean": "5.7999999999999166E-4",
+        "colSE": "2.0099751242241639E-4",
+        "mirMean": "1.1800000000000033E-3",
+        "mirSE": "1.1135528725659414E-4",
+        "contributors": 5
+      },
+      {
+        "rank": 3,
+        "colMean": "6.1599999999999988E-3",
+        "colSE": "4.1303752856126208E-4",
+        "mirMean": "4.6200000000000017E-3",
+        "mirSE": "3.0886890422960098E-4",
+        "contributors": 5
+      },
+      {
+        "rank": 4,
+        "colMean": "6.3399999999999897E-3",
+        "colSE": "4.3772137256478205E-4",
+        "mirMean": "4.9799999999999957E-3",
+        "mirSE": "3.5552777669262874E-4",
+        "contributors": 5
+      },
+      {
+        "rank": 5,
+        "colMean": "1.7879999999999997E-2",
+        "colSE": "2.0550912388504756E-3",
+        "mirMean": "1.3059999999999993E-2",
+        "mirSE": "8.2861329943465726E-4",
+        "contributors": 5
+      },
+      {
+        "rank": 6,
+        "colMean": "2.3100000000000009E-2",
+        "colSE": "1.2557866060760423E-3",
+        "mirMean": "1.367999999999997E-2",
+        "mirSE": "8.5111691323813275E-4",
+        "contributors": 5
+      },
+      {
+        "rank": 7,
+        "colMean": "3.2579999999999984E-2",
+        "colSE": "8.8113563087643888E-4",
+        "mirMean": "1.7059999999999999E-2",
+        "mirSE": "1.0438390680559994E-3",
+        "contributors": 5
+      },
+      {
+        "rank": 8,
+        "colMean": "4.166000000000003E-2",
+        "colSE": "1.8741931597356892E-3",
+        "mirMean": "1.8839999999999978E-2",
+        "mirSE": "1.9815650380444307E-3",
+        "contributors": 5
+      },
+      {
+        "rank": 9,
+        "colMean": "5.0880000000000002E-2",
+        "colSE": "1.778876049644842E-3",
+        "mirMean": "2.4140000000000005E-2",
+        "mirSE": "1.9291448882859938E-3",
+        "contributors": 5
+      },
+      {
+        "rank": 10,
+        "colMean": "5.8660000000000025E-2",
+        "colSE": "1.2014990636700416E-3",
+        "mirMean": "2.6579999999999993E-2",
+        "mirSE": "1.8461852561430525E-3",
+        "contributors": 5
+      }
+    ]
+  },
+  "physics": {
+    "sourceSha256": "d895fb5b4a59fb5e4cd98e69b7667fe5bef595c6581f630852b12cb41c07f675",
+    "sourceQuote": "Monthly mean CO2 constructed from daily mean values.",
+    "sourceUrl": "https://gml.noaa.gov/webdata/ccgg/trends/co2/co2_mm_mlo.csv",
+    "edition": "File Creation: Fri Oct 9 13:08:07 2026; year=2020 rows",
+    "license": "NOAA GML public-domain reuse terms; attribution retained, no endorsement",
+    "rows": [
+      {
+        "year": "2020",
+        "month": "1",
+        "decimal date": "2020.0417",
+        "average": "413.59",
+        "deseasonalized": "413.22",
+        "ndays": "29",
+        "sdev": "0.73",
+        "unc": "0.26"
+      },
+      {
+        "year": "2020",
+        "month": "2",
+        "decimal date": "2020.1250",
+        "average": "414.32",
+        "deseasonalized": "413.41",
+        "ndays": "28",
+        "sdev": "0.69",
+        "unc": "0.25"
+      },
+      {
+        "year": "2020",
+        "month": "3",
+        "decimal date": "2020.2083",
+        "average": "414.72",
+        "deseasonalized": "413.35",
+        "ndays": "26",
+        "sdev": "0.32",
+        "unc": "0.12"
+      },
+      {
+        "year": "2020",
+        "month": "4",
+        "decimal date": "2020.2917",
+        "average": "416.42",
+        "deseasonalized": "413.92",
+        "ndays": "28",
+        "sdev": "0.65",
+        "unc": "0.24"
+      },
+      {
+        "year": "2020",
+        "month": "5",
+        "decimal date": "2020.3750",
+        "average": "417.28",
+        "deseasonalized": "413.98",
+        "ndays": "27",
+        "sdev": "0.61",
+        "unc": "0.23"
+      },
+      {
+        "year": "2020",
+        "month": "6",
+        "decimal date": "2020.4583",
+        "average": "416.58",
+        "deseasonalized": "414.16",
+        "ndays": "27",
+        "sdev": "0.44",
+        "unc": "0.16"
+      },
+      {
+        "year": "2020",
+        "month": "7",
+        "decimal date": "2020.5417",
+        "average": "414.58",
+        "deseasonalized": "414.19",
+        "ndays": "30",
+        "sdev": "0.57",
+        "unc": "0.20"
+      },
+      {
+        "year": "2020",
+        "month": "8",
+        "decimal date": "2020.6250",
+        "average": "412.75",
+        "deseasonalized": "414.60",
+        "ndays": "25",
+        "sdev": "0.25",
+        "unc": "0.10"
+      },
+      {
+        "year": "2020",
+        "month": "9",
+        "decimal date": "2020.7083",
+        "average": "411.50",
+        "deseasonalized": "414.91",
+        "ndays": "29",
+        "sdev": "0.31",
+        "unc": "0.11"
+      },
+      {
+        "year": "2020",
+        "month": "10",
+        "decimal date": "2020.7917",
+        "average": "411.49",
+        "deseasonalized": "414.79",
+        "ndays": "30",
+        "sdev": "0.22",
+        "unc": "0.08"
+      },
+      {
+        "year": "2020",
+        "month": "11",
+        "decimal date": "2020.8750",
+        "average": "413.10",
+        "deseasonalized": "415.12",
+        "ndays": "27",
+        "sdev": "0.81",
+        "unc": "0.30"
+      },
+      {
+        "year": "2020",
+        "month": "12",
+        "decimal date": "2020.9583",
+        "average": "414.23",
+        "deseasonalized": "414.91",
+        "ndays": "30",
+        "sdev": "0.48",
+        "unc": "0.17"
+      }
+    ]
+  }
+}
