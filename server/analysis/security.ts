@@ -32,12 +32,14 @@ export function requireSameOrigin(request: Request, allowedOrigin?: string) {
   const configuredOrigin = (allowedOrigin ?? process.env.ANALYSIS_APP_ORIGIN)?.trim();
   if (!['localhost', '127.0.0.1', '[::1]'].includes(hostname) && origin !== configuredOrigin) throw new AnalysisHttpError(403, 'This application origin is not enabled for analysis. Configure ANALYSIS_APP_ORIGIN for a LAN or hosted installation.');
 }
-export function sessionFor(request: Request, key: string, now: number, create: boolean) {
+export function sessionFor(request: Request, key: string, now: number, create: boolean, options: { cookieName?: string } = {}) {
+  const cookieName = options.cookieName ?? 'paperplay_session';
+  if (!/^[a-z][a-z0-9_]{0,63}$/.test(cookieName)) throw new AnalysisHttpError(500, 'Invalid application session configuration.');
   const renewedCookie = (sid: string) => {
     const token = signToken({ sid, exp: now + 24 * 60 * 60 * 1000 }, key);
-    return `paperplay_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=86400${new URL(request.url).protocol === 'https:' ? '; Secure' : ''}`;
+    return `${cookieName}=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=86400${new URL(request.url).protocol === 'https:' ? '; Secure' : ''}`;
   };
-  const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim()).find(part => part.startsWith('paperplay_session='))?.slice('paperplay_session='.length);
+  const cookie = request.headers.get('cookie')?.split(';').map(part => part.trim()).find(part => part.startsWith(`${cookieName}=`))?.slice(cookieName.length + 1);
   if (cookie) {
     try {
       const payload = verifyToken(cookie, key);

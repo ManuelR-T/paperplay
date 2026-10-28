@@ -1,3 +1,4 @@
+import { brokerRequirementSchema } from './external-broker';
 import { datasetStudyViewSchema,validateDatasetStudyRequest } from './dataset-studies';
 import { discreteViewSchema,validateDiscreteRequest } from './discrete-algorithms';
 import { z } from 'zod';
@@ -52,6 +53,7 @@ export const representationPlanSchema = z.strictObject({
   execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(capabilityReferenceSchema).min(1).max(16), assetIds: z.array(name).max(32) }),
   interactions: z.array(representationInteractionSchema).max(6),
   assetManifests:z.array(scientificAssetSchema).max(32).optional(),
+  externalRequirements:z.array(brokerRequirementSchema).max(16).optional(),
   evidence: z.array(evidenceDeclarationSchema).max(128).optional(),
   reportedChecks: z.array(reportedScientificCheckSchema).max(64).optional(),
   navigation:representationNavigationSchema.optional(),
@@ -75,6 +77,8 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
     const content=block?.kind==='equation'?block.latex:block?.kind==='original-figure'?block.caption:block?.text;
     if(!block || block.page !== anchor.page || !content || !normalized(content).includes(normalized(anchor.quote))) throw Error('A representation quote or page does not match the original source.');
   }
+  unique((plan.externalRequirements??[]).map(requirement=>requirement.id),'external requirement');
+  for(const requirement of plan.externalRequirements??[])checkAnchors(requirement.anchorIds);
   for(const claim of plan.claims) {
     checkAnchors(claim.anchorIds);
     // A source claim is a quotation; interpretation belongs to the added layer.

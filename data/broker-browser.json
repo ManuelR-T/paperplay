@@ -1,0 +1,66 @@
+{
+  "issue": "PP-106",
+  "date": "2026-10-28",
+  "browser": "Native T3 Chromium, owned localhost:3001 tab",
+  "checks": {
+    "typecheck": "passed",
+    "tests": 611,
+    "brokerTests": 33,
+    "productionBuild": "passed"
+  },
+  "observations": [
+    {
+      "check": "No implicit job or upload",
+      "result": "Mount Files & source, inspect requirements, add local fixture and prepare frozen review produced zero /api/broker requests. Upload selection remains empty after fixture addition; Start disabled before per-run authorization."
+    },
+    {
+      "check": "Named requirement semantics",
+      "result": "Before local data: exact dataset, weights and compute unmet. Adding the exact checked two-row fixture satisfies only the manifest-checksum/byte dataset requirement; weights/real compute stay unmet. Cards explicitly describe adapter-demo requirements, not inferred paper needs."
+    },
+    {
+      "check": "Exact review and explicit submission",
+      "selectedManifests": 1,
+      "inputBytes": 826,
+      "manifestSha256": "e409169c9d8016c926f2e050b6c74a275dac0497e9c781d5b1fbf0d4386efc5c",
+      "serializedByteSha256": "d96098ef0cd378cd2cf42b0b3dee52ca92c39e2a5cb76e271c30ecb4835cb1fd",
+      "result": "One explicitly authorized synthetic manifest, fixed application-server recipient, exact source fingerprint, frozen limits, zero USD and actual retention/cancellation terms. Only explicit Start creates prepare/start HTTP requests."
+    },
+    {
+      "check": "Browser reload recovery without prepared input bytes",
+      "result": "New page has no local fixture/prepared selection and no broker calls before Recover. Recover sends only list metadata request; same completed job has one creation. Collection reconstructs immutable run/review/source/input binding without re-upload."
+    },
+    {
+      "check": "Checked output admission",
+      "outputBytes": 932,
+      "result": "Existing checked-asset mechanism admits a 2x2 illustrative engineering table reporting selected manifests=1 and selected bytes=826; no empirical or scientific reproduction label."
+    },
+    {
+      "check": "Returned digest mismatch",
+      "method": "Temporary owned-tab fetch wrapper changed returned output byteSha256 while retaining actual server response/body; wrapper restored after test.",
+      "result": "Finite identity/byte/source validation error, bounded rejected text downloadable, previous checked engineering output retained. Server record remains intact; failed collection still consumes its download allowance."
+    },
+    {
+      "check": "Explicit cancellation",
+      "result": "Second explicitly reviewed empty-input job cancelled immediately through actual Request cancellation. One reserved creation, zero input/output bytes, zero USD; first completed job remains unchanged."
+    },
+    {
+      "check": "Local CSV preview/confirmation",
+      "result": "Project-authored x,y rows(1,2),(2,4) previewed as user-supplied data with unavailable redistribution rights, then confirmed locally. Broker HTTP resource list unchanged; confirmed file checkbox remains false."
+    },
+    {
+      "check": "Durability across actual Node restart",
+      "result": "Restarted owned production server, reloaded browser and recovered only metadata; jobs remain completed/cancelled. Same first job collects verified output again without prepare/start. Read-only SQLite count confirms two job records and two fake creations total for the two explicit starts, not one per recovery."
+    },
+    {
+      "check": "Responsive/enlarged text",
+      "result": "1280px desktop and320px mobile; scoped text32CSSpx yields document320px and broker panel scroll/client250px. Card tracks/children stay contained and wide data tables scroll locally. This is text-enlargement simulation, not OS zoom."
+    }
+  ],
+  "testFixtureNote": "Existing finite generated-polymer conformance test now uses the same one-second Node reference-interpreter allowance as other finite fixtures, while asserting the generated production deadline remains100ms; production and runaway/worker deadline policies unchanged. Final complete611-test suite passes.",
+  "screenshots": [
+    "data/broker-browser/frozen-disclosure-desktop.png",
+    "data/broker-browser/checked-demo-output-desktop.png",
+    "data/broker-browser/local-adapters-mobile-200.png"
+  ],
+  "privacy": "No owner-cookie values, signing keys, provider references or live job credentials are recorded here. Selected input was a project-authored synthetic fixture only. No real provider, paid inference, held-out paper, human study or release."
+}

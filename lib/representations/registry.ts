@@ -1,3 +1,4 @@
+import { externalRequirementGaps } from '../broker/requirements';
 import { validateDatasetStudyResult } from '../../shared/dataset-studies';
 import { hasDatasetStudyComputation,datasetSourceFingerprint } from '../datasets/model';
 import type { SourceDocument } from '../../shared/schema';
@@ -52,7 +53,7 @@ export function createCapabilityRegistry(input:readonly RepresentationAdapter[])
    list:()=>[...adapters.values()].map(adapter=>structuredClone(adapter.descriptor)),
    gaps(plan:RepresentationPlan,environment:CapabilityEnvironment=defaultCapabilityEnvironment(),assets:readonly ScientificAsset[]=[]):CapabilityGap[]{
      environment=capabilityEnvironmentSchema.parse(environment);
-     const gaps:CapabilityGap[]=[];
+     const gaps:CapabilityGap[]=externalRequirementGaps(plan.externalRequirements??[],assets);
      for(const ref of plan.execution.capabilities){const adapter=adapters.get(key(ref));if(!adapter)gaps.push({kind:'capability',requirement:key(ref),reason:'This exact capability version is not installed.',nextAction:'Retain the original and choose an installed adapter; no nearest-version or unrelated algorithm was substituted.'});else gaps.push(...environmentGaps(adapter.descriptor,environment));}
      for(const view of plan.views){const ref=viewCapability(view),adapter=adapters.get(key(ref));if(adapter&&!adapter.descriptor.viewKinds.includes(view.kind))gaps.push({kind:'capability',requirement:key(ref),reason:'The adapter does not support this view kind.',nextAction:'Choose a matching approved view adapter.'});if(adapter){const payload=view.kind==='spatial-view'?assets.filter(asset=>spatialAssets(view.spatial).includes(asset.id)):view.kind==='statistical-chart'?assets.filter(asset=>view.chart.series.some(series=>series.assetId===asset.id)):view.kind==='asset'?assets.find(asset=>asset.id===view.assetId):view.kind==='quantity'?plan.quantities.find(quantity=>quantity.id===view.quantityId)?.measurement:view.kind==='widget'?view.widget.spec:view;const bytes=payload?new TextEncoder().encode(JSON.stringify(payload)).length+(view.kind==='widget'?1024:0):0;gaps.push(...environmentGaps(adapter.descriptor,environment,bytes).filter(gap=>gap.kind==='resource'));}}
      return gaps;

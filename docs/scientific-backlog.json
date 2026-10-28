@@ -855,10 +855,16 @@
       "priority": "P2",
       "size": "discovery",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 61,
         "url": "https://github.com/ManuelR-T/paperplay/issues/61"
+      },
+      "evidence": {
+        "document": "docs/external-broker.md",
+        "checks": "TypeScript, 611 deterministic tests (33 broker), production build",
+        "browser": "Native Chromium: empty/no-network defaults, named requirements, exact826B selected disclosure/consent, same-job browser/server restart recovery without re-upload, checked932B output, tamper rejection/prior-result retention, cancellation, local CSV confirmation and320px enlarged text",
+        "limitations": "Discovery local-file and fixed zero-cost fake only. No real weights/heavy provider, queue/lease provisioning or general paid exactly-once claim. One persistent Node/SQLite host; collection expiry is not deletion. No paid/held-out/human/release work."
       }
     },
     {

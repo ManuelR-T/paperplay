@@ -19,7 +19,7 @@ export const capabilityDescriptorSchema=z.strictObject({
 export type CapabilityDescriptor=z.infer<typeof capabilityDescriptorSchema>;
 export const capabilityNeedSchema=z.strictObject({behaviors:z.array(name).max(32),assetKinds:z.array(z.enum(['table','tensor','image','sequence','graph','geometry'])).max(6),interactions:z.array(representationInteractionSchema).max(6),inputBytes:z.number().int().nonnegative().max(2*1024*1024),requestedEvidence:z.enum(['illustration','mechanism-reproduction','experiment-reproduction'])});
 export type CapabilityNeed=z.infer<typeof capabilityNeedSchema>;
-export type CapabilityGap={kind:'capability'|'environment'|'resource'|'evidence';requirement:string;reason:string;nextAction:string};
+export type CapabilityGap={kind:'capability'|'environment'|'resource'|'evidence'|'dataset'|'weights'|'compute';requirement:string;reason:string;nextAction:string};
 export type CapabilityEnvironment={facilities:readonly z.infer<typeof facilitySchema>[];offline:boolean;maxInputBytes?:number};
 
 export const capabilityEnvironmentSchema=z.strictObject({facilities:z.array(facilitySchema).max(4),offline:z.boolean(),maxInputBytes:z.number().int().nonnegative().max(2*1024*1024).optional()});
