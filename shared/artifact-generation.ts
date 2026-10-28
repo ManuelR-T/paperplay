@@ -6,18 +6,22 @@ import { figureArtifactSchema } from './figure-artifacts';
 import { compileDiagnosticSchema } from './figure-compilation';
 
 export const GENERATION_POLICY = Object.freeze({ maxAttempts: 3, maxDurationMs: 300_000, maxInputCharacters: 50_000, maxOutputTokens: 6000, maxReservedTokens: 666_000, version: 'artifact-generation-v1' });
+// Complete papers use a separate transport contract; preserve the legacy policy in accepted-run hashes.
+export const WHOLE_PAPER_GENERATION_INPUT_CHARACTERS = 900_000;
+export const generationInputCharacterLimit = (scope?: 'paper') => scope === 'paper' ? WHOLE_PAPER_GENERATION_INPUT_CHARACTERS : GENERATION_POLICY.maxInputCharacters;
 const sha = z.string().regex(/^[a-f0-9]{64}$/);
 const prose = z.string().trim().min(1).max(1000);
 export const generationPlanSchema = z.strictObject({ objective: prose, mechanism: prose, representation: z.enum(['conceptual','synthetic']), assumptions: z.array(prose.max(500)).max(8), missingDetails: z.array(prose.max(500)).max(8), interactions: z.array(prose.max(150)).max(8) });
 export const generationRunSchema = z.strictObject({ runId: z.string().uuid(), token: z.string().min(1).max(5000), model: z.string().min(1).max(120), createdAt: z.number().int().nonnegative(), deadlineAt: z.number().int().nonnegative() });
 export const generationCandidateSchema = z.strictObject({ plan: generationPlanSchema, artifact: figureArtifactSchema, sha256: sha }).refine(value => value.artifact.kind === 'generated', 'Expected generated source.');
 export const generationFeedbackSchema = z.strictObject({ candidateSha256: sha.optional(), quality: figureQualityFeedbackSchema.optional(), compiler: z.strictObject({ status: z.enum(['not-run','ready','rejected','failed','cancelled','unavailable']), diagnostics: z.array(compileDiagnosticSchema.pick({ code: true, position: true })).max(4).default([]) }), runtime: z.strictObject({ status: z.enum(['not-run','ready','cancelled','failed']), code: z.enum(['integrity','resource','invalid-input','invalid-output','execution','unavailable']).optional() }) });
-const context = { retrievalSelectionSha256:sha.optional(),source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), brief: z.string().trim().min(1).max(1200) };
+export const generationAnchorSchema = z.strictObject({ blockId:z.string().min(1).max(100), page:z.number().int().min(1).max(500), quote:z.string().trim().min(12).max(1000) });
+const context = { scope:z.literal('paper').optional(), anchor:generationAnchorSchema.optional(), retrievalSelectionSha256:sha.optional(),source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), brief: z.string().trim().min(1).max(1200) };
 export const generationPrepareSchema = z.strictObject({ ...context, runId: z.string().uuid(), maxAttempts: z.number().int().min(1).max(3) });
 export const generationStartSchema = z.strictObject({ ...context, run: generationRunSchema, attempt: z.number().int().min(1).max(3), previous: generationCandidateSchema.optional(), feedback: generationFeedbackSchema.optional() });
 export const generationStatusSchema = z.strictObject({ ...context, run: generationRunSchema, attempt: z.number().int().min(1).max(3) });
-export const generationCancelSchema = z.strictObject({ run: generationRunSchema });
-export const generationBudgetSchema = z.strictObject({ maxAttempts: z.number().int().min(1).max(3), attemptsClaimed: z.number().int().min(0).max(3), maxReservedTokens: z.literal(666000), reservedTokens: z.number().int().nonnegative(), maxOutputTokensPerAttempt: z.literal(6000), maxInputCharactersPerAttempt: z.literal(50000) });
+export const generationCancelSchema = z.strictObject({ run: generationRunSchema, scope:z.literal('paper').optional() });
+export const generationBudgetSchema = z.strictObject({ maxAttempts: z.number().int().min(1).max(3), attemptsClaimed: z.number().int().min(0).max(3), maxReservedTokens: z.literal(666000), reservedTokens: z.number().int().nonnegative(), maxOutputTokensPerAttempt: z.literal(6000), maxInputCharactersPerAttempt: z.union([z.literal(50000),z.literal(900000)]) });
 export const generationReplySchema = z.strictObject({ retrieval:capabilitySelectionReceiptSchema.optional(),accounting:modelRequestAccountingSchema.optional(),status: z.enum(['prepared','queued','analyzing','complete','failed','incomplete','cancelled','expired','exhausted','uncertain']), run: generationRunSchema, attempt: z.number().int().min(1).max(3).optional(), budget: generationBudgetSchema, paperBudget: z.strictObject({ requests: z.number().int().nonnegative(), maxRequests: z.number().int().positive(), accountedTokens: z.number().int().nonnegative(), maxTokens: z.number().int().positive() }).optional(), candidate: generationCandidateSchema.optional(), error: z.string().max(1000).optional(), uncertain: z.boolean().optional() });
 export type GenerationRunRef = z.infer<typeof generationRunSchema>;
 export type GenerationPlan = z.infer<typeof generationPlanSchema>;

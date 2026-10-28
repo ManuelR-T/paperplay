@@ -7,6 +7,7 @@ import {validateWidgetEnvelope,type WidgetEnvelope} from '../../shared/widgets';
 import {sectionContext} from '../enrichment/sections';
 import {datasetSourceFingerprint} from '../datasets/model';
 import {WIDGET_CATALOG_VERSION} from '../widgets/catalog';
+import {WHOLE_PAPER_SECTION_ID,type PaperFigureBrief,type ExistingPaperFigure} from '../enrichment/whole-paper';
 export const retrievalHash=(value:unknown)=>sha256(brokerCanonicalJson(value));
 const freeze=(value:unknown)=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}};
 /** Supply the approved bank to Meta; only explicit target/version and format boundaries constrain capability availability. */
@@ -37,5 +38,17 @@ export async function validateCapabilitySelection(raw:unknown,query?:CapabilityR
 }
 /** Use only after full selection/context or durable receipt validation; this never installs or executes a capability. */
 export function validateRetrievedWidgetKind(kind:string,selection:CapabilitySelection|CapabilitySelectionReceipt){if(!selection.selected.some(e=>e.kind===kind))throw Error('The proposed widget kind was not in the frozen capability selection.');return kind;}
-export async function enrichmentRetrievalQuery(input:{source:SourceDocument;sectionId:string;action:'plan'|'repair'|'edit';feedback:string;target?:WidgetEnvelope}):Promise<CapabilityRetrievalQuery>{const source=validateDocument(input.source),target=input.target?validateWidgetEnvelope(input.target,source):undefined;return capabilityRetrievalQuerySchema.parse({context:sectionContext(source,input.sectionId,target?.source.blockId).text,sourceFingerprint:await datasetSourceFingerprint(source),sectionId:input.sectionId,concept:input.feedback.trim(),purpose:`widget-${input.action}`,...(target?{targetKind:target.spec.kind,targetVersion:WIDGET_CATALOG_VERSION}:{})});}
-export async function generationRetrievalQuery(input:{source:SourceDocument;sectionId:string;brief:string}):Promise<CapabilityRetrievalQuery>{const source=validateDocument(input.source);return capabilityRetrievalQuerySchema.parse({context:sectionContext(source,input.sectionId).text,sourceFingerprint:await datasetSourceFingerprint(source),sectionId:input.sectionId,concept:input.brief.trim(),purpose:'artifact-generate',targetKind:'generated-sdk',targetVersion:'1.0.0'});}
+export async function enrichmentRetrievalQuery(input:{source:SourceDocument;sectionId:string;action:'plan'|'repair'|'edit';feedback:string;target?:WidgetEnvelope;scope?:'paper-outline'|'paper-figure';figureBrief?:PaperFigureBrief;existingFigures?:ExistingPaperFigure[]}):Promise<CapabilityRetrievalQuery>{
+ const source=validateDocument(input.source),target=input.target?validateWidgetEnvelope(input.target,source):undefined,sourceFingerprint=await datasetSourceFingerprint(source);
+ if(input.scope&&(input.sectionId!==WHOLE_PAPER_SECTION_ID||input.action!=='plan'||target))throw Error('Whole-paper capabilities require a complete-paper plan.');
+ // The entire source is sent by the provider. Retrieval needs only its exact identity,
+ // not a second excerpt or a duplicate copy of its potentially large text.
+ const context=input.scope?JSON.stringify({coverage:'complete saved paper',scope:input.scope,sourceFingerprint,figureBriefSha256:input.figureBrief?await retrievalHash(input.figureBrief):null,existingFiguresSha256:input.existingFigures?await retrievalHash(input.existingFigures):null}):sectionContext(source,input.sectionId,target?.source.blockId).text;
+ return capabilityRetrievalQuerySchema.parse({context,sourceFingerprint,sectionId:input.sectionId,concept:input.feedback.trim(),purpose:`widget-${input.action}`,...(target?{targetKind:target.spec.kind,targetVersion:WIDGET_CATALOG_VERSION}:{})});
+}
+export async function generationRetrievalQuery(input:{source:SourceDocument;sectionId:string;brief:string;scope?:'paper'}):Promise<CapabilityRetrievalQuery>{
+ const source=validateDocument(input.source),sourceFingerprint=await datasetSourceFingerprint(source);
+ if(input.scope&&input.sectionId!==WHOLE_PAPER_SECTION_ID)throw Error('Whole-paper generation requires the complete-paper scope.');
+ const context=input.scope?JSON.stringify({coverage:'complete saved paper',scope:input.scope,sourceFingerprint}):sectionContext(source,input.sectionId).text;
+ return capabilityRetrievalQuerySchema.parse({context,sourceFingerprint,sectionId:input.sectionId,concept:input.brief.trim(),purpose:'artifact-generate',targetKind:'generated-sdk',targetVersion:'1.0.0'});
+}

@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import type {SourceDocument} from '@/shared/schema';
 import type {ExtractionEvidenceManifest} from '@/shared/extraction-evidence';
 import {prepareWidgetSource,validateWidgetEnvelope,type WidgetEnvelope} from '@/shared/widgets';
-import {metaReadingWidgets,validateWorkspace,workspaceKey,saveWidgetWorkspace} from '@/lib/experiments/workspace';
+import {explicitReadingWidgets,validateWorkspace,workspaceKey,saveWidgetWorkspace} from '@/lib/experiments/workspace';
 import {decodeWidgetSnapshot} from '@/lib/widgets/compatibility';
 import {peekWidgetLocation} from '@/lib/experiments/widget-location';
 import {listSavedArtifactExperiments} from '@/lib/artifacts/experiment-library';
@@ -19,12 +19,12 @@ import styles from './research-workbench.module.css';
 const ExtractionEvidencePanel=dynamic(()=>import('./extraction-evidence').then(module=>module.ExtractionEvidencePanel),{ssr:false,loading:()=> <p role="status">Loading source inspection…</p>});
 type SavedArtifact=Awaited<ReturnType<typeof listSavedArtifactExperiments>>[number];
 
-/** Preserve earlier saved figures and source inspection; authoring belongs to the automatic pipeline. */
+/** Historical figures remain inspectable; only the whole-paper pipeline supplies automatic additions. */
 export function ResearchWorkbench({source:rawSource,original,originalName,originalUrl,extractionEvidence}:{source:SourceDocument;original?:Blob;originalName?:string;originalUrl?:string;extractionEvidence?:ExtractionEvidenceManifest}){
  const source=useMemo(()=>prepareWidgetSource(rawSource),[rawSource]),identity=`${source.id}:${source.sourceVersion}`;
  const [slot,setSlot]=useState<{identity:string;widgets:WidgetEnvelope[]}>({identity:'',widgets:[]});
  const [explicitSharedIds,setExplicitSharedIds]=useState<string[]>([]);
- const allWidgets=slot.identity===identity?slot.widgets:[],widgets=metaReadingWidgets(allWidgets,explicitSharedIds);
+ const allWidgets=slot.identity===identity?slot.widgets:[],widgets=explicitReadingWidgets(allWidgets,explicitSharedIds);
  const [message,setMessage]=useState(''),[saved,setSaved]=useState<SavedArtifact[]>([]),[preview,setPreview]=useState<SavedArtifact|null>(null),[originalPage,setOriginalPage]=useState<number|null>(null);
  const [closed,setClosed]=useState<string[]>([]);
  const returnToSource=(blockId:string)=>{const target=document.getElementById(`source-${source.id}-${blockId}`);target?.scrollIntoView({block:'center'});target?.focus();};

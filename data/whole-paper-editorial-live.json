@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-28T19:37:31Z",
+  "paper": "https://arxiv.org/abs/2504.17033v2",
+  "sourceSections": 43,
+  "provider": "Meta",
+  "run": {
+    "status": "complete",
+    "revision": 1,
+    "figures": [
+      {
+        "title": "Dijkstra frontier and why it sorts",
+        "kind": "graph",
+        "interaction": "Step the actual Dijkstra search forward and back and watch which frontier vertex is extracted next and how relaxations update estimates.",
+        "reused": true
+      },
+      {
+        "title": "From large frontier to few pivots",
+        "kind": "diagram",
+        "interaction": "Move with Next/Previous or Seek through the four predefined stages from large frontier to few remaining pivots.",
+        "reused": true
+      },
+      {
+        "title": "BMSSP divide and conquer by distance",
+        "kind": "diagram",
+        "interaction": "Step through the five predefined stages: shrink to pivots, insert, pull batch, recurse, relax and reinsert.",
+        "reused": true
+      },
+      {
+        "title": "Balancing k and t for the runtime",
+        "kind": "equation",
+        "interaction": "Edit k and t values and observe how the illustrative cost factor rises when moving away from the balanced defaults.",
+        "reused": true
+      }
+    ],
+    "issues": []
+  },
+  "realRequests": {
+    "initialOutline": 2,
+    "implementations": 5,
+    "editorialReview": 1,
+    "total": 8,
+    "requestCharacterCounts": [
+      100665,
+      100756,
+      127777,
+      127712,
+      127852,
+      127834,
+      127938,
+      112182
+    ],
+    "reopeningAdditionalRequests": 0
+  },
+  "checks": {
+    "tests": 839,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "diagramNextStep": "Step 1 to Step 2; active nodes changed",
+    "mobileViewport": 390,
+    "mobilePageWidth": 390,
+    "mobileDiagramViewport": 328,
+    "mobileDiagramScrollableWidth": 588,
+    "sharedArrowLegend": true
+  },
+  "limitations": [
+    "One real paper; not an independent scientific evaluation.",
+    "No SDK figure selected in this live run; SDK full-source behavior covered by automated tests.",
+    "Entire imported source text and figure metadata sent; original image pixels are not sent."
+  ]
+}

@@ -13,6 +13,7 @@ import {buildFigureArtifact,type FigureBuildResult} from '@/lib/artifacts/lifecy
 import {useAdoptionPolicy} from './adoption-policy-provider';
 import {InlineSourceWidget} from './inline-source-widget';
 import {Button} from './ui/button';
+import {FigureReadingGuideView,type FigureReadingGuide} from './figure-reading-guide';
 import styles from './automatic-paper.module.css';
 
 const GeneratedFigure=dynamic(()=>import('./generated-figure').then(module=>module.GeneratedFigure),{ssr:false,loading:()=> <p role="status">Opening interactive figure…</p>});
@@ -37,7 +38,10 @@ export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDo
  },[pipeline,snapshot,enabled,policy.newModelAllowed,policy.generatedAllowed]);
  useEffect(()=>{if(pipeline&&(!enabled||policy.state==='unavailable'||policy.state==='ready'&&(!policy.newModelAllowed||!policy.generatedAllowed)))void pipeline.pause();},[pipeline,enabled,policy.state,policy.newModelAllowed,policy.generatedAllowed]);
  if(!enabled)return null;
- const widgets=snapshot?.widgets??[],generated=snapshot?.generated??[];
+ // Earlier section-by-section additions are kept in storage while Meta chooses
+ // which ones belong in the new whole-paper reading plan.
+ const widgets=snapshot?.paperPlan?snapshot.widgets:[],generated=snapshot?.paperPlan?snapshot.generated:[];
+ const guide=(widgetId?:string,generatedSha?:string)=>{const binding=snapshot?.figureBindings.find(b=>widgetId?b.widgetId===widgetId:b.generatedSha===generatedSha);return binding?.readingGuide??snapshot?.paperPlan?.figures.find(f=>f.id===binding?.figureId);};
  const timing=snapshot;
  const state=String(snapshot?.status??'idle');
  const available=policy.newModelAllowed&&policy.generatedAllowed;
@@ -50,15 +54,15 @@ export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDo
  }[snapshot?.quotaReason??'session-rate']):undefined;
  const message=error||waitingMessage||(policy.state==='unavailable'?'The service is temporarily unavailable. Your paper remains readable.':policy.state==='ready'&&!available?!policy.newModelAllowed?policy.modelMessage:policy.generatedMessage:snapshot?.message)||'Opening the paper and checking its saved illustrations…';
  return <>
-  <AutomaticPaperProgress phase={phase} message={message} figureCount={widgets.length+generated.length} sectionsDone={snapshot?.sectionsDone??0} sectionsPlanned={snapshot?.sectionIds.length??0} sectionsTotal={snapshot?.sectionsTotal??0} retryAt={timing?.retryAt} issues={snapshot?.issues}/>
-  {widgets.map(widget=><AutomaticStockFigure key={widget.id} envelope={widget} source={stableSource}/>)}
-  {generated.map(entry=><AutomaticGeneratedFigure key={entry.candidate.sha256} candidate={entry.candidate} blockId={entry.blockId} source={stableSource}/>)}
+  <AutomaticPaperProgress phase={phase} message={message} figureCount={widgets.length+generated.length} figuresDone={snapshot?.figureTasksDone.length??0} plannedFigures={snapshot?.paperPlan?.figures.length} retryAt={timing?.retryAt} issues={snapshot?.issues}/>
+  {widgets.map(widget=><AutomaticStockFigure key={widget.id} envelope={widget} source={stableSource} readingGuide={guide(widget.id)}/>)}
+  {generated.map(entry=><AutomaticGeneratedFigure key={entry.candidate.sha256} candidate={entry.candidate} blockId={entry.blockId} source={stableSource} readingGuide={guide(undefined,entry.candidate.sha256)}/>)}
  </>;
 }
 
-function AutomaticStockFigure({envelope,source}:{envelope:WidgetEnvelope;source:SourceDocument}){
+function AutomaticStockFigure({envelope,source,readingGuide}:{envelope:WidgetEnvelope;source:SourceDocument;readingGuide?:FigureReadingGuide}){
  const [widget,setWidget]=useState(envelope),[open,setOpen]=useState(true);
- return <InlineSourceWidget envelope={widget} source={source} open={open} focused={false} onOpen={setOpen} onChange={setWidget}/>;
+ return <InlineSourceWidget envelope={widget} source={source} open={open} focused={false} onOpen={setOpen} onChange={setWidget} readingGuide={readingGuide}/>;
 }
 
 /** Host-owned insertion and visibility; generated code never receives DOM access. */
@@ -69,8 +73,8 @@ function SourceSlot({source,blockId,id,children}:{source:SourceDocument;blockId:
  return slot?createPortal(children(near),slot):null;
 }
 
-function AutomaticGeneratedFigure({candidate,source,blockId}:{candidate:GenerationCandidate;source:SourceDocument;blockId:string}){
- return <SourceSlot source={source} blockId={blockId} id={candidate.sha256}>{near=><section className={`${styles.figure} paperplay-figure`} aria-label={`Custom Meta figure: ${candidate.artifact.title}`}><h3>{candidate.artifact.title}</h3><p>{candidate.plan.objective}</p><small>Custom figure by Meta · illustrative and scientifically unverified</small>{near?<CheckedGeneratedFigure candidate={candidate} source={source}/>:<p>Interactive figure loads as you read this passage.</p>}</section>}</SourceSlot>;
+function AutomaticGeneratedFigure({candidate,source,blockId,readingGuide}:{candidate:GenerationCandidate;source:SourceDocument;blockId:string;readingGuide?:FigureReadingGuide}){
+ return <SourceSlot source={source} blockId={blockId} id={candidate.sha256}>{near=><section className={`${styles.figure} paperplay-figure`} aria-label={`Custom Meta figure: ${candidate.artifact.title}`}><h3>{candidate.artifact.title}</h3>{readingGuide?<FigureReadingGuideView guide={readingGuide}/>:<p>{candidate.plan.objective}</p>}{near?<CheckedGeneratedFigure candidate={candidate} source={source}/>:<p>Interactive figure loads as you read this passage.</p>}<small>Meta teaching illustration · not an experimental result</small></section>}</SourceSlot>;
 }
 
 function CheckedGeneratedFigure({candidate,source}:{candidate:GenerationCandidate;source:SourceDocument}){

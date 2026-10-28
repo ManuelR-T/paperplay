@@ -30,7 +30,9 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource,
   const originalUrl = blobUrl ?? record.originalUrl ?? source.source.url;
   const htmlSource = source.source.kind === 'arxiv' && !record.original;
   const session = useReadingSession();
-  const analyzed = record.analysis?.figures ?? [];
+  // Earlier Meta analyses are retained, but authorship alone is no longer an
+  // editorial decision to insert every historical figure into this reading.
+  const analyzed = snapshotFigureId ? (record.analysis?.figures ?? []).filter(entry=>entry.figure.id===snapshotFigureId) : [];
   const bundleViews = snapshotFigureId ? (session?.state.figures ?? []).filter(view=>view.snapshot.figure.id===snapshotFigureId) : [];
   const restored = bundleViews.filter(view => !analyzed.some(item => item.figure.id === view.snapshot.figure.id)).map(view => {
     const anchor = source.anchors.find(item => item.id === view.snapshot.figure.sourceAnchorIds[0])!;
@@ -45,7 +47,7 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource,
     <SourceInformation source={source} description={htmlSource ? 'Structured arXiv article. References point to sections of the original HTML.' : 'Text extracted from the PDF. Compare the original for equations, figures or uncertain reading order.'}>{record.attribution && <p>{record.attribution.authors} · {record.attribution.notice} {record.attribution.license}</p>}<p>The imported source is stored in this browser. Importing does not establish a redistribution license.</p>{record.analysis?.warnings.length ? <section><h3>Analysis limitations</h3><ul>{record.analysis.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></section> : null}{record.analysis && <p>Analysis by {record.analysis.model}. {record.analysis.usage ? `${record.analysis.usage.inputTokens.toLocaleString()} input tokens · ${record.analysis.usage.outputTokens.toLocaleString()} output tokens.` : 'Provider usage unavailable.'} Saved analysis is reused.</p>}</SourceInformation>
     <ReadingDesk source={source} original={record.original} originalName={record.originalName} originalUrl={originalUrl ?? undefined} htmlSource={htmlSource} sources={sources} openSource={openSource} attribution={record.attribution}/>
     <AutomaticPaperEnhancement source={source} enabled={automaticEnabled&&!busy}/>
-    {record.analysis && <aside className="analysis-overview"><div><Badge variant="outline">Added with Meta</Badge><span>{record.analysis.model}</span></div><h2>A guide to the ideas</h2><p>{record.analysis.summary}</p><p className="control-hint">This summary is an added interpretation. Follow each figure’s quote back to the source.</p></aside>}
+    {record.analysis && analyzed.length>0 && <aside className="analysis-overview"><div><Badge variant="outline">Saved Meta analysis</Badge><span>{record.analysis.model}</span></div><h2>Context for this saved figure</h2><p>{record.analysis.summary}</p><p className="control-hint">This summary is an added interpretation. Follow the figure’s quote back to the source.</p></aside>}
     <div className="source-blocks">{source.blocks.map(block => {
       const additions = anchored.filter(item => item.anchor?.blockId === block.id);
       return <div className="passage-row" key={block.id}><ImportedSourceBlock block={block} source={source} originalUrl={originalUrl} original={record.original} htmlSource={htmlSource}/>{block.kind !== 'heading' && <PassageTools source={source} blockId={block.id}/>}

@@ -32,7 +32,7 @@ export function readingWidgets(source:SourceDocument):WidgetEnvelope[] {
   return[];
 }
 
-/** Reading eligibility only: content and parameters are chosen by Meta, never inferred from source keywords. */
-export function metaReadingWidgets(widgets:readonly WidgetEnvelope[],explicitSharedIds:readonly string[]=[]):WidgetEnvelope[]{
-  const shared=new Set(explicitSharedIds);return widgets.filter(widget=>widget.authorship.kind==='meta'||shared.has(widget.id));
+/** Saved figures outside the whole-paper plan appear only after an explicit reader selection. */
+export function explicitReadingWidgets(widgets:readonly WidgetEnvelope[],explicitSharedIds:readonly string[]=[]):WidgetEnvelope[]{
+  const shared=new Set(explicitSharedIds);return widgets.filter(widget=>shared.has(widget.id));
 }

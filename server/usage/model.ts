@@ -19,7 +19,7 @@ export const usageIdFor = (sessionId: string, requestId: string) => createHash('
 export function validateUsageRequest(input: UsageRequest) {
   if (!/^[a-zA-Z0-9:_-]{1,200}$/.test(input.id) || !/^[a-zA-Z0-9_-]{1,200}$/.test(input.sessionId) || !['analysis', 'question'].includes(input.kind)
     || !Number.isInteger(input.maxOutputTokens) || input.maxOutputTokens < 1 || input.maxOutputTokens > 6000
-    || !Number.isInteger(input.inputCharacters) || input.inputCharacters < 1 || input.inputCharacters > 100_000
+    || !Number.isInteger(input.inputCharacters) || input.inputCharacters < 1 || input.inputCharacters > 1_000_000
     || !/^[a-zA-Z0-9._/-]{1,120}$/.test(input.model) || (input.fingerprint !== undefined && !/^[a-zA-Z0-9:_-]{1,200}$/.test(input.fingerprint))) throw new AnalysisHttpError(400, 'Invalid bounded usage reservation.');
 }
 export function validateUsageUpdate(update: UsageUpdate) {

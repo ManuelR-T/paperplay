@@ -1,6 +1,7 @@
+// Compatibility tests for recovering saved section-era requests. New readers use whole-paper planning.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createAutomaticPaperPipeline,automaticPaperStorageKey,AUTOMATIC_PAPER_POLICY,AutomaticPaperHttpError,type AutomaticPaperTransport,type AutomaticPaperOptions} from '../lib/automatic/pipeline';
+import {createAutomaticPaperPipeline,automaticPaperStorageKey,AUTOMATIC_PAPER_POLICY,AutomaticPaperHttpError,type AutomaticPaperTransport,type AutomaticPaperOptions} from '../lib/automatic/legacy-pipeline';
 import {createDynamicSequenceArtifact} from '../lib/artifacts/fixtures/dynamic-sequence';
 import {enrichmentFingerprint} from '../lib/enrichment/state';
 import {sha256Text} from '../lib/artifacts/sdk-source';

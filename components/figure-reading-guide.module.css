@@ -1,0 +1,8 @@
+.guide{margin:12px 0 18px;min-width:0;color:var(--ink,var(--foreground));font:16px/1.65 var(--sans);overflow-wrap:anywhere}
+.guide .context{font:inherit;margin:0 0 12px;color:inherit}
+.context strong{font-weight:600}
+.prompts{margin:0;display:grid;gap:8px;padding-left:14px;border-left:2px solid var(--olive,#667b4c)}
+.prompts>div{display:grid;grid-template-columns:58px minmax(0,1fr);column-gap:10px;align-items:baseline}
+.prompts dt{font-weight:600;font-size:15px}
+.prompts dd{margin:0;min-width:0}
+@media(max-width:500px){.guide{font-size:15px;line-height:1.7}.prompts{padding-left:10px}.prompts>div{grid-template-columns:48px minmax(0,1fr);column-gap:8px}}

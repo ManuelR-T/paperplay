@@ -13,11 +13,12 @@ import { usageIdFor, reservedTokensFor, usageQuotaResponse, type UsageStore } fr
 import { AnalysisHttpError, requireSameOrigin, sessionFor, signingKey, signToken, verifyToken } from '../analysis/security';
 import { safeProviderError, type ProviderResponse } from '../analysis/provider';
 import type { MetaConfig } from '../meta/config';
-import { createMetaEnrichmentProvider, providerInput, enrichmentProviderRequest,enrichmentPromptMetrics, ENRICHMENT_MAX_OUTPUT_TOKENS, type EnrichmentInput, type EnrichmentProvider } from './provider';
+import { createMetaEnrichmentProvider, providerInput, enrichmentProviderRequest,enrichmentPromptMetrics,paperFigureModelOutputSchema, ENRICHMENT_MAX_OUTPUT_TOKENS, type EnrichmentInput, type EnrichmentProvider } from './provider';
 import { getEnrichmentStore, type EnrichmentStore, type EnrichmentRecord } from './store';
+import {WHOLE_PAPER_SECTION_ID,paperFigureBriefSchema,existingPaperFigureSchema,wholePaperContext,validatePaperFigureBrief,validateExistingPaperFigures,validatePaperPlan} from '../../lib/enrichment/whole-paper';
 
 const actionSchema = z.enum(['plan','repair','edit']);
-const contextFields = { retrievalSelectionSha256:z.string().regex(/^[a-f0-9]{64}$/).optional(),source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), action: actionSchema, feedback: z.string().max(1200).default(''), target: widgetEnvelopeSchema.optional() };
+const contextFields = { retrievalSelectionSha256:z.string().regex(/^[a-f0-9]{64}$/).optional(),source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), action: actionSchema, feedback: z.string().max(1200).default(''), target: widgetEnvelopeSchema.optional(),scope:z.enum(['paper-outline','paper-figure']).optional(),figureBrief:paperFigureBriefSchema.optional(),existingFigures:z.array(existingPaperFigureSchema).max(3000).optional() };
 const startSchema = z.strictObject({ ...contextFields, requestId: z.string().regex(/^[a-zA-Z0-9-]{16,100}$/) });
 const jobSchema = z.strictObject({ token: z.string().max(5000), createdAt: z.number().finite(), action: actionSchema, sectionId: z.string().min(1).max(100), model: z.string().max(120) });
 const statusSchema = z.strictObject({ ...contextFields, job: jobSchema });
@@ -42,12 +43,17 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
   const fail = (error: unknown, cookie?: string) => { const e = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The source, section or widget configuration could not be validated. The previous valid work is retained.');const quota=usageQuotaResponse(e);return Response.json({error:e.message,uncertain:e.uncertain,...(quota?{quota:quota.quota}:{})},{status:e.status,headers:{'Cache-Control':'no-store',...(cookie?{'Set-Cookie':cookie}:{}),...quota?.headers}}); };
   async function prepare(input: z.infer<typeof statusSchema> | z.infer<typeof startSchema>, config: MetaConfig,frozen?:EnrichmentRecord) {
     const source = validateDocument(input.source);
+    if(input.scope&&(input.action!=='plan'||input.sectionId!==WHOLE_PAPER_SECTION_ID||input.target))throw new AnalysisHttpError(400,'Whole-paper illustration work requires plan action and the complete paper scope.');
+    if((input.scope==='paper-figure')!==!!input.figureBrief||input.existingFigures!==undefined&&input.scope!=='paper-outline')throw new AnalysisHttpError(400,'The figure brief or saved illustrations do not belong to this planning phase.');
     if ((input.action !== 'plan') !== !!input.target) throw new AnalysisHttpError(400, 'Targeted repair/edit requires exactly one valid current widget; a plan has no target.');
     if (input.action !== 'plan' && input.feedback.trim().length < 4) throw new AnalysisHttpError(400, 'Describe the requested repair or configuration change.');
     if (/```|<script|javascript:|\beval\s*\(|process\.env|\b(?:exec|spawn|require)\s*\(/i.test(input.feedback)) throw new AnalysisHttpError(400, 'This action accepts a bounded configuration request, not executable code.');
     const target = input.target ? validateWidgetEnvelope(input.target, source) : undefined;
-    const context = sectionContext(source, input.sectionId, target?.source.blockId);
-    const scopeRequest:EnrichmentInput={action:input.action,context:context.text,feedback:input.feedback.trim(),...(target?{target}:{})};
+    const figureBrief=input.figureBrief?validatePaperFigureBrief(input.figureBrief,source):undefined;
+    if(figureBrief?.reuseId!==null&&figureBrief?.reuseId!==undefined)throw new AnalysisHttpError(400,'A selected saved figure should be reused directly, not regenerated.');
+    const existingFigures=input.existingFigures?validateExistingPaperFigures(input.existingFigures,source):undefined;
+    const context = input.scope?wholePaperContext(source):sectionContext(source, input.sectionId, target?.source.blockId);
+    const scopeRequest:EnrichmentInput={action:input.action,context:context.text,feedback:input.feedback.trim(),...(target?{target}:{}),...(input.scope?{scope:input.scope}:{}),...(figureBrief?{figureBrief}:{}),...(existingFigures?{existingFigures}:{})};
     const query=await enrichmentRetrievalQuery({...input,source,target});
     const retryUnsubmitted=!!frozen&&frozen.status==='rejected'&&frozen.actualTokens===0&&!frozen.providerId;
     const legacy=!!frozen&&!frozen.retrieval,selection=frozen&&!retryUnsubmitted?undefined:await retrieveCapabilities(query);
@@ -56,8 +62,9 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
     if(selection?.gaps.some(gap=>gap.blocking))throw new AnalysisHttpError(409,'A required exact capability is unavailable. Retain the source-linked fallback.');
     if(input.retrievalSelectionSha256&&input.retrievalSelectionSha256!==retrieval?.selectionSha256)throw new AnalysisHttpError(409,'The reviewed capability selection changed. Review the exact bounded selection again.');
     const request:EnrichmentInput={...scopeRequest,...(selection?{retrieval:selection}:{})},inputText=selection?providerInput(request):'';
+    if(input.scope&&selection&&JSON.stringify(enrichmentProviderRequest(request,config.model)).length>1_000_000)throw new AnalysisHttpError(413,'The complete paper and figure instructions exceed this service’s full-input transport limit. No excerpted replacement was sent.');
     const metrics=frozen?.requestMetrics??(selection?enrichmentPromptMetrics(request,config.model):undefined);
-    if(metrics&&metrics.characters>70_000)throw new AnalysisHttpError(400,'The complete instructions/input/schema/feedback exceed the enrichment prompt budget.');
+    if(metrics&&metrics.characters>(input.scope?1_000_000:70_000))throw new AnalysisHttpError(413,input.scope?'The complete paper and figure instructions exceed this service’s full-input transport limit. No excerpted replacement was sent.':'The complete instructions/input/schema/feedback exceed the enrichment prompt budget.');
     const requestSha256=frozen?.requestSha256??(selection?digest(enrichmentProviderRequest(request,config.model)):undefined);
     if(retryUnsubmitted&&requestSha256!==digest(enrichmentProviderRequest(request,config.model)))throw new AnalysisHttpError(409,'The frozen prompt changed before this unsubmitted request could resume.');
     const documentHash=digest({...source,anchors:[]}),contextHash=frozen&&!frozen.retrieval?digest({request:scopeRequest,catalog:WIDGET_CATALOG_VERSION,model:config.model}):digest({request:scopeRequest,retrieval:retrieval?.selectionSha256,model:config.model,promptPolicy:'retrieval-v1',requestSha256});
@@ -75,11 +82,20 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
     if (response.status === 'completed') {
       try {
         const usage=measured(response);
-        const result = compileEnrichmentPlan(JSON.parse(response.output_text || ''), { source: input.source, section: input.context.section, action: input.request.action, target: input.target, model, catalogVersion: WIDGET_CATALOG_VERSION,
+        if(input.request.scope==='paper-outline')return {status:'complete',paperPlan:validatePaperPlan(JSON.parse(response.output_text||''),input.source,input.request.existingFigures),retrieval:input.retrieval,accounting:accounting(input.metrics,response,record)};
+        const output=JSON.parse(response.output_text||''),implementation=input.request.scope==='paper-figure'?paperFigureModelOutputSchema.parse(output):undefined;
+        const {readingGuide,...implementationPlan}=implementation??{};
+        const result = compileEnrichmentPlan(implementation?implementationPlan:output, { source: input.source, section: input.context.section, action: input.request.action, target: input.target, model, catalogVersion: WIDGET_CATALOG_VERSION,
           reviewCustom: dependencies.reviewCustom, allowedKind:input.retrieval?kind=>validateRetrievedWidgetKind(kind,input.retrieval!):undefined,allowedInteractions: (kind: WidgetKind) => widgetCatalog.find(c => c.format === 'paperplay-widget' && c.kind === kind)?.controls ?? [], usage });
+        if(input.request.scope==='paper-figure'){
+          const brief=input.request.figureBrief!;
+          if(result.proposals.length+(result.customFigures?.length??0)>1)throw Error('Implement exactly one approved illustration, not additional figures.');
+          const sameAnchor=(anchor:{blockId:string;page:number;quote:string})=>anchor.blockId===brief.blockId&&anchor.page===brief.page&&anchor.quote.replace(/\s+/g,' ').trim()===brief.quote.replace(/\s+/g,' ').trim();
+          if(result.proposals.some(proposal=>proposal.envelope.spec.kind!==brief.kind||!sameAnchor(proposal.envelope.source))||(result.customFigures??[]).some(request=>!sameAnchor(request)))throw Error('The implementation must preserve the approved illustration kind and exact source anchor.');
+        }
         if(!input.retrieval)result.warnings.push('This job predates frozen capability retrieval; no selected-method receipt was reconstructed. The result remains an unverified teaching proposal.');
-        return {status:'complete',result:{...result,retrieval:input.retrieval,accounting:accounting(input.metrics,response,record)}};
-      } catch (error) { return { status: 'failed', error: ('Meta output did not match the bounded plan/source contract. '+(error instanceof z.ZodError?error.issues.slice(0,6).map(issue=>issue.path.join('.')+': '+issue.message).join('; '):'Return a complete valid plan using the supplied templates and exact source quotes.')).slice(0,1500) }; }
+        return {status:'complete',result:{...result,...(readingGuide?{readingGuide}:{}),retrieval:input.retrieval,accounting:accounting(input.metrics,response,record)}};
+      } catch (error) { return { status: 'failed', error: ('Meta output did not match the bounded plan/source contract. '+(error instanceof z.ZodError?error.issues.slice(0,6).map(issue=>issue.path.join('.')+': '+issue.message).join('; '):input.request.scope&&error instanceof Error?error.message:'Return a complete valid plan using the supplied templates and exact source quotes.')).slice(0,1500) }; }
     }
     if (response.status === 'queued') return { status: 'queued' };
     if (response.status === 'cancelled') return { status: 'cancelled' };

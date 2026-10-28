@@ -1,5 +1,6 @@
 import type { CustomWidgetSpec } from '../../shared/custom-widget';
 import { z } from 'zod';
+import {paperReadingGuideSchema,type PaperPlan,type PaperReadingGuide} from './whole-paper';
 import {capabilitySelectionReceiptSchema,modelRequestAccountingSchema,type CapabilitySelectionReceipt,type ModelRequestAccounting} from '../../shared/capability-retrieval';
 import type { SourceDocument } from '../../shared/schema';
 import { validateWidgetEnvelope, validateWidgetSpec, prepareWidgetSource, widgetEnvelopeSchema, WIDGET_KINDS, type WidgetEnvelope } from '../../shared/widgets';
@@ -35,12 +36,13 @@ export const enrichmentPlanSchema = z.strictObject({
 export type CustomWidgetReview = (candidate: CustomWidgetSpec, context: { source: SourceDocument; quote: string; blockId: string }) => void;
 export type EnrichmentAction = 'plan' | 'repair' | 'edit';
 export type EnrichmentProposal = { id: string; concept: string; reason: string; objective: string; neededData: string[]; provenance: 'synthetic' | 'illustrative'; interactions: string[]; limitations: string[]; envelope: WidgetEnvelope; diff?: Array<{ path: string; before: string; after: string }> };
-export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; customFigures?:EnrichmentCustomFigure[]; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number };retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
+export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; customFigures?:EnrichmentCustomFigure[]; readingGuide?:PaperReadingGuide; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number };retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
 export type EnrichmentJob = { token: string; createdAt: number; action: EnrichmentAction; sectionId: string; model: string };
 export type EnrichmentBudget = { requests: number; maxRequests: number; accountedTokens: number; maxTokens: number };
-export type EnrichmentReply = { status: 'queued' | 'analyzing' | 'complete' | 'failed' | 'cancelled' | 'expired' | 'incomplete'; job?: EnrichmentJob; result?: EnrichmentResult; budget?: EnrichmentBudget; error?: string; uncertain?: boolean;retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
+export type EnrichmentReply = { status: 'queued' | 'analyzing' | 'complete' | 'failed' | 'cancelled' | 'expired' | 'incomplete'; job?: EnrichmentJob; result?: EnrichmentResult; paperPlan?:PaperPlan; budget?: EnrichmentBudget; error?: string; uncertain?: boolean;retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
 
 export const enrichmentResultSchema = z.strictObject({ retrieval:capabilitySelectionReceiptSchema.optional(),accounting:modelRequestAccountingSchema.optional(),action: z.enum(['plan','repair','edit']), sectionId: z.string().min(1).max(100), sectionTitle: z.string().min(1).max(1000), catalogVersion: z.string().max(30), model: z.string().max(120), summary: plain,
+  readingGuide:paperReadingGuideSchema.optional(),
   proposals: z.array(z.strictObject({ id: z.string().max(40), concept: plain.max(300), reason: plain.max(1000), objective: plain.max(1000), neededData: z.array(plain.max(300)).max(8), provenance: z.enum(['synthetic','illustrative']), interactions: z.array(plain.max(100)).max(12), limitations: z.array(plain.max(500)).max(8), envelope: widgetEnvelopeSchema, diff: z.array(z.strictObject({ path: z.string().max(500), before: z.string().max(25_000), after: z.string().max(25_000) })).max(100).optional() })).max(4),
   customFigures:z.array(enrichmentCustomFigureSchema).max(4).default([]),
   rejected: z.array(z.strictObject({ id: z.string().max(40), reason: z.string().max(2000) })).max(8), warnings: z.array(z.string().max(2000)).max(20), repetitionReason: z.string().max(1000), usage: z.strictObject({ inputTokens: z.number().int().min(0), outputTokens: z.number().int().min(0), totalTokens: z.number().int().min(0) }).optional(),

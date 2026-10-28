@@ -4,11 +4,12 @@ import {createCapabilitySelectionReceipt,validateCapabilitySelectionReceipt} fro
 import type {ModelRequestAccounting} from '../../shared/capability-retrieval';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
-import { GENERATION_POLICY, generationPrepareSchema, generationStartSchema, generationStatusSchema, generationCancelSchema, type GenerationReply, type GenerationRunRef, type GenerationCandidate } from '../../shared/artifact-generation';
+import { GENERATION_POLICY, generationInputCharacterLimit, generationPrepareSchema, generationStartSchema, generationStatusSchema, generationCancelSchema, type GenerationReply, type GenerationRunRef, type GenerationCandidate } from '../../shared/artifact-generation';
 import { canonicalArtifactJson } from '../../shared/figure-compilation';
 import { validateFigureArtifact } from '../../shared/figure-artifacts';
 import { validateDocument } from '../../shared/schema';
-import { sectionContext } from '../../lib/enrichment/sections';
+import { wholePaperContext, WHOLE_PAPER_SECTION_ID } from '../../lib/enrichment/whole-paper';
+import { sectionContext, sourceBlockText } from '../../lib/enrichment/sections';
 import { FIGURE_SDK_SOURCE } from '../../lib/artifacts/sdk-source';
 import { AnalysisHttpError, requireSameOrigin, sessionFor, signingKey, signToken, verifyToken } from '../analysis/security';
 import { safeProviderError, type ProviderResponse } from '../analysis/provider';
@@ -16,7 +17,7 @@ import { getUsageStore } from '../usage/service';
 import { reservedTokensFor, usageIdFor, usageQuotaResponse, type UsageStore } from '../usage/model';
 import { getEnrichmentStore, type EnrichmentStore, type GenerationRunRecord, type EnrichmentRecord } from '../enrichment/store';
 import type { MetaConfig } from '../meta/config';
-import { createArtifactGenerationProvider, generationModelOutputSchema, generationPromptCharacters,generationProviderRequest,GENERATION_INSTRUCTIONS,generationPromptMetrics,validateGeneratedMethodSelection,type ArtifactGenerationProvider, type GenerationProviderInput } from './provider';
+import { createArtifactGenerationProvider, generationModelOutputSchema, generationPromptCharacters,generationProviderRequest,generationInstructions,generationPromptMetrics,validateGeneratedMethodSelection,type ArtifactGenerationProvider, type GenerationProviderInput } from './provider';
 
 const hash = (value: unknown) => createHash('sha256').update(canonicalArtifactJson(value)).digest('hex');
 const textHash = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -37,7 +38,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   const provider = dependencies.provider ?? createArtifactGenerationProvider;
   const running = new Map<string, Promise<GenerationReply>>();
   const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) } });
-  const fail = (error: unknown) => { const safe = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The generation request or result failed bounded validation. Previous figures are retained.'); const quota=usageQuotaResponse(safe);return Response.json({error:safe.message,uncertain:safe.uncertain,...(quota?{quota:quota.quota}:{})},{status:safe.status,headers:{'Cache-Control':'no-store',...quota?.headers}}); };
+  const fail = (error: unknown) => { const safe = error instanceof AnalysisHttpError ? error : error instanceof Error&&error.message==='Model request body exceeds its measurement ceiling.' ? new AnalysisHttpError(413,'The complete paper and generation instructions exceed the supported request size. No source text was removed and no model request was sent.') : new AnalysisHttpError(400, 'The generation request or result failed bounded validation. Previous figures are retained.'); const quota=usageQuotaResponse(safe);return Response.json({error:safe.message,uncertain:safe.uncertain,...(quota?{quota:quota.quota}:{})},{status:safe.status,headers:{'Cache-Control':'no-store',...quota?.headers}}); };
   function configFor(request: Request, createSession = false) {
     requireSameOrigin(request, dependencies.allowedOrigin); const config = dependencies.getConfig();
     if (!config.apiKey) throw new AnalysisHttpError(503, 'Meta generation is not configured. Existing figures remain available.');
@@ -45,15 +46,21 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     return { config, key, session: sessionFor(request, key, now(), createSession) };
   }
   async function context(input: Context, model: string,frozen?:GenerationRunRecord) {
-    const source = validateDocument(input.source); const selected = sectionContext(source, input.sectionId);
+    const source = validateDocument(input.source);
+    if(input.scope==='paper'){
+      if(input.sectionId!==WHOLE_PAPER_SECTION_ID||!input.anchor)throw new AnalysisHttpError(400,'Whole-paper generation requires its selected figure anchor.');
+      const block=source.blocks.find(block=>block.id===input.anchor!.blockId),norm=(text:string)=>text.replace(/\s+/g,' ').trim();
+      if(!block||block.page!==input.anchor.page||!norm(sourceBlockText(block)).includes(norm(input.anchor.quote)))throw new AnalysisHttpError(400,'The selected figure anchor does not belong to this complete paper.');
+    }else if(input.anchor)throw new AnalysisHttpError(400,'A selected whole-paper anchor requires paper scope.');
+    const selected = input.scope==='paper'?wholePaperContext(source):sectionContext(source, input.sectionId);
     // Match the existing catalog ledger identity byte-for-byte to share its allowance.
     const documentHash = textHash(JSON.stringify({ ...source, anchors: [] }));
     const query=await generationRetrievalQuery({...input,source});
     const legacy=!!frozen&&!frozen.retrieval,selection=frozen?undefined:await retrieveCapabilities(query);let retrieval;try{retrieval=frozen?.retrieval?await validateCapabilitySelectionReceipt(frozen.retrieval,query):legacy?undefined:await createCapabilitySelectionReceipt(selection!);}catch{throw new AnalysisHttpError(409,'Source, section and brief are frozen for this generation run.');}
     if(input.retrievalSelectionSha256&&input.retrievalSelectionSha256!==retrieval?.selectionSha256)throw new AnalysisHttpError(409,'The reviewed capability selection differs from this frozen run.');
-    const promptContractSha256=frozen?.promptContractSha256??hash({instructions:GENERATION_INSTRUCTIONS,schema:generationProviderRequest({context:selected.text,brief:input.brief,attempt:1}).text.format.schema}),sdkSha256=frozen?.sdkSha256??textHash(FIGURE_SDK_SOURCE);
-    const contextHash=hash({documentHash,selected:selected.text,brief:input.brief,model,policy:GENERATION_POLICY,sdkSha256,...(frozen&&!frozen.retrieval?{}:{retrieval:retrieval?.selectionSha256,promptContractSha256})});
-    return {source,selected,documentHash,contextHash,retrieval,selection,query,promptContractSha256,sdkSha256};
+    const promptContractSha256=frozen?.promptContractSha256??hash({instructions:generationInstructions(input),schema:generationProviderRequest({context:selected.text,brief:input.brief,attempt:1,...(input.scope==='paper'?{scope:input.scope,anchor:input.anchor}:{})}).text.format.schema}),sdkSha256=frozen?.sdkSha256??textHash(FIGURE_SDK_SOURCE);
+    const contextHash=hash({documentHash,selected:selected.text,brief:input.brief,model,policy:GENERATION_POLICY,sdkSha256,...(input.scope==='paper'?{scope:input.scope,anchor:input.anchor}:{}),...(frozen&&!frozen.retrieval?{}:{retrieval:retrieval?.selectionSha256,promptContractSha256})});
+    return {source,selected,anchor:input.anchor,documentHash,contextHash,retrieval,selection,query,promptContractSha256,sdkSha256};
   }
 
   function ref(run: GenerationRunRecord, key: string): GenerationRunRef {
@@ -75,13 +82,14 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     const current = store().generationRun(run.runId, run.owner);
     const attempt=value.attempt??current.attempts.length,record=attempt?store().generationAttempt(current.runId,current.owner,attempt):undefined;
     const metrics=record?.requestMetrics??current.previewMetrics;const accounting:ModelRequestAccounting|undefined=metrics?{request:metrics,actualUsage:record?.actualUsage??null,estimatePurpose:'conservative-quota-reservation-not-financial-quote',localTests:'provider-free'}:undefined;
-    return { ...value,retrieval:current.retrieval,...(accounting?{accounting}:{}), run: ref(current, key), budget: { maxAttempts: current.maxAttempts, attemptsClaimed: current.attempts.length, maxReservedTokens: 666000, reservedTokens: current.reservedTokens, maxOutputTokensPerAttempt: 6000, maxInputCharactersPerAttempt: 50000 }, paperBudget: store().budget(current.owner, current.documentHash) };
+    return { ...value,retrieval:current.retrieval,...(accounting?{accounting}:{}), run: ref(current, key), budget: { maxAttempts: current.maxAttempts, attemptsClaimed: current.attempts.length, maxReservedTokens: 666000, reservedTokens: current.reservedTokens, maxOutputTokensPerAttempt: 6000, maxInputCharactersPerAttempt: generationInputCharacterLimit(current.sectionId===WHOLE_PAPER_SECTION_ID?'paper':undefined) }, paperBudget: store().budget(current.owner, current.documentHash) };
   }
   function candidate(response: ProviderResponse, checked: Awaited<ReturnType<typeof context>>, run: GenerationRunRecord, attempt: number): GenerationCandidate {
     if (!response.output_text || Buffer.byteLength(response.output_text) > 96*1024) throw Error('Output exceeds limit.');
     const output = generationModelOutputSchema.parse(JSON.parse(response.output_text));
     if(checked.retrieval)validateGeneratedMethodSelection(output.sourceCode,checked.retrieval);
     const norm = (text: string) => text.replace(/\s+/g, ' ').trim();
+    if(checked.anchor&&(output.anchor.blockId!==checked.anchor.blockId||output.anchor.page!==checked.anchor.page||output.anchor.quote!==checked.anchor.quote))throw Error('The generated interaction moved away from the approved figure anchor.');
     if (!checked.selected.section.segments.some(segment => segment.blockId === output.anchor.blockId && segment.page === output.anchor.page && norm(segment.text).includes(norm(output.anchor.quote))) || norm(output.anchor.quote).length < 12) throw Error('Anchor outside selected coverage.');
     const fields = (items: typeof output.inputFields) => items.map(({ maxItems, ...field }) => ({ ...field, ...(maxItems === null ? {} : { maxItems }) }));
     const artifact = validateFigureArtifact({ format: 'paperplay-figure-artifact', schemaVersion: 1, id: `generated-${run.runId.slice(0,8)}-${attempt}`, title: output.title, kind: 'generated', source: { documentId: checked.source.id, sourceVersion: checked.source.sourceVersion }, authorship: { kind: 'meta', label: 'Meta-proposed unverified teaching interaction' }, anchors: [{ id: 'passage', ...output.anchor }], assumptions: output.plan.assumptions, rights: 'Model-authored teaching code. Source paper/data rights remain separate; no third-party assets are bundled.', sdk: { id: 'paperplay-figure-sdk', version: '1.0.0' }, entry: { file: 'figure.js', export: 'update', language: 'javascript', source: output.sourceCode, sha256: textHash(output.sourceCode) }, dependencyLock: [{ id: 'paperplay-figure-sdk', version: '1.0.0', sha256:run.sdkSha256??textHash(FIGURE_SDK_SOURCE), license: 'ISC' }], capabilityRequests: ['draw-2d','controls','source-return','entity-selection'], interfaces: { input: fields(output.inputFields), state: fields(output.stateFields), output: 'paperplay-sdk-frame-v1' }, initialInput: JSON.parse(output.initialInputJson), assetIds: [], assetBindings: [], resources: { maxSourceBytes: 16384, maxInputBytes: 16384, maxStateBytes: 16384, maxOutputBytes: 65536, maxMarks: 256, maxControls: 8, maxExecutionMs: 100, maxMemoryBytes: 8*1024*1024, maxStackBytes: 256*1024 }, tests: output.checks.map((description,index) => ({ id: `declared-${index}`, kind: 'invariant', description, expected: 'Not executed. Model-declared expectation; scientific evidence remains unverified.' })), provenance: { origin: 'model-authored', evidence: 'unverified', references: [] } }, checked.source);
@@ -118,7 +126,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   return {
     async prepare(request: Request) {
       try { const { config, key, session } = configFor(request, true); const input = generationPrepareSchema.parse(await readJson(request)); let existing:GenerationRunRecord|undefined;try{existing=store().generationRun(input.runId,session.sid);}catch(error){if(!(error instanceof AnalysisHttpError)||error.status!==404)throw error;}const checked=await context(input,config.model,existing);
-        const previewMetrics=checked.selection?generationPromptMetrics({context:checked.selected.text,brief:input.brief,attempt:1,retrieval:checked.selection},config.model):existing?.previewMetrics;if(previewMetrics&&previewMetrics.characters>GENERATION_POLICY.maxInputCharacters)throw new AnalysisHttpError(400,'The complete generation prompt exceeds the bounded input budget.');
+        const previewMetrics=checked.selection?generationPromptMetrics({context:checked.selected.text,brief:input.brief,attempt:1,retrieval:checked.selection,...(input.scope==='paper'?{scope:input.scope,anchor:input.anchor}:{})},config.model):existing?.previewMetrics;if(previewMetrics&&previewMetrics.characters>generationInputCharacterLimit(input.scope))throw new AnalysisHttpError(400,'The complete generation prompt exceeds its transport limit. No source text was removed.');
         const run = store().prepareGenerationRun({ runId: input.runId, owner: session.sid, documentHash: checked.documentHash, contextHash: checked.contextHash, sectionId: input.sectionId, model: config.model, maxAttempts: input.maxAttempts,retrieval:existing?existing.retrieval:checked.retrieval,previewMetrics,promptContractSha256:existing?.promptContractSha256??checked.promptContractSha256,sdkSha256:existing?.sdkSha256??checked.sdkSha256 });
         return json(reply(run, key, { status: run.closed ? 'cancelled' : now() >= run.deadlineAt ? 'expired' : 'prepared' }), 200, session.cookie);
       } catch (error) { return fail(error); }
@@ -148,11 +156,11 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         if(!readAdoptionPolicy(process.env).generatedExecution)throw new AnalysisHttpError(503,'New generated artifacts are disabled by the operator. Accepted jobs and recorded replay remain available.');
         if(!run.retrieval)throw new AnalysisHttpError(409,'This run predates frozen capability retrieval. Retrieve accepted work; explicitly prepare a new run for new creation.');
-        if(run.promptContractSha256!==hash({instructions:GENERATION_INSTRUCTIONS,schema:generationProviderRequest({context:checked.selected.text,brief:input.brief,attempt:1}).text.format.schema})||run.sdkSha256!==textHash(FIGURE_SDK_SOURCE))throw new AnalysisHttpError(409,'The frozen prompt/SDK contract changed. Retrieve accepted work or explicitly prepare a new run.');
+        if(run.promptContractSha256!==hash({instructions:generationInstructions(input),schema:generationProviderRequest({context:checked.selected.text,brief:input.brief,attempt:1,...(input.scope==='paper'?{scope:input.scope,anchor:input.anchor}:{})}).text.format.schema})||run.sdkSha256!==textHash(FIGURE_SDK_SOURCE))throw new AnalysisHttpError(409,'The frozen prompt/SDK contract changed. Retrieve accepted work or explicitly prepare a new run.');
         const selection=await retrieveCapabilities(checked.query);if(selection.selectionSha256!==run.retrieval.selectionSha256)throw new AnalysisHttpError(409,'The frozen catalog changed. Retrieve existing attempts or explicitly prepare a new run; no repair was submitted.');
         if(selection.gaps.some(g=>g.blocking))throw new AnalysisHttpError(409,'A required exact capability is unavailable. Retain the source-linked fallback.');
-        const providerInput:GenerationProviderInput={context:checked.selected.text,brief:input.brief,attempt:input.attempt,retrieval:selection,...(input.previous?{previous:input.previous}:{}),...(input.feedback?{feedback:input.feedback}:{})};
-        const metrics=generationPromptMetrics(providerInput,run.model),characters=metrics.characters;if(characters>GENERATION_POLICY.maxInputCharacters)throw new AnalysisHttpError(400,'The complete generation prompt (instructions/input/schema/feedback) exceeds its input budget. No source scope was silently removed.');
+        const providerInput:GenerationProviderInput={context:checked.selected.text,brief:input.brief,attempt:input.attempt,retrieval:selection,...(input.scope==='paper'?{scope:input.scope,anchor:input.anchor}:{}),...(input.previous?{previous:input.previous}:{}),...(input.feedback?{feedback:input.feedback}:{})};
+        const metrics=generationPromptMetrics(providerInput,run.model),characters=metrics.characters;if(characters>generationInputCharacterLimit(input.scope))throw new AnalysisHttpError(400,'The complete generation prompt (paper/instructions/schema/feedback) exceeds its transport limit. No source text was removed.');
         const reservation = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: 6000, inputCharacters: characters, model: run.model, fingerprint };
         const claimed = store().claimGenerationAttempt(run.runId, session.sid, input.attempt, { id, owner: session.sid, documentHash: run.documentHash, contextHash: fingerprint, action: 'artifact', sectionId: run.sectionId, reservedTokens: reservedTokensFor(reservation),retrieval:run.retrieval,requestMetrics:metrics,requestSha256:textHash(JSON.stringify(generationProviderRequest(providerInput,run.model))) });
         if (!claimed.created) { const pending = running.get(id); if (pending) return json(await pending); return json(await retrieve(run, input.attempt, checked, config, key)); }
