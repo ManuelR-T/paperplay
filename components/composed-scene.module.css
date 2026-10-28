@@ -25,3 +25,6 @@
 .composition [data-selected=true] { background:var(--accent); box-shadow:inset 3px 0 0 var(--primary); }
 .canvas [role=button] { cursor:pointer; }
 .canvas [role=button]:focus-visible { outline:3px solid var(--ring); outline-offset:5px; }
+.controls button { display:block; max-width:100%; height:auto; min-height:44px; white-space:normal; overflow-wrap:anywhere; text-align:left; }
+.table { min-width:680px; }
+.table th,.table td { overflow-wrap:normal; word-break:normal; }

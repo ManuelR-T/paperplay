@@ -82,7 +82,7 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
   if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
   for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
   if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');
-  if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide'||view.kind==='composed-scene'&&view.scene.nodes.some(node=>node.kind==='scene'&&node.frames.length>0))) throw Error('This representation has no source-guide steps.');
+  if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide'||view.kind==='composed-scene'&&view.scene.nodes.some(node=>node.kind==='scene'&&node.frames.length>0||node.kind==='process'&&node.steps.length>0))) throw Error('This representation has no source-guide steps.');
   for(const quantity of plan.quantities)if(quantity.measurement){const measurement=validateScientificQuantity(quantity.measurement);if(measurement.id!==quantity.id||measurement.unit!==quantity.unit)throw Error('A quantity measurement must retain its declared identity and original unit.');}
   const evidence=new Map((plan.evidence??[]).map(item=>[item.id,item]));
   unique((plan.evidence??[]).map(item=>item.id),'evidence record');

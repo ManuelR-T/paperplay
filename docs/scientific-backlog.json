@@ -294,10 +294,16 @@
       "priority": "P1",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 44,
         "url": "https://github.com/ManuelR-T/paperplay/issues/44"
+      },
+      "evidence": {
+        "document": "docs/process-networks.md",
+        "checks": "npm run check: TypeScript, 269 tests, production build",
+        "browser": "Native Chromium: biological process and state machine; active entities/edges, declared conditions/rates/guards, linked selection, exact source return; 320 px and 200% text/spacing; no dialog overflow or model requests",
+        "limitations": "Authored teaching walkthroughs only. No reaction solver, guard interpreter, inferred causality or fake computed events. First-order rates support explicit Hz declarations only."
       }
     },
     {

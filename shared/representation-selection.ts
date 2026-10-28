@@ -10,9 +10,9 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
  if(view.kind==='composed-scene'){
    if(selection.kind==='entity')return selection.scopeId==='composition'&&!!view.scene.entities?.some(entity=>entity.id===selection.entityId);
-   const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(!node||node.kind!=='scene')return false;
-   if(selection.kind==='time'){const index=node.frames.findIndex(frame=>frame.id===selection.frameId);return selection.mode==='authored-step'&&selection.unit==='walkthrough-step'&&(selection.frameId===null?selection.value===-1:index>=0&&selection.value===index);}
-   if(selection.kind==='region')return selection.frame===node.coordinates.frame&&selection.unit===node.coordinates.unit;
+   const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(!node||(node.kind!=='scene'&&node.kind!=='process'))return false;
+   if(selection.kind==='time'){const frames=node.kind==='process'?node.steps:node.frames;const index=frames.findIndex(frame=>frame.id===selection.frameId);return selection.mode==='authored-step'&&selection.unit==='walkthrough-step'&&(selection.frameId===null?selection.value===-1:index>=0&&selection.value===index);}
+   if(selection.kind==='region')return node.kind==='scene'&&selection.frame===node.coordinates.frame&&selection.unit===node.coordinates.unit;
    return false;
  }
  if(view.kind==='quantity'&&selection.kind==='uncertainty'){
@@ -31,7 +31,7 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
    if(view.kind==='composed-scene'&&selection.kind==='entity')view.scene.entities?.find(entity=>entity.id===selection.entityId)?.anchorIds.forEach(id=>ids.add(id));
-   else if(view.kind==='composed-scene'&&selection.kind==='time'){const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(node?.kind==='scene')node.frames.find(frame=>frame.id===selection.frameId)?.anchorIds?.forEach(id=>ids.add(id));}
+   else if(view.kind==='composed-scene'&&selection.kind==='time'){const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(node?.kind==='scene'||node?.kind==='process')(node.kind==='process'?node.steps:node.frames).find(frame=>frame.id===selection.frameId)?.anchorIds?.forEach(id=>ids.add(id));}
    else if(view.kind==='widget')plan.anchors.filter(anchor=>anchor.blockId===view.widget.source.blockId).forEach(anchor=>ids.add(anchor.id));
  }
  return [...ids];
