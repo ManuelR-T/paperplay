@@ -16,7 +16,9 @@ The cutoff does not inspect Meta billing. Check the provider dashboard for actua
 
 ## Durable limits
 
-The defaults are 20 global creations per hour, 5 per anonymous session per ten minutes, 100 per UTC day and 2,000,000 accounted tokens per UTC day. Override them through `USAGE_HOURLY_REQUESTS`, `USAGE_SESSION_REQUESTS`, `USAGE_DAILY_REQUESTS` and `USAGE_DAILY_TOKENS`. These are application safeguards, not purchased provider allowances or a complete defense against determined anonymous abuse. Start with conservative limits for a public demo.
+The defaults are 60 global creations per hour, 15 per anonymous session per ten minutes, 100 per UTC day and 2,000,000 accounted tokens per UTC day. Override them through `USAGE_HOURLY_REQUESTS`, `USAGE_SESSION_REQUESTS`, `USAGE_DAILY_REQUESTS` and `USAGE_DAILY_TOKENS`. These are application safeguards, not purchased provider allowances or a complete defense against determined anonymous abuse. Start with conservative limits for a public demo.
+
+A bounded automatic paper may create four section plans and one custom figure. The former five-request session burst admitted only one such paper before blocking the next; the new burst admits three while retaining the same daily request/token ceilings. Quota responses identify the exhausted window and provide `Retry-After` plus an absolute retry time. The reader shows a waiting countdown and automatically resumes the same request identity when permitted; it does not clear the ledger or replace accepted/uncertain jobs.
 
 Reservations are made before provider creation. Pending or unmeasured work retains a conservative token reservation; a measured terminal response reconciles it. Provider billing remains authoritative. An interrupted or uncertain creation must not be treated as free work and automatically recreated.
 

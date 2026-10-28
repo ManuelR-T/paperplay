@@ -118,3 +118,11 @@ test('Redis REST adapter submits atomic EVAL commands and fails closed on unsafe
   const broken = createRedisUsageStore({ url: 'https://redis.example', token: 'secret', fetch: async () => Response.json({ error: 'raw server details' }) });
   await assert.rejects(broken.reserve(request()), /durable usage store is unavailable/);
 });
+
+test('default automatic-reading burst admits three five-request papers while retaining the daily token cap',async()=>{
+ const {UsageQuotaError}=await import('../server/usage/model');const store=createSqliteUsageStore({path:':memory:',now:()=>1_000_000});
+ try{for(let n=0;n<15;n++)await store.reserve({...request(`automatic-${n}`),inputCharacters:100,maxOutputTokens:100});
+ await assert.rejects(store.reserve({...request('automatic-16'),inputCharacters:100,maxOutputTokens:100}),(error:unknown)=>error instanceof UsageQuotaError&&error.quotaReason==='session-rate'&&error.retryAt===1_600_001);
+ const summary=await store.summary();assert.equal(summary.requests,15);assert.equal(summary.limits.dailyTokens,2_000_000);assert.ok(summary.accountedTokens<summary.limits.dailyTokens);
+ }finally{store.close?.();}
+});

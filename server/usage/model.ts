@@ -7,7 +7,7 @@ export type UsageRequest = { id: string; sessionId: string; kind: 'analysis' | '
 export type UsageRecord = UsageRequest & { createdAt: number; updatedAt: number; status: UsageStatus; reservedTokens: number; providerId?: string; usage?: MeasuredUsage };
 export type UsageUpdate = { status: Exclude<UsageStatus, 'reserved'>; providerId?: string; usage?: MeasuredUsage };
 export type UsageLimits = { globalHourlyRequests: number; sessionTenMinuteRequests: number; dailyRequests: number; dailyTokens: number };
-export const DEFAULT_USAGE_LIMITS: UsageLimits = { globalHourlyRequests: 20, sessionTenMinuteRequests: 5, dailyRequests: 100, dailyTokens: 2_000_000 };
+export const DEFAULT_USAGE_LIMITS: UsageLimits = { globalHourlyRequests: 60, sessionTenMinuteRequests: 15, dailyRequests: 100, dailyTokens: 2_000_000 };
 export type UsageSummary = { day: string; requests: number; byKind: Record<'analysis' | 'question', number>; byStatus: Partial<Record<UsageStatus, number>>; measured: MeasuredUsage; measuredRequests: number; unavailableRequests: number; reservedUnmeasuredTokens: number; accountedTokens: number; limits: UsageLimits; backend: 'sqlite' | 'redis' | 'd1' };
 export interface UsageStore {
   reserve(input: UsageRequest): Promise<{ created: boolean; record: UsageRecord }>;
@@ -41,11 +41,25 @@ export function compatibleReservation(record: UsageRecord, input: UsageRequest) 
   if (record.sessionId !== input.sessionId || record.kind !== input.kind || record.model !== input.model || record.fingerprint !== input.fingerprint || record.inputCharacters !== input.inputCharacters || record.maxOutputTokens !== input.maxOutputTokens) throw new AnalysisHttpError(409, 'This request reference already belongs to different input.');
 }
 export function dayStart(now: number) { return Math.floor(now / 86_400_000) * 86_400_000; }
+export type UsageQuotaReason='session-rate'|'global-rate'|'daily-requests'|'daily-tokens';
+export class UsageQuotaError extends AnalysisHttpError {
+ constructor(readonly quotaReason:UsageQuotaReason,readonly retryAt:number){super(429,({
+  'session-rate':'Your recent papers are still using the short-term preparation allowance. Illustrations will resume automatically.',
+  'global-rate':'The shared preparation allowance is temporarily busy. Illustrations will resume automatically.',
+  'daily-requests':'Today’s shared preparation allowance is reached. Saved figures remain available.',
+  'daily-tokens':'Today’s shared model allowance is reached or reserved by running papers. Saved figures remain available.',
+ })[quotaReason]);}
+}
+export function usageQuotaResponse(error:unknown){return error instanceof UsageQuotaError?{quota:{reason:error.quotaReason,retryAt:error.retryAt},headers:{'Retry-After':String(Math.max(1,Math.ceil((error.retryAt-Date.now())/1000)))}}:undefined;}
 export function checkLimits(records: UsageRecord[], input: UsageRequest, limits: UsageLimits, now: number) {
-  const today = records.filter(record => record.createdAt >= dayStart(now));
-  if (records.filter(record => record.createdAt > now - 3_600_000).length >= limits.globalHourlyRequests
-    || records.filter(record => record.sessionId === input.sessionId && record.createdAt > now - 600_000).length >= limits.sessionTenMinuteRequests
-    || today.length >= limits.dailyRequests || today.reduce((sum, record) => sum + accountedTokensFor(record), 0) + reservedTokensFor(input) > limits.dailyTokens) throw new AnalysisHttpError(429, 'The shared analysis/question allowance is reached. Existing analyses can still be retrieved; no new paid request was started.');
+ const today=records.filter(record=>record.createdAt>=dayStart(now));
+ const hourly=records.filter(record=>record.createdAt>now-3_600_000),session=records.filter(record=>record.sessionId===input.sessionId&&record.createdAt>now-600_000);
+ const release=(rows:UsageRecord[],limit:number,window:number)=>rows.map(r=>r.createdAt).sort((a,b)=>a-b)[rows.length-limit]+window+1;
+ // Financial/day limits take precedence over burst limits: do not promise an earlier retry than allowed.
+ if(today.length>=limits.dailyRequests)throw new UsageQuotaError('daily-requests',dayStart(now)+86_400_000);
+ if(today.reduce((sum,r)=>sum+accountedTokensFor(r),0)+reservedTokensFor(input)>limits.dailyTokens)throw new UsageQuotaError('daily-tokens',today.some(r=>['reserved','accepted'].includes(r.status))?now+60_000:dayStart(now)+86_400_000);
+ if(hourly.length>=limits.globalHourlyRequests)throw new UsageQuotaError('global-rate',Math.max(release(hourly,limits.globalHourlyRequests,3_600_000),session.length>=limits.sessionTenMinuteRequests?release(session,limits.sessionTenMinuteRequests,600_000):0));
+ if(session.length>=limits.sessionTenMinuteRequests)throw new UsageQuotaError('session-rate',release(session,limits.sessionTenMinuteRequests,600_000));
 }
 export function summarize(records: UsageRecord[], limits: UsageLimits, now: number, backend: UsageSummary['backend']): UsageSummary {
   const today = records.filter(record => record.createdAt >= dayStart(now));

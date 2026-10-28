@@ -58,7 +58,14 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
         if (existing) {
           const record = JSON.parse(existing.record) as EnrichmentRecord;
           if (record.owner !== input.owner || record.documentHash !== input.documentHash || record.contextHash !== input.contextHash || record.action !== input.action || record.sectionId !== input.sectionId) throw new AnalysisHttpError(409, 'This enrichment request already belongs to different context.');
-          return { created: false, record };
+          if(record.status!=='rejected'||record.actualTokens!==0||record.providerId)return { created: false, record };
+          // Only a definitive zero-provider rejection can re-enter admission. The global
+          // reservation still must be newly created before any provider submission.
+          const available=budget(input.owner,input.documentHash);
+          if(available.requests>=limits.maxRequests||available.accountedTokens+input.reservedTokens>limits.maxTokens)throw new AnalysisHttpError(429,'The per-paper enrichment request/token allowance is reached.');
+          const retry={...record,status:'reserved' as const,actualTokens:undefined,actualUsage:undefined};
+          db.prepare('UPDATE enrichment_records SET record=? WHERE id=?').run(JSON.stringify(retry),record.id);
+          return {created:true,record:retry};
         }
         const available = budget(input.owner, input.documentHash);
         if (available.requests >= limits.maxRequests || available.accountedTokens + input.reservedTokens > limits.maxTokens) throw new AnalysisHttpError(429, 'The per-paper enrichment request/token allowance is reached. Existing results and accepted jobs remain available.');
@@ -87,7 +94,7 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
         if (!Number.isInteger(attempt) || attempt < 1 || attempt > run.maxAttempts || input.owner !== owner || input.documentHash !== run.documentHash || input.sectionId !== run.sectionId || input.action !== 'artifact') throw new AnalysisHttpError(409, 'Invalid generation attempt scope.');
         if(run.retrieval&&input.retrieval?.receiptSha256!==run.retrieval.receiptSha256)throw new AnalysisHttpError(409,'The attempt capability selection differs from the frozen run.');
         const existing = run.attempts[attempt - 1];
-        if (existing) { if (existing.id !== input.id || existing.fingerprint !== input.contextHash) throw new AnalysisHttpError(409, 'This attempt already belongs to different input.'); return { created: false, record: readAttempt(run, attempt) }; }
+        if(existing){if(existing.id!==input.id||existing.fingerprint!==input.contextHash)throw new AnalysisHttpError(409,'This attempt already belongs to different input.');const prior=readAttempt(run,attempt);if(prior.status!=='rejected'||prior.actualTokens!==0||prior.providerId)return {created:false,record:prior};if(run.closed||now()>=run.deadlineAt)throw new AnalysisHttpError(410,'The original custom-figure creation window expired while waiting for allowance. Existing source and figures remain available.');return reserve(input);}
         if (run.closed || now() >= run.deadlineAt) throw new AnalysisHttpError(410, 'The generation run is closed or its five-minute creation budget expired.');
         if (attempt !== run.attempts.length + 1) throw new AnalysisHttpError(409, 'Generation attempts must be sequential.');
         if (attempt > 1 && ['reserved','accepted','uncertain'].includes(readAttempt(run, attempt - 1).status)) throw new AnalysisHttpError(409, 'Resolve the previous accepted or uncertain attempt before repairing.', true);

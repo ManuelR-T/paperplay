@@ -13,7 +13,7 @@ import { FIGURE_SDK_SOURCE } from '../../lib/artifacts/sdk-source';
 import { AnalysisHttpError, requireSameOrigin, sessionFor, signingKey, signToken, verifyToken } from '../analysis/security';
 import { safeProviderError, type ProviderResponse } from '../analysis/provider';
 import { getUsageStore } from '../usage/service';
-import { reservedTokensFor, usageIdFor, type UsageStore } from '../usage/model';
+import { reservedTokensFor, usageIdFor, usageQuotaResponse, type UsageStore } from '../usage/model';
 import { getEnrichmentStore, type EnrichmentStore, type GenerationRunRecord, type EnrichmentRecord } from '../enrichment/store';
 import type { MetaConfig } from '../meta/config';
 import { createArtifactGenerationProvider, generationModelOutputSchema, generationPromptCharacters,generationProviderRequest,GENERATION_INSTRUCTIONS,generationPromptMetrics,validateGeneratedMethodSelection,type ArtifactGenerationProvider, type GenerationProviderInput } from './provider';
@@ -37,7 +37,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   const provider = dependencies.provider ?? createArtifactGenerationProvider;
   const running = new Map<string, Promise<GenerationReply>>();
   const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) } });
-  const fail = (error: unknown) => { const safe = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The generation request or result failed bounded validation. Previous figures are retained.'); return json({ error: safe.message, uncertain: safe.uncertain }, safe.status); };
+  const fail = (error: unknown) => { const safe = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The generation request or result failed bounded validation. Previous figures are retained.'); const quota=usageQuotaResponse(safe);return Response.json({error:safe.message,uncertain:safe.uncertain,...(quota?{quota:quota.quota}:{})},{status:safe.status,headers:{'Cache-Control':'no-store',...quota?.headers}}); };
   function configFor(request: Request, createSession = false) {
     requireSameOrigin(request, dependencies.allowedOrigin); const config = dependencies.getConfig();
     if (!config.apiKey) throw new AnalysisHttpError(503, 'Meta generation is not configured. Existing figures remain available.');
@@ -144,7 +144,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
         }
         const id=usageIdFor(session.sid,`artifact-${run.runId}-${input.attempt}`);
         const fingerprint=hash({frozen:run.contextHash,context:checked.selected.text,brief:input.brief,attempt:input.attempt,previous:input.previous??null,feedback:input.feedback??null,retrieval:run.retrieval?.receiptSha256??null,model:run.model});
-        const acceptedAttempt=run.attempts[input.attempt-1];if(acceptedAttempt){if(run.retrieval&&acceptedAttempt.fingerprint!==fingerprint)throw new AnalysisHttpError(409,'This attempt already belongs to different frozen input.');const pending=running.get(id);if(pending)return json(await pending);return json(await retrieve(run,input.attempt,checked,config,key));}
+        const acceptedAttempt=run.attempts[input.attempt-1],priorAttempt=acceptedAttempt?store().generationAttempt(run.runId,session.sid,input.attempt):undefined;if(acceptedAttempt&&!(priorAttempt?.status==='rejected'&&priorAttempt.actualTokens===0&&!priorAttempt.providerId)){if(run.retrieval&&acceptedAttempt.fingerprint!==fingerprint)throw new AnalysisHttpError(409,'This attempt already belongs to different frozen input.');const pending=running.get(id);if(pending)return json(await pending);return json(await retrieve(run,input.attempt,checked,config,key));}
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         if(!readAdoptionPolicy(process.env).generatedExecution)throw new AnalysisHttpError(503,'New generated artifacts are disabled by the operator. Accepted jobs and recorded replay remain available.');
         if(!run.retrieval)throw new AnalysisHttpError(409,'This run predates frozen capability retrieval. Retrieve accepted work; explicitly prepare a new run for new creation.');

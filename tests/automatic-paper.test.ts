@@ -83,3 +83,16 @@ test('ambiguous pending submission does not establish a replacement browser iden
  try{const reopened=await createAutomaticPaperPipeline(source,{storage:disk,check:passing,lock});await reopened.start();assert.equal(reopened.getSnapshot().status,'blocked');assert.deepEqual(paths,['/api/enrichment/start']);const pending=reopened.getSnapshot().pending;assert.equal(pending?.kind==='plan'&&pending.requestId,requestId);const again=await createAutomaticPaperPipeline(source,{storage:disk,check:passing,lock});await again.start();assert.deepEqual(paths,['/api/enrichment/start','/api/enrichment/start']);}
  finally{globalThis.fetch=previous;}
 });
+
+test('authoritative quota waits visibly then retries the original section request automatically',async()=>{
+ const {source,candidate}=await fixture(),disk=storage(),provider=fake(candidate);let clock=1000,denied=true;const ids:string[]=[],states:string[]=[];
+ const controller=await createAutomaticPaperPipeline(source,{storage:disk,check:passing,lock,now:()=>clock,waitUntil:async(retryAt)=>{assert.equal(controller.getSnapshot().status,'waiting');assert.equal(controller.getSnapshot().quotaReason,'session-rate');assert.equal(provider.calls.length,0);clock=retryAt;},transport:async(endpoint,payload:any,signal)=>{if(endpoint==='/api/enrichment/start'){ids.push(payload.requestId);if(denied){denied=false;throw new AutomaticPaperHttpError(429,'Short-term allowance reached',false,2000,'session-rate');}}return provider.transport(endpoint,payload,signal);}});
+ controller.subscribe(()=>states.push(controller.getSnapshot().status));await controller.start();assert.equal(controller.getSnapshot().status,'complete');assert.ok(states.includes('waiting'));assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);assert.equal(provider.calls.filter(x=>x.endpoint==='/api/enrichment/start').length,1);
+});
+
+test('reopening a saved quota wait starts no transport before its recorded retry time',async()=>{
+ const {source,candidate}=await fixture(),disk=storage(),provider=fake(candidate),initial=await createAutomaticPaperPipeline(source,{storage:disk,transport:provider.transport,check:passing,lock}),state=initial.getSnapshot();
+ disk.setItem(automaticPaperStorageKey(source,state.fingerprint),JSON.stringify({...state,status:'waiting',message:'Waiting for allowance',retryAt:5000,quotaReason:'global-rate',pending:{kind:'plan',requestId:crypto.randomUUID(),sectionId:state.sectionIds[0]}}));
+ let clock=1000;const reopened=await createAutomaticPaperPipeline(source,{storage:disk,transport:provider.transport,check:passing,lock,now:()=>clock,waitUntil:async time=>{assert.equal(time,5000);assert.equal(provider.calls.length,0);assert.equal(reopened.getSnapshot().status,'waiting');clock=time;}});
+ await reopened.start();assert.equal(reopened.getSnapshot().status,'complete');assert.equal(provider.calls.filter(x=>x.endpoint==='/api/enrichment/start').length,1);
+});

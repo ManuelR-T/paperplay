@@ -1,5 +1,5 @@
 import { AnalysisHttpError } from '../analysis/security';
-import { type UsageStore, type UsageLimits, type UsageRecord, DEFAULT_USAGE_LIMITS, validateLimits, validateUsageRequest, validateUsageUpdate, compatibleReservation, reservedTokensFor, updatedRecord, summarize, unavailableStore, dayStart } from './model';
+import { type UsageStore, type UsageLimits, type UsageRecord, DEFAULT_USAGE_LIMITS, validateLimits, validateUsageRequest, validateUsageUpdate, compatibleReservation, reservedTokensFor, updatedRecord, summarize, unavailableStore, dayStart, checkLimits, UsageQuotaError } from './model';
 
 /** Structural subset of the Cloudflare D1 binding; no platform SDK is required. */
 export interface D1UsageStatement {
@@ -26,7 +26,6 @@ AND COALESCE((SELECT SUM(
     ELSE json_extract(record, '$.reservedTokens')
   END
 ) FROM usage_records WHERE created_at >= ?), 0) + ? <= ?`;
-const quotaMessage = 'The shared analysis/question allowance is reached. Existing analyses can still be retrieved; no new paid request was started.';
 
 export function createD1UsageStore(options: { db: D1UsageDatabase; limits?: UsageLimits; now?: () => number }): UsageStore {
   const limits = options.limits ?? DEFAULT_USAGE_LIMITS; validateLimits(limits);
@@ -44,7 +43,7 @@ export function createD1UsageStore(options: { db: D1UsageDatabase; limits?: Usag
           today, limits.dailyRequests, today, record.reservedTokens, limits.dailyTokens).run();
         if (result.success === false || !Number.isInteger(result.meta?.changes) || ![0, 1].includes(result.meta!.changes!)) return unavailableStore();
         const stored = await row(input.id);
-        if (!stored) throw new AnalysisHttpError(429, quotaMessage);
+        if (!stored) {const observed=await db.prepare('SELECT record FROM usage_records WHERE created_at >= ?').bind(time-86_400_000).all<{record:string}>();if(observed.success===false||!Array.isArray(observed.results))return unavailableStore();checkLimits(observed.results.map(row=>JSON.parse(row.record)),input,limits,time);throw new UsageQuotaError('global-rate',time+60_000);}
         const accepted = JSON.parse(stored.record) as UsageRecord;
         compatibleReservation(accepted, input);
         // Retention is housekeeping, not a reason to lose a successfully reserved slot.

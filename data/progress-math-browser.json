@@ -1,0 +1,96 @@
+{
+  "format": "paperplay-quota-progress-math-native-evidence",
+  "date": "2026-10-28",
+  "scope": "Actual browser UI with controlled quota/provider responses; real local checks and source math rendering. No new live Meta creation.",
+  "diagnosis": {
+    "originalSessionBurst": 5,
+    "maxAutomaticCreationsPerPaper": 5,
+    "aggregateAtInvestigation": {
+      "requestsToday": 14,
+      "hourlyRequests": 9,
+      "busiestSessionTenMinutes": 5,
+      "dailyAccountedTokens": 181589
+    },
+    "newEffectiveLimitsVerified": {
+      "globalHourlyRequests": 60,
+      "sessionTenMinuteRequests": 15,
+      "dailyRequests": 100,
+      "dailyTokens": 2000000
+    },
+    "ledgerReset": false
+  },
+  "browser": {
+    "server": "localhost:3004",
+    "actualServerModelCreationEnabled": false,
+    "actualServerGeneratedExecutionEnabled": false,
+    "controlledResponses": "Policy metadata, free session setup, one definite429 and authored queued/completed provider replies; local workers and layout checks unmocked.",
+    "observedPhases": [
+      "opening",
+      "planning",
+      "waiting",
+      "planning",
+      "generating",
+      "checking",
+      "ready"
+    ],
+    "waitingCountdownSecondsObserved": [
+      16,
+      7
+    ],
+    "automaticRetryAfterSeconds": 20,
+    "planSubmissions": 2,
+    "samePlanRequestId": true,
+    "customSubmissions": 1,
+    "liveProviderCreations": 0,
+    "finalAcceptedCustomFigures": 1,
+    "spinnerAnimationObserved": "illustration-spin",
+    "realSectionProgressAndPlaceholder": true,
+    "waitingDockObserved": true,
+    "waitingIndicatorDoesNotClaimActiveGeneration": true,
+    "finalState": "ready"
+  },
+  "math": {
+    "sample": "User-provided SSSP paragraph",
+    "renderedExpressions": [
+      "w:E\\to\\mathbb{R}_{\\geq 0}",
+      "v\\in V"
+    ],
+    "mathMLExpressions": 2,
+    "sourceStringsAndQuotesUnchanged": true,
+    "ordinaryProsePreserved": true,
+    "compiledAlignment": "middle",
+    "compiledFormulaPaddingPx": 2,
+    "viewportWidth": 320,
+    "rootFontPx": 32,
+    "pageClientWidth": 320,
+    "pageScrollWidth": 320,
+    "formulaWidths": [
+      {
+        "client": 138,
+        "scroll": 138
+      },
+      {
+        "client": 65,
+        "scroll": 65
+      }
+    ]
+  },
+  "checks": {
+    "fullTests": 785,
+    "passed": 785,
+    "failed": 0,
+    "typecheck": "passed",
+    "productionBuild": "passed after final math alignment and countdown formatting"
+  },
+  "screenshots": [
+    "data/progress-quota-waiting.png",
+    "data/progress-preparing.png",
+    "data/inline-math-mobile.png"
+  ],
+  "limits": [
+    "Authored provider transport fixtures do not establish current Meta generation quality or scientific validity.",
+    "The initial pass still covers at most4sections; full source section count is disclosed separately.",
+    "Accepted/uncertain requests are never replaced. Custom creation retains its original five-minute window.",
+    "Math fallback is conservative; unsupported syntax remains original readable text."
+  ]
+}

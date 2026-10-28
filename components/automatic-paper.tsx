@@ -3,7 +3,7 @@
 import {useEffect,useMemo,useRef,useState,type ReactNode} from 'react';
 import {createPortal} from 'react-dom';
 import dynamic from 'next/dynamic';
-import {Sparkles} from 'lucide-react';
+import {AutomaticPaperProgress,type IllustrationPhase} from './automatic-paper-progress';
 import type {SourceDocument} from '@/shared/schema';
 import type {WidgetEnvelope} from '@/shared/widgets';
 import type {GenerationCandidate} from '@/shared/artifact-generation';
@@ -18,7 +18,6 @@ import styles from './automatic-paper.module.css';
 const GeneratedFigure=dynamic(()=>import('./generated-figure').then(module=>module.GeneratedFigure),{ssr:false,loading:()=> <p role="status">Opening interactive figure…</p>});
 type Pipeline=Awaited<ReturnType<typeof createAutomaticPaperPipeline>>;
 type Snapshot=ReturnType<Pipeline['getSnapshot']>;
-const busyStatuses=new Set(['planning','generating','checking']);
 
 /** Reader-only orchestration: the user's automatic-paper workflow authorizes bounded new creation. */
 export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDocument;enabled?:boolean}){
@@ -38,16 +37,20 @@ export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDo
  },[pipeline,snapshot,enabled,policy.newModelAllowed,policy.generatedAllowed]);
  useEffect(()=>{if(pipeline&&(!enabled||policy.state==='unavailable'||policy.state==='ready'&&(!policy.newModelAllowed||!policy.generatedAllowed)))void pipeline.pause();},[pipeline,enabled,policy.state,policy.newModelAllowed,policy.generatedAllowed]);
  if(!enabled)return null;
- const busy=!!snapshot&&busyStatuses.has(snapshot.status),widgets=snapshot?.widgets??[],generated=snapshot?.generated??[],issues=snapshot?.issues??[];
+ const widgets=snapshot?.widgets??[],generated=snapshot?.generated??[];
+ const timing=snapshot;
+ const state=String(snapshot?.status??'idle');
+ const available=policy.newModelAllowed&&policy.generatedAllowed;
+ const phase:IllustrationPhase=error||policy.state==='unavailable'||policy.state==='ready'&&!available?'blocked':state==='waiting'?'waiting':state==='complete'?'ready':state==='partial'?'limited':state==='blocked'?'blocked':state==='planning'||state==='generating'||state==='checking'?state:'opening';
+ const waitingMessage=state==='waiting'?({
+  'session-rate':'Several papers were opened in quick succession. This paper is queued and will resume automatically.',
+  'global-rate':'The illustration service is busy. Your paper is queued and will resume automatically.',
+  'daily-requests':"Today’s configured processing allowance has been reached. Preparation is scheduled to resume automatically.",
+  'daily-tokens':"Today’s configured processing budget has been reached. Preparation is scheduled to resume automatically."
+ }[snapshot?.quotaReason??'session-rate']):undefined;
+ const message=error||waitingMessage||(policy.state==='unavailable'?'The service is temporarily unavailable. Your paper remains readable.':policy.state==='ready'&&!available?!policy.newModelAllowed?policy.modelMessage:policy.generatedMessage:snapshot?.message)||'Opening the paper and checking its saved illustrations…';
  return <>
-  <section className={styles.panel} aria-label="Automatic Meta figures" aria-busy={busy}>
-   <p role="status"><Sparkles size={18} aria-hidden="true"/>{error||snapshot?.message||'Meta is preparing illustrations for this paper…'}</p>
-   {snapshot&&<small>{widgets.length+generated.length} interactive figure{widgets.length+generated.length===1?'':'s'} · {snapshot.sectionsDone} of {snapshot.sectionsTotal} sections considered</small>}
-   {!policy.newModelAllowed&&policy.state!=='unknown'&&<p>{policy.modelMessage}</p>}
-   {!policy.generatedAllowed&&policy.state!=='unknown'&&<p>{policy.generatedMessage}</p>}
-   {issues.length>0&&<ul className={styles.issues}>{issues.slice(0,2).map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
-   <small>Illustrations appear beside the passages they explain. Meta receives bounded excerpts; saved figures are reused. Added illustrations are teaching models, not verified scientific results.</small>
-  </section>
+  <AutomaticPaperProgress phase={phase} message={message} figureCount={widgets.length+generated.length} sectionsDone={snapshot?.sectionsDone??0} sectionsPlanned={snapshot?.sectionIds.length??0} sectionsTotal={snapshot?.sectionsTotal??0} retryAt={timing?.retryAt} issues={snapshot?.issues}/>
   {widgets.map(widget=><AutomaticStockFigure key={widget.id} envelope={widget} source={stableSource}/>)}
   {generated.map(entry=><AutomaticGeneratedFigure key={entry.candidate.sha256} candidate={entry.candidate} blockId={entry.blockId} source={stableSource}/>)}
  </>;

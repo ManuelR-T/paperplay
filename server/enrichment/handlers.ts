@@ -9,7 +9,7 @@ import { widgetCatalog, WIDGET_CATALOG_VERSION } from '../../lib/widgets/catalog
 import { compileEnrichmentPlan, type CustomWidgetReview, type EnrichmentAction, type EnrichmentJob, type EnrichmentReply } from '../../lib/enrichment/contracts';
 import { sectionContext } from '../../lib/enrichment/sections';
 import { getUsageStore } from '../usage/service';
-import { usageIdFor, reservedTokensFor, type UsageStore } from '../usage/model';
+import { usageIdFor, reservedTokensFor, usageQuotaResponse, type UsageStore } from '../usage/model';
 import { AnalysisHttpError, requireSameOrigin, sessionFor, signingKey, signToken, verifyToken } from '../analysis/security';
 import { safeProviderError, type ProviderResponse } from '../analysis/provider';
 import type { MetaConfig } from '../meta/config';
@@ -39,7 +39,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
   const provider = dependencies.provider ?? createMetaEnrichmentProvider;
   const running = new Map<string, Promise<EnrichmentReply>>();
   const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) } });
-  const fail = (error: unknown, cookie?: string) => { const e = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The source, section or widget configuration could not be validated. The previous valid work is retained.'); return json({ error: e.message, uncertain: e.uncertain }, e.status, cookie); };
+  const fail = (error: unknown, cookie?: string) => { const e = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The source, section or widget configuration could not be validated. The previous valid work is retained.');const quota=usageQuotaResponse(e);return Response.json({error:e.message,uncertain:e.uncertain,...(quota?{quota:quota.quota}:{})},{status:e.status,headers:{'Cache-Control':'no-store',...(cookie?{'Set-Cookie':cookie}:{}),...quota?.headers}}); };
   async function prepare(input: z.infer<typeof statusSchema> | z.infer<typeof startSchema>, config: MetaConfig,frozen?:EnrichmentRecord) {
     const source = validateDocument(input.source);
     if ((input.action !== 'plan') !== !!input.target) throw new AnalysisHttpError(400, 'Targeted repair/edit requires exactly one valid current widget; a plan has no target.');
@@ -49,14 +49,17 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
     const context = sectionContext(source, input.sectionId, target?.source.blockId);
     const scopeRequest:EnrichmentInput={action:input.action,context:context.text,feedback:input.feedback.trim(),...(target?{target}:{})};
     const query=await enrichmentRetrievalQuery({...input,source,target});
-    const legacy=!!frozen&&!frozen.retrieval,selection=frozen?undefined:await retrieveCapabilities(query);
+    const retryUnsubmitted=!!frozen&&frozen.status==='rejected'&&frozen.actualTokens===0&&!frozen.providerId;
+    const legacy=!!frozen&&!frozen.retrieval,selection=frozen&&!retryUnsubmitted?undefined:await retrieveCapabilities(query);
     let retrieval;try{retrieval=frozen?.retrieval?await validateCapabilitySelectionReceipt(frozen.retrieval,query):legacy?undefined:await createCapabilitySelectionReceipt(selection!);}catch{throw new AnalysisHttpError(409,'The frozen capability context differs from this source/configuration.');}
+    if(retryUnsubmitted&&selection?.selectionSha256!==retrieval?.selectionSha256)throw new AnalysisHttpError(409,'The frozen capability selection changed before this unsubmitted request could resume.');
     if(selection?.gaps.some(gap=>gap.blocking))throw new AnalysisHttpError(409,'A required exact capability is unavailable. Retain the source-linked fallback.');
     if(input.retrievalSelectionSha256&&input.retrievalSelectionSha256!==retrieval?.selectionSha256)throw new AnalysisHttpError(409,'The reviewed capability selection changed. Review the exact bounded selection again.');
     const request:EnrichmentInput={...scopeRequest,...(selection?{retrieval:selection}:{})},inputText=selection?providerInput(request):'';
     const metrics=frozen?.requestMetrics??(selection?enrichmentPromptMetrics(request,config.model):undefined);
     if(metrics&&metrics.characters>70_000)throw new AnalysisHttpError(400,'The complete instructions/input/schema/feedback exceed the enrichment prompt budget.');
     const requestSha256=frozen?.requestSha256??(selection?digest(enrichmentProviderRequest(request,config.model)):undefined);
+    if(retryUnsubmitted&&requestSha256!==digest(enrichmentProviderRequest(request,config.model)))throw new AnalysisHttpError(409,'The frozen prompt changed before this unsubmitted request could resume.');
     const documentHash=digest({...source,anchors:[]}),contextHash=frozen&&!frozen.retrieval?digest({request:scopeRequest,catalog:WIDGET_CATALOG_VERSION,model:config.model}):digest({request:scopeRequest,retrieval:retrieval?.selectionSha256,model:config.model,promptPolicy:'retrieval-v1',requestSha256});
     return {source,target,context,request,inputText,documentHash,contextHash,retrieval,metrics,requestSha256};
   }
@@ -111,7 +114,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         sessionFor(request,key,now(),false);const session=sessionFor(request,key,now(),true);cookie=session.cookie;
         const id=usageIdFor(session.sid,`enrichment-${input.requestId}`),existing=store().record(id,session.sid);
         const prepared=await prepare(input,config,existing);
-        if(existing){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
+        if(existing&&!(existing.status==='rejected'&&existing.actualTokens===0&&!existing.providerId)){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: ENRICHMENT_MAX_OUTPUT_TOKENS, inputCharacters: prepared.metrics!.characters, model: config.model, fingerprint: prepared.contextHash };
         const reserved = store().reserve({ id, owner: session.sid, documentHash: prepared.documentHash, contextHash: prepared.contextHash, action: input.action, sectionId: input.sectionId, reservedTokens: reservedTokensFor(reservationInput),retrieval:prepared.retrieval,requestMetrics:prepared.metrics,requestSha256:prepared.requestSha256 });

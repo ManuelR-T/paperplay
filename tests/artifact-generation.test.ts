@@ -224,3 +224,11 @@ test('a generated quote with an invented block ID remains rejected even when the
  const response=await f.handlers.start(req({...f.context,attempt:1},f.cookie)),body=await response.json();
  assert.equal(response.status,200);assert.equal(body.status,'failed');assert.equal(body.candidate,undefined);assert.match(body.error,/artifact\/source validation/);assert.equal(f.counts().starts,1);
 });
+
+test('pre-provider quota rejection reclaims the same custom run and attempt without multiplying its budget',async t=>{
+ const {UsageQuotaError}=await import('../server/usage/model');const f=await fixture(t,{maxAttempts:1});let deny=true;
+ const handlers=createArtifactGenerationHandlers({...f.dependencies,usage:{...f.usage,reserve:async input=>{if(deny){deny=false;throw new UsageQuotaError('session-rate',11_000);}return f.usage.reserve(input);}}});
+ const body={...f.context,attempt:1},denied=await handlers.start(req(body,f.cookie));assert.equal(denied.status,429);assert.equal((await denied.json()).quota.reason,'session-rate');assert.equal(f.counts().starts,0);
+ const accepted=await handlers.start(req(body,f.cookie));assert.equal(accepted.status,200);const reply=await accepted.json();assert.equal(reply.status,'queued');assert.equal(reply.budget.attemptsClaimed,1);assert.equal(f.counts().starts,1);
+ assert.equal((await handlers.start(req(body,f.cookie))).status,200);assert.equal(f.counts().starts,1);
+});

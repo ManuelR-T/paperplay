@@ -179,3 +179,11 @@ test('creative direction reaches the provider and its output allowance fits the 
   assert.ok(text.length<70000);
   assert.doesNotThrow(()=>validateUsageRequest({id:'creative-fixture',sessionId:'fixture',kind:'analysis',maxOutputTokens:ENRICHMENT_MAX_OUTPUT_TOKENS,inputCharacters:text.length,model:'fixture'}));
 });
+
+test('temporary shared quota denial retries the same section request without poisoning its durable identity',async t=>{
+ const {UsageQuotaError}=await import('../server/usage/model');const f=await fixture(t);let deny=true;
+ const handlers=createEnrichmentHandlers({...f.dependencies,provider:()=>({...f.provider,start:async input=>{assert.ok(input.retrieval,'Recovered submission must restore the actual capability selection, not only its receipt');return f.provider.start(input);}}),usage:{...f.usage,reserve:async input=>{if(deny){deny=false;throw new UsageQuotaError('session-rate',11_000);}return f.usage.reserve(input);}}});
+ const denied=await handlers.start(request(f.body,f.cookie)),body=await denied.json();assert.equal(denied.status,429);assert.deepEqual(body.quota,{reason:'session-rate',retryAt:11_000});assert.ok(Number(denied.headers.get('Retry-After'))>=1);assert.equal(f.counts().creates,0);
+ const accepted=await handlers.start(request(f.body,f.cookie));assert.equal(accepted.status,200);assert.equal((await accepted.json()).status,'queued');assert.equal(f.counts().creates,1);
+ assert.equal((await handlers.start(request(f.body,f.cookie))).status,200);assert.equal(f.counts().creates,1);
+});

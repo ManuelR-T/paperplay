@@ -1,5 +1,5 @@
 import { AnalysisHttpError } from '../analysis/security';
-import { type UsageStore, type UsageLimits, type UsageRequest, type UsageRecord, type UsageUpdate, DEFAULT_USAGE_LIMITS, validateLimits, validateUsageRequest, validateUsageUpdate, summarize, unavailableStore } from './store';
+import { type UsageStore, type UsageLimits, type UsageRequest, type UsageRecord, type UsageUpdate, DEFAULT_USAGE_LIMITS, validateLimits, validateUsageRequest, validateUsageUpdate, summarize, unavailableStore, checkLimits, UsageQuotaError } from './store';
 
 // One EVAL is the reservation transaction. No pipeline/check-then-increment race.
 export const RESERVE_LUA = `
@@ -66,7 +66,7 @@ export function createRedisUsageStore(options: { url: string; token: string; nam
       const raw = await command(['EVAL', RESERVE_LUA, 1, key, JSON.stringify(input), JSON.stringify(limits), now()]);
       let parsed: { created: boolean; record: UsageRecord; error?: string };
       try { parsed = JSON.parse(String(raw)); } catch { return unavailableStore(); }
-      if (parsed.error === 'quota') throw new AnalysisHttpError(429, 'The shared analysis/question allowance is reached. Existing analyses can still be retrieved; no new paid request was started.');
+      if(parsed.error==='quota'){const rows=await command(['HVALS',key]);if(Array.isArray(rows))checkLimits(rows.map(row=>JSON.parse(String(row))),input,limits,now());throw new UsageQuotaError('global-rate',now()+60_000);}
       if (parsed.error === 'conflict') throw new AnalysisHttpError(409, 'This request reference already belongs to different input.');
       if (typeof parsed.created !== 'boolean' || parsed.record?.id !== input.id) return unavailableStore();
       return { created: parsed.created, record: parsed.record };
