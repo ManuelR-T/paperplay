@@ -1,0 +1,56 @@
+{
+  "format": "paperplay-extension-native-browser-evidence",
+  "date": "2026-10-28",
+  "extension": "weak-acid-equilibrium@1.0.0",
+  "nativeBrowser": true,
+  "source": "Actual IAPWS 2024 PDF nomenclature excerpt; authored synthetic equilibrium values, not experimental measurements.",
+  "journeys": [
+    "Import provider-free CLI fixture into existing scientific study reader",
+    "Select sweep-0 chart point and source-guide step",
+    "Read chart source focuses study-weak-acid-standard-state-note-standard-state",
+    "Toggle Source details with aria-expanded",
+    "Download data study and import downloaded bytes into final production build; sweep-0 and guide selection preserved"
+  ],
+  "geometry": {
+    "desktop": {
+      "viewport": 1280,
+      "pageClient": 1280,
+      "pageScroll": 1280,
+      "dialogClient": 728,
+      "dialogScroll": 728
+    },
+    "mobile": {
+      "viewport": 320,
+      "pageClient": 320,
+      "pageScroll": 320,
+      "dialogClient": 286,
+      "dialogScroll": 286
+    },
+    "mobileRootFont32px": {
+      "pageClient": 320,
+      "pageScroll": 320,
+      "dialogClient": 286,
+      "dialogScroll": 286
+    },
+    "finalBuildStudyButtonMinHeight": 44
+  },
+  "fixedObservedBug": "Wide table intrinsic width stretched mobile dialog to scrollWidth1969; generic grid minmax(0,1fr) and child min-width constraints contain it. Table scroll stays local.",
+  "paidInferenceAttemptsDuringOriginalWalkthrough": 0,
+  "cliEditedInput": {
+    "parameter": "total acid concentration mol/L",
+    "before": 0.0010999989,
+    "after": 0.002,
+    "hydrogenBefore": 9.999999999993784e-05,
+    "hydrogenAfter": 0.00013650975490243908,
+    "independentReferenceRowsPassed": 14,
+    "scientificallyVerified": false
+  },
+  "screenshots": [
+    "data/weak-acid-browser-desktop.png",
+    "data/weak-acid-browser-mobile-large-text.png"
+  ],
+  "limits": [
+    "Engineering walkthrough, not participant study or scientific certification.",
+    "Only bounded monoprotic fixed-temperature concentration model is implemented."
+  ]
+}

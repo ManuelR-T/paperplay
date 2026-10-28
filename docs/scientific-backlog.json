@@ -1163,10 +1163,22 @@
       "priority": "P2",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 70,
         "url": "https://github.com/ManuelR-T/paperplay/issues/70"
+      },
+      "implementation": {
+        "documents": [
+          "docs/scientific-extension-kit.md",
+          "docs/weak-acid-extension-research.md"
+        ],
+        "evidence": [
+          "tests/weak-acid-extension.test.ts",
+          "data/weak-acid-browser.json",
+          "data/weak-acid-example.json"
+        ],
+        "summary": "Provider-free bounded weak-acid extension through existing assets, chart and guide interfaces; independent numerical references; illustrative values never scientifically verified. Native source return, narrow/enlarged text, selection export/reopening and generic dialog containment checked."
       }
     },
     {

@@ -1,0 +1,8 @@
+/** Provider/network-free extension fixture. Uses existing Data study / Experience import formats; never reads credentials. */
+import {readFile,writeFile,stat} from 'node:fs/promises';
+import {createWeakAcidExample} from '../lib/extensions/weak-acid-example';
+import {weakAcidRequestSchema} from '../lib/extensions/weak-acid';
+const args=new Map<string,string>();for(const argument of process.argv.slice(2)){const match=/^--(output|experience|request|report|input)=(.+)$/.exec(argument);if(!match||args.has(match[1]))throw Error('Use --output=NEW_DATA_STUDY.json [--experience=NEW_EXPERIENCE.json] [--request=NEW_REQUEST.json] [--report=NEW_REFERENCE_REPORT.json] [--input=EDITED_REQUEST.json].');args.set(match[1],match[2]);}
+let request;if(args.has('input')){const path=args.get('input')!;if((await stat(path)).size>256*1024)throw Error('Extension input exceeds256KiB.');request=weakAcidRequestSchema.parse(JSON.parse(await readFile(path,'utf8')));}
+const example=await createWeakAcidExample({request});const save=async(key:string,text:string)=>{const path=args.get(key);if(path)await writeFile(path,text+'\n',{flag:'wx'});};
+await save('output',example.dataStudy);await save('experience',example.experience);await save('request',JSON.stringify(example.request,null,2));await save('report',JSON.stringify(example.referenceChecks,null,2));if(!args.has('output'))process.stdout.write(example.dataStudy+'\n');else process.stdout.write(JSON.stringify({status:'created-provider-free',dataStudy:args.get('output'),scenarios:example.result.rows.length,engineeringReferences:example.referenceChecks.status,scientificVerification:false})+'\n');

@@ -1,0 +1,637 @@
+{
+  "format": "paperplay-data-study",
+  "version": 2,
+  "source": {
+    "schemaVersion": 1,
+    "id": "weak-acid-standard-state-note",
+    "sourceVersion": "iapws-2024-excerpt-7e0dc09f7ed9e192",
+    "title": "IAPWS R11-24: Revised Release on the Ionization Constant of H2O (2024)",
+    "authors": [
+      "International Association for the Properties of Water and Steam"
+    ],
+    "source": {
+      "kind": "prepared",
+      "url": "https://iapws.org/technical-guidance/release/Ionization.download"
+    },
+    "pageCount": 1,
+    "blocks": [
+      {
+        "id": "standard-state",
+        "page": 1,
+        "kind": "paragraph",
+        "text": "Ionization constant (dimensionless) of water"
+      }
+    ],
+    "anchors": [
+      {
+        "id": "standard-state",
+        "blockId": "standard-state",
+        "page": 1,
+        "quote": "Ionization constant (dimensionless) of water"
+      }
+    ],
+    "extractionWarnings": [
+      "Short exact nomenclature excerpt only; saved logical card page 1 corresponds to original printed page 2. Printed page 2, section 1 Nomenclature; Kw row.",
+      "Actual official 7-page PDF inspected 28 October 2026, SHA256 7e0dc09f7ed9e1927c904d44644a9f6664440d0e5e1f58799e683bcb341a278c, 788267bytes; PDF not bundled.",
+      "IAPWS 2024 cover permits publication in whole or part with attribution to IAPWS. No full PDF is bundled.",
+      "The original supports the standard-state warning only. The acid equilibrium equations, rounded molarity-product parameter and synthetic scenarios are authored teaching additions, not extracted IAPWS model values or experiments."
+    ]
+  },
+  "representation": {
+    "format": "paperplay-representation",
+    "schemaVersion": 1,
+    "id": "weak-acid-equilibrium-study",
+    "title": "Weak-acid equilibrium: water matters at dilution",
+    "source": {
+      "documentId": "weak-acid-standard-state-note",
+      "sourceVersion": "iapws-2024-excerpt-7e0dc09f7ed9e192"
+    },
+    "authorship": {
+      "kind": "prepared",
+      "label": "Application-authored chemistry teaching extension"
+    },
+    "objective": "Compare a declared water-inclusive concentration model with its acid-only approximation, inspect balances, and distinguish an acidity index from activity-defined measured pH.",
+    "anchors": [
+      {
+        "id": "standard-state",
+        "blockId": "standard-state",
+        "page": 1,
+        "quote": "Ionization constant (dimensionless) of water"
+      }
+    ],
+    "claims": [
+      {
+        "id": "source-note",
+        "kind": "source",
+        "text": "Ionization constant (dimensionless) of water",
+        "anchorIds": [
+          "standard-state"
+        ]
+      },
+      {
+        "id": "model-scope",
+        "kind": "pedagogical-addition",
+        "text": "The acid-water equilibrium, constants and scenarios below are authored synthetic teaching content. Converged roots do not reproduce IAPWS water ionization calculations or an original experiment.",
+        "anchorIds": [
+          "standard-state"
+        ]
+      }
+    ],
+    "assumptions": [
+      "One uncharged monoprotic acid and water only, uniform equilibrium at fixed 298.15 K; no salt, buffer, counterions, temperature variation or other reactions.",
+      "Ka_c is a conditional concentration constant in mol/L. Kw_c=1e-14(mol/L)^2 is a rounded authored teaching parameter, not the dimensionless IAPWS constant.",
+      "Acidity index = -log10(h/(1 mol/L)). Activity coefficients and molarity-to-molality conversion are omitted; this is not measured pH.",
+      "The plotted concentration group uses synthetic Ka_c=0.00001mol/L; other cases remain in the table. No independent experimental observations or uncertainty bars exist."
+    ],
+    "requestedEvidence": "simplified-illustration",
+    "assets": [
+      {
+        "id": "weak-acid-authored-results",
+        "kind": "table",
+        "description": "Synthetic chemical equilibrium scenarios and balance residuals",
+        "checksum": "c4636f5c2b42a3f26351c1296def744c8c79482e11f173d750a2ac43ffbcb5c9"
+      }
+    ],
+    "quantities": [],
+    "execution": {
+      "kind": "local-computation",
+      "capabilities": [
+        {
+          "id": "statistical-chart",
+          "version": "1.0.0"
+        },
+        {
+          "id": "asset-inspector",
+          "version": "1.0.0"
+        },
+        {
+          "id": "source-guide",
+          "version": "1.0.0"
+        }
+      ],
+      "assetIds": [
+        "weak-acid-authored-results"
+      ]
+    },
+    "interactions": [
+      "select-entity",
+      "inspect-data",
+      "select-step",
+      "return-source"
+    ],
+    "assetManifests": [
+      {
+        "format": "paperplay-scientific-asset",
+        "schemaVersion": 1,
+        "id": "weak-acid-authored-results",
+        "label": "Synthetic chemical equilibrium scenarios and balance residuals",
+        "shape": [
+          14,
+          14
+        ],
+        "coordinates": {
+          "system": "Independent authored equilibrium scenarios; no observed time or experimental sampling.",
+          "axes": []
+        },
+        "missingValues": "null",
+        "provenance": {
+          "origin": "illustrative",
+          "attribution": "Paperplay-authored concentration-equilibrium model and synthetic scenarios. IAPWS supports the separate standard-state note only.",
+          "rights": "Project-authored synthetic values; original IAPWS excerpt attributed under its cover permission.",
+          "source": {
+            "documentId": "weak-acid-standard-state-note",
+            "sourceVersion": "iapws-2024-excerpt-7e0dc09f7ed9e192",
+            "blockId": "standard-state",
+            "quote": "Ionization constant (dimensionless) of water"
+          }
+        },
+        "transformations": [
+          {
+            "name": "weak-acid-equilibrium@1.0.0",
+            "description": "Trusted safeguarded cubic-root calculation, exact request SHA256 f691d900de47569664477f67424968743255e657e295e3565d7c267f9ee8c64b. Fixed 298.15 K; Ka_c in mol/L and rounded Kw_c=1e-14(mol/L)^2; no activity correction."
+          },
+          {
+            "name": "Named approximation",
+            "description": "Comparison solves the acid-only quadratic and deliberately neglects water. The water-only approximation is undefined and stored null; never zero."
+          },
+          {
+            "name": "Independent reference checks",
+            "description": "Separate bounded charge-balance bisection and recomputed balances are engineering checks only, not original scientific verification or measured uncertainty."
+          }
+        ],
+        "checksum": {
+          "algorithm": "sha256",
+          "scope": "manifest-and-data",
+          "value": "c4636f5c2b42a3f26351c1296def744c8c79482e11f173d750a2ac43ffbcb5c9"
+        },
+        "kind": "table",
+        "data": {
+          "columns": [
+            {
+              "id": "scenario",
+              "label": "Authored scenario",
+              "type": "text",
+              "unit": "1"
+            },
+            {
+              "id": "role",
+              "label": "Teaching role",
+              "type": "text",
+              "unit": "1"
+            },
+            {
+              "id": "total",
+              "label": "Total acid C_T",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "Ka_c",
+              "label": "Authored conditional Ka_c",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "hydrogen",
+              "label": "Hydrogen h",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "hydroxide",
+              "label": "Hydroxide",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "anion",
+              "label": "A- concentration",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "undissociated",
+              "label": "HA concentration",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "acidity",
+              "label": "Concentration-based acidity index (not measured pH)",
+              "type": "number",
+              "unit": "1"
+            },
+            {
+              "id": "acid-only",
+              "label": "Approximation: neglects water, not a full equilibrium",
+              "type": "number",
+              "unit": "1"
+            },
+            {
+              "id": "mass",
+              "label": "Mass balance residual",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "charge",
+              "label": "Charge balance residual",
+              "type": "number",
+              "unit": "mol/L"
+            },
+            {
+              "id": "water",
+              "label": "Water product residual",
+              "type": "number",
+              "unit": "(mol/L)^2"
+            },
+            {
+              "id": "acid",
+              "label": "Acid mass-action residual",
+              "type": "number",
+              "unit": "(mol/L)^2"
+            }
+          ],
+          "rows": [
+            {
+              "id": "water",
+              "values": [
+                "Water-only algebraic reference",
+                "reference",
+                0,
+                0.00001,
+                1e-7,
+                1.0000000000000001e-7,
+                0,
+                0,
+                7,
+                null,
+                0,
+                -1.3234889800848443e-23,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "acid-reference",
+              "values": [
+                "Authored acid-dominated rational reference",
+                "sweep",
+                0.0010999989,
+                0.00001,
+                0.00009999999999993784,
+                1.0000000000006216e-10,
+                0.00009999990000005651,
+                0.0009999989999999435,
+                4.00000000000027,
+                4.0000002274877025,
+                2.168404344971009e-19,
+                -1.186725469294989e-16,
+                0,
+                -1.6543612251060553e-24
+              ]
+            },
+            {
+              "id": "dilute-reference",
+              "values": [
+                "Authored water-sensitive rational reference",
+                "reference",
+                4.5e-7,
+                1e-7,
+                1.9999999999904568e-7,
+                5.000000000023858e-8,
+                1.5000000000047714e-7,
+                2.999999999995228e-7,
+                6.698970004338091,
+                6.774833057890449,
+                -5.293955920339377e-23,
+                -1.6700445695200608e-18,
+                0,
+                6.310887241768095e-30
+              ]
+            },
+            {
+              "id": "sweep-0",
+              "values": [
+                "Synthetic concentration 1e-12 mol/L",
+                "sweep",
+                1e-12,
+                0.00001,
+                1.0000049504984478e-7,
+                9.999950495260595e-8,
+                9.900989613714518e-13,
+                9.90103862854823e-15,
+                6.999997850031163,
+                12.000000043429441,
+                0,
+                -1.7225341424702257e-18,
+                0,
+                1.2037062152420224e-35
+              ]
+            },
+            {
+              "id": "sweep-1",
+              "values": [
+                "Synthetic concentration 1e-11 mol/L",
+                "sweep",
+                1e-11,
+                0.00001,
+                1.000049506160046e-7,
+                9.999504962906926e-8,
+                9.900985245942966e-12,
+                9.901475405703165e-14,
+                6.999978500280052,
+                11.000000434293831,
+                -1.6155871338926322e-27,
+                1.6893939784089012e-18,
+                0,
+                -1.925929944387236e-34
+              ]
+            },
+            {
+              "id": "sweep-2",
+              "values": [
+                "Synthetic concentration 1e-10 mol/L",
+                "sweep",
+                1e-10,
+                0.00001,
+                1.000495169607235e-7,
+                9.995050754643529e-8,
+                9.900941557966906e-11,
+                9.90584420330942e-13,
+                6.999785003797372,
+                10.000004342879675,
+                0,
+                -1.291460546766791e-18,
+                0,
+                1.5407439555097887e-33
+              ]
+            },
+            {
+              "id": "sweep-3",
+              "values": [
+                "Synthetic concentration 1e-9 mol/L",
+                "sweep",
+                1e-9,
+                0.00001,
+                1.0049625042392833e-7,
+                9.950620006036547e-8,
+                9.900503650580823e-10,
+                9.949634941917868e-12,
+                6.997850141731807,
+                9.00004342293522,
+                2.0679515313825692e-25,
+                -1.4952249101406537e-18,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "sweep-4",
+              "values": [
+                "Synthetic concentration 1e-8 mol/L",
+                "sweep",
+                1e-8,
+                0.00001,
+                1.0507035030683954e-7,
+                9.517432816010181e-8,
+                9.896022148620026e-9,
+                1.039778513799749e-10,
+                6.978519819792784,
+                8.000433644484039,
+                0,
+                -1.882305732146068e-18,
+                0,
+                -1.9721522630525295e-31
+              ]
+            },
+            {
+              "id": "sweep-5",
+              "values": [
+                "Synthetic concentration 1e-7 mol/L",
+                "sweep",
+                1e-7,
+                0.00001,
+                1.6066146739819748e-7,
+                6.224267811033447e-8,
+                9.841878928932233e-8,
+                1.5812107106776526e-9,
+                6.79408827073481,
+                7.004279211356265,
+                -1.3234889800848443e-23,
+                -1.4593186541109518e-18,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "sweep-6",
+              "values": [
+                "Synthetic concentration 1e-6 mol/L",
+                "sweep",
+                0.000001,
+                0.00001,
+                9.260430591841711e-7,
+                1.0798633930488974e-8,
+                9.152444252536822e-7,
+                8.475557474631782e-8,
+                6.033368819007797,
+                6.03806670116727,
+                0,
+                -6.617444900424222e-24,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "sweep-7",
+              "values": [
+                "Synthetic concentration 1e-5 mol/L",
+                "sweep",
+                0.00001,
+                0.00001,
+                0.000006181510509570417,
+                1.6177275739510064e-9,
+                0.000006179892782003006,
+                0.0000038201072179969945,
+                5.208905388048048,
+                5.208987640249979,
+                0,
+                -6.5399959796708814e-18,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "sweep-8",
+              "values": [
+                "Synthetic concentration 1e-4 mol/L",
+                "sweep",
+                0.0001,
+                0.00001,
+                0.000027015835168424826,
+                3.701532800173305e-10,
+                0.000027015465015173237,
+                0.00007298453498482677,
+                4.568381602123234,
+                4.568385042003888,
+                1.3552527156068805e-20,
+                -2.842771828295901e-17,
+                0,
+                -1.0339757656912846e-25
+              ]
+            },
+            {
+              "id": "sweep-9",
+              "values": [
+                "Synthetic concentration 1e-3 mol/L",
+                "sweep",
+                0.001,
+                0.00001,
+                0.00009512497715973871,
+                1.0512486098375078e-10,
+                0.00009512487203497677,
+                0.0009048751279650232,
+                4.021705434498907,
+                4.021705686457112,
+                0,
+                -9.90473732272051e-17,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "sweep-10",
+              "values": [
+                "Synthetic concentration 1e-2 mol/L",
+                "sweep",
+                0.01,
+                0.00001,
+                0.0003112673083343957,
+                3.212672751761312e-11,
+                0.0003112672762082395,
+                0.00968873272379176,
+                3.5068664898395894,
+                3.5068665126058565,
+                -1.734723475976807e-18,
+                -5.712901512227161e-16,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "navigation": {
+      "format": "paperplay-semantic-navigation",
+      "schemaVersion": 1,
+      "revision": "417c4ea3b5d60495",
+      "selections": [
+        {
+          "viewId": "chemistry-plot",
+          "scopeId": "chart",
+          "kind": "entity",
+          "entityId": "full:acid-reference"
+        }
+      ]
+    },
+    "views": [
+      {
+        "id": "chemistry-plot",
+        "kind": "statistical-chart",
+        "chart": {
+          "id": "dilution",
+          "title": "Synthetic dilution: water-inclusive model vs acid-only approximation",
+          "kind": "line",
+          "anchorIds": [
+            "standard-state"
+          ],
+          "x": {
+            "label": "Authored total acid concentration",
+            "unit": "mol/L",
+            "scale": "log"
+          },
+          "y": {
+            "label": "Concentration-based acidity index, not measured pH",
+            "unit": "1",
+            "scale": "linear"
+          },
+          "series": [
+            {
+              "id": "full",
+              "label": "Water-inclusive concentration model",
+              "assetId": "weak-acid-authored-results",
+              "xColumn": "total",
+              "yColumn": "acidity",
+              "origin": "illustrative",
+              "interpretation": "Authored equilibrium, synthetic Ka_c=0.00001mol/L with fixed rounded Kw_c; not activity-defined or measured pH.",
+              "order": "ascending",
+              "filter": {
+                "column": "role",
+                "equals": "sweep"
+              }
+            },
+            {
+              "id": "approx",
+              "label": "Approximation: water neglected",
+              "assetId": "weak-acid-authored-results",
+              "xColumn": "total",
+              "yColumn": "acid-only",
+              "origin": "illustrative",
+              "interpretation": "Acid-only quadratic deliberately omits water. Its low-concentration acidity index is not the full model; the discrepancy is visible.",
+              "order": "ascending",
+              "filter": {
+                "column": "role",
+                "equals": "sweep"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "chemistry-values",
+        "kind": "asset",
+        "assetId": "weak-acid-authored-results"
+      },
+      {
+        "id": "chemistry-source",
+        "kind": "source-guide",
+        "steps": [
+          {
+            "id": "definition",
+            "title": "Read the original standard-state note",
+            "explanation": "Printed page 2, section 1 Nomenclature; Kw row. Logical cardpage1 is not original page1. The attributed five-word quotation describes the dimensionless water constant; no full PDF is bundled.",
+            "anchorIds": [
+              "standard-state"
+            ]
+          },
+          {
+            "id": "authored",
+            "title": "Keep the model separate",
+            "explanation": "The generic acid, rounded molarity-product parameter and synthetic scenarios are authored additions. They are not IAPWS empirical data, a calibrated pH measurement or the IAPWS temperature-density formulation.",
+            "anchorIds": [
+              "standard-state"
+            ]
+          },
+          {
+            "id": "balance",
+            "title": "Inspect the balances",
+            "explanation": "The trusted module solves mass conservation, charge balance and acid/water mass action. Inspect all species and residuals in the accessible table; no uncertainty or significance test is inferred.",
+            "anchorIds": [
+              "standard-state"
+            ]
+          },
+          {
+            "id": "unsupported",
+            "title": "Know what this extension cannot do",
+            "explanation": "Activity corrections, measured pH, other temperatures/solvents, charged or polyprotic acids, salt/buffers and titration kinetics are unsupported. Retain the original source rather than substituting another simulation.",
+            "anchorIds": [
+              "standard-state"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

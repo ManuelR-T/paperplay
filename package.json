@@ -24,7 +24,8 @@
     "check:reconstruction": "tsx scripts/check-pdf-reconstruction.ts",
     "benchmark:widgets": "tsx scripts/benchmark-widget-validation.ts",
     "check:custom-design": "tsx scripts/check-custom-design.ts",
-    "report:scientific-corpus": "tsx scripts/report-scientific-corpus.ts"
+    "report:scientific-corpus": "tsx scripts/report-scientific-corpus.ts",
+    "example:weak-acid": "tsx scripts/example-weak-acid.ts"
   },
   "repository": {
     "type": "git",
