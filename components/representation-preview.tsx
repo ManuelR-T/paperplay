@@ -14,6 +14,7 @@ import { useRepresentationSelections } from './use-representation-selections';
 import { selectionAnchorIds } from '@/shared/representation-selection';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog';
 import { RepresentationViews,type PlanUpdate } from './representation-views';
+import {ExperienceExport} from './experience-export';
 
 export function RepresentationPreview({input,source,onClose,assets}:{input:unknown;source:SourceDocument;onClose:()=>void;assets?:readonly ScientificAsset[]}) {
   const [working,setWorking]=useState(input);const workingRef=useRef(input);workingRef.current=working;
@@ -51,5 +52,6 @@ export function RepresentationPreview({input,source,onClose,assets}:{input:unkno
     {coverageImportOpen&&parsed&&<section aria-label="Inspect local data alongside the source"><h3>Inspect local data as a separate study</h3><p>The requested representation stays available through Return to requested representation. New values are not silently substituted for missing publication data.</p><ScientificAssetImporter source={source} onConfirm={asset=>{setWorking(representationFromAsset(asset,source,parsed.anchors[0].blockId));setAvailable([asset]);setCoverageImportOpen(false);setDataError('');}}/></section>}
     {dataError&&<p role="alert">{dataError}</p>}
     <Button variant="outline" onClick={download}>Download representation file</Button>
+    {parsed&&<ExperienceExport source={source} assets={available} entries={[{id:parsed.id,kind:'representation',plan:parsed}]} getEntries={()=>[{id:parsed.id,kind:'representation',plan:validateRepresentationPlan({...validateRepresentationPlan(workingRef.current,source),...(built.status==='ready'?{navigation:selectionStore.getSnapshot()}:{})},source)}]}/>}
   </DialogContent></Dialog>;
 }

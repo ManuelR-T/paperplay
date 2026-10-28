@@ -456,6 +456,8 @@
 
 .reading-figure .paperplay-figure button{max-width:100%;white-space:normal;overflow-wrap:anywhere;height:auto;min-height:40px}.comparison-table:focus-visible{outline:2px solid var(--olive);outline-offset:3px}@media(max-width:620px){.reading-figure>.paperplay-figure,.reading-figure>div>.paperplay-figure{padding:14px}}
 
+.desk-dialog button[data-slot=button]{min-height:44px;height:auto;max-width:100%;font-size:1rem;white-space:normal}
+
 /* Persistent, direct reading actions. */
 .dialog-close-bar{position:sticky;top:0;height:0;min-height:0;z-index:30;align-self:start}.dialog-close-bar>[data-slot=dialog-close]{position:absolute;right:-8px;top:-8px;display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;background:var(--paper,var(--background));color:var(--ink,var(--foreground));border:1px solid var(--reader-line,var(--border));border-radius:8px;box-shadow:0 2px 5px #0001}[data-slot=dialog-content]>[data-slot=dialog-title]{padding-right:44px}
 .reader-quick-actions{display:flex;align-items:center;gap:4px;margin-left:auto}.reader-quick-actions button{min-height:44px;height:auto;font-size:14px}.reader-navigation>details{min-width:0;flex:1}.reader-navigation summary>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.reader-progress{flex-shrink:0;font-size:14px}.app-header .header-actions button{min-height:44px}@media(max-width:700px){.reader-progress{display:none}.reader-quick-actions button{width:40px;padding:8px}.reader-quick-actions button span{display:none}.reader-navigation>details{max-width:calc(100% - 136px)}.reader-navigation{gap:8px;min-height:52px}.app-header{height:auto;min-height:76px;flex-wrap:wrap}.header-actions{flex-wrap:wrap}}

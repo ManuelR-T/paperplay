@@ -1,0 +1,120 @@
+{
+  "scope": "PP112 native browser engineering checks; no human usability or scientific evaluation",
+  "url": "http://localhost:3001",
+  "profile": "own incognito tab_y; default profile not changed",
+  "inferenceRequests": 0,
+  "checks": {
+    "exportDefaults": {
+      "source": false,
+      "assets": false,
+      "results": true
+    },
+    "composedNavigation": {
+      "action": "Next then export",
+      "exportedFrameId": "move",
+      "reimportRestoredAuthoredPositionChange": true,
+      "workersCreatedByReviewOrExplicitComposedOpen": 0
+    },
+    "artifactWithoutSource": {
+      "status": "missing-source",
+      "interactionDisabled": true,
+      "originalDownloadAvailable": true,
+      "workersCreated": 0
+    },
+    "artifactWithSource": {
+      "reviewStatus": "ready",
+      "workersCreatedByReviewAndPreview": 0,
+      "exportBeforeFirstRun": "succeeded",
+      "exportedSeed": 73,
+      "exportedInputJson": "{}",
+      "inventedCapture": false
+    },
+    "explicitArtifactExecution": {
+      "compilerAndRuntimeWorkersCreated": true,
+      "addItemRendered": "1 item.",
+      "exportedFrameCapture": "1 item.",
+      "captureReimport": "inert text; no additional worker"
+    },
+    "scientificSettings": {
+      "fixture": "authored decay",
+      "editedRate": "1 to 2 per second",
+      "exportedRate": 2,
+      "reimportReviewAdditionalWorkers": 0,
+      "explicitOpenRestoredRate": 2,
+      "explicitOpenCreatedWorker": true
+    },
+    "corruptionRecovery": {
+      "mutation": "changed nested dependency version without updating outer digest",
+      "status": "incompatible",
+      "reason": "Experience manifest digest differs.",
+      "additionalWorkers": 0,
+      "originalDownloadBytes": 8390,
+      "originalDownloadSha256": "bd724e6ca7a61d545e21369ad815ee6bdcd670e6e4e07fc9ad3507c509e924e0",
+      "matchesUploadedBytes": true,
+      "limitation": "Outer integrity rejection; not a separate native dependency-version compatibility test"
+    },
+    "responsive": {
+      "viewport": [
+        320,
+        900
+      ],
+      "rootFontPx": 32,
+      "dialogClientWidth": 286,
+      "dialogScrollWidth": 286,
+      "exportPanelClientWidth": 242,
+      "exportPanelScrollWidth": 242,
+      "scopedButtonHeights": [
+        134.390625,
+        236.78125
+      ],
+      "minimum44Satisfied": true
+    },
+    "assetNavigation": {
+      "fixture": "authored Gaussian spatial field with two checked attachments",
+      "defaultAttachments": false,
+      "initialResult": "Export failed after selecting a region because detached assetManifests changed the portable navigation revision",
+      "owner": "Core bundle owner fixing with regression; targeted retest pending",
+      "finalResult": "Passed after core portable navigation revision fix; native retest on fresh production server",
+      "sourceIncluded": true,
+      "attachmentsOff": {
+        "assets": 0,
+        "references": "two exact SHA256 references marked external",
+        "status": "missing-data",
+        "interactionDisabled": true
+      },
+      "attachmentsOn": {
+        "assets": 2,
+        "status": "ready",
+        "restoredRegion": "columns2..4, rows3..5; (0.2,0.3) to (0.4,0.5) mm;9cells",
+        "errors": []
+      },
+      "navigationRevision": "c4bc0bc4da17e6cf",
+      "exactBounds": {
+        "min": [
+          0.2,
+          0.30000000000000004
+        ],
+        "max": [
+          0.4,
+          0.5
+        ]
+      },
+      "checksums": {
+        "field": "d80207837b44e091f8d8b018c158d2721065f85daef84f209265529a3362ddae",
+        "threshold": "9c5ff96e1575fcb66b8d49cd536982b3e68229439f80c02b3a2c7e094fe71334"
+      },
+      "nativeReviewAndLocalFieldWorkerCreations": 0
+    }
+  },
+  "screenshots": [
+    "data/experience-browser-desktop.png",
+    "data/experience-browser-mobile.png"
+  ],
+  "notes": [
+    "All model API requests were blocked by the tab-local QA fetch interceptor; none attempted.",
+    "No reader source or default-profile paper was overwritten by these imports.",
+    "Examples are authored teaching fixtures except the composed guide, which explicitly cites the existing public prepared paper and labels its diagram illustrative.",
+    "Actual local workers executed only after explicitly opening an interaction or a direct pre-existing scientific data study import."
+  ],
+  "productionRetest": "Fresh server3001 session99014 after723tests/type/build"
+}

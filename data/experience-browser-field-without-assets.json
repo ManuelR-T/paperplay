@@ -1,0 +1,252 @@
+{
+  "format": "paperplay-scientific-experience",
+  "schemaVersion": 1,
+  "contents": "definitions-and-quoted-excerpts",
+  "sourceReference": {
+    "documentId": "spatial-field",
+    "sourceVersion": "authored-gaussian-field-v1",
+    "fingerprint": "282aa69a7ace2b3035c1d84804fb0e39beaf2580da66e6a8dd9ab4ffb197d313",
+    "title": "Authored Gaussian scalar-field study",
+    "authors": [
+      "Paperplay-authored mathematical illustration"
+    ],
+    "url": null
+  },
+  "attribution": {
+    "authors": "Paperplay-authored mathematical illustration",
+    "notice": "Source/data rights remain with their authors. Exporting does not grant redistribution permission."
+  },
+  "inclusions": {
+    "source": true,
+    "assets": false,
+    "results": true
+  },
+  "source": {
+    "schemaVersion": 1,
+    "id": "spatial-field",
+    "sourceVersion": "authored-gaussian-field-v1",
+    "title": "Authored Gaussian scalar-field study",
+    "authors": [
+      "Paperplay-authored mathematical illustration"
+    ],
+    "source": {
+      "kind": "prepared"
+    },
+    "pageCount": 1,
+    "blocks": [
+      {
+        "id": "source",
+        "page": 1,
+        "kind": "paragraph",
+        "text": "This authored Gaussian scalar field uses millimetre coordinates and kelvin values. It is a mathematical teaching illustration, not an observed temperature map or a physical diffusion simulation."
+      }
+    ],
+    "anchors": [
+      {
+        "id": "source",
+        "blockId": "source",
+        "page": 1,
+        "quote": "This authored Gaussian scalar field uses millimetre coordinates and kelvin values. It is a mathematical teaching illustration, not an observed temperature map or a physical diffusion simulation."
+      }
+    ],
+    "extractionWarnings": [
+      "Prepared authored-source card, not a published experimental result. The field is a fixed analytic illustration with deliberately missing cells."
+    ]
+  },
+  "entries": [
+    {
+      "id": "spatial-field",
+      "definitionSha256": "95546360500e69aa6a26d6c4f8fc1b9c5a4b69b6fa2d8625a17159817e298399",
+      "executions": [
+        {
+          "id": "spatial",
+          "engineId": "spatial-field",
+          "engineVersion": "1.0.0",
+          "requestSha256": "d2648f22a7772ec1e04fb615a22e996b046b7f02fefed10fa4fbc0450f83c98c",
+          "parametersPath": "plan.views[0]",
+          "seed": null,
+          "randomPolicy": null,
+          "replayClass": "deterministic"
+        }
+      ],
+      "kind": "representation",
+      "plan": {
+        "format": "paperplay-representation",
+        "schemaVersion": 1,
+        "id": "spatial-field",
+        "title": "Scalar field, exact coordinates and missing cells",
+        "source": {
+          "documentId": "spatial-field",
+          "sourceVersion": "authored-gaussian-field-v1"
+        },
+        "authorship": {
+          "kind": "prepared",
+          "label": "Source-attributed spatial study with explicitly authored overlays"
+        },
+        "objective": "Inspect original coordinate-linked values while keeping source pixels, data and overlays distinct.",
+        "anchors": [
+          {
+            "id": "source",
+            "blockId": "source",
+            "page": 1,
+            "quote": "This authored Gaussian scalar field uses millimetre coordinates and kelvin values. It is a mathematical teaching illustration, not an observed temperature map or a physical diffusion simulation."
+          }
+        ],
+        "claims": [
+          {
+            "id": "source-description",
+            "kind": "source",
+            "text": "This authored Gaussian scalar field uses millimetre coordinates and kelvin values. It is a mathematical teaching illustration, not an observed temperature map or a physical diffusion simulation.",
+            "anchorIds": [
+              "source"
+            ]
+          },
+          {
+            "id": "scope",
+            "kind": "pedagogical-addition",
+            "text": "Spatial selection is a reading aid. No scientific validation, inferred calibration, segmentation verification or physical simulation is claimed.",
+            "anchorIds": [
+              "source"
+            ]
+          }
+        ],
+        "assumptions": [
+          "Fixed analytic teaching data, not measurements or a solved physical initial/boundary-value problem."
+        ],
+        "requestedEvidence": "simplified-illustration",
+        "assets": [
+          {
+            "id": "field",
+            "kind": "tensor",
+            "description": "Authored analytic Gaussian temperature-like field",
+            "checksum": "d80207837b44e091f8d8b018c158d2721065f85daef84f209265529a3362ddae"
+          },
+          {
+            "id": "threshold",
+            "kind": "tensor",
+            "description": "Authored illustrative threshold mask",
+            "checksum": "9c5ff96e1575fcb66b8d49cd536982b3e68229439f80c02b3a2c7e094fe71334"
+          }
+        ],
+        "quantities": [],
+        "execution": {
+          "kind": "local-computation",
+          "capabilities": [
+            {
+              "id": "spatial-field",
+              "version": "1.0.0"
+            }
+          ],
+          "assetIds": [
+            "field",
+            "threshold"
+          ]
+        },
+        "interactions": [
+          "select-region",
+          "inspect-data",
+          "return-source"
+        ],
+        "navigation": {
+          "format": "paperplay-semantic-navigation",
+          "schemaVersion": 1,
+          "revision": "c4bc0bc4da17e6cf",
+          "selections": [
+            {
+              "viewId": "spatial",
+              "scopeId": "spatial",
+              "kind": "region",
+              "frame": "authored-grid",
+              "unit": "mm",
+              "min": [
+                0.2,
+                0.30000000000000004
+              ],
+              "max": [
+                0.4,
+                0.5
+              ]
+            }
+          ]
+        },
+        "views": [
+          {
+            "id": "spatial",
+            "kind": "spatial-view",
+            "spatial": {
+              "id": "raster",
+              "title": "Scalar field, exact coordinates and missing cells",
+              "anchorIds": [
+                "source"
+              ],
+              "input": {
+                "kind": "field",
+                "assetId": "field",
+                "valueUnit": "K",
+                "temperatureMode": "absolute"
+              },
+              "calibration": {
+                "frame": "authored-grid",
+                "kind": "declared",
+                "unit": "mm",
+                "x": {
+                  "origin": 0,
+                  "spacing": 0.1,
+                  "direction": 1
+                },
+                "y": {
+                  "origin": 0,
+                  "spacing": 0.1,
+                  "direction": 1
+                },
+                "anchorIds": [
+                  "source"
+                ],
+                "interpretation": "Authored 0.1 mm grid spacing, not an experimentally calibrated coordinate system."
+              },
+              "overlays": [
+                {
+                  "id": "threshold-layer",
+                  "label": "Illustrative 308 K threshold",
+                  "origin": "generated-overlay",
+                  "anchorIds": [
+                    "source"
+                  ],
+                  "interpretation": "Declared deterministic threshold of the authored field, not verified segmentation or a physical phase boundary.",
+                  "opacity": 0.35,
+                  "kind": "mask",
+                  "assetId": "threshold"
+                }
+              ],
+              "viewport": {
+                "zoom": 8,
+                "panX": 0,
+                "panY": 0,
+                "palette": "blue-gold",
+                "visibleOverlayIds": []
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "assetReferences": [
+    {
+      "id": "field",
+      "kind": "tensor",
+      "checksum": "d80207837b44e091f8d8b018c158d2721065f85daef84f209265529a3362ddae",
+      "availability": "external"
+    },
+    {
+      "id": "threshold",
+      "kind": "tensor",
+      "checksum": "9c5ff96e1575fcb66b8d49cd536982b3e68229439f80c02b3a2c7e094fe71334",
+      "availability": "external"
+    }
+  ],
+  "assets": [],
+  "reports": [],
+  "disclosure": "Selected definitions contain cited source quotations and may contain scientific inputs. Recorded text, values/state and reports may contain copies of data or source text. Full normalized source and original asset attachments are separate explicit choices. No original PDF, provider capability, credential, execution authority or compiler receipt is added.",
+  "manifestSha256": "cb2d4bbee83314c8d062063e03add162fb605f212c0631fc462adbe94465b3fa"
+}

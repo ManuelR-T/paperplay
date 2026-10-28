@@ -1059,10 +1059,16 @@
       "priority": "P1",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 67,
         "url": "https://github.com/ManuelR-T/paperplay/issues/67"
+      },
+      "evidence": {
+        "document": "docs/scientific-experiences.md",
+        "checks": "TypeScript, 8 focused codec tests, complete automated suite and production build passed; workspace checkpoint 723 tests including prepared PP-113 infrastructure",
+        "browser": "Native Chromium: readonly import zero workers, explicit approved generated execution; arbitrary legacy seeds 73/74; edited dynamics; asset inclusion/omission and exact ROI navigation; corrupted original download; 320 px/enlarged text",
+        "limitations": "Historical reports/captures remain reported-only. Untyped reader captures use the static HTML study pack. No paid inference or human evaluation."
       }
     },
     {

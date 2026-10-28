@@ -1,0 +1,69 @@
+{
+  "scope": "PP112 native reader export/import engineering checks, not independent science or human evaluation",
+  "date": "2026-10-28",
+  "export": {
+    "file": "Temporary local download; source/data bodies not published with this report",
+    "bytes": 12906,
+    "sha256": "531219e2cb1c48e3424ed4c96340f99fccf2ea027b6ba2168e16ccd6a68e851c",
+    "inclusions": {
+      "source": false,
+      "assets": false,
+      "results": true
+    },
+    "entries": [
+      "widget graph",
+      "legacy Dijkstra comparison"
+    ],
+    "note": "Mounted walkthrough without a typed session definition remains available through static HTML capture; export message identifies skipped captures."
+  },
+  "controlledReplay": {
+    "basis": "Two controlled copies of the actual exported legacy definition, seeds changed to 73 and 74, captures removed and source explicitly included for local QA.",
+    "workersOnReadOnlyImport": 0,
+    "workersOnSwitchBeforeRun": 0,
+    "priorTraceRangesAfterSwitch": 0,
+    "counts": {
+      "workers": 4,
+      "posts": [
+        {
+          "kind": "run",
+          "engineId": "dijkstra-heap",
+          "seed": 73
+        },
+        {
+          "kind": "run",
+          "engineId": "dijkstra-scan",
+          "seed": 73
+        },
+        {
+          "kind": "run",
+          "engineId": "dijkstra-heap",
+          "seed": 74
+        },
+        {
+          "kind": "run",
+          "engineId": "dijkstra-scan",
+          "seed": 74
+        }
+      ],
+      "paidCalls": 0
+    },
+    "seed74": true,
+    "width": 320,
+    "pageWidth": 320,
+    "dialogWidth": 286,
+    "dialogScrollWidth": 286
+  },
+  "limits": [
+    "Instrumentation subclasses the native browser Worker and records request kind/engine/seed only.",
+    "No original import, saved widget or default source was overwritten.",
+    "The first close-button locator failed; corrected CSS data-slot locator succeeded."
+  ],
+  "finalExportLayout": {
+    "viewportWidth": 320,
+    "pageWidth": 320,
+    "dialogClientWidth": 286,
+    "dialogScrollWidth": 286,
+    "allVisibleButtonsHeight": 44,
+    "allVisibleButtonsFontPx": 16
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "format": "paperplay-scientific-experience",
+  "schemaVersion": 1,
+  "contents": "definitions-and-quoted-excerpts",
+  "sourceReference": {
+    "documentId": "priority-search-trees",
+    "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05",
+    "fingerprint": "f1ea7d77697a3355116879e8fd75dac8e31e8b4a3750ef6c266a9152f3c258c0",
+    "title": "Proof Pearl: Purely Functional, Simple and Efficient Priority Search Trees and Applications to Prim and Dijkstra",
+    "authors": [
+      "Peter Lammich",
+      "Tobias Nipkow"
+    ],
+    "url": "https://doi.org/10.4230/LIPIcs.ITP.2019.23"
+  },
+  "attribution": {
+    "authors": "Peter Lammich · Tobias Nipkow",
+    "notice": "Source/data rights remain with their authors. Exporting does not grant redistribution permission.",
+    "sourceUrl": "https://doi.org/10.4230/LIPIcs.ITP.2019.23"
+  },
+  "inclusions": {
+    "source": false,
+    "assets": false,
+    "results": true
+  },
+  "entries": [
+    {
+      "id": "guide-e6fa3d3af9e94c6e868361f1",
+      "definitionSha256": "40b79d211c9ed85b9c9071271aba68f3f5141ee5338096400007b7f9af35a6e3",
+      "executions": [
+        {
+          "id": "composition",
+          "engineId": "composed-scene",
+          "engineVersion": "1.0.0",
+          "requestSha256": "89bd86dcd5d03327ce5dfd8ab989434e881bd506f7a27df2857b49ce407b662e",
+          "parametersPath": "plan.views[0]",
+          "seed": null,
+          "randomPolicy": null,
+          "replayClass": "deterministic"
+        }
+      ],
+      "kind": "representation",
+      "plan": {
+        "format": "paperplay-representation",
+        "schemaVersion": 1,
+        "id": "guide-e6fa3d3af9e94c6e868361f1",
+        "title": "A composed reading figure",
+        "source": {
+          "documentId": "priority-search-trees",
+          "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05"
+        },
+        "authorship": {
+          "kind": "user",
+          "label": "Reader-created reading scaffold"
+        },
+        "objective": "Inspect the cited passage beside a responsive figure scaffold. All coordinates and values in this example are explicitly illustrative.",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "g-abstract-text",
+            "page": 1,
+            "quote": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm."
+          }
+        ],
+        "claims": [
+          {
+            "id": "source-quote",
+            "kind": "source",
+            "text": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm.",
+            "anchorIds": [
+              "passage"
+            ]
+          },
+          {
+            "id": "reading-scaffold",
+            "kind": "pedagogical-addition",
+            "text": "These prompts are a reading scaffold, not a claim that the mechanism has been executed or verified.",
+            "anchorIds": [
+              "passage"
+            ]
+          }
+        ],
+        "assumptions": [
+          "The scaffold does not infer missing experimental data, equations or proof steps."
+        ],
+        "requestedEvidence": "illustrative-walkthrough",
+        "assets": [],
+        "quantities": [],
+        "execution": {
+          "kind": "none",
+          "capabilities": [
+            {
+              "id": "composed-scene",
+              "version": "1.0.0"
+            }
+          ],
+          "assetIds": []
+        },
+        "interactions": [
+          "select-step",
+          "select-entity",
+          "return-source"
+        ],
+        "navigation": {
+          "format": "paperplay-semantic-navigation",
+          "schemaVersion": 1,
+          "revision": "44d9c3d9d03e55ce",
+          "selections": [
+            {
+              "viewId": "composition",
+              "scopeId": "concepts",
+              "kind": "time",
+              "frameId": "move",
+              "value": 0,
+              "unit": "walkthrough-step",
+              "mode": "authored-step"
+            }
+          ]
+        },
+        "views": [
+          {
+            "id": "composition",
+            "kind": "composed-scene",
+            "scene": {
+              "format": "paperplay-composed-scene",
+              "schemaVersion": 1,
+              "entities": [
+                {
+                  "id": "first",
+                  "label": "First illustrative concept",
+                  "anchorIds": [
+                    "passage"
+                  ]
+                },
+                {
+                  "id": "second",
+                  "label": "Second illustrative concept",
+                  "anchorIds": [
+                    "passage"
+                  ]
+                },
+                {
+                  "id": "third",
+                  "label": "Third illustrative concept",
+                  "anchorIds": [
+                    "passage"
+                  ]
+                }
+              ],
+              "rootId": "root",
+              "nodes": [
+                {
+                  "id": "root",
+                  "kind": "panel",
+                  "title": "Source and illustration",
+                  "children": [
+                    "citation",
+                    "columns",
+                    "key"
+                  ]
+                },
+                {
+                  "id": "citation",
+                  "kind": "annotation",
+                  "text": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm.",
+                  "anchorIds": [
+                    "passage"
+                  ],
+                  "role": "source"
+                },
+                {
+                  "id": "columns",
+                  "kind": "grid",
+                  "columns": 2,
+                  "children": [
+                    "concepts",
+                    "values"
+                  ]
+                },
+                {
+                  "id": "concepts",
+                  "kind": "scene",
+                  "title": "Illustrative relationship scaffold",
+                  "description": "Three generic objects and an authored transition. This is a layout example, not an interpretation or execution of the cited paper.",
+                  "coordinates": {
+                    "frame": "authored teaching frame",
+                    "xAxis": "x",
+                    "yAxis": "y",
+                    "unit": "illustrative units"
+                  },
+                  "marks": [
+                    {
+                      "id": "steps",
+                      "kind": "repeat",
+                      "label": "Illustrative objects",
+                      "color": "blue",
+                      "items": [
+                        {
+                          "id": "first",
+                          "entityId": "first",
+                          "label": "First illustrative object — replace with a source-grounded concept",
+                          "x": 0,
+                          "y": 0
+                        },
+                        {
+                          "id": "second",
+                          "entityId": "second",
+                          "label": "Second illustrative object — relationship meaning must be declared",
+                          "x": 1,
+                          "y": 1
+                        },
+                        {
+                          "id": "third",
+                          "entityId": "third",
+                          "label": "Third illustrative object — no causal evidence implied",
+                          "x": 2,
+                          "y": 0
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [
+                    {
+                      "id": "relation",
+                      "from": "first",
+                      "to": "second",
+                      "label": "Authored explanatory connection; not established causation"
+                    }
+                  ],
+                  "frames": [
+                    {
+                      "id": "move",
+                      "label": "Authored position change",
+                      "anchorIds": [
+                        "passage"
+                      ],
+                      "changes": [
+                        {
+                          "markId": "second",
+                          "x": 1,
+                          "y": 2
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "values",
+                  "kind": "slot",
+                  "slot": "chart",
+                  "title": "Numerical equivalent slot",
+                  "description": "Explicit illustrative numbers; a specialized chart adapter can be added later.",
+                  "values": [
+                    {
+                      "label": "First example input",
+                      "entityId": "first",
+                      "value": 1,
+                      "unit": "dimensionless illustration"
+                    },
+                    {
+                      "label": "Second example input",
+                      "entityId": "second",
+                      "value": 2,
+                      "unit": "dimensionless illustration"
+                    },
+                    {
+                      "label": "Third example input",
+                      "entityId": "third",
+                      "value": 3,
+                      "unit": "dimensionless illustration"
+                    }
+                  ]
+                },
+                {
+                  "id": "key",
+                  "kind": "legend",
+                  "items": [
+                    {
+                      "label": "Blue: authored illustrative objects",
+                      "color": "blue"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "assetReferences": [],
+  "assets": [],
+  "reports": [],
+  "disclosure": "Selected definitions contain cited source quotations and may contain scientific inputs. Recorded text, values/state and reports may contain copies of data or source text. Full normalized source and original asset attachments are separate explicit choices. No original PDF, provider capability, credential, execution authority or compiler receipt is added.",
+  "manifestSha256": "50a9d232e5090b47c76e77be9380c1cd7ea256e83aa3bf2f861f19d24c0bb620"
+}

@@ -3,7 +3,7 @@ import { useEffect,useLayoutEffect,useMemo,useRef,useState,useSyncExternalStore 
 import type { ArtifactRecordedReplay } from '@/shared/artifact-experiment';
 import type { SourceDocument } from '@/shared/schema';
 import type { BuiltFigureArtifact } from '@/lib/artifacts/lifecycle';
-import { createExperimentSession } from '@/lib/artifacts/experiment-session';
+import { createExperimentSession,type ExperimentSessionSnapshot } from '@/lib/artifacts/experiment-session';
 import type { SdkEvent } from '@/shared/figure-sdk';
 import { isSdkSelection,sdkSelectionRevision } from '@/shared/figure-selection';
 import { createSemanticSelectionStore } from '@/lib/interactions/selection-store';
@@ -12,7 +12,7 @@ import styles from './generated-figure.module.css';
 import sessionStyles from './generated-figure-session.module.css';
 import { GeneratedFigureDisplay } from './generated-figure-display';
 type Session=ReturnType<typeof createExperimentSession>;
-export type FigureSaveSettings={input?:unknown;seed?:number;replay?:ArtifactRecordedReplay;pending?:boolean};
+export type FigureSaveSettings={input?:unknown;seed?:number;replay?:ArtifactRecordedReplay;pending?:boolean;status?:ExperimentSessionSnapshot['status']};
 export type FigureReplaySettings=Pick<Parameters<typeof createExperimentSession>[0],'input'|'seed'|'records'|'expectedInputSha256'>;
 function download(text:string,name:string,type='application/json'){const url=URL.createObjectURL(new Blob([text],{type})),link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 function object(value:unknown):Record<string,unknown>{return value&&typeof value==='object'&&!Array.isArray(value)?value as Record<string,unknown>:{};}
@@ -26,7 +26,7 @@ export function GeneratedFigure({built,source,onReturn,autoStart=false,experimen
  const inputFields=built.manifest.kind==='generated'?built.manifest.interfaces.input.filter(field=>field.id!=='assets'):[];
  // Keep the save action aligned with the visible session before the next browser event.
  // The parent callback writes only a ref, so frames never recreate this session.
- useLayoutEffect(()=>{onSettings?.({input:snapshot.input,seed:snapshot.seed,pending:busy||snapshot.status==='idle'||snapshot.status==='running'||snapshot.status==='opening',...(frame&&snapshot.identity?{replay:{frame,seed:snapshot.seed,inputSha256:snapshot.identity.inputSha256,artifactSha256:snapshot.identity.artifactSha256}}:{})});},[onSettings,snapshot.identity,snapshot.input,snapshot.seed,snapshot.status,frame,busy]);
+ useLayoutEffect(()=>{onSettings?.({input:snapshot.input,seed:snapshot.seed,status:snapshot.status,pending:busy||snapshot.status==='idle'||snapshot.status==='running'||snapshot.status==='opening',...(frame&&snapshot.identity?{replay:{frame,seed:snapshot.seed,inputSha256:snapshot.identity.inputSha256,artifactSha256:snapshot.identity.artifactSha256}}:{})});},[onSettings,snapshot.identity,snapshot.input,snapshot.seed,snapshot.status,frame,busy]);
 
  useEffect(()=>{if(!dirty.current){setSeedDraft(String(snapshot.seed));const data=object(snapshot.input);setInputDraft(Object.fromEntries(inputFields.map(field=>[field.id,field.kind==='string'?String(data[field.id]??''):JSON.stringify(data[field.id]??(field.kind==='number'?0:field.kind==='boolean'?false:field.kind==='array'?[]:{}))])));}},[snapshot.input,snapshot.seed]);
  const [store]=useState(()=>createSemanticSelectionStore({revision:sdkSelectionRevision(built.contentSha256,null),isValid:value=>isSdkSelection(built.manifest.id,current.current,value)}));

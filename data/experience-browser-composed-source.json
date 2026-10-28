@@ -1,0 +1,576 @@
+{
+  "format": "paperplay-scientific-experience",
+  "schemaVersion": 1,
+  "contents": "definitions-and-quoted-excerpts",
+  "sourceReference": {
+    "documentId": "priority-search-trees",
+    "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05",
+    "fingerprint": "f1ea7d77697a3355116879e8fd75dac8e31e8b4a3750ef6c266a9152f3c258c0",
+    "title": "Proof Pearl: Purely Functional, Simple and Efficient Priority Search Trees and Applications to Prim and Dijkstra",
+    "authors": [
+      "Peter Lammich",
+      "Tobias Nipkow"
+    ],
+    "url": "https://doi.org/10.4230/LIPIcs.ITP.2019.23"
+  },
+  "attribution": {
+    "authors": "Peter Lammich · Tobias Nipkow",
+    "notice": "Source/data rights remain with their authors. Exporting does not grant redistribution permission.",
+    "sourceUrl": "https://doi.org/10.4230/LIPIcs.ITP.2019.23"
+  },
+  "inclusions": {
+    "source": true,
+    "assets": false,
+    "results": true
+  },
+  "source": {
+    "schemaVersion": 1,
+    "id": "priority-search-trees",
+    "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05",
+    "title": "Proof Pearl: Purely Functional, Simple and Efficient Priority Search Trees and Applications to Prim and Dijkstra",
+    "authors": [
+      "Peter Lammich",
+      "Tobias Nipkow"
+    ],
+    "source": {
+      "kind": "prepared",
+      "url": "https://doi.org/10.4230/LIPIcs.ITP.2019.23"
+    },
+    "pageCount": 18,
+    "blocks": [
+      {
+        "id": "g-abstract",
+        "page": 1,
+        "kind": "heading",
+        "text": "Abstract",
+        "level": 2
+      },
+      {
+        "id": "g-abstract-text",
+        "page": 1,
+        "sectionId": "g-abstract",
+        "kind": "paragraph",
+        "text": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm."
+      },
+      {
+        "id": "g-introduction",
+        "page": 1,
+        "kind": "heading",
+        "text": "1 Introduction",
+        "level": 2
+      },
+      {
+        "id": "g-introduction-text",
+        "page": 1,
+        "sectionId": "g-introduction",
+        "kind": "paragraph",
+        "text": "The standard implementations (e.g. [6]) of a number of efficient algorithms (e.g. Prim [26] and Dijkstra [7]) require a priority queue with a decrease-key operation. The latter operation is easy to realize efficiently in an imperative setting but harder in a functional one because one cannot use a pointer into the priority queue. The starting point of this paper is an extremely simple and yet efficient functional data structure that supports the usual search tree operations plus the priority queue operations including decrease-key. It can be realized on top of any kind of binary search tree by augmenting it with priority information. We call it a priority search tree. Based on this data structure we implement and verify two classic efficient algorithms, Prim and Dijkstra, in a purely functional manner. This is the first formal verification of an executable version of Prim’s algorithm and we discuss its details. The work is carried out in the theorem prover Isabelle/HOL [20, 21]."
+      },
+      {
+        "id": "g-priority-maps",
+        "page": 2,
+        "kind": "heading",
+        "text": "3.1 Priority Maps",
+        "level": 2
+      },
+      {
+        "id": "g-priority-definition",
+        "page": 2,
+        "sectionId": "g-priority-maps",
+        "kind": "paragraph",
+        "text": "A priority map is a map from keys (type 'a) to values (type 'b) where the values (“priorities”) are linearly ordered and a key with minimal value can be extracted. This is the interface:"
+      },
+      {
+        "id": "g-priority-interface",
+        "page": 2,
+        "sectionId": "g-priority-maps",
+        "kind": "equation",
+        "latex": "\\operatorname{getmin} :: 'm \\Rightarrow 'a \\times 'b"
+      },
+      {
+        "id": "g-priority-operations",
+        "page": 2,
+        "sectionId": "g-priority-maps",
+        "kind": "paragraph",
+        "text": "The first five operations are the canonical ones for maps (which is why we omit their specification); function update subsumes decrease-key (which should be called decrease-priority). Function getmin extracts the key with the minimal value. Its specification is:"
+      },
+      {
+        "id": "g-getmin-specification",
+        "page": 2,
+        "sectionId": "g-priority-maps",
+        "kind": "equation",
+        "latex": "\\begin{gathered}\\operatorname{getmin}(m)=(k,p)\\land\\operatorname{invar}(m)\\land\\operatorname{lookup}(m)\\ne(\\lambda x.\\mathrm{None})\\\\\\Longrightarrow\\operatorname{lookup}(m,k)=\\mathrm{Some}(p)\\land(\\forall p'\\in\\operatorname{ran}(\\operatorname{lookup}(m)).\\;p\\le p')\\end{gathered}"
+      },
+      {
+        "id": "g-search-trees",
+        "page": 2,
+        "kind": "heading",
+        "text": "3.2 Priority Search Trees",
+        "level": 2
+      },
+      {
+        "id": "g-search-trees-text",
+        "page": 2,
+        "sectionId": "g-search-trees",
+        "kind": "paragraph",
+        "text": "The first contribution of this paper is a truly simple implementation of priority maps by means of augmented binary search trees. That is, the basic data structure is some arbitrary binary search tree, e.g. a red-black tree, implementing the map from 'a to 'b by storing pairs (k,p) in each node. At this point we need to assume that the keys are also linearly ordered. To implement getmin efficiently we annotate/augment each node with another pair (k′,p′), the intended result of getmin when applied to that subtree. The specification of getmin tells us that (k′,p′) must be in that subtree and that p′ is the minimal priority in that subtree. Thus the annotation can be computed by passing the (k′,p′) with the minimal p′ up the tree. We will now make this more precise for balanced binary trees in general."
+      },
+      {
+        "id": "g-complexity",
+        "page": 3,
+        "sectionId": "g-search-trees",
+        "kind": "paragraph",
+        "text": "Note that this transformation does not affect the asymptotic complexity of f. Therefore the priority search tree operations have the same complexity as the underlying search tree operations, i.e. typically logarithmic (update, delete, lookup) and constant time (empty, is_empty). For brevity we simply speak of efficient in the rest of the paper."
+      },
+      {
+        "id": "g-data-structures",
+        "page": 12,
+        "kind": "heading",
+        "text": "5.5 Data Structures",
+        "level": 2
+      },
+      {
+        "id": "g-data-structures-text",
+        "page": 12,
+        "sectionId": "g-data-structures",
+        "kind": "paragraph",
+        "text": "The next step towards an executable algorithm is to implement the graph, priority queue, and predecessor map by actual data structures. We do this in a two-step approach: First, we implement the algorithm parameterized over the interfaces of graphs, maps, and priority maps, and, in a second step, we instantiate these interfaces to actual data structures. This approach has two advantages: First, it is easy to exchange the used data structures by simply exchanging the instantiation. Second, not knowing the actual data structures when proving the implementation correct prevents accidental breaking of the interface and looking into data structure details. Note that this actually happens in practice, e.g., due to “forgotten” simplifier setup, or automated tools like sledgehammer, which do not know about interfaces."
+      },
+      {
+        "id": "g-original-figure-3",
+        "page": 14,
+        "sectionId": "g-data-structures",
+        "kind": "original-figure",
+        "caption": "Figure 3 Implementation of Prim’s algorithm, parameterized over a graph, map, and priority map interface.",
+        "alt": "Original Figure 3 contains the functional Prim implementation. Open the cited original page to inspect its complete pseudocode; it is not redrawn here.",
+        "sourceUrl": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol141-itp2019/LIPIcs.ITP.2019.23/LIPIcs.ITP.2019.23.pdf#page=14"
+      },
+      {
+        "id": "g-dijkstra",
+        "page": 14,
+        "kind": "heading",
+        "text": "6 Dijkstra’s Algorithm",
+        "level": 2
+      },
+      {
+        "id": "g-dijkstra-introduction",
+        "page": 14,
+        "sectionId": "g-dijkstra",
+        "kind": "paragraph",
+        "text": "Dijkstra’s algorithm [7] is a classical algorithm to determine the shortest paths from a root node to all other nodes in a weighted directed graph. Although it solves a different problem, and works on a different type of graphs, its structure is very similar to Prim’s algorithm."
+      },
+      {
+        "id": "g-dijkstra-priority",
+        "page": 15,
+        "sectionId": "g-dijkstra",
+        "kind": "paragraph",
+        "text": "In particular, like Prim’s algorithm, it has a simple loop structure and can be efficiently implemented by a priority queue. This makes Dijkstra’s algorithm another good example to illustrate the main points of this proof pearl: Functional implementations of algorithms that use priority queues with a decrease-key operation."
+      },
+      {
+        "id": "g-abstract-algorithm",
+        "page": 15,
+        "kind": "heading",
+        "text": "6.1 Abstract Algorithm",
+        "level": 2
+      },
+      {
+        "id": "g-distances-not-paths",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "paragraph",
+        "text": "Again, our formalization of Dijkstra’s algorithm follows the presentation of Cormen et al. [6]. However, for the sake of simplicity, our algorithm does not compute actual shortest paths, but only their weights."
+      },
+      {
+        "id": "g-fixed-graph",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "paragraph",
+        "text": "For the rest of this section, we fix a weighted directed graph w and a source node s. We define δ u v to be the minimum distance from node u to node v."
+      },
+      {
+        "id": "g-finished-set",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "paragraph",
+        "text": "Abstractly, Dijkstra’s algorithm keeps track of a set of finished nodes S:: 'v set, and an estimate of the shortest path weights D:: 'v ⇒ enat. The invariant D_invar D S states that"
+      },
+      {
+        "id": "g-upper-bound",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "equation",
+        "latex": "\\delta(s,u)\\le D(u)",
+        "label": "Invariant 1"
+      },
+      {
+        "id": "g-finished-exact",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "equation",
+        "latex": "u\\in S\\;\\Longrightarrow\\;D(u)=\\delta(s,u)",
+        "label": "Invariant 2"
+      },
+      {
+        "id": "g-distance-consistency",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "equation",
+        "latex": "v\\in S\\;\\Longrightarrow\\;D(u)\\le\\delta(s,v)+w(v,u)",
+        "label": "Invariant 3"
+      },
+      {
+        "id": "g-initial-or-finished",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "equation",
+        "latex": "s\\in S\\;\\lor\\;[D=(\\lambda\\_.\\infty)(s:=0)\\land S=\\emptyset]",
+        "label": "Invariant 4"
+      },
+      {
+        "id": "g-minimum-estimate",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "paragraph",
+        "text": "The main idea of the algorithm is that the least estimate D u among all unfinished nodes u ∉ S is already precise:"
+      },
+      {
+        "id": "g-selection-equation",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "equation",
+        "latex": "u\\notin S\\;\\land\\;(\\forall v\\notin S:\\;D(u)\\le D(v))\\;\\Longrightarrow\\;D(u)=\\delta(s,u)"
+      },
+      {
+        "id": "g-update-successors",
+        "page": 15,
+        "sectionId": "g-abstract-algorithm",
+        "kind": "paragraph",
+        "text": "Thus, adding an unfinished node u ∉ S with minimal D u to the finished set S, and updating the estimates of all successor nodes to accommodate for paths over u, will preserve the invariant. We iterate this until all nodes are finished, and thus all estimates are precise."
+      },
+      {
+        "id": "g-refined-algorithm",
+        "page": 16,
+        "kind": "heading",
+        "text": "6.2 Refined Algorithm",
+        "level": 2
+      },
+      {
+        "id": "g-refined-queue",
+        "page": 16,
+        "sectionId": "g-refined-algorithm",
+        "kind": "paragraph",
+        "text": "Like for Prim’s algorithm, a priority map Q:: 'v ⇒ nat option from unfinished nodes to estimates is used to efficiently obtain a node with minimum estimate. Moreover, we use another map V :: 'v ⇒ nat option to map finished nodes to their minimum distances from the source. The relation between a refined state (Q,V ) and an abstract state (D,S) is defined as:"
+      },
+      {
+        "id": "g-coupling",
+        "page": 16,
+        "sectionId": "g-refined-algorithm",
+        "kind": "equation",
+        "latex": "\\begin{gathered}\\operatorname{coupling}(Q,V,D,S)\\equiv\\\\D=\\operatorname{enat\\_of\\_option}\\circ(V\\mathbin{++}Q)\\land S=\\operatorname{dom}(V)\\\\{}\\land\\operatorname{dom}(V)\\cap\\operatorname{dom}(Q)=\\emptyset\\end{gathered}"
+      },
+      {
+        "id": "g-refinement-text",
+        "page": 16,
+        "sectionId": "g-refined-algorithm",
+        "kind": "paragraph",
+        "text": "The rest of the formalization proceeds analogously to the formalization of Prim’s algorithm: We implement the update of the successor nodes by iteration over a successor list, refine the algorithm to use the interfaces of directed graphs, priority maps and maps, and finally instantiate it with concrete, red-black-tree based implementations."
+      }
+    ],
+    "anchors": [
+      {
+        "id": "priority-search-trees-primary",
+        "blockId": "g-update-successors",
+        "page": 15,
+        "quote": "Thus, adding an unfinished node u ∉ S with minimal D u to the finished set S, and updating the estimates of all successor nodes to accommodate for paths over u, will pres"
+      },
+      {
+        "id": "priority-search-trees-comparison",
+        "blockId": "g-dijkstra-priority",
+        "page": 15,
+        "quote": "In particular, like Prim’s algorithm, it has a simple loop structure and can be efficiently implemented by a priority queue. This makes Dijkstra’s algorithm another good"
+      },
+      {
+        "id": "priority-search-trees-walkthrough",
+        "blockId": "g-priority-definition",
+        "page": 2,
+        "quote": "A priority map is a map from keys (type 'a) to values (type 'b) where the values (“priorities”) are linearly ordered and a key with minimal value can be extracted. This i"
+      }
+    ],
+    "extractionWarnings": [
+      "This is a manually prepared selection, not a full normalized edition or an automatic import. Unselected source content remains available in the complete original PDF.",
+      "Selected equations are semantic TeX transcriptions of the cited original equations; PDF typography and bound-variable spacing have been normalized.",
+      "Original figures and pseudocode are retained as explicit page-linked placeholders, not redrawn or automatically extracted.",
+      "PDF text-extraction artifacts in primes, type variables, non-membership, footnote markers and line-end hyphenation were corrected against the original notation. Bibliographic numbers refer to the complete original PDF reference list."
+    ]
+  },
+  "entries": [
+    {
+      "id": "guide-e6fa3d3af9e94c6e868361f1",
+      "definitionSha256": "40b79d211c9ed85b9c9071271aba68f3f5141ee5338096400007b7f9af35a6e3",
+      "executions": [
+        {
+          "id": "composition",
+          "engineId": "composed-scene",
+          "engineVersion": "1.0.0",
+          "requestSha256": "89bd86dcd5d03327ce5dfd8ab989434e881bd506f7a27df2857b49ce407b662e",
+          "parametersPath": "plan.views[0]",
+          "seed": null,
+          "randomPolicy": null,
+          "replayClass": "deterministic"
+        }
+      ],
+      "kind": "representation",
+      "plan": {
+        "format": "paperplay-representation",
+        "schemaVersion": 1,
+        "id": "guide-e6fa3d3af9e94c6e868361f1",
+        "title": "A composed reading figure",
+        "source": {
+          "documentId": "priority-search-trees",
+          "sourceVersion": "LIPIcs.ITP.2019.23-publisher-2019-09-05"
+        },
+        "authorship": {
+          "kind": "user",
+          "label": "Reader-created reading scaffold"
+        },
+        "objective": "Inspect the cited passage beside a responsive figure scaffold. All coordinates and values in this example are explicitly illustrative.",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "g-abstract-text",
+            "page": 1,
+            "quote": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm."
+          }
+        ],
+        "claims": [
+          {
+            "id": "source-quote",
+            "kind": "source",
+            "text": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm.",
+            "anchorIds": [
+              "passage"
+            ]
+          },
+          {
+            "id": "reading-scaffold",
+            "kind": "pedagogical-addition",
+            "text": "These prompts are a reading scaffold, not a claim that the mechanism has been executed or verified.",
+            "anchorIds": [
+              "passage"
+            ]
+          }
+        ],
+        "assumptions": [
+          "The scaffold does not infer missing experimental data, equations or proof steps."
+        ],
+        "requestedEvidence": "illustrative-walkthrough",
+        "assets": [],
+        "quantities": [],
+        "execution": {
+          "kind": "none",
+          "capabilities": [
+            {
+              "id": "composed-scene",
+              "version": "1.0.0"
+            }
+          ],
+          "assetIds": []
+        },
+        "interactions": [
+          "select-step",
+          "select-entity",
+          "return-source"
+        ],
+        "navigation": {
+          "format": "paperplay-semantic-navigation",
+          "schemaVersion": 1,
+          "revision": "44d9c3d9d03e55ce",
+          "selections": [
+            {
+              "viewId": "composition",
+              "scopeId": "concepts",
+              "kind": "time",
+              "frameId": "move",
+              "value": 0,
+              "unit": "walkthrough-step",
+              "mode": "authored-step"
+            }
+          ]
+        },
+        "views": [
+          {
+            "id": "composition",
+            "kind": "composed-scene",
+            "scene": {
+              "format": "paperplay-composed-scene",
+              "schemaVersion": 1,
+              "entities": [
+                {
+                  "id": "first",
+                  "label": "First illustrative concept",
+                  "anchorIds": [
+                    "passage"
+                  ]
+                },
+                {
+                  "id": "second",
+                  "label": "Second illustrative concept",
+                  "anchorIds": [
+                    "passage"
+                  ]
+                },
+                {
+                  "id": "third",
+                  "label": "Third illustrative concept",
+                  "anchorIds": [
+                    "passage"
+                  ]
+                }
+              ],
+              "rootId": "root",
+              "nodes": [
+                {
+                  "id": "root",
+                  "kind": "panel",
+                  "title": "Source and illustration",
+                  "children": [
+                    "citation",
+                    "columns",
+                    "key"
+                  ]
+                },
+                {
+                  "id": "citation",
+                  "kind": "annotation",
+                  "text": "The starting point of this paper is a new, purely functional, simple and efficient data structure combining a search tree and a priority queue, which we call a priority search tree. The salient feature of priority search trees is that they offer a decrease-key operation, something that is missing from other simple, purely functional priority queue implementations. As two applications of this data structure we verify purely functional, simple and efficient implementations of Prim’s and Dijkstra’s algorithms. This constitutes the first verification of an executable and even efficient version of Prim’s algorithm.",
+                  "anchorIds": [
+                    "passage"
+                  ],
+                  "role": "source"
+                },
+                {
+                  "id": "columns",
+                  "kind": "grid",
+                  "columns": 2,
+                  "children": [
+                    "concepts",
+                    "values"
+                  ]
+                },
+                {
+                  "id": "concepts",
+                  "kind": "scene",
+                  "title": "Illustrative relationship scaffold",
+                  "description": "Three generic objects and an authored transition. This is a layout example, not an interpretation or execution of the cited paper.",
+                  "coordinates": {
+                    "frame": "authored teaching frame",
+                    "xAxis": "x",
+                    "yAxis": "y",
+                    "unit": "illustrative units"
+                  },
+                  "marks": [
+                    {
+                      "id": "steps",
+                      "kind": "repeat",
+                      "label": "Illustrative objects",
+                      "color": "blue",
+                      "items": [
+                        {
+                          "id": "first",
+                          "entityId": "first",
+                          "label": "First illustrative object — replace with a source-grounded concept",
+                          "x": 0,
+                          "y": 0
+                        },
+                        {
+                          "id": "second",
+                          "entityId": "second",
+                          "label": "Second illustrative object — relationship meaning must be declared",
+                          "x": 1,
+                          "y": 1
+                        },
+                        {
+                          "id": "third",
+                          "entityId": "third",
+                          "label": "Third illustrative object — no causal evidence implied",
+                          "x": 2,
+                          "y": 0
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [
+                    {
+                      "id": "relation",
+                      "from": "first",
+                      "to": "second",
+                      "label": "Authored explanatory connection; not established causation"
+                    }
+                  ],
+                  "frames": [
+                    {
+                      "id": "move",
+                      "label": "Authored position change",
+                      "anchorIds": [
+                        "passage"
+                      ],
+                      "changes": [
+                        {
+                          "markId": "second",
+                          "x": 1,
+                          "y": 2
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "values",
+                  "kind": "slot",
+                  "slot": "chart",
+                  "title": "Numerical equivalent slot",
+                  "description": "Explicit illustrative numbers; a specialized chart adapter can be added later.",
+                  "values": [
+                    {
+                      "label": "First example input",
+                      "entityId": "first",
+                      "value": 1,
+                      "unit": "dimensionless illustration"
+                    },
+                    {
+                      "label": "Second example input",
+                      "entityId": "second",
+                      "value": 2,
+                      "unit": "dimensionless illustration"
+                    },
+                    {
+                      "label": "Third example input",
+                      "entityId": "third",
+                      "value": 3,
+                      "unit": "dimensionless illustration"
+                    }
+                  ]
+                },
+                {
+                  "id": "key",
+                  "kind": "legend",
+                  "items": [
+                    {
+                      "label": "Blue: authored illustrative objects",
+                      "color": "blue"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "assetReferences": [],
+  "assets": [],
+  "reports": [],
+  "disclosure": "Selected definitions contain cited source quotations and may contain scientific inputs. Recorded text, values/state and reports may contain copies of data or source text. Full normalized source and original asset attachments are separate explicit choices. No original PDF, provider capability, credential, execution authority or compiler receipt is added.",
+  "manifestSha256": "d61372d0736cd621c85a530b1eac1df79261618f6dcf2badedb8156e2b669f22"
+}

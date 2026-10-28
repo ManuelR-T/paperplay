@@ -1,0 +1,53 @@
+{
+  "format": "paperplay-scientific-experience",
+  "schemaVersion": 1,
+  "contents": "definitions-and-quoted-excerpts",
+  "sourceReference": {
+    "documentId": "sdk-dynamic-sequence",
+    "sourceVersion": "authored-v1",
+    "fingerprint": "b116fbac2138ce3020b327cdb755992f65a6aca9b5ef078a79332918fde955a5",
+    "title": "Authored dynamic-sequence teaching fixture",
+    "authors": [
+      "Paperplay"
+    ],
+    "url": null
+  },
+  "attribution": {
+    "authors": "Paperplay",
+    "notice": "Source/data rights remain with their authors. Exporting does not grant redistribution permission."
+  },
+  "inclusions": {
+    "source": false,
+    "assets": false,
+    "results": true
+  },
+  "entries": [
+    {
+      "id": "quality-healthy",
+      "definitionSha256": "f7ae558673bb172bb90b949518e05d05137a1e8635f335724e36ac73d972656c",
+      "executions": [
+        {
+          "id": "generated",
+          "engineId": "paperplay-figure-sdk",
+          "engineVersion": "quickjs-seeded-sdk@1.1.0",
+          "requestSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "parametersPath": "bundle.inputJson (raw serialized order retained)",
+          "seed": "73",
+          "randomPolicy": "mulberry32-payload-fnv1a-v1",
+          "replayClass": "seeded-stochastic"
+        }
+      ],
+      "capture": {
+        "title": "Recorded figure frame · not recomputed on import",
+        "text": "{\n  \"format\": \"paperplay-sdk-frame\",\n  \"schemaVersion\": 1,\n  \"title\": \"Dynamic sequence\",\n  \"description\": \"1 item.\",\n  \"coordinateSpace\": {\n    \"width\": 120,\n    \"height\": 80\n  },\n  \"marks\": [\n    {\n      \"id\": \"node1\",\n      \"label\": \"Item 1, value 1\",\n      \"anchorId\": \"passage\",\n      \"entityId\": \"item1\",\n      \"kind\": \"circle\",\n      \"center\": [\n        40,\n        40\n      ],\n      \"radius\": 24,\n      \"paint\": \"accent\"\n    },\n    {\n      \"id\": \"label1\",\n      \"label\": \"Value 1\",\n      \"kind\": \"text\",\n      \"at\": [\n        40,\n        40\n      ],\n      \"text\": \"1\"\n    }\n  ],\n  \"controls\": [\n    {\n      \"id\": \"append\",\n      \"kind\": \"button\",\n      \"label\": \"Add item\",\n      \"disabled\": false\n    },\n    {\n      \"id\": \"remove\",\n      \"kind\": \"button\",\n      \"label\": \"Remove last\",\n      \"disabled\": false\n    },\n    {\n      \"id\": \"reset\",\n      \"kind\": \"button\",\n      \"label\": \"Reset\",\n      \"disabled\": false\n    }\n  ],\n  \"table\": {\n    \"caption\": \"Every item in current insertion order\",\n    \"columns\": [\n      \"Item ID\",\n      \"Value\"\n    ],\n    \"rows\": [\n      [\n        1,\n        1\n      ]\n    ]\n  },\n  \"state\": {\n    \"items\": [\n      {\n        \"id\": 1,\n        \"value\": 1\n      }\n    ],\n    \"nextId\": 2\n  }\n}"
+      },
+      "kind": "artifact",
+      "bundleJson": "{\n  \"format\": \"paperplay-artifact-experiment\",\n  \"schemaVersion\": 1,\n  \"contents\": \"artifact-and-quoted-excerpts\",\n  \"inclusions\": {\n    \"source\": false,\n    \"assets\": false,\n    \"results\": true\n  },\n  \"artifact\": {\n    \"format\": \"paperplay-figure-artifact\",\n    \"schemaVersion\": 1,\n    \"id\": \"quality-healthy\",\n    \"title\": \"Growing sequence\",\n    \"source\": {\n      \"documentId\": \"sdk-dynamic-sequence\",\n      \"sourceVersion\": \"authored-v1\"\n    },\n    \"authorship\": {\n      \"kind\": \"prepared\",\n      \"label\": \"Project-authored SDK reference implementation\"\n    },\n    \"anchors\": [\n      {\n        \"id\": \"passage\",\n        \"blockId\": \"passage\",\n        \"page\": 1,\n        \"quote\": \"This authored sequence illustrates adding and removing elements while preserving the identity of the remaining elements. It is a teaching interaction, not an implementation or verification of a research result.\"\n      }\n    ],\n    \"assumptions\": [\n      \"Items are authored small integers, not experimental observations.\",\n      \"At most 32 items; this does not implement a paper-specific data structure or algorithm.\"\n    ],\n    \"rights\": \"Project-authored teaching source and SDK fixture; ISC project code, no third-party paper assets.\",\n    \"kind\": \"generated\",\n    \"sdk\": {\n      \"id\": \"paperplay-figure-sdk\",\n      \"version\": \"1.0.0\"\n    },\n    \"entry\": {\n      \"file\": \"figure.js\",\n      \"export\": \"update\",\n      \"language\": \"javascript\",\n      \"sha256\": \"20f74e912e917b306bfdab4c6abff695174b869e9ce2894b7fdd7b33e8aa990b\",\n      \"source\": \"function update(input,previous,event){\\n const old=previous||{items:[],nextId:1};const items=old.items.map(x=>({id:x.id,value:x.value}));let nextId=old.nextId;\\n if(event.kind==='control'&&event.id==='append'&&items.length<32){items.push({id:nextId,value:nextId});nextId++;}\\n if(event.kind==='control'&&event.id==='remove'&&items.length)items.pop();\\n if(event.kind==='control'&&event.id==='reset'){items.length=0;nextId=1;}\\n const marks=[];items.forEach((item,i)=>{const x=40+(i%8)*76,y=40+Math.floor(i/8)*76;marks.push(sdk.circle({id:'node'+item.id,entityId:'item'+item.id,anchorId:'passage',center:[x,y],radius:24,label:'Item '+item.id+', value '+item.value}));marks.push(sdk.text({id:'label'+item.id,at:[x,y],text:String(item.value),label:'Value '+item.value}));});\\n return sdk.frame({title:'Dynamic sequence',description:items.length+' '+(items.length===1?'item.':'items.'),coordinateSpace:{width:Math.max(120,Math.min(8,Math.max(items.length,1))*76),height:Math.max(80,Math.ceil(items.length/8)*76)},marks:marks,controls:[sdk.button({id:'append',label:'Add item',disabled:items.length>=32}),sdk.button({id:'remove',label:'Remove last',disabled:!items.length}),sdk.button({id:'reset',label:'Reset'})],table:{caption:'Every item in current insertion order',columns:['Item ID','Value'],rows:items.map(x=>[x.id,x.value])},state:{items:items,nextId:nextId}});\\n}\"\n    },\n    \"dependencyLock\": [\n      {\n        \"id\": \"paperplay-figure-sdk\",\n        \"version\": \"1.0.0\",\n        \"sha256\": \"a25e9d981c863bf3c0186d958bc35e9a1177896d0e64ee2e873356977f8abfb3\",\n        \"license\": \"ISC\"\n      }\n    ],\n    \"capabilityRequests\": [\n      \"draw-2d\",\n      \"controls\",\n      \"source-return\",\n      \"entity-selection\"\n    ],\n    \"interfaces\": {\n      \"input\": [],\n      \"state\": [\n        {\n          \"id\": \"items\",\n          \"kind\": \"array\",\n          \"description\": \"Stable item IDs and values in insertion order\",\n          \"maxItems\": 32\n        },\n        {\n          \"id\": \"nextId\",\n          \"kind\": \"number\",\n          \"description\": \"Next stable authored identity\"\n        }\n      ],\n      \"output\": \"paperplay-sdk-frame-v1\"\n    },\n    \"assetIds\": [],\n    \"assetBindings\": [],\n    \"resources\": {\n      \"maxSourceBytes\": 16384,\n      \"maxInputBytes\": 16384,\n      \"maxStateBytes\": 8192,\n      \"maxOutputBytes\": 32768,\n      \"maxMarks\": 64,\n      \"maxControls\": 3,\n      \"maxExecutionMs\": 100,\n      \"maxMemoryBytes\": 8388608,\n      \"maxStackBytes\": 262144\n    },\n    \"tests\": [\n      {\n        \"id\": \"growth\",\n        \"description\": \"Append/remove preserve surviving identities and respect 32 items.\",\n        \"kind\": \"reference\",\n        \"expected\": \"Length 0→1→2→1; remaining ID is 1.\"\n      }\n    ],\n    \"provenance\": {\n      \"origin\": \"prepared\",\n      \"evidence\": \"unverified\",\n      \"references\": []\n    }\n  },\n  \"identity\": {\n    \"source\": {\n      \"documentId\": \"sdk-dynamic-sequence\",\n      \"sourceVersion\": \"authored-v1\",\n      \"fingerprint\": \"b116fbac2138ce3020b327cdb755992f65a6aca9b5ef078a79332918fde955a5\"\n    },\n    \"artifactSha256\": \"615ded117a3c15f4d1b77c3f1f822961db91bf84e296a68662e7f9583eb961ec\",\n    \"sdk\": {\n      \"id\": \"paperplay-figure-sdk\",\n      \"version\": \"1.0.0\",\n      \"sha256\": \"a25e9d981c863bf3c0186d958bc35e9a1177896d0e64ee2e873356977f8abfb3\"\n    },\n    \"compiler\": \"paperplay-script-admission@1.0.0/acorn@8.19.0/quickjs@0.32.0/synchronous-update-v1\",\n    \"runtime\": \"quickjs-seeded-sdk@1.1.0\",\n    \"randomPolicy\": \"mulberry32-payload-fnv1a-v1\",\n    \"qualityPolicy\": \"figure-quality-v1\",\n    \"dependencies\": [\n      {\n        \"id\": \"paperplay-figure-sdk\",\n        \"version\": \"1.0.0\",\n        \"sha256\": \"a25e9d981c863bf3c0186d958bc35e9a1177896d0e64ee2e873356977f8abfb3\"\n      }\n    ],\n    \"assets\": [],\n    \"inputSha256\": \"44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a\",\n    \"seed\": 73\n  },\n  \"inputJson\": \"{}\",\n  \"inputJsonSha256\": \"44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a\",\n  \"inputBinding\": \"complete\",\n  \"records\": [],\n  \"recordedFrames\": [],\n  \"attribution\": {\n    \"authors\": \"Paperplay\",\n    \"notice\": \"Artifact quotes and recorded values/state may contain copies of data or source text. Full paper and original asset attachments are optional. Source/data rights remain with their owners; export does not establish redistribution permission.\"\n  },\n  \"assets\": []\n}"
+    }
+  ],
+  "assetReferences": [],
+  "assets": [],
+  "reports": [],
+  "disclosure": "Selected definitions contain cited source quotations and may contain scientific inputs. Recorded text, values/state and reports may contain copies of data or source text. Full normalized source and original asset attachments are separate explicit choices. No original PDF, provider capability, credential, execution authority or compiler receipt is added.",
+  "manifestSha256": "37f3afb4ae1c62b3ec85060e9155bbc94f288d2af9b2d7cd02150a7c8409db1e"
+}

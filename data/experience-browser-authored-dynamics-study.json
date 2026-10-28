@@ -1,0 +1,149 @@
+{
+  "format": "paperplay-data-study",
+  "version": 2,
+  "source": {
+    "schemaVersion": 1,
+    "id": "authored-dynamics-decay",
+    "sourceVersion": "authored-dynamics-v1",
+    "title": "Paperplay mathematical fixture: Exponential decay",
+    "authors": [
+      "Paperplay"
+    ],
+    "source": {
+      "kind": "prepared"
+    },
+    "pageCount": 1,
+    "blocks": [
+      {
+        "id": "model",
+        "page": 1,
+        "kind": "paragraph",
+        "text": "This authored example integrates dx/dt = −kx with x(0) = 4 dimensionless and k = 1 s⁻¹. Its analytic half-value is x = 2 at t = ln(2) s. No experimental measurements are supplied."
+      }
+    ],
+    "anchors": [
+      {
+        "id": "model",
+        "blockId": "model",
+        "page": 1,
+        "quote": "This authored example integrates dx/dt = −kx with x(0) = 4 dimensionless and k = 1 s⁻¹. Its analytic half-value is x = 2 at t = ln(2) s. No experimental measurements are supplied."
+      }
+    ],
+    "extractionWarnings": [
+      "Project-authored ODE/hybrid engineering fixture. No original research paper or experimental dataset is represented.",
+      "Analytic references check named mathematical cases only; no independent scientific validation or expert approval is implied."
+    ]
+  },
+  "representation": {
+    "format": "paperplay-representation",
+    "schemaVersion": 1,
+    "id": "dynamics-decay",
+    "title": "Exponential decay",
+    "source": {
+      "documentId": "authored-dynamics-decay",
+      "sourceVersion": "authored-dynamics-v1"
+    },
+    "authorship": {
+      "kind": "prepared",
+      "label": "Paperplay-authored mathematical dynamics example"
+    },
+    "objective": "Explore the relationship between a registered differential model, its numerical trajectory and its exact stored values.",
+    "anchors": [
+      {
+        "id": "model",
+        "blockId": "model",
+        "page": 1,
+        "quote": "This authored example integrates dx/dt = −kx with x(0) = 4 dimensionless and k = 1 s⁻¹. Its analytic half-value is x = 2 at t = ln(2) s. No experimental measurements are supplied."
+      }
+    ],
+    "claims": [
+      {
+        "id": "fixture",
+        "kind": "source",
+        "text": "This authored example integrates dx/dt = −kx with x(0) = 4 dimensionless and k = 1 s⁻¹. Its analytic half-value is x = 2 at t = ln(2) s. No experimental measurements are supplied.",
+        "anchorIds": [
+          "model"
+        ]
+      }
+    ],
+    "assumptions": [
+      "Smooth, non-stiff ordinary differential equations on each continuous mode.",
+      "Parameters and initial conditions are authored examples, not inferred source measurements.",
+      "Local error estimates are not global error bounds, measurement uncertainty or scientific verification.",
+      "A threshold crossing can be missed between steps; this finite event policy does not certify arbitrary hybrid systems."
+    ],
+    "requestedEvidence": "simplified-illustration",
+    "assets": [],
+    "quantities": [],
+    "execution": {
+      "kind": "local-computation",
+      "capabilities": [
+        {
+          "id": "ode-rk4",
+          "version": "1.0.0"
+        }
+      ],
+      "assetIds": []
+    },
+    "interactions": [
+      "widget-controls",
+      "select-time",
+      "inspect-data",
+      "return-source"
+    ],
+    "views": [
+      {
+        "id": "dynamics",
+        "kind": "dynamics",
+        "dynamics": {
+          "title": "Exponential decay",
+          "anchorIds": [
+            "model"
+          ],
+          "request": {
+            "format": "paperplay-dynamics",
+            "schemaVersion": 1,
+            "model": {
+              "id": "decay",
+              "initial": {
+                "value": 4,
+                "unit": "1"
+              },
+              "rate": {
+                "value": 1,
+                "per": "s",
+                "role": "decay-rate"
+              }
+            },
+            "interval": {
+              "start": 0,
+              "end": 2,
+              "unit": "s"
+            },
+            "solver": {
+              "method": "rk4-step-doubling",
+              "rtol": 0.000001,
+              "atol": [
+                {
+                  "value": 1e-9,
+                  "unit": "1"
+                }
+              ],
+              "initialStep": 0.01,
+              "minStep": 1e-10,
+              "maxStep": 0.1,
+              "maxAcceptedSteps": 4096,
+              "maxAttempts": 8192,
+              "maxRhsEvaluations": 100000,
+              "maxOutputRows": 2048,
+              "maxEvents": 1,
+              "maxEventIterations": 32,
+              "eventTimeTolerance": 1e-8,
+              "maxWallMs": 3000
+            }
+          }
+        }
+      }
+    ]
+  }
+}
