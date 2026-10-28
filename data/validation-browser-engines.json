@@ -1,0 +1,27 @@
+{
+  "issue":"PP-108",
+  "date":"2026-10-28",
+  "browser":"Native collaborative Chromium, localhost:3001",
+  "legacy":{
+    "source":"Prepared priority-search-trees development source",
+    "figure":"priority-search-trees-primary",
+    "engine":"dijkstra-heap@1.0.0",
+    "actualLocalWorkerCheck":"current-pass",
+    "independentExpectedDistances":{"s":0,"a":3,"b":1,"c":4,"t":4},
+    "nextPlaybackStep":"current-pass retained",
+    "edgeWeight4to7":"old report retained as stale",
+    "rerun":"current-pass",
+    "portableReportImport":"reported-only, no authority restored",
+    "networkObserved":"original local PDF only; no API/model calls during check/edit/export/import"
+  },
+  "dynamics":{
+    "fixtures":"Explicitly authored mathematical examples, not paper experiments",
+    "decay":{"source":"authored-dynamics-decay","initialRate":1,"initialSamples":24,"outcome":"current-pass","rateChangedTo":2,"previousReport":"stale","rerunSamples":29,"rerunOutcome":"current-pass","numericComparisonsAndInvariants":59,"export":"data/validation-decay-native-report.json"},
+    "reaction":{"source":"authored-dynamics-reaction-chain","samples":28,"outcome":"current-pass","numericComparisonsAndInvariants":141,"export":"data/validation-reaction-native-report.json"},
+    "observedFetchesDuringRepeatDecayAndReactionChecks":[],
+    "modelCalls":0,
+    "overflowAt320":false,
+    "errors":[]
+  },
+  "limits":"Native engineering checks and fixed mathematical references, not reader-study observations, original experiment reproduction, universal validity or domain expert approval. Historical first-build graph row-count wording was corrected before final build; final reports distinguish graph vertices, sort items, quadratic iterates and ODE samples."
+}

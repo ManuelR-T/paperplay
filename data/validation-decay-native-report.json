@@ -1,0 +1,686 @@
+{
+  "format": "paperplay-scientific-validation",
+  "schemaVersion": 1,
+  "reportId": "209f24efe7fc3901c18e170d3e5278b8212dd91a8a2942e306f76ed54a1f50d0",
+  "policyVersion": "1.0.0",
+  "target": {
+    "kind": "dynamics",
+    "subjectId": "dynamics",
+    "engines": [
+      {
+        "id": "dynamics-ode",
+        "version": "rk4-step-doubling@1.0.0"
+      }
+    ]
+  },
+  "binding": {
+    "source": {
+      "documentId": "authored-dynamics-decay",
+      "sourceVersion": "authored-dynamics-v1",
+      "fingerprint": "ec4d31a7a5f8c3db8b430fec3328d0a0ae417ee1b7d847572fd1fb5714dd0bdb"
+    },
+    "requestSha256": "fdf56596606c72f9a271b02d7d3c406d8ad9d67045b3a4b6d63a6206a1af8bd9",
+    "outputSha256": "efc009a0857914a7e90789cf76ee7563c64c47ebad631a39b3bd8fbfb98c03f9",
+    "checkerSetSha256": "e8f68ba5e198a305ee9f9ad0078fe7477f2f998ec9dd005afcae82455784fa51",
+    "assets": []
+  },
+  "status": "passed",
+  "checks": [
+    {
+      "checkId": "decay-analytic-v1",
+      "engineId": "dynamics-ode",
+      "checkerVersion": "1.0.0",
+      "oracleVersion": "1.0.0",
+      "reference": {
+        "id": "linear-decay-ivp",
+        "citation": "Project-authored analytic initial-value solution, independently differentiable: dx/dt=-kx.",
+        "location": "NIST DLMF §1.13, linear differential equations; https://dlmf.nist.gov/1.13",
+        "independence": "analytic"
+      },
+      "scope": "Canonical scalar x(t)=x0 exp(-k(t-t0)) at every retained time; positivity and full interval.",
+      "assumptions": [
+        {
+          "description": "Constant nonnegative first-order decay coefficient.",
+          "state": "satisfied-by-input-domain"
+        },
+        {
+          "description": "These are synthetic/model inputs; agreement is not experimental reproduction.",
+          "state": "declared"
+        }
+      ],
+      "comparisons": [
+        {
+          "id": "complete",
+          "metric": "Full requested interval completed.",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "positive-0",
+          "metric": "Nonnegative admitted states at t=0",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-0-0",
+          "metric": "Analytic state 0 at t=0",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 4,
+          "expected": 4,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-1",
+          "metric": "Nonnegative admitted states at t=0.01",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-1-0",
+          "metric": "Analytic state 0 at t=0.01",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 3.9207946932336104,
+          "expected": 3.920794693227021,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-2",
+          "metric": "Nonnegative admitted states at t=0.03",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-2-0",
+          "metric": "Analytic state 0 at t=0.03",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 3.7670581345476126,
+          "expected": 3.767058134336995,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-3",
+          "metric": "Nonnegative admitted states at t=0.06999999999999999",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-3-0",
+          "metric": "Analytic state 0 at t=0.06999999999999999",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 3.4774329479257253,
+          "expected": 3.4774329415952234,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-4",
+          "metric": "Nonnegative admitted states at t=0.14999999999999997",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-4-0",
+          "metric": "Analytic state 0 at t=0.14999999999999997",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 2.9632730611232234,
+          "expected": 2.9632728827268715,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-5",
+          "metric": "Nonnegative admitted states at t=0.22999999999999993",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-5-0",
+          "metric": "Analytic state 0 at t=0.22999999999999993",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 2.525134881469511,
+          "expected": 2.5251345820277042,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-6",
+          "metric": "Nonnegative admitted states at t=0.3099999999999999",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-6-0",
+          "metric": "Analytic state 0 at t=0.3099999999999999",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 2.1517781311713184,
+          "expected": 2.1517777503786983,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-7",
+          "metric": "Nonnegative admitted states at t=0.38999999999999985",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-7-0",
+          "metric": "Analytic state 0 at t=0.38999999999999985",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 1.8336244767616532,
+          "expected": 1.8336240452208947,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-8",
+          "metric": "Nonnegative admitted states at t=0.4699999999999998",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-8-0",
+          "metric": "Analytic state 0 at t=0.4699999999999998",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 1.56251180039145,
+          "expected": 1.562511341434085,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-9",
+          "metric": "Nonnegative admitted states at t=0.5499999999999998",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-9-0",
+          "metric": "Analytic state 0 at t=0.5499999999999998",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 1.3314848036247529,
+          "expected": 1.3314843347923186,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-10",
+          "metric": "Nonnegative admitted states at t=0.6299999999999999",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-10-0",
+          "metric": "Analytic state 0 at t=0.6299999999999999",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 1.1346165717529306,
+          "expected": 1.1346161059990818,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-11",
+          "metric": "Nonnegative admitted states at t=0.71",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-11-0",
+          "metric": "Analytic state 0 at t=0.71",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.9668565209244276,
+          "expected": 0.9668560675881458,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-12",
+          "metric": "Nonnegative admitted states at t=0.79",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-12-0",
+          "metric": "Analytic state 0 at t=0.79",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.8239008272282214,
+          "expected": 0.8239003928195338,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-13",
+          "metric": "Nonnegative admitted states at t=0.8700000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-13-0",
+          "metric": "Analytic state 0 at t=0.8700000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.7020820136356153,
+          "expected": 0.7020816024679873,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-14",
+          "metric": "Nonnegative admitted states at t=0.9500000000000002",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-14-0",
+          "metric": "Analytic state 0 at t=0.9500000000000002",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.5982748621929727,
+          "expected": 0.59827447689054,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-15",
+          "metric": "Nonnegative admitted states at t=1.0300000000000002",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-15-0",
+          "metric": "Analytic state 0 at t=1.0300000000000002",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.509816237676457,
+          "expected": 0.5098158795792828,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-16",
+          "metric": "Nonnegative admitted states at t=1.1100000000000003",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-16-0",
+          "metric": "Analytic state 0 at t=1.1100000000000003",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.4344367658134085,
+          "expected": 0.43443643529983167,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-17",
+          "metric": "Nonnegative admitted states at t=1.1900000000000004",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-17-0",
+          "metric": "Analytic state 0 at t=1.1900000000000004",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.37020261329963916,
+          "expected": 0.37020231004137283,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-18",
+          "metric": "Nonnegative admitted states at t=1.2700000000000005",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-18-0",
+          "metric": "Analytic state 0 at t=1.2700000000000005",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.31546587599988124,
+          "expected": 0.3154655991626995,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-19",
+          "metric": "Nonnegative admitted states at t=1.3500000000000005",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-19-0",
+          "metric": "Analytic state 0 at t=1.3500000000000005",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.26882230255847156,
+          "expected": 0.26882205095899875,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-20",
+          "metric": "Nonnegative admitted states at t=1.4300000000000006",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-20-0",
+          "metric": "Analytic state 0 at t=1.4300000000000006",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.22907526883467305,
+          "expected": 0.22907504106186913,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-21",
+          "metric": "Nonnegative admitted states at t=1.5100000000000007",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-21-0",
+          "metric": "Analytic state 0 at t=1.5100000000000007",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.19520507893969766,
+          "expected": 0.19520487344805157,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-22",
+          "metric": "Nonnegative admitted states at t=1.5900000000000007",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-22-0",
+          "metric": "Analytic state 0 at t=1.5900000000000007",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.16634280530455053,
+          "expected": 0.16634262048469242,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-23",
+          "metric": "Nonnegative admitted states at t=1.6700000000000008",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-23-0",
+          "metric": "Analytic state 0 at t=1.6700000000000008",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.1417479966550222,
+          "expected": 0.1417478308863943,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-24",
+          "metric": "Nonnegative admitted states at t=1.7500000000000009",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-24-0",
+          "metric": "Analytic state 0 at t=1.7500000000000009",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.12078968199992551,
+          "expected": 0.1207895336892738,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-25",
+          "metric": "Nonnegative admitted states at t=1.830000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-25-0",
+          "metric": "Analytic state 0 at t=1.830000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.10293018329671183,
+          "expected": 0.10293005090543958,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-26",
+          "metric": "Nonnegative admitted states at t=1.910000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-26-0",
+          "metric": "Analytic state 0 at t=1.910000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.08771132151421036,
+          "expected": 0.08771120357704629,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-27",
+          "metric": "Nonnegative admitted states at t=1.990000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-27-0",
+          "metric": "Analytic state 0 at t=1.990000000000001",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.07474266221398003,
+          "expected": 0.07474255735093092,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        },
+        {
+          "id": "positive-28",
+          "metric": "Nonnegative admitted states at t=2",
+          "status": "pass",
+          "reason": null,
+          "kind": "invariant",
+          "actual": true,
+          "expected": true
+        },
+        {
+          "id": "analytic-28-0",
+          "metric": "Analytic state 0 at t=2",
+          "status": "pass",
+          "reason": null,
+          "kind": "numeric",
+          "unit": "1",
+          "actual": 0.07326265834168146,
+          "expected": 0.07326255555493671,
+          "absTolerance": 1e-7,
+          "relTolerance": 0.000001
+        }
+      ],
+      "status": "pass"
+    }
+  ],
+  "coverage": {
+    "completeRequestedResult": true,
+    "checkedRows": 29,
+    "totalRows": 29,
+    "note": "Named output properties were checked: graph vertices, stable-sort items, quadratic retained iterates or ODE samples as applicable. Intermediate graph/sort traces are not certified; no original experiment is verified."
+  },
+  "supplementalGeneratedChecks": [],
+  "limitations": [
+    "Checks are limited to the registered finite equations/properties and fixed tolerances.",
+    "No original experiment reproduction, mathematical proof, causal claim or general scientific validity is certified.",
+    "Model-authored tests are supplemental declarations and never grant verification."
+  ]
+}

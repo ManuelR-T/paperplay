@@ -15,6 +15,7 @@ import { useEngineExecution } from '../use-engine-execution';
 import { NumericView } from './numeric-view';
 import { TraceView } from './trace-view';
 import { PlaybackControls, usePlayback } from './playback';
+import { ScientificValidationOutput } from '../scientific-validation-output';
 import { IndependentComparisonRun } from './experiment';
 
 function illustrativeState(figure: Extract<FigureSpecification, { kind: 'graph' | 'array' }>, selected: string): ExecutionTrace['steps'][number]['state'] {
@@ -45,7 +46,8 @@ export function GeneratedFigureView({ entry, source, htmlSource, origin = 'meta'
     ? valid.kind === 'comparison' ? { kind: 'comparison', engineIds: valid.runs.map(run => run.binding.engineId), input: valid.input, options: { seed, parametersByEngine: Object.fromEntries(valid.runs.map(run => [run.binding.engineId, run.binding.parameters])) } }
       : valid.execution.mode === 'computed' ? { kind: 'run', engineId: valid.execution.binding.engineId, input: valid.input, options: { seed, parameters: valid.execution.binding.parameters } } : null
     : null);
-  const computed = { valid, error: specification.error || execution.error, runs: execution.result?.kind === 'run' ? [execution.result.run] : execution.result?.kind === 'comparison' ? execution.result.comparison.runs : [] };
+  const currentRuns=useMemo(()=>execution.result?.kind === 'run' ? [execution.result.run] : execution.result?.kind === 'comparison' ? execution.result.comparison.runs : [],[execution.result]);
+  const computed = { valid, error: specification.error || execution.error, runs:currentRuns };
   const length = Math.max(1, ...computed.runs.map(run => run.trace.steps.length));
   const playback = usePlayback(length, execution.identity, saved?.stepIndex ?? 0);
   useEffect(() => {
@@ -97,6 +99,7 @@ export function GeneratedFigureView({ entry, source, htmlSource, origin = 'meta'
       </>}
     </>}
     <div className="fidelity-note"><Badge variant="outline">{explanatory ? 'Illustrative explanation' : 'Illustrative simulation'}</Badge><span>{origin === 'meta' ? 'Model-selected addition' : 'Imported snapshot'} · no original experiment reproduction</span><p className="control-hint">{explanatory ? 'This figure does not execute the paper’s algorithm.' : 'A supported implementation computes these synthetic inputs. Its selection does not verify the paper’s full method or reported results.'}</p></div>
+    {!explanatory&&valid&&<ScientificValidationOutput target={{kind:'legacy-engine',source,figure:valid,seed}} output={computed.runs.length?computed.runs:null} unavailable={execution.status!=='complete'?'The current computation must complete before checking.':undefined}/>}
     {figure.kind==='comparison'&&independent&&<p className="control-hint">A figure question needs one shared trace index. <Button variant="outline" onClick={()=>setIndependent(false)}>Use shared index for a contextual question</Button></p>}
     <div className="figure-tools">{anchor && (figure.kind!=='comparison'||!independent) && <ContextualQuestion source={source} blockId={anchor.blockId} figure={figure} seed={saved?.snapshot.seed ?? 42} stepIndex={figure.kind === 'steps' ? stepIndex : playback.index}/>}<ExperimentActions source={source} snapshot={figureSnapshot(source, figure, saved?.snapshot.seed ?? 42)} original={original} originalName={originalName} attribution={attribution}/></div>
     <details className="generated-source-quote"><summary>Quoted source passage</summary><blockquote>{entry.sourceQuote}</blockquote></details>

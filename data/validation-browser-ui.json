@@ -1,0 +1,137 @@
+{
+  "issue": "PP108",
+  "date": "2026-10-28",
+  "browser": "Native collaborative Chromium, new agent-owned default-profile tab",
+  "application": "http://localhost:3001",
+  "scope": "Compact legacy validation UI; root separately covered dynamics, scientific-input staleness and registry fault fixtures.",
+  "actualCheck": {
+    "engine": "dijkstra-heap",
+    "state": "current-pass",
+    "checkedRows": 5,
+    "totalRows": 5,
+    "comparisons": 7,
+    "freshWorkers": 1,
+    "fetchCalls": 0
+  },
+  "referenceReview": {
+    "freshWorkers": 0,
+    "fetchCalls": 0
+  },
+  "desktop": {
+    "viewportWidth": 1280,
+    "pageClientWidth": 1280,
+    "pageScrollWidth": 1280,
+    "panelClientWidth": 598,
+    "panelScrollWidth": 598,
+    "comparisonRegion": {
+      "clientWidth": 559,
+      "scrollWidth": 580,
+      "overflow": "auto"
+    }
+  },
+  "mobile": {
+    "page": {
+      "client": 320,
+      "scroll": 320
+    },
+    "panel": {
+      "client": 254,
+      "scroll": 254
+    },
+    "font": "16px",
+    "table": [
+      {
+        "client": 215,
+        "scroll": 580,
+        "overflow": "auto"
+      }
+    ],
+    "minimumButtonHeight": 44,
+    "computedMinHeights": [
+      "44px"
+    ]
+  },
+  "enlargedText": {
+    "page": {
+      "client": 320,
+      "scroll": 320
+    },
+    "panel": {
+      "client": 254,
+      "scroll": 254
+    },
+    "font": "32px",
+    "comparisonRegion": {
+      "client": 183,
+      "scroll": 580,
+      "overflow": "auto"
+    },
+    "overflowOutsideRegions": [],
+    "minimumButtonHeight": 185.5859375
+  },
+  "importedReport": {
+    "state": "reported-only",
+    "importedLabel": true,
+    "originalPassRetained": true,
+    "fetches": [],
+    "workers": 2
+  },
+  "reportDownload": {
+    "fileName": "paperplay-scientific-validation.json",
+    "bytes": 4653
+  },
+  "cancellation": {
+    "fakePosts": 1,
+    "terminatedFake": 1,
+    "state": "reported-only",
+    "cancelledReport": true,
+    "priorPassedHistory": true,
+    "noActiveCheck": true,
+    "fetches": [],
+    "text": "ry · recorded cancelled\nLocal check · 11:17:47 AM · priority-search-trees-primary · recorded passed\n\nReported validation history · not reverified in this session\n\nRecorded report outcome: cancelled. Source priority-search-trees, version LIPIcs.ITP.2019.23-publisher-2019-09-05; subject priority-search-trees-primary.\n\n0 of 0 recorded rows checked. Requested-result coverage: incomplete. Computation cancelled.\n\nNo completed independent comparison is recorded. The report cannot establish a current pass.\n\nLimits of this report\nChecks are limited to the registered finite equations/properties and fixed tolerances.\nNo original experiment reproduction, mathematical proof, causal claim or general scientific validity is certified.\nModel-authored tests are supplemental declarations and never grant verification.\nExact scientific identities and checker versions\n\nThe download contains recorded comparisons, source/input identities and limitations. Source PDFs and attachments are not added. Shared reports are declarations until a new explicit local check is performed.\n\nDownload validation report\nOpen a saved report\n\nIndependent check cancelled. No passing authority was granted by this cancelled run.",
+    "injection": "A deliberately hanging EventTarget Worker replaced window.Worker only in this agent tab. This validates cancellation plumbing, not a numerical oracle.",
+    "realWorkerRestored": true
+  },
+  "touchTargetFix": {
+    "beforeFixMinimumHeightPx": 41.59375,
+    "ownedCssChange": ".root.root button{min-height:44px}",
+    "exactSelectorProbe": {
+      "computedMinHeight": "44px",
+      "minimumHeightPx": 44
+    },
+    "finalProductionRecheck": {
+      "observer": "Parent native tab after latest657-test production build",
+      "viewportWidth": 320,
+      "buttonHeightPx": 44,
+      "computedMinHeight": "44px",
+      "temporaryStyleElements": 0,
+      "pageOverflow": false
+    }
+  },
+  "network": {
+    "fetchCallsDuringReferenceReviewCheckCancellationExportImport": 0,
+    "paidModelCalls": 0
+  },
+  "cleanup": {
+    "localPapersCreated": 0,
+    "persistentReportsCreated": 0,
+    "WorkerInjectionRemovedByReload": true,
+    "temporaryStyleRemovedByReload": true
+  },
+  "limitations": [
+    "No human reader study or universal scientific-validation claim.",
+    "Cancellation injection is engineering fault simulation.",
+    "Source-edit staleness and dynamics numeric coverage were tested separately by parent.",
+    "Screenshots show the tested compact UI before the final button-selector production rebuild; final change only raises the minimum button height."
+  ],
+  "screenshots": [
+    {
+      "path": "data/validation-browser-desktop.png",
+      "sha256": "0ea0db250c7cb4d8794760b634ac569831d641978d6252933f4c2dafde9154e7"
+    },
+    {
+      "path": "data/validation-browser-mobile-enlarged.png",
+      "sha256": "c861eb17713e1dac6127207b749179661a2498bcbef6b2a28ebe971836fe5766"
+    }
+  ]
+}

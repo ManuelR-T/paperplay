@@ -923,10 +923,16 @@
       "priority": "P0",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 63,
         "url": "https://github.com/ManuelR-T/paperplay/issues/63"
+      },
+      "evidence": {
+        "document": "docs/scientific-validation.md",
+        "checks": "TypeScript, 657 deterministic tests (13 scientific-validation/reference), production build",
+        "browser": "Native actual Dijkstra and decay/reaction checks; navigation stays current, input edits stale, rerun, report download/reimport reported-only; explicit cancellation with labeled hanging-worker injection;320px/32px text",
+        "limitations": "Fixed finite mechanism/property checks for six legacy engines and two ODEs only. No experiment reproduction, universal scientific validity, imported authority or main-thread execution fallback. No paid inference, held-out tuning, human observations or release."
       }
     },
     {

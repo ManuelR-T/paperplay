@@ -67,9 +67,9 @@ export function assessFigureFidelity(input: FigureSpecification | unknown): Fide
   const evidence = bindings.map(binding => checkedMechanisms[`${binding.engineId}@${binding.engineVersion}`]);
   if (evidence.length && evidence.every(Boolean)) {
     return {
-      level: 'mechanism-reproduction', label: 'Checked mechanism',
+      level: 'mechanism-reproduction', label: 'Implementation reference cases',
       claim: evidence.map(item => item.claim).join(' '),
-      limitations: [...new Set(evidence.flatMap(item => item.limitations))],
+      limitations: ['Implementation checks describe fixed reference cases, not verification of this current run. Use the independent behavior check for a source/input-bound report.', ...new Set(evidence.flatMap(item => item.limitations))],
       referenceCaseIds: [...new Set(evidence.flatMap(item => item.referenceCaseIds))],
     };
   }

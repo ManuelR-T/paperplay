@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { algorithmInputSchema, type FigureSpecification, type SourceDocument } from '@/shared/schema';
 import { engineRegistry, engineMetadata, type EngineRun } from '@/lib/engines';
+import { ScientificValidationOutput } from '../scientific-validation-output';
 import { assessFigureFidelity } from '@/lib/fidelity';
 import { PlaybackControls, usePlayback } from './playback';
 import { ContextualQuestion } from '../contextual-question';
@@ -75,7 +76,7 @@ export function EngineFigure({ id, document, anchorId, state, setState, reset, m
       <PlaybackControls playback={playback} length={result.run.trace.steps.length} label="algorithm"/>
       <RunSummary run={result.run}/>
     </>}
-    {result.figure && <><FidelityNote figure={result.figure}/><div className="figure-tools"><ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={result.figure} seed={state.seed} stepIndex={playback.index}/><ExperimentActions source={document} snapshot={figureSnapshot(document, result.figure, state.seed)}/></div></>}
+    {result.figure && <><FidelityNote figure={result.figure}/><ScientificValidationOutput target={{kind:'legacy-engine',source:document,figure:result.figure,seed:state.seed}} output={result.run??null} unavailable={execution.status!=='complete'?'The current computation must complete before checking.':undefined}/><div className="figure-tools"><ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={result.figure} seed={state.seed} stepIndex={playback.index}/><ExperimentActions source={document} snapshot={figureSnapshot(document, result.figure, state.seed)}/></div></>}
     <SourceReturn document={document} anchorId={anchorId}/>
   </section>;
 }
@@ -111,7 +112,7 @@ export function ComparisonFigure({ id, document, anchorId, state, inputFigureId 
       <div className="comparison-table" role="region" aria-label="Comparison measurements" tabIndex={0}><table><caption>Measured totals from these runs</caption><thead><tr><th>Method</th>{computed.comparison.commonMetrics.map(metric => <th key={metric.id}>{metric.label}<small>{metric.unit}</small></th>)}<th>Status</th></tr></thead><tbody>{computed.comparison.runs.map(run => <tr key={run.engineId}><th scope="row">{run.name}</th>{computed.comparison!.commonMetrics.map(metric => <td key={metric.id}>{run.trace.metrics.find(item => item.id === metric.id)?.value ?? '—'}</td>)}<td>{run.trace.status}</td></tr>)}</tbody></table></div>
     </>}
     {independent&&<p className="control-hint">A contextual comparison question needs one shared trace index. <Button variant="outline" onClick={()=>setIndependent(false)}>Use shared index for a contextual question</Button></p>}
-    {computed.figure && <><FidelityNote figure={computed.figure}/><div className="figure-tools">{!independent&&<ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={computed.figure} seed={state.seed} stepIndex={playback.index}/>}<ExperimentActions source={document} snapshot={figureSnapshot(document, computed.figure, state.seed)}/></div></>}<SourceReturn document={document} anchorId={anchorId}/>
+    {computed.figure && <><FidelityNote figure={computed.figure}/><ScientificValidationOutput target={{kind:'legacy-engine',source:document,figure:computed.figure,seed:state.seed}} output={computed.comparison?.runs??null} unavailable={execution.status!=='complete'?'The current comparison must complete before checking.':undefined}/><div className="figure-tools">{!independent&&<ContextualQuestion source={document} blockId={document.anchors.find(item => item.id === anchorId)!.blockId} figure={computed.figure} seed={state.seed} stepIndex={playback.index}/>}<ExperimentActions source={document} snapshot={figureSnapshot(document, computed.figure, state.seed)}/></div></>}<SourceReturn document={document} anchorId={anchorId}/>
   </section>;
 }
 
