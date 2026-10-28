@@ -35,7 +35,7 @@ function ActiveWidget({envelope,source,onChange,compact=false,detailsContent,onS
  const incomingIdentity=JSON.stringify(envelope),identity=JSON.stringify([current.spec,current.seed,restart]);
  const descriptor=getWidgetDescriptor(current.spec.kind),guide=widgetGuides[current.spec.kind];const validResult=response?.identity===identity?response:undefined;const result=response?.result;const displayEnvelope={...(response?.envelope??current),view:current.view};
  useEffect(()=>{const controller=new AbortController();cancel.current=controller;executeWidget(current.spec,current.seed,{signal:controller.signal}).then(result=>{if(!controller.signal.aborted)setResponse({identity,result,envelope:current});}).catch(error=>{if(!controller.signal.aborted)setResponse(old=>({...old,identity,error:error instanceof Error?error.message:'Computation failed.'}));});return()=>controller.abort();},[identity]);
- useEffect(()=>{if(JSON.stringify(envelope)!==JSON.stringify(current)){setCurrent(envelope);setDraft(JSON.stringify(envelope.spec,null,2));setPrevious(null);}},[incomingIdentity]);
+ useEffect(()=>{if(JSON.stringify(envelope)!==JSON.stringify(current)){setCurrent(envelope);setDraft(JSON.stringify(envelope.spec,null,2));if(JSON.stringify([envelope.spec,envelope.seed])!==JSON.stringify([current.spec,current.seed]))setPrevious(null);}},[incomingIdentity]);
  function update(patch:Partial<WidgetEnvelope>,remember=true) { try {
    const next=validateWidgetEnvelope({...current,...patch},source);
    if(remember&&(patch.spec||patch.seed!==undefined))setPrevious(structuredClone(current));

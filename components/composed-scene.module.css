@@ -21,3 +21,7 @@
 
 .grid { grid-template-columns:repeat(var(--requested-columns,2),minmax(0,1fr)); }
 @container (max-width:600px) { .grid,.row { grid-template-columns:minmax(0,1fr); } }
+
+.composition [data-selected=true] { background:var(--accent); box-shadow:inset 3px 0 0 var(--primary); }
+.canvas [role=button] { cursor:pointer; }
+.canvas [role=button]:focus-visible { outline:3px solid var(--ring); outline-offset:5px; }

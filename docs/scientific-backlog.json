@@ -262,10 +262,16 @@
       "priority": "P0",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 43,
         "url": "https://github.com/ManuelR-T/paperplay/issues/43"
+      },
+      "evidence": {
+        "document": "docs/semantic-selections.md",
+        "checks": "npm run check: TypeScript, 265 tests, production build",
+        "browser": "Native Chromium at 320 px: linked diagram/tables/source, reset/undo, portable entity+frame restoration, keyboard selection, legacy graph seek/edit/input undo; zero model requests",
+        "limitations": "Coordinate-region protocol is ready for later spatial controls; specialized chart/image renderers remain subsequent work. Navigation digests grant no scientific trust."
       }
     },
     {

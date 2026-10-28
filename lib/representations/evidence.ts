@@ -13,7 +13,7 @@ function canonical(value:unknown):string {if(Array.isArray(value))return '['+val
 /** Conservative scientific identity: view-only navigation does not invalidate a result. */
 export async function scientificBinding(plan:RepresentationPlan,bindings:ScientificBindings={assetHashes:{},engineVersions:{}}):Promise<string> {
   const checked=bindingsSchema.parse(bindings);
-  const identity={...plan,reportedChecks:undefined,views:plan.views.map(view=>view.kind==='widget'?{...view,widget:{...view.widget,view:undefined}}:view),bindings:checked};
+  const identity={...plan,navigation:undefined,reportedChecks:undefined,views:plan.views.map(view=>view.kind==='widget'?{...view,widget:{...view.widget,view:undefined}}:view),bindings:checked};
   const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(canonical(identity)));
   return Array.from(new Uint8Array(bytes),byte=>byte.toString(16).padStart(2,'0')).join('');
 }

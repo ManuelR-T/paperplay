@@ -1,6 +1,8 @@
 import { z } from 'zod';
+import { representationNavigationSchema, selectionChannel } from './semantic-selections';
+import { isRepresentationSelection, representationInputRevision } from './representation-selection';
 import { composedSceneSchema, validateComposedScene } from './composed-scene';
-import { capabilityReferenceSchema, viewCapability } from './representation-capabilities';
+import { capabilityReferenceSchema, representationInteractionSchema, viewCapability } from './representation-capabilities';
 import { scientificQuantitySchema, quantityRequirementSchema, validateScientificQuantity } from './scientific-quantities';
 import { scientificAssetSchema } from './scientific-assets';
 import { evidenceDeclarationSchema, reportedScientificCheckSchema } from './research-evidence';
@@ -30,10 +32,11 @@ export const representationPlanSchema = z.strictObject({
   assets: z.array(z.strictObject({ id: name, kind: z.enum(['table','tensor','image','sequence','graph','geometry']), description: text.max(500), checksum:z.string().regex(/^[a-f0-9]{64}$/).optional() })).max(32),
   quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500), measurement:scientificQuantitySchema.optional() })).max(32),
   execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(capabilityReferenceSchema).min(1).max(16), assetIds: z.array(name).max(32) }),
-  interactions: z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),
+  interactions: z.array(representationInteractionSchema).max(5),
   assetManifests:z.array(scientificAssetSchema).max(32).optional(),
   evidence: z.array(evidenceDeclarationSchema).max(128).optional(),
   reportedChecks: z.array(reportedScientificCheckSchema).max(64).optional(),
+  navigation:representationNavigationSchema.optional(),
   views: z.array(representationViewSchema).min(1).max(8),
 });
 export type RepresentationPlan = z.infer<typeof representationPlanSchema>;
@@ -74,6 +77,7 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
     else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
     else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
   }
+  if(plan.interactions.includes('select-entity')&&!plan.views.some(view=>view.kind==='widget'||view.kind==='composed-scene'&&!!view.scene.entities?.length))throw Error('This representation has no semantic entity targets.');
   if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'||view.kind==='quantity'))throw Error('This representation has no data inspector.');
   if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
   for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
@@ -93,6 +97,7 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
     unique(item.dependsOn,'evidence dependency');visitEvidence(item.id);
   }
   for(const report of plan.reportedChecks??[]){const subjects=report.subject.kind==='claim'?plan.claims:report.subject.kind==='asset'?plan.assets:report.subject.kind==='quantity'?plan.quantities:plan.views;if(!subjects.some(subject=>subject.id===report.subject.id))throw Error('A reported check refers to an unknown subject.');}
+  if(plan.navigation){unique(plan.navigation.selections.map(selectionChannel),'selection channel');if(plan.navigation.revision!==representationInputRevision(plan)||plan.navigation.selections.some(selection=>!isRepresentationSelection(plan,selection)))throw Error('Saved selections do not match current source/inputs. The original file is retained.');}
   return plan;
 }
 
