@@ -1127,10 +1127,17 @@
       "priority": "P2",
       "size": "external",
       "verification": "Actual consented reader/expert observations when participants become available. Protocol preparation alone does not complete this issue.",
-      "status": "planned",
+      "status": "prepared-awaiting-human-participants",
       "github": {
         "number": 69,
         "url": "https://github.com/ManuelR-T/paperplay/issues/69"
+      },
+      "evidence": {
+        "document": "docs/scientific-reader-study-protocol.md",
+        "observations": "docs/scientific-reader-study-observations.json",
+        "checks": "JSON checked:0participants/0sessions/0expertreviews; allhumanmeasurementsnull; original#24ledger unchanged",
+        "prepared": "Domain-specific tasks/source-backed draft keys, expert/reader distinction, consent/privacy, counterbalanced original/Paperplay conditions, exactstimulusfreeze, revision/hold/retest criteria",
+        "limitations": "Owner has no available participants. Protocol and engineering holds are not human evidence; #69and#24remainopen."
       }
     },
     {

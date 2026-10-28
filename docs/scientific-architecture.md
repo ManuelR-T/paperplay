@@ -63,6 +63,8 @@ PP-112 adds [portable source-bound scientific experiences](scientific-experience
 
 PP-111 adds [bounded capability retrieval and full-request accounting](retrieval-budget.md). Its frozen measurements are recorded in [PP-113 results](frozen-evaluation-results.md):10admitted excerpts,2access failures and3bounded live calls. Development metadata measurements are not full-paper coverage.
 
+PP-114 has [prepared scientific reader tasks and an empty observations ledger](scientific-reader-study-protocol.md). Actual participants and sessions remain zero; expert correctness and reader usefulness stay pending.
+
 ## Delivery order
 
 The issue dependency graph is authoritative. Priorities do not bypass prerequisites. Each large issue should be split into reviewable increments during implementation.

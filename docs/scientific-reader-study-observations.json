@@ -1,0 +1,80 @@
+{
+  "format": "paperplay-scientific-reader-observations",
+  "version": 1,
+  "status": "awaiting-real-participants",
+  "protocol": "docs/scientific-reader-study-protocol.md",
+  "preparedAt": "2026-10-28",
+  "relatedIssues": [24, 68, 69],
+  "baseline": {
+    "appRevisionForHumanSessions": null,
+    "taskPacketVersionForHumanSessions": null,
+    "answerKeyExpertReview": "pending",
+    "sourceEvaluationReport": null,
+    "note": "Bind final source/evaluation references and exact session materials before the first real session; protocol preparation is not a completed human baseline."
+  },
+  "availability": {
+    "participantsAvailable": false,
+    "recruitmentOrContactPerformed": false,
+    "reason": "The owner confirmed that human participants are unavailable. No recruitment, contact or sessions were authorized or performed for this preparation."
+  },
+  "counts": {
+    "participants": 0,
+    "sessions": 0,
+    "expertReviews": 0,
+    "readerSessions": 0,
+    "completedTasks": 0,
+    "consentedTransfers": 0
+  },
+  "participants": [],
+  "sessions": [],
+  "expertReviews": [],
+  "findings": [],
+  "followUps": [],
+  "decisions": [],
+  "measurements": {
+    "taskCompletion": null,
+    "unassistedCorrectAnswers": null,
+    "assistedAnswers": null,
+    "elapsedTaskSeconds": null,
+    "sourceLocationSeconds": null,
+    "originDistinction": null,
+    "assumptionsIdentified": null,
+    "parameterChangeExplanation": null,
+    "correctionRecognition": null,
+    "unsupportedFallbackUnderstanding": null,
+    "scientificallyMisleadingCases": null,
+    "accessibilityProblems": null,
+    "usefulnessRatings": null,
+    "retestOutcomes": null
+  },
+  "gates": {
+    "biologyExpertCorrectness": "pending",
+    "physicsExpertCorrectness": "pending",
+    "computerScienceExpertCorrectness": "pending",
+    "readerUsability": "pending",
+    "revisionAndRetest": "pending",
+    "broaderUsefulness": "hold-pending-human-evidence"
+  },
+  "plannedTaskIds": ["BIO-1", "BIO-2", "PHY-1", "PHY-2", "CS-1", "CS-2"],
+  "privacy": {
+    "namesEmailsOrRecordingsCollected": false,
+    "sourceOrDatasetUploadsRequired": false,
+    "rawParticipantFilesIncluded": false,
+    "separateConsentRequiredForOptionalTransfersOrRecording": true,
+    "defaultRecord": "Anonymous written observations only, after actual consent. No paper, dataset, screenshot, bundle, credential or provider job capability is required."
+  },
+  "evidenceSeparation": {
+    "engineeringObservationsCountAsParticipants": false,
+    "modelSelfRatingsCountAsCorrectnessReview": false,
+    "sourcePaperParticipantsCountAsPaperplayParticipants": false,
+    "existingIssue24LedgerModified": false
+  },
+  "limitations": [
+    "There are zero actual participants, sessions, expert reviews and completed human tasks.",
+    "All human measurements are unknown and remain null; no success rate or learning benefit can be computed.",
+    "Draft source-backed answer keys and task materials await expert review and human piloting.",
+    "Real B3/C4 generated candidates and their engineering records are proposed stimuli, not evidence of scientific fidelity or human usefulness.",
+    "Any future small counterbalanced formative sample will have selection, familiarity and carryover limitations.",
+    "Follow-up findings, hold/revision decisions and retest outcomes require actual documented observations; none are created by this empty ledger."
+  ]
+}
