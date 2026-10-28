@@ -14,6 +14,10 @@ The [M6–M11 roadmap](docs/next-roadmap.md) tracks 34 GitHub issues. Thirty fea
 
 **Release hosting:** Railway is the selected target, with provisioning and hosted checks deferred until the final release. [Railway release plan](docs/railway-release.md). The existing private Sites demonstration is a retained experiment; no Railway service is configured yet.
 
+## Scientific representation architecture
+
+The planned [M12–M16 architecture](docs/scientific-architecture.md) expands Paperplay across biology, physics, computer science and later domains through composed views, scientific data/execution adapters and a separately gated Muse-generated artifact path. [Epic #35](https://github.com/ManuelR-T/paperplay/issues/35) links 36 implementation issues with acceptance criteria and dependencies. This is a planned program; the current product still runs trusted declarative widgets.
+
 ## Original figures and new widget designs
 
 Original figures now appear in the reading flow. The four prepared PDF figures/algorithm regions use reviewed crops, with a complete-page toggle. Imported PDFs display the original page at detected captions when no reviewed crop exists. New structured arXiv imports retain same-article image assets; older saved HTML sources need reimport to gain missing asset locations.

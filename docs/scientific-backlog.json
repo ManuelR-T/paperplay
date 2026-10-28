@@ -1,0 +1,994 @@
+{
+  "version": 1,
+  "createdAt": "2026-10-28",
+  "repository": "ManuelR-T/paperplay",
+  "status": "planned-not-implemented",
+  "epic": {
+    "id": "PP-080",
+    "title": "Build an extensible architecture for scientific paper representations",
+    "github": {
+      "number": 35,
+      "url": "https://github.com/ManuelR-T/paperplay/issues/35"
+    }
+  },
+  "phases": {
+    "M12": "Shared scientific contracts and evidence",
+    "M13": "Composable representations and linked interaction",
+    "M14": "Muse-generated artifacts with verified isolation",
+    "M15": "Scientific data and execution adapters",
+    "M16": "Coverage, validation, performance and adoption"
+  },
+  "sizeLegend": {
+    "M": "roughly 3–5 focused solo days; re-estimate after design",
+    "L": "roughly 6–10 focused solo days; split into reviewable increments",
+    "discovery": "timebox a prototype/design before committing to implementation estimates",
+    "external": "depends on participant/expert availability, not only engineering time"
+  },
+  "issues": [
+    {
+      "id": "PP-081",
+      "phase": "M12",
+      "title": "Define versioned research representation plans and execution contracts",
+      "problem": "A reader needs a faithful experience even when a paper does not describe an executable algorithm.",
+      "scope": "Define a representation plan over existing source anchors, assets, quantities, views, interactions, execution requirements and evidence. Provide small planning/build/execution/render interfaces with typed success, missing-data and unsupported results; retain v2 widgets through an adapter.",
+      "acceptance": [
+        "Round-trip existing widget snapshots plus a biological process, physical model, algorithm trace, empirical result and theoretical argument through fixtures.",
+        "Keep source claims, pedagogical additions and requested execution level separate in the contract.",
+        "Plan/render callers do not branch on paper discipline; add two actual adapters before extracting a new seam.",
+        "Unknown versions and unavailable capabilities preserve the original record and return an actionable result."
+      ],
+      "dependencies": [],
+      "priority": "P0",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 36,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/36"
+      }
+    },
+    {
+      "id": "PP-082",
+      "phase": "M12",
+      "title": "Track evidence and provenance for every scientific representation",
+      "problem": "An attractive generated figure can silently present illustrative numbers as source measurements.",
+      "scope": "Extend existing fidelity checks to per-claim, per-dataset and per-view evidence records: source quotation, authored assumption, extracted observation, computed output and independently checked result. Keep conceptual, simplified, mechanism reproduction and experiment reproduction distinct.",
+      "acceptance": [
+        "Every figure and exported artifact carries exact source/version, assumptions, evidence references and verification status.",
+        "Only application-owned checks can promote scientific labels; model self-assertions never do.",
+        "Changing a dataset, solver or generated artifact invalidates dependent verification while retaining prior evidence.",
+        "A mixed figure can label observed and synthetic series separately without replacing source claims."
+      ],
+      "dependencies": [
+        "PP-081"
+      ],
+      "priority": "P0",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 37,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/37"
+      }
+    },
+    {
+      "id": "PP-083",
+      "phase": "M12",
+      "title": "Introduce typed scientific assets and inspectable data ingestion",
+      "problem": "Images, arrays and supplementary data cannot be represented reliably as loose numbers inside one widget.",
+      "scope": "Add bounded asset manifests for tables, tensors, images, sequences, graphs and geometry with shape, coordinate system, missing-value policy, units reference, origin, checksum and rights. Start with local JSON/CSV and existing original figures; extend formats through adapters.",
+      "acceptance": [
+        "Import bounded JSON/CSV with a preview, missing-value explanation and explicit confirmation before binding data.",
+        "Detect shape errors, malformed files and oversized assets without losing reading state.",
+        "Separate user-supplied, source-extracted and illustrative data; record transformations and checksums.",
+        "Private assets and original paper bytes are not uploaded or included in public links automatically."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-082"
+      ],
+      "priority": "P0",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 38,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/38"
+      }
+    },
+    {
+      "id": "PP-084",
+      "phase": "M12",
+      "title": "Model scientific quantities, dimensions and coordinate systems",
+      "problem": "A parameter that looks plausible may combine incompatible units or use the wrong axes.",
+      "scope": "Add a tested quantity/coordinate layer for scalar, vector, matrix and field data. Cover physical dimensions, explicit conversions, axis orientation and descriptive dimensionless quantities; use a dependency evaluation task rather than inventing a universal symbolic algebra system.",
+      "acceptance": [
+        "Reference tests cover SI conversion, incompatible additions, affine temperatures and dimensionless probabilities.",
+        "Views and solvers declare expected units, shapes and coordinate systems; incompatible bindings fail before execution.",
+        "Units and uncertainty are shown in labels and portable records.",
+        "Legacy dimensionless programs retain their original arithmetic and descriptive unit limitations."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-083"
+      ],
+      "priority": "P0",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 39,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/39"
+      }
+    },
+    {
+      "id": "PP-085",
+      "phase": "M12",
+      "title": "Route plans through an extensible capability registry",
+      "problem": "Adding biology or physics should not require new discipline-specific branches throughout the reader.",
+      "scope": "Generalize the catalog into discoverable execution, data and view capabilities with versions, supported interactions, evidence requirements and resource budgets. Resolve a plan to available adapters and produce explicit capability gaps.",
+      "acceptance": [
+        "The current widget catalog works as one adapter without rewriting its engines.",
+        "Register a second non-widget representation adapter through the same interface.",
+        "Selection uses required data/behavior rather than a discipline-name switch or model assurance.",
+        "Missing dependencies, offline operation and unavailable compute produce structured gaps and usable alternatives."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-082",
+        "PP-083"
+      ],
+      "priority": "P0",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 40,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/40"
+      }
+    },
+    {
+      "id": "PP-086",
+      "phase": "M12",
+      "title": "Establish a cross-domain coverage corpus and unsupported cases",
+      "problem": "Animation demos alone cannot establish that an architecture works across research domains.",
+      "scope": "Build an attributed evaluation manifest of at least 12 real papers: four each in biology, physics and computer science, including empirical, theoretical and computational work. Include missing supplementary data, image-heavy extraction and cross-domain cases. Store links/metadata when redistribution is not permitted.",
+      "acceptance": [
+        "Each case has an expert-reviewable concept, source anchors, expected representation level and required assets.",
+        "At least three cases intentionally lack enough data or compute for faithful simulation and have an explicit expected fallback.",
+        "Keep development examples separate from a frozen held-out subset.",
+        "Report corpus coverage by representation and evidence level; never describe twelve papers as universal scientific coverage."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-082",
+        "PP-083"
+      ],
+      "priority": "P0",
+      "size": "L",
+      "verification": "Review source permissions and the case manifest; evaluate deterministic fixtures without claiming model runs or human reviews that did not occur.",
+      "status": "planned",
+      "github": {
+        "number": 41,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/41"
+      }
+    },
+    {
+      "id": "PP-087",
+      "phase": "M13",
+      "title": "Build a composable scene and responsive layout language",
+      "problem": "Muse needs more than free-positioned shapes to create readable complex scientific figures.",
+      "scope": "Add nested panels, rows/grids, constraints, annotations, legends, repeated marks and semantic chart/scene slots. Separate scientific coordinates from responsive layout. Supply shared text measurement, spacing tokens and collision diagnostics; bound recursion and repeated elements.",
+      "acceptance": [
+        "Render a biological process, physical scene and algorithm diagram through one layout contract.",
+        "At 320 px, 200% zoom and text-spacing overrides, no essential label is clipped; complex canvases offer explicit local scrolling.",
+        "Track objects across the whole animation so layout does not jump; report unresolved collisions rather than silently hiding information.",
+        "Enforce bounded nesting/mark counts and accessible numerical equivalents."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-083",
+        "PP-085"
+      ],
+      "priority": "P0",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 42,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/42"
+      }
+    },
+    {
+      "id": "PP-088",
+      "phase": "M13",
+      "title": "Synchronize composed views through semantic interactions",
+      "problem": "A reader selecting a cell or time point needs every related view to reflect the same scientific event.",
+      "scope": "Extend the existing selection events to typed time, entity, spatial region, parameter and uncertainty selections. Compose a figure, curve, table and source annotation around one state store with adapters for existing widgets.",
+      "acceptance": [
+        "A single selection updates at least three views and the source anchor without feedback loops.",
+        "Seeking, reset and undo preserve meaningful selection and distinguish input changes from view navigation.",
+        "A numerical fallback can drive the same selections by keyboard.",
+        "Snapshots restore linked selections without a model request."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-085",
+        "PP-087"
+      ],
+      "priority": "P0",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 43,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/43"
+      }
+    },
+    {
+      "id": "PP-089",
+      "phase": "M13",
+      "title": "Represent processes, networks and state-machine explanations",
+      "problem": "Biological pathways, physical flows and algorithms share relationships that need more than a static node diagram.",
+      "scope": "Add directed networks, compartments, causal/process annotations and state-machine views using the composable scene. Distinguish authored explanatory transitions from computed execution events.",
+      "acceptance": [
+        "One biological pathway and one algorithm state machine use the same structural renderer.",
+        "Support readable edge meaning, grouped entities and reversible selection with a relationship table.",
+        "Causal labels or reaction rates require declared evidence/assumptions; a drawn arrow does not establish causality.",
+        "Conceptual transitions remain labeled as walkthroughs rather than measured or executed traces."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-087",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 44,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/44"
+      }
+    },
+    {
+      "id": "PP-090",
+      "phase": "M13",
+      "title": "Compose statistical charts with uncertainty and comparisons",
+      "problem": "Point estimates and attractive curves can hide uncertainty, scale choices and missing observations.",
+      "scope": "Provide linked line/scatter/bar/distribution views with uncertainty intervals, replicate grouping, explicit axes, log scales, missing-value handling and paired comparisons. Reuse current plots where appropriate.",
+      "acceptance": [
+        "Render empirical biological and physical data with separately labeled observed, fitted and illustrative series.",
+        "Reference fixtures verify interval meaning, logarithmic-domain errors, missing values and consistent comparison scales.",
+        "Selections expose underlying values and sample counts; accessible tables preserve uncertainty fields.",
+        "A visual comparison cannot imply significance or a causal conclusion that was not calculated and justified."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-084",
+        "PP-087",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 45,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/45"
+      }
+    },
+    {
+      "id": "PP-091",
+      "phase": "M13",
+      "title": "Explore images, spatial fields and multiscale observations",
+      "problem": "Microscopy, simulation fields and spatial data need coordinate-aware exploration rather than a screenshot link.",
+      "scope": "Add bounded 2D image/field views with zoom, region selection, layers, scale bars and linked measurements. Keep source pixels distinct from segmentation, generated overlays and illustrative data.",
+      "acceptance": [
+        "A microscopy-like image case and a physical scalar-field case share coordinate/selection contracts.",
+        "Image transforms preserve original coordinates and units; a linked table identifies selected regions.",
+        "Large or unavailable imagery has a bounded preview/fallback and does not block the reader.",
+        "Avoid fabricated image content, unverified segmentation and missing source/overlay attribution."
+      ],
+      "dependencies": [
+        "PP-083",
+        "PP-084",
+        "PP-087",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 46,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/46"
+      }
+    },
+    {
+      "id": "PP-092",
+      "phase": "M13",
+      "title": "Support equations, proofs and experimental protocols without forcing simulation",
+      "problem": "Theoretical and observational papers may be better explained through a derivation, argument or protocol than an animation.",
+      "scope": "Compose source-linked equation transformations, proof/argument maps, protocol steps and annotated original figures. Link assumptions, definitions and evidence; retain original text and uncertainty about extraction.",
+      "acceptance": [
+        "Provide a theoretical argument and an experimental protocol from the corpus without inventing an execution engine.",
+        "Distinguish authored explanatory steps from formal verification and source-reported procedures.",
+        "Every transformation/step has a source or an explicit added-assumption label and a return action.",
+        "Unsupported notation or missing protocol details remain visible and cannot be silently completed as fact."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-086",
+        "PP-087",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 47,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/47"
+      }
+    },
+    {
+      "id": "PP-093",
+      "phase": "M14",
+      "title": "Specify generated figure artifacts and a small authoring SDK",
+      "problem": "Muse cannot create a new interaction when every behavior must already exist in the fixed declarative grammar.",
+      "scope": "Define a versioned generated-artifact manifest: source mapping, entry point, data/state interfaces, capability requests, dependency lock, tests, provenance and resource policy. Offer a small drawing/control SDK and bridge existing declarative figures as a separate artifact kind.",
+      "acceptance": [
+        "Document two working artifact implementations, declarative and generated, behind one build/run interface.",
+        "Generated artifacts carry explicit trust/evidence state and cannot grant themselves host privileges.",
+        "SDK fixtures demonstrate an interaction absent from the old custom runtime, such as manipulating a variable-length structure.",
+        "Record this planned scope expansion explicitly against CONTRIBUTING.md; generated code remains disabled until isolation gates pass."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-082",
+        "PP-083",
+        "PP-085"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 48,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/48"
+      }
+    },
+    {
+      "id": "PP-094",
+      "phase": "M14",
+      "title": "Validate the isolation architecture for generated scientific code",
+      "problem": "Running model-authored code inside the application or an ordinary worker would expose the reader and server.",
+      "scope": "Run a bounded architecture spike comparing a separate-origin browser sandbox and a disposable server execution environment. Include compilation, rendering and numerical workloads; select adapters from primary documentation and adversarial measurements, not branding. Preserve application-owned controls outside untrusted output.",
+      "acceptance": [
+        "Document trust boundaries and actual tests for parent DOM/cookies/storage, network, navigation, popups, downloads, nested workers, CPU, memory and message flooding.",
+        "Prove that cancelling or killing a hostile artifact keeps the reader usable and leaks no fixture secrets.",
+        "Specify platform prerequisites and unsupported cases; do not claim iframe, Worker, Node vm or a container alone is a complete sandbox.",
+        "Keep generation/execution disabled if the required guarantees cannot be demonstrated."
+      ],
+      "dependencies": [
+        "PP-093"
+      ],
+      "priority": "P0",
+      "size": "discovery",
+      "verification": "Primary-source design review plus repeatable adversarial prototypes in isolated test origins/environments; never execute untrusted code in the existing app process.",
+      "status": "planned",
+      "github": {
+        "number": 49,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/49"
+      }
+    },
+    {
+      "id": "PP-095",
+      "phase": "M14",
+      "title": "Build reproducible generated artifacts in an isolated compiler",
+      "problem": "A syntactically valid model response is not a reproducible, loadable figure.",
+      "scope": "Implement the build adapter selected by the isolation spike. Resolve only reviewed pinned dependencies, disable install hooks and arbitrary build commands, emit content-addressed bundles and structured diagnostics under hard limits.",
+      "acceptance": [
+        "Build a minimal SDK artifact reproducibly from an exact manifest and lockfile.",
+        "Reject undeclared imports, dynamic remote dependencies, malicious package hooks and filesystem escape attempts.",
+        "Bound build time, memory, log size and output bytes; cancellation cleans disposable state.",
+        "Store source, build diagnostics, dependency licenses and hashes without secrets or private source content in logs."
+      ],
+      "dependencies": [
+        "PP-093",
+        "PP-094"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 50,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/50"
+      }
+    },
+    {
+      "id": "PP-096",
+      "phase": "M14",
+      "title": "Host generated figures with a capability-limited execution bridge",
+      "problem": "A generated figure needs interaction and data without access to the rest of the application.",
+      "scope": "Implement the sandbox host selected by the spike and a typed bridge for immutable input, bounded outputs, selections and lifecycle events. Deliver only declared assets; prevent artifacts from launching inference or privileged requests.",
+      "acceptance": [
+        "Run a generated interaction end to end in a real browser with host-owned attribution, close and stop controls.",
+        "Adversarial artifacts cannot access host data or escape the execution/network policy.",
+        "Validate origin, instance identity, schema, payload limits and message rate; isolate two simultaneous artifacts.",
+        "Cancellation, crash and resource exhaustion restore a readable fallback without losing notes or existing figures."
+      ],
+      "dependencies": [
+        "PP-094",
+        "PP-095",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 51,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/51"
+      }
+    },
+    {
+      "id": "PP-097",
+      "phase": "M14",
+      "title": "Let Muse plan, generate, test and repair new figure artifacts",
+      "problem": "A single JSON response cannot reliably produce a novel working scientific interaction.",
+      "scope": "Add an explicit generate-artifact action: Muse proposes a plan, writes against the SDK, receives bounded build/test diagnostics, and can repair within a fixed attempt/token/time budget. Keep existing catalog selection as the inexpensive first path.",
+      "acceptance": [
+        "An unfamiliar mechanism can produce a new SDK-based interaction, build and preview it without manual code edits in the happy path.",
+        "All iterations retain the same source/evidence scope; failures and diagnostics are inspectable.",
+        "Set a maximum attempt count and a budget before creation; reserve each paid call and deduplicate accepted jobs.",
+        "Exhaustion returns a useful explanation or existing representation, never an unbounded repair loop or auto-accepted artifact."
+      ],
+      "dependencies": [
+        "PP-085",
+        "PP-093",
+        "PP-095",
+        "PP-096"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 52,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/52"
+      }
+    },
+    {
+      "id": "PP-098",
+      "phase": "M14",
+      "title": "Evaluate generated layout and interaction quality before presentation",
+      "problem": "A compiled artifact can still be unreadable, blank or unusable.",
+      "scope": "Create a deterministic visual/interaction test harness for the isolated preview with label clipping, overflow, touch targets, contrast, keyboard actions, reduced motion, console errors and post-interaction states. Feed actionable diagnostics into the bounded repair loop.",
+      "acceptance": [
+        "Check 320 px and desktop layouts, large text, long labels, empty inputs, invalid values and multiple animation steps.",
+        "Detect intentionally broken fixtures: clipped label, unreachable control, blank scene and runaway animation.",
+        "Capture artifact/version, screenshots and failing steps; visual checks never substitute for scientific checks.",
+        "Host-owned error/stop UI remains accessible even when the artifact fails its own accessibility tests."
+      ],
+      "dependencies": [
+        "PP-087",
+        "PP-096",
+        "PP-097"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 53,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/53"
+      }
+    },
+    {
+      "id": "PP-099",
+      "phase": "M14",
+      "title": "Cache and version artifact builds, executions and validation reports",
+      "problem": "Reopening an accepted figure must not regenerate different code or silently reuse results from changed data.",
+      "scope": "Extend portable experiment identity with artifact hash, SDK/runtime/dependency versions, asset checksums, parameters, seed and validation evidence. Cache separately at plan, build and execution levels.",
+      "acceptance": [
+        "An identical accepted artifact reopens and replays without inference or rebuild when compatible.",
+        "A changed input, model-generated source, dependency or engine invalidates only relevant caches.",
+        "Unknown/incompatible versions preserve the original and offer export/fallback instead of destructive migration.",
+        "Recovery after interrupted generation/build/run does not start replacement paid work automatically."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-095",
+        "PP-096",
+        "PP-097"
+      ],
+      "priority": "P1",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 54,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/54"
+      }
+    },
+    {
+      "id": "PP-100",
+      "phase": "M15",
+      "title": "Add a reference-tested adapter for differential and hybrid dynamics",
+      "problem": "Biological and physical models often require numerical integration beyond a hand-written scalar recurrence.",
+      "scope": "Implement a bounded trusted ODE adapter with declared solver, tolerances, initial conditions, units and event rules. Begin with small systems and explicit discontinuities; isolate richer solvers behind the same execution interface.",
+      "acceptance": [
+        "Independent reference cases cover decay, a damped oscillator, a small coupled reaction system and an event-triggered transition.",
+        "Report numerical error/tolerance, instability, invalid domains and incomplete integration.",
+        "Parameter edits update linked trajectories locally and respect cancellation/resource budgets.",
+        "Name the supported solver/model class; do not advertise arbitrary ODE/PDE support or original experimental reproduction."
+      ],
+      "dependencies": [
+        "PP-084",
+        "PP-085",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 55,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/55"
+      }
+    },
+    {
+      "id": "PP-101",
+      "phase": "M15",
+      "title": "Add stochastic population and reaction-network experiments",
+      "problem": "Random biological processes need distributions across runs and declared assumptions, not one smooth deterministic curve.",
+      "scope": "Provide a bounded seeded stochastic event adapter for small reaction/population networks, including replicate summaries and a reusable process view. Keep teaching examples independent from organism-specific claims.",
+      "acceptance": [
+        "Reference fixtures verify nonnegative counts, absorbing states, event-rate rules and deterministic seed replay.",
+        "Show multiple-run uncertainty separately from deterministic expectations and measurement uncertainty.",
+        "Reject incompatible rates/units, missing assumptions and excessive population/event counts.",
+        "A biological corpus example exposes its simplifications and source mapping without implying clinical or experimental prediction."
+      ],
+      "dependencies": [
+        "PP-084",
+        "PP-085",
+        "PP-089",
+        "PP-090"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 56,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/56"
+      }
+    },
+    {
+      "id": "PP-102",
+      "phase": "M15",
+      "title": "Add bounded physical fields and conservation-based examples",
+      "problem": "Physics papers often discuss spatial fields and conservation laws that scalar plots do not express.",
+      "scope": "Introduce a small reviewed field-model adapter for explicitly selected 1D/2D cases, boundary conditions, discretization and vector/scalar field output. Start with a narrow diffusion/wave or transport model after solver evaluation; no universal PDE solver promise.",
+      "acceptance": [
+        "Independent analytic/reference cases verify the implemented model and applicable conservation or stability properties.",
+        "Grid resolution, boundary conditions, units, numerical scheme and validity limits are visible.",
+        "Field, probe and time-series views share selection and reproducible state.",
+        "Unstable settings, unsupported equations or excessive grids stop clearly and retain a source-linked fallback."
+      ],
+      "dependencies": [
+        "PP-084",
+        "PP-085",
+        "PP-088",
+        "PP-091",
+        "PP-100"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 57,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/57"
+      }
+    },
+    {
+      "id": "PP-103",
+      "phase": "M15",
+      "title": "Explore molecular and structural geometry through reviewed adapters",
+      "problem": "Structural biology and chemistry need spatial geometry rather than a generic 2D schematic.",
+      "scope": "Add typed atom/bond/residue/geometry assets and a reviewed molecular/3D viewer adapter with labels, selection, clipping and a numerical/2D fallback. Evaluate format parsing and rendering dependencies during implementation.",
+      "acceptance": [
+        "A small attributed structure loads with original identifiers and coordinate units preserved.",
+        "Selection links an entity to available source annotations and measurements.",
+        "Malformed structures, unsupported formats, excessive geometry and unavailable graphics have bounded recovery.",
+        "No inferred bond, fabricated structure, docking result or molecular-dynamics claim is presented as source evidence."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-084",
+        "PP-085",
+        "PP-088"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 58,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/58"
+      }
+    },
+    {
+      "id": "PP-104",
+      "phase": "M15",
+      "title": "Execute discrete algorithms and variable-length structures",
+      "problem": "Computer-science papers often manipulate arrays, queues, trees or agents that the fixed scalar custom model cannot represent.",
+      "scope": "Add reviewed collection/event capabilities and a trace adapter with bounded arrays, maps, graphs, conditional steps and explicit operation counts. Use trusted engines or isolated generated artifacts according to the manifest.",
+      "acceptance": [
+        "Two different algorithms beyond the existing preset engines execute on editable variable-length inputs.",
+        "Trace events map to source/pseudocode and expose intermediate structures, termination and operation metrics.",
+        "Independent reference/property tests catch incorrect output, invalid preconditions and excessive execution.",
+        "Conceptual pseudocode remains available when no checked executable implementation exists."
+      ],
+      "dependencies": [
+        "PP-085",
+        "PP-088",
+        "PP-089",
+        "PP-092",
+        "PP-096"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 59,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/59"
+      }
+    },
+    {
+      "id": "PP-105",
+      "phase": "M15",
+      "title": "Explore empirical datasets, models and experimental outcomes",
+      "problem": "Many scientific papers report observations and fitted models rather than a mechanism to animate.",
+      "scope": "Build an evidence-aware dataset exploration path: select variables/groups, inspect missingness, replicate counts, transformations and a reviewed subset of fits/statistical summaries. Bind reported results to data/protocol only when actually available.",
+      "acceptance": [
+        "An empirical corpus case is useful without inventing a simulation or unreported raw data.",
+        "Reported estimates, recomputed results and illustrative reconstructions remain separately labeled.",
+        "Reference tests cover supported fitting/statistical methods, uncertainty and invalid assumptions.",
+        "Unavailable raw data produces an annotated reported-result view rather than fabricated observations."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-084",
+        "PP-090",
+        "PP-092"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 60,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/60"
+      }
+    },
+    {
+      "id": "PP-106",
+      "phase": "M15",
+      "title": "Define opt-in adapters for external datasets and heavy computation",
+      "problem": "Some papers require assets, trained weights or computation that cannot fit inside the browser.",
+      "scope": "Define a broker interface for reviewed data/compute adapters with explicit source/asset selection, upload disclosure, cost/resource budget, job lifecycle and returned evidence. Provide local-file and deterministic fake remote adapters first; infrastructure provisioning is separate release work.",
+      "acceptance": [
+        "Missing weights, datasets or compute become named requirements in a capability-gap report.",
+        "External execution requires an explicit action and per-run budget; private data is never sent by local interaction.",
+        "Resume/cancel accepted jobs without duplicate paid creation and verify returned asset/result identity.",
+        "Generated artifacts cannot invoke the broker directly or select arbitrary external URLs/credentials."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-085",
+        "PP-094",
+        "PP-099"
+      ],
+      "priority": "P2",
+      "size": "discovery",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 61,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/61"
+      }
+    },
+    {
+      "id": "PP-107",
+      "phase": "M15",
+      "title": "Generalize the extraction and supplementary-material pathway",
+      "problem": "A domain-independent renderer still fails if equations, tables, microscopy figures or supplement references are lost during import.",
+      "scope": "Add an inspectable extraction-evidence manifest over text, equations, tables, original figures and supplementary references with confidence, original coordinates and user corrections. Reuse current PDF/arXiv extraction and extend through format adapters.",
+      "acceptance": [
+        "Corpus cases retain relevant non-text material or explicitly record extraction loss and a return-to-original action.",
+        "Corrected extraction remains a versioned derived interpretation, never a silent source rewrite.",
+        "Follow supplement/dataset links only through explicit bounded retrieval with attribution and access checks.",
+        "Prohibit model-invented figures, equations or missing table values from entering the original-source layer."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-086",
+        "PP-091",
+        "PP-092"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 62,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/62"
+      }
+    },
+    {
+      "id": "PP-108",
+      "phase": "M16",
+      "title": "Verify scientific behavior with independent references and invariants",
+      "problem": "Build success and model-generated tests do not establish scientific validity.",
+      "scope": "Implement a validation-report interface with independent reference cases, invariants, numerical tolerances, assumptions and verified scope. Treat generated tests as supplemental; distinguish a rendered example from checked mechanism/experiment reproduction.",
+      "acceptance": [
+        "Intentionally wrong fixtures pass compilation but fail an independent scientific check.",
+        "Validation records identify what was checked, against which reference/data and with which tolerances.",
+        "Existing engines and one new biological/physical adapter share the reporting interface.",
+        "Evidence promotion and invalidation are application-owned and visible in the figure and exports."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-084",
+        "PP-085",
+        "PP-086",
+        "PP-100"
+      ],
+      "priority": "P0",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 63,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/63"
+      }
+    },
+    {
+      "id": "PP-109",
+      "phase": "M16",
+      "title": "Enforce responsive execution, cancellation and reproducible runs",
+      "problem": "Multiple rich figures can exhaust a browser or make the paper unreadable.",
+      "scope": "Provide a shared execution scheduler with per-artifact time/memory/result budgets, cancellation, visibility-aware scheduling and deterministic seed/version recording. Integrate trusted workers, sandbox hosts and optional external-job adapters.",
+      "acceptance": [
+        "A stress fixture with multiple active views stays within documented measured budgets on a declared test environment.",
+        "Timeout, out-of-memory simulation, backgrounding and user stop leave the source/notes usable.",
+        "Replay distinguishes deterministic, stochastic seeded and hardware-dependent outputs.",
+        "No silent main-thread fallback or automatic paid inference occurs when an execution adapter is unavailable."
+      ],
+      "dependencies": [
+        "PP-085",
+        "PP-088",
+        "PP-096",
+        "PP-099"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 64,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/64"
+      }
+    },
+    {
+      "id": "PP-110",
+      "phase": "M16",
+      "title": "Provide faithful degradation and visible representation coverage",
+      "problem": "An unsupported paper should remain useful instead of receiving an unrelated generic animation.",
+      "scope": "Add coverage states by section/concept: represented, partially represented, missing data, missing capability and not applicable. Offer a justified annotated figure, concept map, derivation or protocol fallback when simulation is not grounded.",
+      "acceptance": [
+        "Missing-data and unsupported corpus cases identify the exact unmet requirement and an actionable next step.",
+        "A reader can see which sections were analyzed and which claims remain unexplained.",
+        "Fallbacks preserve the original and never borrow an unrelated engine while implying execution of the paper.",
+        "Uncertainty is concise and readable; a gap can be exported as a bounded developer-extension request."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-085",
+        "PP-086",
+        "PP-089",
+        "PP-092"
+      ],
+      "priority": "P0",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 65,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/65"
+      }
+    },
+    {
+      "id": "PP-111",
+      "phase": "M16",
+      "title": "Retrieve relevant capabilities and control Muse generation budgets",
+      "problem": "Sending every solver, SDK example and domain recipe to Muse will grow cost and context without improving a particular figure.",
+      "scope": "Add bounded capability/example retrieval tied to a section/concept plan; keep a small common manifest and selected adapters. Account for planning, generation, tests and repair separately with explicit progress and ceilings.",
+      "acceptance": [
+        "Record payload size and usage on the frozen corpus, including failures and unknown-domain cases.",
+        "A missing capability produces a gap instead of hallucinated SDK methods or packages.",
+        "Changing a slider, seeking, reopening or selecting an existing view never launches paid inference.",
+        "Cancellation, retries, deduplication and per-paper/global reservations remain effective across multi-step generation."
+      ],
+      "dependencies": [
+        "PP-085",
+        "PP-086",
+        "PP-093",
+        "PP-097",
+        "PP-099"
+      ],
+      "priority": "P1",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 66,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/66"
+      }
+    },
+    {
+      "id": "PP-112",
+      "phase": "M16",
+      "title": "Share scientific experiences with complete reproducibility manifests",
+      "problem": "An exported figure loses its meaning if its data, runtime or verification history cannot be identified.",
+      "scope": "Extend study packs and snapshot formats for composed views, approved assets, generated-artifact hashes, engine versions, parameters, seeds and evidence reports. Preserve original rights and explicitly selected source inclusion.",
+      "acceptance": [
+        "A fresh compatible browser can open an exported experience without regenerating it.",
+        "Unsupported runtime/dependency/data versions return a clear fallback and retain the original artifact.",
+        "Generated code executes only in the approved isolation host, including after import; portable HTML never bypasses that policy.",
+        "Secrets, provider job capabilities and unselected private data are excluded; attribution and asset availability remain explicit."
+      ],
+      "dependencies": [
+        "PP-082",
+        "PP-083",
+        "PP-088",
+        "PP-096",
+        "PP-099",
+        "PP-108"
+      ],
+      "priority": "P1",
+      "size": "M",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 67,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/67"
+      }
+    },
+    {
+      "id": "PP-113",
+      "phase": "M16",
+      "title": "Run held-out cross-domain regression and artifact failure evaluations",
+      "problem": "The breadth claim needs measured successes and failures across domains, not selected screenshots.",
+      "scope": "Build an evaluation runner over the frozen corpus and adversarial artifacts: grounding, useful representation level, scientific checks, layout, accessibility, isolation, execution cost and unsupported behavior. Compare catalog-only and generated-artifact paths.",
+      "acceptance": [
+        "Publish per-case outcomes, rejected attempts, missing capabilities and measured inference/resource cost.",
+        "Include biological, physical and computer-science cases plus empirical/theoretical and missing-data cases.",
+        "Use frozen fixtures in routine CI; separately named live Muse runs require explicit budget/opt-in and preserve actual outputs.",
+        "Regression criteria prevent silent evidence promotion, lost source anchors or weakened isolation."
+      ],
+      "dependencies": [
+        "PP-086",
+        "PP-098",
+        "PP-108",
+        "PP-109",
+        "PP-110",
+        "PP-111"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 68,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/68"
+      }
+    },
+    {
+      "id": "PP-114",
+      "phase": "M16",
+      "title": "Evaluate usefulness and scientific fidelity with domain readers",
+      "problem": "Agent walkthroughs cannot establish that a biologist, physicist or engineer learns from a representation.",
+      "scope": "Extend the existing real-reader study #24 with domain-specific interpretation and misleading-output tasks. Separate domain-expert correctness review from student usability; keep the study pending while no participants are available.",
+      "acceptance": [
+        "Prepare tasks and observation forms for biology, physics and computer science.",
+        "Ask participants to identify assumptions, distinguish observed from synthetic results and explain one changed parameter.",
+        "Record actual participants, limitations, confusion and misleading cases; do not invent sessions or replace them with model judgments.",
+        "Define and apply a revision/hold decision for scientifically misleading experiences before claiming broad usefulness."
+      ],
+      "dependencies": [
+        "PP-113",
+        "#24"
+      ],
+      "priority": "P2",
+      "size": "external",
+      "verification": "Actual consented reader/expert observations when participants become available. Protocol preparation alone does not complete this issue.",
+      "status": "planned",
+      "github": {
+        "number": 69,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/69"
+      }
+    },
+    {
+      "id": "PP-115",
+      "phase": "M16",
+      "title": "Document how to add a scientific domain without changing the reader",
+      "problem": "The architecture is extensible only if a new capability can be added through documented seams.",
+      "scope": "Provide an extension kit with manifest/schema, data adapter, optional execution adapter, view bindings, source/evidence mapping, resource policy and reference tests. Demonstrate a fourth-domain extension selected from the corpus gaps.",
+      "acceptance": [
+        "Add one bounded chemistry, geoscience or astronomy example without new discipline branches in the reader/planner.",
+        "Document which parts are trusted application code and which may be generated and isolated.",
+        "Independent references, rights, unit conventions, unsupported behavior and accessible values accompany the example.",
+        "A clean installation can run its provider-free fixture through the public module interfaces."
+      ],
+      "dependencies": [
+        "PP-085",
+        "PP-087",
+        "PP-088",
+        "PP-093",
+        "PP-108",
+        "PP-110"
+      ],
+      "priority": "P2",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 70,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/70"
+      }
+    },
+    {
+      "id": "PP-116",
+      "phase": "M16",
+      "title": "Introduce the new architecture incrementally while preserving the current reader",
+      "problem": "An architecture expansion must not invalidate saved papers and existing accepted figures.",
+      "scope": "Roll out contracts, composed views and isolated artifacts through explicit capability/version gates. Keep current declarative widgets as the default fallback. This issue covers local product rollout and migration, not Railway provisioning or public release.",
+      "acceptance": [
+        "Existing v1/v2 snapshots, saved Meta plans and local papers retain behavior or receive a non-destructive recovery path.",
+        "Generated execution remains off until isolation, quality and evidence gates pass; feature flags can disable it without losing source data.",
+        "A staged migration run records fixtures, cache invalidation, rollback and known incompatibilities.",
+        "Document completion evidence and separate pending human study #24 and release issues #31/#33/#34 from implemented features."
+      ],
+      "dependencies": [
+        "PP-081",
+        "PP-085",
+        "PP-099",
+        "PP-108",
+        "PP-110",
+        "PP-112",
+        "PP-113"
+      ],
+      "priority": "P1",
+      "size": "L",
+      "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
+      "status": "planned",
+      "github": {
+        "number": 71,
+        "url": "https://github.com/ManuelR-T/paperplay/issues/71"
+      }
+    }
+  ]
+}

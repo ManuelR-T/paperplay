@@ -4,6 +4,8 @@ Status: **30 feature issues implemented; reader study and release remain open**,
 
 The product direction is an article that is pleasant to read and useful to think with: change a symbol, inspect a transformation, challenge an assumption, and see every related view respond beside the source. An unsupported algorithm can still have a meaningful conceptual diagram. A computed result always needs a declared model, valid data and a checked implementation.
 
+The next architecture program is [M12–M16: scientific representations](scientific-architecture.md), tracked by [PP-080 · #35](https://github.com/ManuelR-T/paperplay/issues/35). Its generated-artifact path is a new, gated proposal; the exclusions below describe the historical M6–M11 scope.
+
 ## Problems recorded at planning time
 
 The baseline 1.1.0 equation view was static KaTeX. Paragraph-level Ask actions and full control/evidence stacks interrupt the reading flow. The graph layout is fixed and imported figures have fewer data-editing controls than prepared examples. Numeric figures cover small SPD matrices and residual curves; there is no probability, attention-tensor, geometric-transformation or signal widget. Comparisons align trace indices, not necessarily comparable semantic events. The held-out Meta baseline mostly produced conceptual step cards and rejected unsupported computed proposals.
