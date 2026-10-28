@@ -173,7 +173,7 @@ export default function PaperWorkspace() {
     try{if(existing){const pending=await checkPendingSourcePlans(existing.source,localStorage);if(pending?.uncertain)setTransferMessage('An unconfirmed Meta request may still exist. Removing the local paper does not cancel work without a saved job reference.');}}catch(error){setTransferMessage(error instanceof Error?error.message:'The saved figure plan could not be checked; the source was retained.');return;}
     await imports.remove(id);
     if (await createImportStorage().get(id)) return;
-    try{forgetSourceWidgets(id,localStorage);}catch{setTransferMessage('The paper was removed, but some cached widget settings could not be cleared. Personal notes remain as unresolved notebook records.');}
+    try{await forgetSourceWidgets(id,localStorage);}catch{setTransferMessage('The paper was removed, but some cached widget settings could not be cleared. Personal notes remain as unresolved notebook records.');}
     const result = deleteReadingState(id); if (result.warning) setTransferMessage(result.warning);
     setRecents(listRecentPapers());
   }

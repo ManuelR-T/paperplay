@@ -1,0 +1,158 @@
+{
+  "format": "paperplay-artifact-experiment-browser-qa",
+  "schemaVersion": 1,
+  "runtime": "quickjs-seeded-sdk@1.1.0",
+  "providerRequests": 0,
+  "initialSeed42": {
+    "rows": [
+      "1\t0.8172425816301256",
+      "2\t0.011097937123849988",
+      "3\t0.9329971058759838"
+    ],
+    "text": "Close\nSeeded replay engineering fixture\n\nExplore the figure and check its source.\n\nSave imported artifact\n\nGenerated figure \u00b7 unverified.\n\nSynthetic reproducible samples, not scientific observations.\n\n3\nAdd sample\nReset samples\nSynthetic values\nIndex\tValue\n1\t0.8172425816301256\n2\t0.011097937123849988\n3\t0.9329971058759838\nText, values and source links\nInputs and reproducibility\nExport this experiment\nSource and assumptions\nDownload figure\nOriginal source\nFigure source and declared limits",
+    "resources": [
+      {
+        "name": "http://localhost:3001/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+        "bytes": 0
+      },
+      {
+        "name": "http://localhost:3001/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+        "bytes": 0
+      },
+      {
+        "name": "http://localhost:3001/artifact-runtime.044e5c4117b3d6840f06f31ad142a3a2704b3eaa20acc4b0bd0ea517cabb3e81.worker.mjs",
+        "bytes": 384740
+      },
+      {
+        "name": "http://localhost:3001/artifact-runtime.044e5c4117b3d6840f06f31ad142a3a2704b3eaa20acc4b0bd0ea517cabb3e81.worker.mjs",
+        "bytes": 0
+      }
+    ]
+  },
+  "changedSeed43": {
+    "rows": [
+      "1\t0.7442298198584467",
+      "2\t0.6501073176041245",
+      "3\t0.6042085723020136"
+    ],
+    "seed": "43",
+    "compilers": 2,
+    "alerts": []
+  },
+  "reloadWithoutBuild": {
+    "rows": [
+      "1\t0.7442298198584467",
+      "2\t0.6501073176041245",
+      "3\t0.6042085723020136"
+    ],
+    "dialog": "Close\nSeeded replay engineering fixture\n\nExplore the figure and check its source.\n\nSave imported artifact\n\nGenerated figure \u00b7 unverified.\n\nResume interaction\n\nSaved replay \u00b7 interactions paused. Resume runs locally; no model request is made.\n\nSynthetic reproducible samples, not scientific observations.\n\n3\nAdd sample\nReset samples\nSynthetic values\nIndex\tValue\n1\t0.7442298198584467\n2\t0.6501073176041245\n3\t0.6042085723020136\nText, values and source links\nInputs and reproducibility\nExport this experiment\nSource and assumptions\nDownload figure\nOriginal source\nFigure source and declared limits",
+    "artifactRequests": [],
+    "paidRequests": [],
+    "overflow": false
+  },
+  "explicitResume": {
+    "rows": [
+      "1\t0.7442298198584467",
+      "2\t0.6501073176041245",
+      "3\t0.6042085723020136",
+      "4\t0.9316111882217228"
+    ],
+    "resources": [
+      {
+        "name": "http://localhost:3001/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+        "initiator": "fetch",
+        "transfer": 0
+      },
+      {
+        "name": "http://localhost:3001/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+        "initiator": "other",
+        "transfer": 0
+      },
+      {
+        "name": "http://localhost:3001/artifact-runtime.044e5c4117b3d6840f06f31ad142a3a2704b3eaa20acc4b0bd0ea517cabb3e81.worker.mjs",
+        "initiator": "fetch",
+        "transfer": 0
+      },
+      {
+        "name": "http://localhost:3001/artifact-runtime.044e5c4117b3d6840f06f31ad142a3a2704b3eaa20acc4b0bd0ea517cabb3e81.worker.mjs",
+        "initiator": "other",
+        "transfer": 0
+      }
+    ],
+    "alerts": []
+  },
+  "protectedReplayAfterDerivedCacheRemoval": {
+    "dialog": "Close\nSeeded replay engineering fixture\n\nExplore the figure and check its source.\n\nSave imported artifact\n\nGenerated figure \u00b7 unverified.\n\nStart a new local run\n\nRecorded frame \u00b7 unverified; execution history unavailable. Start a new local run to compute from the initial state.\n\nSynthetic reproducible samples, not scientific observations.\n\n3\nAdd sample\nReset samples\nSynthetic values\nIndex\tValue\n1\t0.7442298198584467\n2\t0.6501073176041245\n3\t0.6042085723020136\nText, values and source links\nInputs and reproducibility\nExport this experiment\nSource and assumptions\nDownload figure\nOriginal source\nFigure source and declared limits",
+    "rows": [
+      "1\t0.7442298198584467",
+      "2\t0.6501073176041245",
+      "3\t0.6042085723020136"
+    ],
+    "resources": 0
+  },
+  "portableImportAfterCacheRemoval": {
+    "rows": [
+      "1\t0.7442298198584467",
+      "2\t0.6501073176041245",
+      "3\t0.6042085723020136",
+      "4\t0.9316111882217228"
+    ],
+    "resources": 0,
+    "paidRequests": 0
+  },
+  "export": {
+    "format": "paperplay-artifact-experiment",
+    "inclusions": {
+      "source": false,
+      "assets": false,
+      "results": true
+    },
+    "seed": 43,
+    "runtime": "quickjs-seeded-sdk@1.1.0",
+    "artifactSha256": "5f263f427e54b9bbca19606ca2e81ca2226ca25768498e21aa6605f2c2681714",
+    "recordKinds": [
+      "execution",
+      "build"
+    ],
+    "hasSource": false,
+    "assetAttachments": 0
+  },
+  "unknownVersion": {
+    "schemaVersion": 99,
+    "originalBytesPreserved": true,
+    "sha256": "e30d286a3690a3f8a66ca25963fab858b28fa029b99c18c7584dc81bc8628636",
+    "bytes": 14256
+  },
+  "missingAssets": {
+    "readonly": "Recorded frame \u00b7 unverified. This imported result has not been recomputed. Bind the exact declared data before resuming interaction.\n\nDeclared data binding fixture\n\nDeclared data plus an authored initial parameter.\n\n5\nExplicit illustrative arithmetic\nValue\n5\nText, values and source links\nRecorded figure source",
+    "hasBinder": true,
+    "artifactRequests": 0,
+    "providerRequests": 0
+  },
+  "boundExport": {
+    "source": false,
+    "assets": false,
+    "results": true,
+    "inputJson": "{\"parameter\":3,\"assets\":null}",
+    "inputBinding": "assets-omitted",
+    "attachments": 0,
+    "recordKinds": [
+      "build"
+    ],
+    "recordedFrames": 1
+  },
+  "largeText": {
+    "width": 320,
+    "textScale": 2,
+    "pageOverflow": false,
+    "dialogWidth": 276.7880859375
+  },
+  "isolation": "data/artifact-experiment-isolation-browser.json",
+  "limitations": [
+    "Authored engineering fixtures only; no paid inference, model-quality evaluation or scientific certification.",
+    "Reopening validates source/manifest/data and recorded SDK values; a persisted record never creates a compiler receipt.",
+    "The 33-probe Chromium isolation rerun is not cross-browser or total-process-memory certification.",
+    "Only owned QA artifact rows and the owned host-storage fixture were removed after verification."
+  ],
+  "recordedAt": "2026-10-28T06:43:56Z"
+}

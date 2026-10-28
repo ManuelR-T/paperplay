@@ -2,7 +2,10 @@ import { z } from 'zod';
 import { figureArtifactSchema } from './figure-artifacts';
 import { compiledFigureSchema } from './figure-compilation';
 import { sdkEventSchema,sdkFrameSchema } from './figure-sdk';
-export const runtimeRequestSchema=z.strictObject({format:z.literal('paperplay-runtime-request'),schemaVersion:z.literal(1),instanceId:z.string().uuid(),sequence:z.literal(1),artifact:figureArtifactSchema,compiled:compiledFigureSchema,compiledSha256:z.string().regex(/^[a-f0-9]{64}$/),input:z.unknown(),state:z.unknown(),event:sdkEventSchema});
+export const FIGURE_RUNTIME_VERSION='quickjs-seeded-sdk@1.1.0' as const;
+export const FIGURE_RANDOM_POLICY='mulberry32-payload-fnv1a-v1' as const;
+export const figureSeedSchema=z.number().int().min(0).max(0xffffffff);
+export const runtimeRequestSchema=z.strictObject({format:z.literal('paperplay-runtime-request'),schemaVersion:z.literal(1),instanceId:z.string().uuid(),sequence:z.literal(1),runtimeVersion:z.literal(FIGURE_RUNTIME_VERSION).default(FIGURE_RUNTIME_VERSION),seed:figureSeedSchema.default(42),artifact:figureArtifactSchema,compiled:compiledFigureSchema,compiledSha256:z.string().regex(/^[a-f0-9]{64}$/),input:z.unknown(),state:z.unknown(),event:sdkEventSchema});
 export const runtimeResponseSchema=z.discriminatedUnion('status',[
  z.strictObject({format:z.literal('paperplay-runtime-response'),schemaVersion:z.literal(1),instanceId:z.string().uuid(),sequence:z.literal(1),status:z.literal('ready'),frame:sdkFrameSchema}),
  z.strictObject({format:z.literal('paperplay-runtime-response'),schemaVersion:z.literal(1),instanceId:z.string().uuid(),sequence:z.literal(1),status:z.literal('failed'),code:z.enum(['integrity','resource','invalid-input','invalid-output','execution','unavailable'])}),
