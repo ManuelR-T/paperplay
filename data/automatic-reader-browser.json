@@ -1,0 +1,73 @@
+{
+  "format": "paperplay-automatic-reader-browser-evidence",
+  "date": "2026-10-28",
+  "scope": "Native UI orchestration with explicitly simulated Meta API responses; real compilation, quality checks, worker execution, storage, inline placement and controls. This is not a fresh Meta generation or a scientific/human evaluation.",
+  "server": {
+    "url": "http://localhost:3004",
+    "actualGeneratedExecutionEnabled": false,
+    "actualNewModelCreationEnabled": false,
+    "controlledTransport": "Only browser policy GET and enrichment/generation API responses were replaced. No guest worker output or local check result was replaced.",
+    "liveProviderCreateCalls": 0
+  },
+  "fixture": {
+    "source": "Existing prepared priority-search-trees source",
+    "stock": "Project-authored illustrative table, returned as a simulated model proposal",
+    "custom": "Project-authored bounded SDK sequence initialized with one item; content digests recomputed for the fixture",
+    "scientificVerification": false
+  },
+  "automaticJourney": {
+    "entry": "Client-side navigation from Explore to Reader with no generation button pressed",
+    "sectionPlanCalls": 4,
+    "customPrepareCalls": 1,
+    "customStartCalls": 1,
+    "automaticPaidRepairCalls": 0,
+    "catalogFigures": 1,
+    "customFigures": 1,
+    "sectionsConsidered": 4,
+    "sectionsTotal": 8,
+    "remainingSectionsDisclosed": 4,
+    "insertionSourceElement": "source-priority-search-trees-g-abstract-text",
+    "all20ObservedInitialCheckAndDisplayWorkersTerminated": true
+  },
+  "interaction": {
+    "addItem": "1 item -> 2 items through native button and actual isolated SDK execution",
+    "modelTransportRequestsAfterInteraction": 6,
+    "readCitedPassageFocused": "source-priority-search-trees-g-abstract-text"
+  },
+  "cachedReopening": {
+    "entry": "Navigate from Explore to Reader again, with model endpoints actively denied",
+    "restoredStatus": "partial",
+    "catalogFigures": 1,
+    "customFigures": 1,
+    "modelRequestsAttempted": 0,
+    "pending": false
+  },
+  "responsive": {
+    "desktopWidth": 1280,
+    "narrowWidth": 320,
+    "narrowRootFontPx": 32,
+    "pageClientWidth": 320,
+    "pageScrollWidth": 320,
+    "customClientWidth": 282,
+    "customScrollWidth": 282,
+    "visibleCustomButtonsMinimumHeightPx": 60
+  },
+  "screenshots": [
+    "data/automatic-reader-browser-desktop.png",
+    "data/automatic-reader-browser-mobile.png"
+  ],
+  "checks": {
+    "fullSuiteTests": 767,
+    "fullSuitePass": 767,
+    "fullSuiteFail": 0,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "focusedRecovery": "14 automatic pipeline tests, including pre-submission recovery and lock-waiter cancellation"
+  },
+  "limitations": [
+    "The browser transport fixture proves workflow integration, not actual model content quality.",
+    "Four initial sections and one custom attempt are bounded; full-paper illustration is not guaranteed.",
+    "Real arXiv source import is separately recorded in automatic-explore-browser.json.",
+    "No participants, new held-out evaluation, deployment or public-access change."
+  ]
+}

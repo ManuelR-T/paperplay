@@ -1,16 +1,26 @@
 import { z } from 'zod';
 
 export const EXPLORE_PAGE_SIZE = 12;
-export const EXPLORE_CATEGORIES = [
+export { ARXIV_GROUPS, ARXIV_ARCHIVES, ARXIV_SUBJECTS } from './arxiv-taxonomy';
+import { ARXIV_GROUPS, ARXIV_ARCHIVES, ARXIV_SUBJECTS } from './arxiv-taxonomy';
+export const EXPLORE_CATEGORIES: readonly {value:string;label:string}[] = [
   { value: '', label: 'All subjects' },
-  { value: 'cs.AI', label: 'Artificial intelligence' },
-  { value: 'cs.LG', label: 'Machine learning' },
-  { value: 'cs.CL', label: 'Language & NLP' },
-  { value: 'cs.CV', label: 'Computer vision' },
-  { value: 'cs.DS', label: 'Algorithms & data structures' },
-  { value: 'math.OC', label: 'Optimization & control' },
-  { value: 'stat.ML', label: 'Statistical learning' },
-] as const;
+  ...ARXIV_GROUPS.map(group => ({value:`group:${group.id}`,label:`All ${group.label}`})),
+  ...ARXIV_ARCHIVES.map(archive => ({value:`archive:${archive.id}`,label:`All ${archive.label}`})),
+  ...ARXIV_SUBJECTS,
+];
+/** Only installed taxonomy entries can create a category clause; no user query operators. */
+export function exploreSubjectIds(value:string):string[]{
+  if(value.startsWith('group:'))return ARXIV_SUBJECTS.filter(item=>item.group===value.slice(6)).map(item=>item.value);
+  if(value.startsWith('archive:'))return ARXIV_SUBJECTS.filter(item=>item.archive===value.slice(8)).map(item=>item.value);
+  return ARXIV_SUBJECTS.some(item=>item.value===value)?[value]:[];
+}
+export function exploreSubjectGroup(value:string):string{
+  if(value.startsWith('group:'))return ARXIV_GROUPS.find(item=>item.id===value.slice(6))?.id??'';
+  if(value.startsWith('archive:'))return ARXIV_ARCHIVES.find(item=>item.id===value.slice(8))?.group??'';
+  return ARXIV_SUBJECTS.find(item=>item.value===value)?.group??'';
+}
+export function exploreSubjectLabel(value:string){return EXPLORE_CATEGORIES.find(item=>item.value===value)?.label??value;}
 export const exploreQuerySchema = z.object({
   q: z.string().trim().max(200).refine(value => !value || /[\p{L}\p{N}]/u.test(value), 'Enter a topic, title or author.').default(''),
   field: z.enum(['all', 'title', 'author']).default('all'),

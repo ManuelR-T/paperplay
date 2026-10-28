@@ -1,6 +1,6 @@
 import * as cheerio from 'cheerio';
 import { fetchArxivResource, parseArxivId } from '../import/arxiv';
-import { EXPLORE_PAGE_SIZE, arxivPaperSchema, exploreQuerySchema, type ExploreQuery, type ExploreResult } from '../../shared/explore';
+import { EXPLORE_PAGE_SIZE, exploreSubjectIds, arxivPaperSchema, exploreQuerySchema, type ExploreQuery, type ExploreResult } from '../../shared/explore';
 
 export class ExploreBusyError extends Error {}
 export function arxivSearchUrl(input: ExploreQuery) {
@@ -11,7 +11,7 @@ export function arxivSearchUrl(input: ExploreQuery) {
   const terms = query.q.match(/[\p{L}\p{N}_-]+/gu) ?? [];
   if (query.q && !terms.length) throw new Error('Enter a topic, title or author using letters or numbers.');
   const clauses = terms.length ? [`${prefix}:"${terms.join(' ')}"`] : [];
-  if (query.category) clauses.push(`cat:${query.category}`);
+  if (query.category) { const subjects=exploreSubjectIds(query.category); clauses.push(subjects.length===1?`cat:${subjects[0]}`:`(${subjects.map(id=>`cat:${id}`).join(' OR ')})`); }
   if (query.since) clauses.push(`submittedDate:[${query.since}01010000 TO 299912312359]`);
   if (!clauses.length) clauses.push('all:*');
   const url = new URL('https://export.arxiv.org/api/query');

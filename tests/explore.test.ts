@@ -73,3 +73,13 @@ test('saved papers survive a reload, toggle by exact version and preserve data o
   storage.setItem(SAVED_PAPERS_KEY, '{broken');
   assert.throws(() => toggleSavedPaper(storage, original)); assert.equal(storage.getItem(SAVED_PAPERS_KEY), '{broken');
 });
+
+test('official dated taxonomy covers every group, exact category and physics archive without query injection',async()=>{
+ const {ARXIV_GROUPS,ARXIV_ARCHIVES,ARXIV_SUBJECTS,exploreSubjectGroup,exploreSubjectIds}=await import('../shared/explore');
+ assert.equal(ARXIV_GROUPS.length,8);assert.equal(ARXIV_SUBJECTS.length,155);assert.equal(ARXIV_ARCHIVES.length,13);
+ assert.equal(new Set(ARXIV_SUBJECTS.map(item=>item.value)).size,155);
+ for(const group of ARXIV_GROUPS){const selection=`group:${group.id}`,ids=exploreSubjectIds(selection);assert.ok(ids.length);assert.equal(exploreSubjectGroup(selection),group.id);const input=exploreQuerySchema.parse({category:selection});const clause=new URL(arxivSearchUrl(input)).searchParams.get('search_query')!;for(const id of ids)assert.ok(clause.includes(`cat:${id}`));assert.equal(clause.includes('*'),false);}
+ for(const subject of ARXIV_SUBJECTS){assert.equal(exploreQuerySchema.safeParse({category:subject.value}).success,true);assert.deepEqual(exploreSubjectIds(subject.value),[subject.value]);assert.equal(exploreSubjectGroup(subject.value),subject.group);}
+ const astro=exploreSubjectIds('archive:astro-ph');assert.equal(astro.length,6);assert.equal(astro.includes('quant-ph'),false);assert.equal(exploreSubjectGroup('archive:astro-ph'),'physics');
+ for(const unsupported of ['group:chemistry','group:physics OR all:*','archive:physics.*','physics.unknown','cs.*'])assert.equal(exploreQuerySchema.safeParse({category:unsupported}).success,false);
+});

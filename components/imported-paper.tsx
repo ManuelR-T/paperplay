@@ -12,9 +12,10 @@ import { OriginalSourceFigure } from './reading/original-source-figure';
 import { SourceInformation } from './reading/source-information';
 import { ResearchWorkbench } from './research-workbench';
 import { useReadingSession } from './reading-session';
+import {AutomaticPaperEnhancement} from './automatic-paper';
 import { GeneratedFigureView } from './figures/generated-figure';
 
-export function ImportedPaperReader({ record, remove, busy, sources, openSource }: { record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
+export function ImportedPaperReader({ record, remove, busy, sources, openSource, automaticEnabled=true }: { automaticEnabled?:boolean; record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [evidenceRecoveryError,setEvidenceRecoveryError]=useState('');
@@ -41,6 +42,7 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource 
     <div className="paper-links">{originalUrl && <a href={originalUrl} target="_blank" rel="noreferrer">{htmlSource ? 'Original article' : 'Original PDF'} <ArrowUpRight size={14}/></a>}{source.source.url && source.source.url !== originalUrl && <a href={source.source.url} target="_blank" rel="noreferrer">Source record <ArrowUpRight size={14}/></a>}<span>{record.originalName ?? 'Saved in this browser'}</span></div>
     <SourceInformation source={source} description={htmlSource ? 'Structured arXiv article. References point to sections of the original HTML.' : 'Text extracted from the PDF. Compare the original for equations, figures or uncertain reading order.'}>{record.attribution && <p>{record.attribution.authors} · {record.attribution.notice} {record.attribution.license}</p>}<p>The imported source is stored in this browser. Importing does not establish a redistribution license.</p>{record.analysis?.warnings.length ? <section><h3>Analysis limitations</h3><ul>{record.analysis.warnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul></section> : null}{record.analysis && <p>Analysis by {record.analysis.model}. {record.analysis.usage ? `${record.analysis.usage.inputTokens.toLocaleString()} input tokens · ${record.analysis.usage.outputTokens.toLocaleString()} output tokens.` : 'Provider usage unavailable.'} Saved analysis is reused.</p>}</SourceInformation>
     <ReadingDesk source={source} original={record.original} originalName={record.originalName} originalUrl={originalUrl ?? undefined} htmlSource={htmlSource} sources={sources} openSource={openSource} attribution={record.attribution}/>
+    <AutomaticPaperEnhancement source={source} enabled={automaticEnabled&&!busy}/>
     {record.analysis && <aside className="analysis-overview"><div><Badge variant="outline">Added with Meta</Badge><span>{record.analysis.model}</span></div><h2>A guide to the ideas</h2><p>{record.analysis.summary}</p><p className="control-hint">This summary is an added interpretation. Follow each figure’s quote back to the source.</p></aside>}
     <div className="source-blocks">{source.blocks.map(block => {
       const additions = anchored.filter(item => item.anchor?.blockId === block.id);

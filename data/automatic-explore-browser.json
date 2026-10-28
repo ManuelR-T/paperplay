@@ -1,0 +1,146 @@
+{
+  "format": "paperplay-automatic-discovery-native-evidence",
+  "schemaVersion": 1,
+  "date": "2026-10-28",
+  "environment": {
+    "url": "http://localhost:3004/explore",
+    "profile": "Owned incognito tab_11",
+    "generatedExecution": false,
+    "newModelCreation": false
+  },
+  "scope": "Real arXiv discovery, native reader navigation and actual source import; no model creation, generated execution, human study or release approval.",
+  "taxonomy": {
+    "groupsRendered": 8,
+    "subjectsDeclared": 155,
+    "initialCategorySelectOptions": 177,
+    "physicsArchivesRendered": 13,
+    "physicsFilterSelectOptions": 66,
+    "mathFilterSelectOptions": 34,
+    "biologyFilterSelectOptions": 12
+  },
+  "actualUpstream": {
+    "transport": "Unmodified real /api/explore requests; a browser fetch wrapper only observed response status and denied any model-create endpoint. No search response was replaced.",
+    "initialAllSubjects": "Displayed the honest arXiv temporarily unavailable alert; no fabricated empty success or cards. This initial request preceded status instrumentation.",
+    "successfulQueries": [
+      {
+        "category": "group:physics",
+        "start": 0,
+        "status": 200
+      },
+      {
+        "category": "archive:astro-ph",
+        "start": 0,
+        "status": 200
+      },
+      {
+        "category": "group:math",
+        "start": 0,
+        "status": 200
+      },
+      {
+        "category": "math.NT",
+        "start": 0,
+        "status": 200
+      },
+      {
+        "category": "group:q-bio",
+        "start": 0,
+        "status": 200
+      },
+      {
+        "category": "group:q-bio",
+        "start": 12,
+        "status": 200
+      },
+      {
+        "category": "q-bio.CB",
+        "start": 0,
+        "status": 200
+      }
+    ],
+    "observedResultCards": 12,
+    "actualAstrophysicsFirstTitle": "Improving cosmological distance measurements at high redshift using Lyman-Alpha forest BAO reconstruction",
+    "actualBiologyFirstTitle": "Stationary Action Principles for Neuronal Growth"
+  },
+  "navigation": {
+    "groupButtons": "Native clicks update category URL/filter and search automatically.",
+    "archiveButton": "Astrophysics native click produced category=archive:astro-ph and start=0.",
+    "categorySelect": "Native select math.NT immediately updated URL and produced12 actual cards.",
+    "pagination": "Next retained group:q-bio and sort:newest, changed start0→12; actual response200.",
+    "cardCategory": "Native first category tag click from page2 routed internally to q-bio.CB and reset start0; response200.",
+    "readerHrefExamples": [
+      "/?arxiv=2610.37664v1",
+      "/?arxiv=2610.37606v1",
+      "/?arxiv=2610.36463v1"
+    ],
+    "exactPinnedVersionPreserved": true,
+    "readerLinkScope": "Inspected rendered hrefs, then clicked the actual first Open in Paperplay card for2610.36463v1; actual reader source imported."
+  },
+  "geometry": {
+    "desktop": {
+      "viewportWidth": 1280,
+      "pageClient": 1280,
+      "pageScroll": 1280
+    },
+    "mobile": {
+      "viewportWidth": 320,
+      "pageClient": 320,
+      "pageScroll": 320,
+      "groupButtonMinimumHeight": 44
+    },
+    "mobileRootFont32px": {
+      "viewportWidth": 320,
+      "pageClient": 320,
+      "pageScroll": 320,
+      "visibleElementsOutsideRightEdge": 0
+    }
+  },
+  "paidModelCreateAttempts": 0,
+  "screenshots": [
+    "data/automatic-explore-browser-desktop.png",
+    "data/automatic-explore-browser-mobile.png",
+    "data/automatic-explore-reader-paused.png",
+    "data/automatic-explore-reader-original.png"
+  ],
+  "limitations": [
+    "Taxonomy is a dated155-category snapshot, not live complete mirror of all arXiv content.",
+    "Search pagination retains the first1008-results boundary and upstream spacing/cache policy.",
+    "No claim of automatic Meta output success or scientific correctness follows from discovery QA.",
+    "Initial native evaluate used top-level await and was rejected by the tool; successful later waits used async IIFE. No product change was required."
+  ],
+  "actualReaderOutcome": {
+    "action": "Native first Open in Paperplay click from current real q-bio.CB result card",
+    "arxivId": "2610.36463v1",
+    "title": "Stationary Action Principles for Neuronal Growth",
+    "authors": [
+      "Nathan Brodeur",
+      "Cristian Staii"
+    ],
+    "sourceStatus": "Ready to read",
+    "sourceKind": "HTML source",
+    "outlineSectionsDisplayed": 25,
+    "automaticSectionsConsidered": 28,
+    "automaticPanelTitle": "Your paper, illustrated by Meta",
+    "automaticPanelStatus": "Automatic preparation paused. Saved figures remain available.",
+    "automaticCounts": "0 catalog figures · 0 custom figures · 0 of28 sections considered",
+    "pausedReasons": [
+      "Creating new figures with Meta is disabled here. Saved jobs and figures remain available.",
+      "Interactive code is disabled here. Source, recorded frames and downloads remain available."
+    ],
+    "originalImageNodes": 6,
+    "firstOriginalImage": {
+      "url": "https://arxiv.org/html/2610.36463v1/Figures/Fig1.png",
+      "lazyLoading": "Initial offscreen node incomplete; after scrolling into view actual image loaded.",
+      "complete": true,
+      "naturalWidth": 1935,
+      "naturalHeight": 735,
+      "captionPresent": true,
+      "authorsContentLabelPresent": true
+    },
+    "modelCreateAttempts": 0,
+    "createResourcesObserved": 0,
+    "alerts": [],
+    "upstreamFallbackOrReplacementPapers": false,
+    "limits": "The genuine import+paused automatic path is tested. No paid Meta creation or automatic output success is claimed."
+  }
+}
