@@ -9,6 +9,7 @@ export function representationInputRevision(plan:RepresentationPlan){
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='reasoning-guide'){const index=view.guide.steps.findIndex(step=>step.id===(selection.kind==='time'?selection.frameId:null));return selection.kind==='time'&&selection.scopeId==='reasoning'&&selection.mode==='authored-step'&&selection.unit==='guide-step'&&index>=0&&selection.value===index;}
  if(view.kind==='spatial-view'){
    if(selection.kind!=='region'||selection.scopeId!=='spatial'||selection.frame!==view.spatial.calibration.frame||selection.unit!==view.spatial.calibration.unit)return false;
    const asset=plan.assetManifests?.find(asset=>asset.id===view.spatial.input.assetId);
@@ -41,7 +42,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='spatial-view'&&selection.kind==='region')view.spatial.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='reasoning-guide'&&selection.kind==='time')view.guide.steps.find(step=>step.id===selection.frameId)?.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='spatial-view'&&selection.kind==='region')view.spatial.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='statistical-chart'&&selection.kind==='entity')view.chart.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='composed-scene'&&selection.kind==='entity')view.scene.entities?.find(entity=>entity.id===selection.entityId)?.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='composed-scene'&&selection.kind==='time'){const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(node?.kind==='scene'||node?.kind==='process')(node.kind==='process'?node.steps:node.frames).find(frame=>frame.id===selection.frameId)?.anchorIds?.forEach(id=>ids.add(id));}

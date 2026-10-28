@@ -16,7 +16,7 @@ export type RepresentationFailure = { status:'invalid'|'unsupported'|'missing-da
 export type RepresentationOutcome<T> = { status:'ready'; value:T } | RepresentationFailure;
 export type RepresentationArtifact = { format:'paperplay-representation-artifact'; schemaVersion:1; plan:RepresentationPlan; assets?:readonly ScientificAsset[] };
 export type RepresentationView = RepresentationPlan['views'][number];
-export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'|'composed-scene'|'spatial-view'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity} | {kind:'statistical-chart';id:string;model:ChartModel};
+export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'|'composed-scene'|'spatial-view'|'reasoning-guide'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity} | {kind:'statistical-chart';id:string;model:ChartModel};
 export type RepresentationRun = { artifact:RepresentationArtifact; views:ExecutedRepresentationView[]; evidence:{requested:RepresentationPlan['requestedEvidence']; verified:false} };
 
 export function representationCapabilities() { return representationRegistry.list().map(({id,version})=>({id,version})); }

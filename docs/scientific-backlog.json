@@ -394,10 +394,16 @@
       "priority": "P1",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 47,
         "url": "https://github.com/ManuelR-T/paperplay/issues/47"
+      },
+      "evidence": {
+        "document": "docs/reasoning-guides.md",
+        "checks": "npm run check: TypeScript, 289 tests and production build; exact-quote/role/dependency/gap/notation and portable selection checks",
+        "browser": "Native Chromium: Bell equations, authored substitution, original excerpt focus, step export/reopen; HH source-reported vs calculated observations and persistent missing laboratory details; mobile layout checked",
+        "limitations": "Reading maps only, no proof checker, laboratory SOP or scientific reproduction. Bounded excerpts and primary links; original figures/scans not bundled. No expert/human review."
       }
     },
     {

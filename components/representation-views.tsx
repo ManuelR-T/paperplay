@@ -13,6 +13,7 @@ import { ScientificAssetView } from './scientific-asset-importer';
 import { ScientificQuantityView } from './scientific-quantity-view';
 import { StatisticalChartView } from './statistical-chart';
 import { ComposedSceneView } from './composed-scene';
+import { ReasoningGuideView } from './reasoning-guide';
 import { SpatialViewRenderer } from './spatial-view';
 import { Button } from './ui/button';
 const WidgetView=dynamic(()=>import('./widgets/widget-view').then(module=>module.WidgetView),{ssr:false,loading:()=> <p role="status">Loading figure…</p>});
@@ -22,6 +23,7 @@ export function RepresentationViews({plan,source,assets,store,navigation,onUpdat
  const returnToAnchor=(id:string)=>onReturn(plan.anchors.find(anchor=>anchor.id===id)!.blockId);
  return <>{plan.views.map(view=>{
    switch(view.kind){
+     case 'reasoning-guide':return <ReasoningGuideView key={view.id} viewId={view.id} guide={view.guide} sourceUrl={source.source.url} store={store} navigation={navigation} onReturn={returnToAnchor}/>;
      case 'spatial-view':return <SpatialViewRenderer key={view.id} viewId={view.id} spatial={view.spatial} assets={assets} store={store} navigation={navigation} onReturn={returnToAnchor} onChange={patch=>onUpdate(current=>({...current,navigation:Object.keys(patch).every(key=>key==='viewport')?current.navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='spatial-view'?{...item,spatial:{...item.spatial,...patch}}:item)}))}/>;
      case 'statistical-chart':return <StatisticalChartView key={view.id} model={buildChartModel(view.chart,assets)} viewId={view.id} store={store} navigation={navigation} onReturn={returnToAnchor} onConfigure={chart=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='statistical-chart'?{...item,chart}:item)}))}/>;
      case 'composed-scene':return <ComposedSceneView key={view.id} scene={view.scene} viewId={view.id} store={store} navigation={navigation} onReturn={returnToAnchor}/>;
