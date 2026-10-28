@@ -11,7 +11,7 @@ import { enrichmentResultSchema, type EnrichmentAction, type EnrichmentProposal,
 import { acceptEnrichmentWidget, emptyEnrichmentState, enrichmentFingerprint, enrichmentSourceIdentity, enrichmentStorageKey, parseEnrichmentState, serializeEnrichmentState, undoEnrichmentWidget, type EnrichmentState, type PendingEnrichment } from '@/lib/enrichment/state';
 
 const WidgetView = lazy(() => import('./widgets/widget-view').then(m => ({ default: m.WidgetView })));
-type Props = { source: SourceDocument; widgets?: WidgetEnvelope[]; onAcceptWidget?: (envelope: WidgetEnvelope) => boolean | void; onRemoveWidget?: (id: string) => void; renderAccepted?: boolean };
+type Props = { source: SourceDocument; widgets?: WidgetEnvelope[]; onAcceptWidget?: (envelope: WidgetEnvelope) => boolean | void; onRemoveWidget?: (id: string) => void; renderAccepted?: boolean; onStateChange?:(state:EnrichmentState)=>void; requestedSectionId?:string };
 const fieldStyle = { display: 'grid', gap: 6, minWidth: 0 } as const;
 const inputStyle = { fontSize: 16, padding: '9px 10px', border: '1px solid var(--line)', borderRadius: 6, background: 'var(--paper)', color: 'var(--ink)', width: '100%', minWidth: 0 } as const;
 
@@ -20,14 +20,16 @@ export function EnrichmentWorkbench(props: Props) {
   const key = useMemo(() => { let a=2166136261,b=5381; for(let i=0;i<identity.length;i++){a=Math.imul(a^identity.charCodeAt(i),16777619);b=Math.imul(b,33)^identity.charCodeAt(i);}return `${props.source.id}:${props.source.sourceVersion}:${a>>>0}:${b>>>0}`; }, [identity,props.source.id,props.source.sourceVersion]);
   return <EnrichmentSession key={key} {...props}/>;
 }
-function EnrichmentSession({ source, widgets = [], onAcceptWidget, onRemoveWidget, renderAccepted = true }: Props) {
+function EnrichmentSession({ source, widgets = [], onAcceptWidget, onRemoveWidget, renderAccepted = true,onStateChange,requestedSectionId }: Props) {
   const sections = useMemo(() => buildSourceSections(source), [source]);
   const [data, setData] = useState<EnrichmentState>(); const current = useRef<EnrichmentState | undefined>(undefined); const storageKey = useRef(''); const mounted = useRef(true);
   const [sectionId, setSectionId] = useState(sections[0]?.id ?? ''); const [busy, setBusy] = useState(false); const [paused, setPaused] = useState(false);
+  useEffect(()=>{if(requestedSectionId&&sections.some(section=>section.id===requestedSectionId))setSectionId(requestedSectionId);},[requestedSectionId,sections]);
   const [storageWarning,setStorageWarning]=useState('');
   const [message, setMessage] = useState(''); const [storageBlocked, setStorageBlocked] = useState(false); const [targetId, setTargetId] = useState(''); const [feedback, setFeedback] = useState('');
   const [creativeBrief,setCreativeBrief]=useState('');
   const [previewId, setPreviewId] = useState(''); const [showRemoved, setShowRemoved] = useState(false);
+  useEffect(()=>{if(data)onStateChange?.(data);},[data,onStateChange]);
   useEffect(() => {
     mounted.current = true;
     void enrichmentFingerprint(source).then(fingerprint => {

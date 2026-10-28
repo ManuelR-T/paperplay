@@ -1,0 +1,65 @@
+{
+  "issue": "PP-110",
+  "date": "2026-10-28",
+  "browser": "Native collaborative Chromium,localhost:3001",
+  "preparedReader": {
+    "savedSections": 8,
+    "partiallyLinkedSections": 1,
+    "notAnalyzedSections": 7,
+    "wholePaperCompletenessClaim": false
+  },
+  "missingData": {
+    "source": "Existing B1 Hodgkin–Huxley Figure11 attribution card",
+    "savedSections": 1,
+    "state": "missing-data",
+    "analysisCharacters": 0,
+    "linkedQuoteCharacters": 121,
+    "requirement": "Checked numerical observations for the reported-only view",
+    "nextAction": "Retain source-reported result or explicitly admit exact measurement table",
+    "rawValuesInvented": false,
+    "originalPhysicalPage": 521,
+    "logicalCardPage": 1
+  },
+  "missingCapability": {
+    "fixture": "Authored QA plan requesting unavailable proof adapter on existing C1 source; not a source claim or real proof execution",
+    "adapter": "isabelle-proof-replay@1.0.0",
+    "state": "missing-capability",
+    "otherSectionsNotAnalyzed": 7,
+    "unrelatedEngineSelected": false,
+    "fallback": "Exact introduction passage in nonexecuting source-guide; requested representation remains recoverable"
+  },
+  "extensionExport": {
+    "metadataFile": "data/coverage-extension-native-metadata.json",
+    "metadataBytes": 1287,
+    "metadataExcerpts": 0,
+    "containsCaptionPrefix": false,
+    "rawAssetManifestsIncluded": false,
+    "quoteCheckboxInitiallyChecked": false,
+    "explicitExcerptBytes": 1540,
+    "explicitExcerptCount": 1,
+    "explicitSelectedCharacters": 60,
+    "explicitRange": [
+      0,
+      60
+    ],
+    "onlyRequestedTextIncluded": true
+  },
+  "network": {
+    "fetchesDuringB1CoverageAndExportsAndC1UnsupportedFallback": [],
+    "providerCalls": 0,
+    "newEngineExecutions": 0
+  },
+  "nativeFindingsFixed": {
+    "fallbackHeadingOnly": "Generic section now selects a substantive passage within permitted range; explicit targets never widened",
+    "physicalPageLabel": "Shared SourceGuide renderer now labels saved logical page rather than asserting original physical page",
+    "structuredAdapterVersion": "Automatic gap retains exact expectedVersion1.0.0 rather than only embedding it in label"
+  },
+  "limits": "Engineering observations on development cases, not held-out results, human-reader evidence, full-paper coverage, scientific verification or release. Final corrected renderer/version confirmation recorded with final build.",
+  "finalProductionRecheck": {
+    "tests": 689,
+    "expectedCapabilityVersionVisible": "1.0.0",
+    "fallbackRendererLabel": "Saved-source passage · logical page 1",
+    "falseOriginalPhysicalPageLabelAbsent": true,
+    "returnRequestedRepresentationAvailable": true
+  }
+}

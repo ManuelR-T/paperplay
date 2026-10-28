@@ -990,10 +990,16 @@
       "priority": "P0",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 65,
         "url": "https://github.com/ManuelR-T/paperplay/issues/65"
+      },
+      "evidence": {
+        "document": "docs/representation-coverage.md",
+        "checks": "TypeScript,689 deterministic tests (17 coverage/reference),production build; actual50ms runaway bound retained while test-only finite cold prefix gets1s",
+        "browser": "Native prepared8-section map, exactMeta review selector/noPOST, actualB1automaticmissingdata +authoredC1unknowncapabilityversion, substantive nonexecuting fallback/logicalpage, metadata-only1287B vs explicit60-char1540Brequest, foreignhistoryrecovery and320px/32px",
+        "limitations": "Saved-source scope only; exactquote linkage is not semantic completeness or independent scientific verification. Declared/manualreviews are not human-study evidence. No sourcekeywords→engine substitution. No paid inference/heldout tuning/human/release."
       }
     },
     {

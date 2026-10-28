@@ -1,5 +1,10 @@
 'use client';
-import { useRef,useState } from 'react';
+import {CoverageForSource} from './coverage-for-source';
+import {RepresentationPreview} from './representation-preview';
+import {ScientificAssetImporter} from './scientific-asset-importer';
+import {representationFromAsset} from '@/lib/representations/from-asset';
+import {Dialog,DialogContent,DialogTitle,DialogDescription} from './ui/dialog';
+import { useMemo,useRef,useState } from 'react';
 import type { SourceDocument } from '@/shared/schema';
 import type { ScientificAsset } from '@/shared/scientific-assets';
 import { validateRepresentationPlan,type RepresentationPlan } from '@/shared/representations';
@@ -16,6 +21,7 @@ export type ScientificStudy={source:SourceDocument;plan:RepresentationPlan;asset
 /** Local host for source-linked scientific views; source and data never enter an inference request. */
 export function ScientificStudyView({study}:{study:ScientificStudy}){
  const [plan,setPlan]=useState(study.plan),[error,setError]=useState('');const current=useRef(plan);current.current=plan;
+ const coveragePlans=useMemo(()=>[plan],[plan]),[fallback,setFallback]=useState<{plan:unknown;assets:readonly ScientificAsset[]}|null>(null),[importOpen,setImportOpen]=useState(false);
  const {store,navigation,selectionWarning}=useRepresentationSelections(plan,study.assets);
  const update:PlanUpdate=transform=>{const checked=buildRepresentation(transform(current.current),study.source,{assets:study.assets});if(checked.status!=='ready')throw Error(checked.reason);current.current=checked.value.plan;setPlan(checked.value.plan);setError('');};
  const originalChart=study.plan.views.length===1&&study.plan.views[0].kind==='statistical-chart'?study.plan.views[0]:null,chart=plan.views.length===1&&plan.views[0].kind==='statistical-chart'?plan.views[0]:null;
@@ -28,7 +34,10 @@ export function ScientificStudyView({study}:{study:ScientificStudy}){
  {chart?.chart.kind==='distribution'&&<p>Distribution counts supplied observation-summary rows. Fitted/processed/illustrative curves are excluded; no bin uncertainty or independent experimental replicates are inferred.</p>}
  <div className="reader-choice"><Button variant="ghost" onClick={()=>store.undo()}>Undo selection</Button><Button variant="ghost" onClick={()=>store.clear()}>Clear selections</Button><Button variant="outline" onClick={download}>Download data study</Button></div><p className="reader-hint">The downloaded file includes source text, embedded data, attribution and selections. Original images/PDF bytes stay separate; image references retain expected digests when available.</p>
  {error&&<p role="alert">{error}</p>}{selectionWarning&&<p role="alert">{selectionWarning}</p>}
- <RepresentationViews plan={plan} source={study.source} assets={study.assets} store={store} navigation={navigation} onUpdate={update} onReturn={returnToSource}/>
+ <CoverageForSource input={{source:study.source,plans:coveragePlans,assets:study.assets}} onReturn={returnToSource} onFallback={next=>setFallback({plan:next,assets:study.assets})} onAction={(_sectionId,action)=>{if(action==='import-data')setImportOpen(true);else if(action==='inspect-representations'){const target=document.getElementById(`study-views-${study.source.id}-${plan.id}`);target?.scrollIntoView({block:'start'});target?.focus();}else returnToSource(plan.anchors[0].blockId);}}/>
+ {importOpen&&<Dialog open onOpenChange={setImportOpen}><DialogContent className="reader-dialog"><DialogTitle>Inspect local data alongside this source</DialogTitle><DialogDescription>Importing a table does not fill a missing publication dataset or establish reproduction. Inspect it as a separate source-linked study.</DialogDescription><ScientificAssetImporter source={study.source} onConfirm={asset=>{setImportOpen(false);setFallback({plan:representationFromAsset(asset,study.source,plan.anchors[0].blockId),assets:[asset]});}}/></DialogContent></Dialog>}
+ {fallback&&<RepresentationPreview input={fallback.plan} source={study.source} assets={fallback.assets} onClose={()=>setFallback(null)}/>}
+ <div id={`study-views-${study.source.id}-${plan.id}`} tabIndex={-1}><RepresentationViews plan={plan} source={study.source} assets={study.assets} store={store} navigation={navigation} onUpdate={update} onReturn={returnToSource}/></div>
  <RepresentationEvidence plan={plan}/>{study.assets.map(asset=><ScientificAssetView key={asset.id} asset={asset}/>)}
  </>;
 }

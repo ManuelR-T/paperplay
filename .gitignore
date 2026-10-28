@@ -6,7 +6,7 @@ dist/
 *.log
 .next/
 out/
-coverage/
+/coverage/
 *.tsbuildinfo
 .env.local
 

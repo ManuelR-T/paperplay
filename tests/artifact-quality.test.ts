@@ -33,7 +33,12 @@ test('unavailable promised interactions and blank later states have fixed repair
  for(const id of ['unreachable-control','blank-after-action'] as const){const {built,source,expectedCodes}=await prepared(id);const result=await runFigureQuality(built,source,{adapter,promisedInteractions:true});assert.equal(result.status,'failed');assert.equal(result.repairable,true);assert.ok(result.diagnostics.some(d=>expectedCodes.includes(d.code)));assert.equal(result.diagnostics[0].step,id==='blank-after-action'?1:0);}
 });
 test('a guest loop reached only after repeated actions is interrupted and cannot expose exception text',async()=>{
- const {built,source}=await prepared('runaway');const result=await runFigureQuality(built,source,{adapter,promisedInteractions:true});
+ const {built,source}=await prepared('runaway');if(built.manifest.kind!=='generated')throw Error('Runaway fixture must use the generated isolation path.');assert.equal(built.manifest.resources.maxExecutionMs,50);
+ // Node's cold WASM setup is unrelated to the repeated-action runaway assertion.
+ // Give only the known finite prefix more startup time; the offending invocation
+ // still uses the fixture's original 50 ms guest deadline. Production is unchanged.
+ const repeatedActionAdapter:FigureExecutionAdapter={id:'trusted-runaway-prefix-reference',execute(artifact,input,state,event,signal){const next=((state as {nextId?:number}|null)?.nextId??0)+(event.kind==='control'?1:0);return adapter.execute(next<2?{...artifact,resources:{...artifact.resources,maxExecutionMs:1000}}:artifact,input,state,event,signal);}};
+ const result=await runFigureQuality(built,source,{adapter:repeatedActionAdapter,promisedInteractions:true});
  assert.equal(result.status,'failed');assert.equal(result.repairable,true);assert.equal(result.framesChecked,2);assert.deepEqual(result.diagnostics,[{code:'execution',scope:'artifact',step:2}]);
 });
 test('deadline races a never-resolving host callback and aborts its signal',async()=>{

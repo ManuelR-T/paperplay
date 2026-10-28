@@ -1,0 +1,136 @@
+{
+  "issue": "PP110",
+  "date": "2026-10-28",
+  "browser": "Native collaborative Chromium, own new default-profile tab",
+  "application": "http://localhost:3001",
+  "scope": "Prepared-source coverage UI only; root separately covers real missing-data/capability cases and excerpt/privacy invariants.",
+  "initial": {
+    "detailsClosed": true,
+    "savedSections": 8,
+    "partiallyRepresented": 1,
+    "notAnalyzed": 7,
+    "apiRequests": [
+      "/api/health"
+    ]
+  },
+  "reviewAction": {
+    "selectedSectionId": "section-5-f4c1445f",
+    "selectedSectionLabel": "6. 6 Dijkstra\u2019s Algorithm \u00b7 unanalyzed",
+    "postRequests": 0
+  },
+  "sourceReturn": {
+    "focusedId": "source-priority-search-trees-g-abstract"
+  },
+  "fallback": {
+    "previewOpened": true,
+    "kind": "source-guide",
+    "execution": "none",
+    "network": [
+      {
+        "url": "/papers/priority-search-trees.pdf",
+        "method": "GET"
+      }
+    ],
+    "observedLimitation": "Initial generic fallback quoted the section heading Abstract; reported to root to prefer a substantive non-heading segment unless an exact gap/concept range is selected."
+  },
+  "extension": {
+    "quoteCheckboxOffInitially": true,
+    "rightsVisible": true,
+    "downloadBytes": 1074,
+    "sourceTextIncluded": false,
+    "excerpts": [],
+    "hasNoTitleHeadingQuoteFields": true,
+    "downloadIsLocalOnly": true,
+    "button": {
+      "foreground": "#f7f9f0",
+      "background": "#536941",
+      "contrastRatio": 5.704104559148007,
+      "minimumHeightPx": 44
+    }
+  },
+  "desktop": {
+    "page": {
+      "client": 1280,
+      "scroll": 1280
+    },
+    "panel": {
+      "client": 594,
+      "scroll": 594
+    },
+    "minimumButtonHeight": 44,
+    "fetches": [
+      {
+        "url": "http://localhost:3001/papers/priority-search-trees.pdf",
+        "method": "GET"
+      }
+    ]
+  },
+  "mobile": {
+    "viewportWidth": 320,
+    "pageClientWidth": 320,
+    "pageScrollWidth": 320,
+    "panelClientWidth": 250,
+    "panelScrollWidth": 250,
+    "computedTextPx": 16,
+    "minimumButtonHeightPx": 44,
+    "outsideInputOverflows": 0
+  },
+  "enlargedText": {
+    "page": {
+      "client": 320,
+      "scroll": 320
+    },
+    "panel": {
+      "client": 250,
+      "scroll": 250
+    },
+    "font": "32px",
+    "minimumButtonHeight": 134.390625,
+    "outsideInputOverflows": []
+  },
+  "historyRecovery": {
+    "liveSummaryUnchanged": true,
+    "alerts": [
+      "Invalid input: expected 1 The paper, live coverage and last valid history remain available."
+    ],
+    "originalDownloadAvailable": true,
+    "localPaperCount": "LOCAL PAPERS\n0",
+    "fetches": [
+      {
+        "url": "http://localhost:3001/papers/priority-search-trees.pdf",
+        "method": "GET"
+      }
+    ]
+  },
+  "network": {
+    "requestsAfterInstrumentation": [
+      {
+        "url": "/papers/priority-search-trees.pdf",
+        "method": "GET"
+      }
+    ],
+    "postRequests": 0,
+    "modelRequests": 0
+  },
+  "cleanup": {
+    "newLocalPapers": 0,
+    "acceptedRepresentationsCreated": 0,
+    "temporaryTextStyleRemoved": true,
+    "fetchInstrumentationRestored": true
+  },
+  "limitations": [
+    "Engineering UI checks, not human-reader or scientific-validation evidence.",
+    "No creation/analysis/model call was triggered; section review only opened explicit Meta controls.",
+    "Only prepared-source default metadata export was inspected here; root validates quoted-excerpt export and real gap cases."
+  ],
+  "screenshots": [
+    {
+      "path": "data/coverage-browser-ui-desktop.png",
+      "sha256": "775c5836dfeeab6f55abc9d3023ca1c299885b2b366556145aea69ea8ef258cd"
+    },
+    {
+      "path": "data/coverage-browser-ui-mobile-enlarged.png",
+      "sha256": "9e2d686813edff03cf2215c5c1907e16a702fa3554a5a6a53ccdb0262090f65a"
+    }
+  ]
+}

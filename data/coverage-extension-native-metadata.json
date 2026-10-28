@@ -1,0 +1,31 @@
+{
+  "format": "paperplay-coverage-extension-request",
+  "schemaVersion": 1,
+  "source": {
+    "documentId": "dataset-hh-reported",
+    "sourceVersion": "hh1952-figure11-p521-reported-v1",
+    "fingerprint": "b4ff1da0795f6a443d637fbf620c8923a534299a553af843040b9b11abedf883"
+  },
+  "coverageReportSha256": "1d2073e4163b433dc9c4dac23f98e5ecba430a1975c7084020150a522aab04c4",
+  "sectionId": "section-0-6df875a2",
+  "conceptId": null,
+  "state": "missing-data",
+  "requirements": [
+    {
+      "id": "reported-dataset",
+      "kind": "dataset",
+      "label": "Checked numerical observations for this reported-only view",
+      "expectedVersion": null,
+      "expectedSha256": null
+    }
+  ],
+  "gapKinds": [
+    "missing-data"
+  ],
+  "rights": "Source and asset rights are unknown unless separately admitted. Metadata export does not grant redistribution permission.",
+  "sourceTextIncluded": false,
+  "excerpts": [],
+  "scope": "bounded-extension-request-not-execution",
+  "disclosure": "Metadata and hashes only. No source title, heading, quote, full PDF, attachment, private asset manifest, provider job or credential is added. Requirement labels and rights notes are included for explicit review.",
+  "requestSha256": "a3e268c978e51711f41c1cbcda682d5e027b3782b2210bd3bbc4694342cc185a"
+}
