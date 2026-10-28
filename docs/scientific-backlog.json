@@ -427,10 +427,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 48,
         "url": "https://github.com/ManuelR-T/paperplay/issues/48"
+      },
+      "evidence": {
+        "document": "docs/figure-artifacts.md",
+        "checks": "npm run check: TypeScript, 295 tests and production build; shared declarative/generated build/run reference, dynamic sequence, exact source/SDK/data hashes, strict privileges and guest resource checks",
+        "browser": "Native Chromium at 320 px: generated source stays inert, availability remains disabled, no interpreter/model loads, manifest download; wrong-source artifact rejected and declarative artifact opens the existing source guide",
+        "limitations": "Product generated execution remains disabled pending PP-094\u2013096. Internal restricted QuickJS/WASM reference is not a completed browser/process sandbox, isolated compiler or scientific verification. No paid generation."
       }
     },
     {

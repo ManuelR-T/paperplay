@@ -1,0 +1,14 @@
+'use client';
+import { useEffect,useState } from 'react';
+import type { SourceDocument } from '@/shared/schema';
+import { buildFigureArtifact,runFigureArtifact,type FigureBuildResult } from '@/lib/artifacts/lifecycle';
+import { RepresentationPreview } from './representation-preview';
+import { Button } from './ui/button';
+import { Dialog,DialogContent,DialogTitle,DialogDescription } from './ui/dialog';
+export function FigureArtifactPreview({input,source,onClose}:{input:unknown;source:SourceDocument;onClose:()=>void}){
+ const [built,setBuilt]=useState<FigureBuildResult|null>(null),[status,setStatus]=useState('');
+ useEffect(()=>{let active=true;const controller=new AbortController();void buildFigureArtifact(input,source,{signal:controller.signal}).then(result=>{if(active)setBuilt(result);});return()=>{active=false;controller.abort();};},[input,source]);
+ if(built?.status==='ready'&&built.value.manifest.kind==='declarative')return <RepresentationPreview input={built.value.manifest.representation} source={source} onClose={onClose}/>;
+ const manifest=built?.status==='ready'?built.value.manifest:null;
+ return <Dialog open onOpenChange={open=>{if(!open)onClose();}}><DialogContent className="reader-dialog"><DialogTitle>{manifest?.title??'Figure artifact'}</DialogTitle><DialogDescription>Source-linked figure preview. Original reading remains available.</DialogDescription>{!built?<p role="status">Checking source and figure integrity…</p>:built.status!=='ready'?<p role="alert">{built.reason}</p>:<><p role="status">This generated figure is not ready to run. Its isolated execution checks are pending.</p><p>Added teaching interaction · scientific evidence unverified.</p>{manifest!.anchors.map(anchor=><blockquote key={anchor.id} className="passage-quotation">{anchor.quote}</blockquote>)}<p>{source.authors.join(' · ')}</p><ul>{manifest!.assumptions.map((a,i)=><li key={i}>{a}</li>)}</ul><div className="reader-choice"><Button variant="outline" onClick={()=>{void runFigureArtifact(built.value,source).then(result=>setStatus(result.status==='ready'?'Figure completed.':result.reason));}}>Check availability</Button><Button variant="outline" onClick={()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(manifest,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='paperplay-figure-artifact.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}>Download figure</Button>{source.source.url&&<a href={source.source.url} target="_blank" rel="noreferrer">Original source</a>}</div>{status&&<p role="status">{status}</p>}<details><summary>Figure source and declared limits</summary><pre style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere',fontSize:'1rem'}}>{JSON.stringify(manifest,null,2)}</pre></details></>}</DialogContent></Dialog>;
+}

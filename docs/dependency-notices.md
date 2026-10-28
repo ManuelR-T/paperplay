@@ -13,6 +13,8 @@ Generated from the installed, locked dependency tree. Package license files rema
 | @img/colour | 1.1.0 | MIT |
 | @img/sharp-libvips-linux-x64 | 1.3.4 | LGPL-3.0-or-later |
 | @img/sharp-linux-x64 | 0.35.5 | Apache-2.0 |
+| @jitl/quickjs-ffi-types | 0.32.0 | MIT |
+| @jitl/quickjs-singlefile-browser-release-sync | 0.32.0 | MIT |
 | @jridgewell/gen-mapping | 0.3.13 | MIT |
 | @jridgewell/remapping | 2.3.5 | MIT |
 | @jridgewell/resolve-uri | 3.1.2 | MIT |
@@ -140,6 +142,7 @@ Generated from the installed, locked dependency tree. Package license files rema
 | pdfjs-dist | 6.4.299 | Apache-2.0 |
 | picocolors | 1.1.1 | ISC |
 | postcss | 8.5.23 | MIT |
+| quickjs-emscripten-core | 0.32.0 | MIT |
 | radix-ui | 1.8.1 | MIT |
 | react | 19.3.1 | MIT |
 | react-dom | 19.3.1 | MIT |

@@ -1,0 +1,26 @@
+import { z } from 'zod';
+import { name,text } from './widget-primitives';
+import { representationPlanSchema,representationAnchorSchema,validateRepresentationPlan } from './representations';
+import type { SourceDocument } from './schema';
+const sha=z.string().regex(/^[a-f0-9]{64}$/),semver=z.string().regex(/^\d+\.\d+\.\d+$/);
+const base={format:z.literal('paperplay-figure-artifact'),schemaVersion:z.literal(1),id:name,title:text.max(200),source:z.strictObject({documentId:z.string().min(1).max(100),sourceVersion:z.string().min(1).max(100)}),authorship:z.strictObject({kind:z.enum(['prepared','user','meta','imported']),label:text.max(200)}),anchors:z.array(representationAnchorSchema).min(1).max(32),assumptions:z.array(text.max(500)).max(16),rights:text.max(1000)};
+export const generatedResourcePolicySchema=z.strictObject({maxSourceBytes:z.number().int().min(1).max(64*1024),maxInputBytes:z.number().int().min(1).max(256*1024),maxStateBytes:z.number().int().min(1).max(64*1024),maxOutputBytes:z.number().int().min(1).max(128*1024),maxMarks:z.number().int().min(1).max(512),maxControls:z.number().int().min(1).max(16),maxExecutionMs:z.number().int().min(1).max(1000),maxMemoryBytes:z.number().int().min(1024*1024).max(32*1024*1024),maxStackBytes:z.number().int().min(16*1024).max(512*1024)});
+const field=z.strictObject({id:name,kind:z.enum(['number','string','boolean','array','object']),description:text.max(400),maxItems:z.number().int().min(1).max(512).optional()});
+export const figureArtifactSchema=z.discriminatedUnion('kind',[
+ z.strictObject({...base,kind:z.literal('declarative'),representation:representationPlanSchema}),
+ z.strictObject({...base,kind:z.literal('generated'),sdk:z.strictObject({id:z.literal('paperplay-figure-sdk'),version:z.literal('1.0.0')}),entry:z.strictObject({file:z.literal('figure.js'),export:z.literal('update'),language:z.literal('javascript'),sha256:sha,source:z.string().min(1).max(64*1024)}),dependencyLock:z.array(z.strictObject({id:z.literal('paperplay-figure-sdk'),version:z.literal('1.0.0'),sha256:sha,license:z.literal('ISC')})).length(1),capabilityRequests:z.array(z.enum(['draw-2d','controls','source-return','entity-selection'])).min(1).max(4),interfaces:z.strictObject({input:z.array(field).max(16),state:z.array(field).max(16),output:z.literal('paperplay-sdk-frame-v1')}),assetIds:z.array(name).max(16),assetBindings:z.array(z.strictObject({id:name,kind:z.enum(['table','tensor','image','sequence','graph','geometry']),sha256:sha})).max(16),resources:generatedResourcePolicySchema,tests:z.array(z.strictObject({id:name,description:text.max(500),kind:z.enum(['schema','invariant','reference']),expected:text.max(500)})).min(1).max(16),provenance:z.strictObject({origin:z.enum(['prepared','model-authored','user-authored','imported']),evidence:z.literal('unverified'),references:z.array(z.string().url().max(1000)).max(16)})}),
+]);
+export type FigureArtifact=z.infer<typeof figureArtifactSchema>;
+export type GeneratedArtifact=Extract<FigureArtifact,{kind:'generated'}>;
+export const MAX_FIGURE_ARTIFACT_BYTES=384*1024;
+export function validateFigureArtifact(input:unknown,source:SourceDocument):FigureArtifact{
+ if(new TextEncoder().encode(JSON.stringify(input)).length>MAX_FIGURE_ARTIFACT_BYTES)throw Error('Figure artifact exceeds 384 KiB.');const artifact=figureArtifactSchema.parse(input);
+ if(artifact.source.documentId!==source.id||artifact.source.sourceVersion!==source.sourceVersion)throw Error('Artifact requires its exact source version.');
+ const normalized=(s:string)=>s.replace(/\s+/g,' ').trim();
+ for(const anchor of artifact.anchors){const block=source.blocks.find(b=>b.id===anchor.blockId),content=block?.kind==='equation'?block.latex:block?.kind==='original-figure'?block.caption:block?.text;if(!block||block.page!==anchor.page||!content||!normalized(content).includes(normalized(anchor.quote)))throw Error('Artifact anchor does not match the original source.');}
+ if(new Set(artifact.anchors.map(a=>a.id)).size!==artifact.anchors.length)throw Error('Duplicate artifact anchor.');
+ if(artifact.kind==='declarative'){const plan=validateRepresentationPlan(artifact.representation,source);if(JSON.stringify(plan.source)!==JSON.stringify(artifact.source))throw Error('Declarative artifact source differs.');}
+ else{if(artifact.assetBindings.length!==artifact.assetIds.length||new Set(artifact.assetBindings.map(a=>a.id)).size!==artifact.assetBindings.length||artifact.assetBindings.some(a=>!artifact.assetIds.includes(a.id)))throw Error('Generated asset bindings must name every required asset exactly once.');if(new TextEncoder().encode(artifact.entry.source).length>artifact.resources.maxSourceBytes)throw Error('Generated source exceeds its declared byte budget.');for(const fields of [artifact.interfaces.input,artifact.interfaces.state]){if(new Set(fields.map(field=>field.id)).size!==fields.length)throw Error('Duplicate artifact interface field.');if(fields.some(field=>field.kind==='array'&&!field.maxItems))throw Error('Array interfaces need an explicit length bound.');}for(const ids of [artifact.assetIds,artifact.tests.map(t=>t.id),artifact.capabilityRequests])if(new Set(ids).size!==ids.length)throw Error('Duplicate generated artifact declaration.');}
+ return artifact;
+}
+export const FIGURE_ARTIFACT_VERSION=semver.parse('1.0.0');
