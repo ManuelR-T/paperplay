@@ -59,7 +59,7 @@ export function ImportDialog({ open, onOpenChange, busy, ...actions }: Actions &
   </DialogContent></Dialog>;
 }
 
-export function ImportProgress({ stage, record, busy, error, warning, progress, cancel, resume, analyze, failureExtraction }: {
+export function ImportProgress({ stage, record, busy, error, warning, progress, cancel, resume, failureExtraction }: {
   failureExtraction?:{manifest:ExtractionEvidenceManifest;original:Blob;name:string};
   stage: ImportStage | null; record: ImportRecord | null; busy: boolean; error: string | null; warning: string | null; progress?: { page: number; total: number } | null;
   cancel: () => Promise<void>; resume: (id?: string) => Promise<void>; analyze: (id?: string) => Promise<void>;
@@ -68,11 +68,10 @@ export function ImportProgress({ stage, record, busy, error, warning, progress, 
   const currentStep = steps.findIndex(step => stage && (step.stages as string[]).includes(stage));
   const problem = stage === 'failed' || stage === 'uncertain' || stage === 'expired';
   const resumeAllowed = !!record?.job && stage === record.stage && !['complete', 'cancelled', 'expired'].includes(record.stage);
-  const analyzeAllowed = record && stage === record.stage && !record.job && ['ready', 'failed', 'cancelled', 'expired'].includes(record.stage);
   return <section className={`import-progress ${problem ? 'needs-attention' : ''}`} aria-labelledby="import-progress-title" aria-live="polite">
-    <div className="progress-title"><span>{busy ? <LoaderCircle size={19} className="import-spinner"/> : problem ? <AlertCircle size={19}/> : stage === 'complete' ? <Check size={19}/> : <PauseCircle size={19}/>}</span><div><strong id="import-progress-title">{busy && stage === 'cancelled' ? 'Cancelling the current operation' : stage ? stageLabels[stage] : 'Import information'}</strong>{record && record.stage === stage && <p>{record.source.title}</p>}</div>{stage && <Badge variant="outline">{stage === 'complete' ? 'Saved analysis' : busy ? 'In progress' : problem ? 'Needs attention' : stage==='ready'?'Ready for figure planning':'Stopped'}</Badge>}</div>
+    <div className="progress-title"><span>{busy ? <LoaderCircle size={19} className="import-spinner"/> : problem ? <AlertCircle size={19}/> : stage === 'complete' ? <Check size={19}/> : <PauseCircle size={19}/>}</span><div><strong id="import-progress-title">{busy && stage === 'cancelled' ? 'Cancelling the current operation' : stage ? stageLabels[stage] : 'Import information'}</strong>{record && record.stage === stage && <p>{record.source.title}</p>}</div>{stage && <Badge variant="outline">{stage === 'complete' ? 'Saved analysis' : busy ? 'In progress' : problem ? 'Needs attention' : stage==='ready'?'Ready to read':'Stopped'}</Badge>}</div>
     {currentStep >= 0 && stage!=='ready' && <ol className="import-stages" aria-label="Import stages">{steps.map((step, index) => <li key={step.label} className={index < currentStep || stage === 'complete' ? 'done' : index === currentStep ? 'current' : ''} aria-current={index === currentStep ? 'step' : undefined}><span>{index < currentStep || stage === 'complete' ? <Check size={13}/> : index + 1}</span>{step.label}</li>)}</ol>}
-    {stage==='ready'&&!error&&record&&<p>The source is prepared. <Button variant="outline" onClick={()=>window.dispatchEvent(new CustomEvent('paperplay:open-planner',{detail:{documentId:record.source.id}}))}>Choose sections and plan interactive figures</Button> No model request is made until you explicitly ask for a plan.</p>}
+    {stage==='ready'&&!error&&record&&<p>The source is ready. Meta prepares the interactive figures automatically below while you read.</p>}
     {stage === 'extracting' && progress && <p>Extracting page {progress.page} of {progress.total}.</p>}
     {stage === 'queued' && <p>Meta accepted this analysis. Waiting does not submit another request.</p>}
     {stage === 'uncertain' && <p>A connection ended before acceptance could be confirmed. Paperplay will not automatically submit another paid analysis. The extracted source remains available below.</p>}
@@ -83,7 +82,6 @@ export function ImportProgress({ stage, record, busy, error, warning, progress, 
     <div className="progress-actions">
       {busy && <Button variant="outline" size="sm" disabled={stage === 'cancelled'} onClick={() => void cancel().catch(() => {})}><X size={15}/>Cancel</Button>}
       {!busy && resumeAllowed && <Button variant="outline" size="sm" onClick={() => void resume(record?.id).catch(() => {})}><RefreshCw size={15}/>Resume existing analysis</Button>}
-      {!busy && analyzeAllowed && <Button variant="outline" size="sm" onClick={() => void analyze(record.id).catch(() => {})}>Create optional legacy guide</Button>}
     </div>
   </section>;
 }

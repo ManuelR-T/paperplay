@@ -13,7 +13,7 @@ import { createDynamicSequenceArtifact } from '../lib/artifacts/fixtures/dynamic
 import { buildSourceSections } from '../lib/enrichment/sections';
 import { canonicalArtifactJson } from '../shared/figure-compilation';
 import { generationReplySchema, type GenerationReply } from '../shared/artifact-generation';
-import { generationPromptCharacters, generationProviderText, GENERATION_INSTRUCTIONS, generationModelOutputSchema, type ArtifactGenerationProvider } from '../server/artifact-generation/provider';
+import { generationPromptCharacters, generationProviderText, generationProviderRequest, GENERATION_INSTRUCTIONS, generationModelOutputSchema, type ArtifactGenerationProvider } from '../server/artifact-generation/provider';
 import type { ProviderResponse } from '../server/analysis/provider';
 import { checkGeneratedCandidate } from '../lib/artifacts/generation-check';
 import { compileFigureSource } from '../lib/artifacts/compiler-engine';
@@ -207,4 +207,20 @@ test('quality repair accepts bounded artifact diagnostics but never pays to repa
  const rawText={...feedback,quality:{...feedback.quality,diagnostics:[{...feedback.quality.diagnostics[0],labelText:'private label must not reach the model'}]}};
  assert.equal((await f.handlers.start(req({...f.context,attempt:2,previous,feedback:rawText},f.cookie))).status,400);assert.equal(f.counts().starts,1);
  assert.equal((await f.handlers.start(req({...f.context,attempt:2,previous,feedback},f.cookie))).status,200);assert.equal(f.counts().starts,2);
+});
+
+
+test('generated response schema restricts anchor locators to selected literal block IDs and pages',()=>{
+ const context=JSON.stringify({selectedPassages:[{blockId:'selected-paragraph',page:2,text:'An exact selected teaching passage.'},{blockId:'selected-equation',page:7,text:'Another selected passage.'},{blockId:'selected-paragraph',page:2,text:'A second segment.'}],neighboringContext:[{blockId:'neighbor-only',page:9,text:'Not selected coverage.'}]});
+ const request=generationProviderRequest({context,brief:'Explain the selected mechanism.',attempt:1});
+ const anchor=(request.text.format.schema as any).properties.anchor.properties;
+ assert.deepEqual(anchor.blockId.enum,['selected-paragraph','selected-equation']);assert.deepEqual(anchor.page.enum,[2,7]);
+ assert.equal(anchor.blockId.enum.includes('invented-block'),false);assert.equal(anchor.blockId.enum.includes('neighbor-only'),false);assert.equal(anchor.page.enum.includes(9),false);
+ assert.match(request.instructions,/copy.*blockId.*literally/i);assert.match(request.instructions,/previous is null/i);
+});
+
+test('a generated quote with an invented block ID remains rejected even when the quoted text exists',async t=>{
+ const f=await fixture(t);f.startResult({status:'completed',output_text:JSON.stringify({...f.output,anchor:{...f.output.anchor,blockId:'invented-block'}})});
+ const response=await f.handlers.start(req({...f.context,attempt:1},f.cookie)),body=await response.json();
+ assert.equal(response.status,200);assert.equal(body.status,'failed');assert.equal(body.candidate,undefined);assert.match(body.error,/artifact\/source validation/);assert.equal(f.counts().starts,1);
 });

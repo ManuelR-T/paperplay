@@ -25,28 +25,28 @@ export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDo
  const identity=enrichmentSourceIdentity(source);
  const stableSource=useMemo(()=>source,[identity]);
  const policy=useAdoptionPolicy();
- const [pipeline,setPipeline]=useState<Pipeline|null>(null),[snapshot,setSnapshot]=useState<Snapshot|null>(null),[error,setError]=useState(''),[expanded,setExpanded]=useState(false);
+ const [pipeline,setPipeline]=useState<Pipeline|null>(null),[snapshot,setSnapshot]=useState<Snapshot|null>(null),[error,setError]=useState('');
  const controller=useRef<Pipeline|null>(null),autoStarted=useRef(false);
  useEffect(()=>{if(!enabled)return;let alive=true,unsubscribe:(()=>void)|undefined,owned:Pipeline|undefined;autoStarted.current=false;setPipeline(null);setSnapshot(null);setError('');
   void createAutomaticPaperPipeline(stableSource).then(next=>{if(!alive){next.dispose();return;}owned=next;controller.current=next;setPipeline(next);setSnapshot(next.getSnapshot());unsubscribe=next.subscribe(()=>{if(alive)setSnapshot(next.getSnapshot());});}).catch(()=>{if(alive)setError('Automatic figures could not open safely. The original paper remains readable.');});
   return()=>{alive=false;unsubscribe?.();if(controller.current===owned)controller.current=null;owned?.dispose();};
  },[stableSource,enabled]);
  useEffect(()=>{if(!pipeline||!snapshot||!enabled||!policy.newModelAllowed||!policy.generatedAllowed||autoStarted.current)return;autoStarted.current=true;
-  // An explicitly paused or completed paper stays paused/completed when reopened.
-  if(snapshot.status!=='paused'&&snapshot.status!=='complete'&&snapshot.status!=='partial'&&snapshot.status!=='blocked')void pipeline.start();
+  // Opening the paper authorizes a single automatic recovery, including older paused caches.
+  // The controller retains accepted request identities and never replaces uncertain submissions.
+  if(snapshot.status!=='complete'&&snapshot.status!=='partial')void pipeline.start();
  },[pipeline,snapshot,enabled,policy.newModelAllowed,policy.generatedAllowed]);
- useEffect(()=>{if(pipeline&&(!enabled||policy.state==='unavailable'||policy.state==='ready'&&(!policy.newModelAllowed||!policy.generatedAllowed)))pipeline.pause();},[pipeline,enabled,policy.state,policy.newModelAllowed,policy.generatedAllowed]);
+ useEffect(()=>{if(pipeline&&(!enabled||policy.state==='unavailable'||policy.state==='ready'&&(!policy.newModelAllowed||!policy.generatedAllowed)))void pipeline.pause();},[pipeline,enabled,policy.state,policy.newModelAllowed,policy.generatedAllowed]);
  if(!enabled)return null;
  const busy=!!snapshot&&busyStatuses.has(snapshot.status),widgets=snapshot?.widgets??[],generated=snapshot?.generated??[],issues=snapshot?.issues??[];
  return <>
   <section className={styles.panel} aria-label="Automatic Meta figures" aria-busy={busy}>
-   <div className={styles.heading}><h2><Sparkles size={18} aria-hidden="true" style={{display:'inline',marginRight:8}}/>Your paper, illustrated by Meta</h2><div className={styles.actions}>{busy&&<Button variant="outline" onClick={()=>pipeline?.pause()}>Pause generation</Button>}{snapshot&&['paused','blocked','idle'].includes(snapshot.status)&&<Button variant="outline" disabled={!enabled||!policy.newModelAllowed||!policy.generatedAllowed} onClick={()=>void pipeline?.start()}>Continue figures</Button>}</div></div>
-   <p role="status">{error||snapshot?.message||'Opening this paper’s saved figures…'}</p>
-   {snapshot&&<small>{widgets.length} catalog figure{widgets.length===1?'':'s'} · {generated.length} custom figure{generated.length===1?'':'s'} · {snapshot.sectionsDone} of {snapshot.sectionsTotal} sections considered</small>}
+   <p role="status"><Sparkles size={18} aria-hidden="true"/>{error||snapshot?.message||'Meta is preparing illustrations for this paper…'}</p>
+   {snapshot&&<small>{widgets.length+generated.length} interactive figure{widgets.length+generated.length===1?'':'s'} · {snapshot.sectionsDone} of {snapshot.sectionsTotal} sections considered</small>}
    {!policy.newModelAllowed&&policy.state!=='unknown'&&<p>{policy.modelMessage}</p>}
    {!policy.generatedAllowed&&policy.state!=='unknown'&&<p>{policy.generatedMessage}</p>}
-   {issues.length>0&&<><ul className={styles.issues}>{(expanded?issues:issues.slice(0,2)).map((issue,index)=><li key={index}>{issue}</li>)}</ul>{issues.length>2&&<Button variant="ghost" aria-expanded={expanded} onClick={()=>setExpanded(!expanded)}>{expanded?'Show fewer details':`Show ${issues.length-2} more details`}</Button>}</>}
-   <small>Meta receives bounded excerpts to choose figures and their placement. Saved figures are reused. Each automatic run includes a custom-figure attempt; unsupported or failed figures are reported, never presented as successful. Added illustrations are teaching models, not verified scientific results.</small>
+   {issues.length>0&&<ul className={styles.issues}>{issues.slice(0,2).map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
+   <small>Illustrations appear beside the passages they explain. Meta receives bounded excerpts; saved figures are reused. Added illustrations are teaching models, not verified scientific results.</small>
   </section>
   {widgets.map(widget=><AutomaticStockFigure key={widget.id} envelope={widget} source={stableSource}/>)}
   {generated.map(entry=><AutomaticGeneratedFigure key={entry.candidate.sha256} candidate={entry.candidate} blockId={entry.blockId} source={stableSource}/>)}

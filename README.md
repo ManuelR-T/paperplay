@@ -4,7 +4,7 @@
 
 Read research papers with interactive figures beside the passages they explain. Change an input, replay a trusted algorithm, inspect its actual measurements, and return to the cited source.
 
-**Current development builds on 1.1.0** with automatic Meta figure preparation. Browse arXiv subjects in Paperplay, open a paper, and read while Meta selects source-linked teaching figures and attempts a custom generated interaction. Saved results are reused; preparation can be paused. Text excerpts are sent to the configured Meta service automatically when opening a paper, within the documented per-paper limits. [Automatic reading flow](docs/automatic-papers.md).
+**Current development builds on 1.1.0** with automatic Meta figure preparation. Browse arXiv subjects in Paperplay, open a paper, and read while Meta selects source-linked teaching figures and attempts a custom generated interaction. Saved results are reused and interrupted preparation resumes automatically. No manual figure-creation panel is needed. Text excerpts are sent to the configured Meta service automatically when opening a paper, within the documented per-paper limits. [Automatic reading flow](docs/automatic-papers.md).
 
 [Hosted demonstration](https://paperplay-meta-lab-1027.poeticbadge1024.chatgpt.site) — owner-private, as explicitly requested. [70-second English demo](artifacts/paperplay-demo.mp4) — actual UI footage with English subtitles and no audio. Neither artifact establishes anonymous judge access or a submitted hackathon entry.
 

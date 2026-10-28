@@ -16,7 +16,7 @@ const customBrief='Create one bespoke interactive teaching figure for a central 
 const jobSchema=z.strictObject({token:z.string().max(5000),createdAt:z.number().finite(),action:z.literal('plan'),sectionId:z.string().max(100),model:z.string().max(120)});
 const enrichmentReplySchema=z.object({status:z.enum(['queued','analyzing','complete','failed','cancelled','expired','incomplete']),job:jobSchema.optional(),result:enrichmentResultSchema.optional(),error:z.string().max(2000).optional(),uncertain:z.boolean().optional()});
 const pendingSchema=z.discriminatedUnion('kind',[
- z.strictObject({kind:z.literal('plan'),sectionId:z.string().max(100),requestId:z.string().uuid(),job:jobSchema.optional()}),
+ z.strictObject({kind:z.literal('plan'),sectionId:z.string().max(100),requestId:z.string().uuid(),job:jobSchema.optional(),preserveSessionOwner:z.literal(true).optional()}),
  z.strictObject({kind:z.literal('custom'),sectionId:z.string().max(100),brief:z.string().max(1200),runId:z.string().uuid(),run:generationRunSchema.optional(),candidate:generationCandidateSchema.optional()})
 ]);
 export const automaticPaperStateSchema=z.strictObject({format:z.literal('paperplay-automatic-paper'),version:z.literal(1),fingerprint:z.string().regex(/^[a-f0-9]{64}$/),status:z.enum(['idle','planning','generating','checking','complete','partial','paused','blocked']),message:z.string().max(1000),sectionsTotal:z.number().int().nonnegative(),sectionIds:z.array(z.string().max(100)).max(4),sectionsDone:z.number().int().min(0).max(4),widgets:z.array(widgetEnvelopeSchema).max(16),generated:z.array(z.strictObject({candidate:generationCandidateSchema,blockId:z.string().max(100)})).max(1),issues:z.array(z.string().max(1000)).max(16),customAttempted:z.boolean(),pending:pendingSchema.optional()});
@@ -44,12 +44,21 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
   const response=await fetch(endpoint,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.any([signal,AbortSignal.timeout(30000)])});
   const raw=await response.text();if(new TextEncoder().encode(raw).length>2_500_000)throw Error('Automatic preparation received an oversized response. Saved requests were retained.');let reply;try{reply=JSON.parse(raw);}catch{throw Error('The response was unreadable. The saved request is retained for recovery.');}if(!response.ok)throw new AutomaticPaperHttpError(response.status,typeof reply.error==='string'?reply.error:'Meta could not prepare this paper. Saved request references were retained.',reply.uncertain===true);return reply;
  });
+ let browserSessionReady=false;
+ async function prepareBrowserSession(signal:AbortSignal){if(options.transport||browserSessionReady)return;const reply=await transport('/api/enrichment/session',{},signal);abort(signal);if(!z.strictObject({ready:z.literal(true)}).safeParse(reply).success)throw Error('The browser session could not be prepared. No new model request was started.');browserSessionReady=true;}
  const sleep=options.sleep??(signal=>new Promise<void>((resolve,reject)=>{const end=()=>{signal.removeEventListener('abort',stop);resolve();},timer=setTimeout(end,AUTOMATIC_PAPER_POLICY.pollMs),stop=()=>{clearTimeout(timer);signal.removeEventListener('abort',stop);reject(new DOMException('Paused','AbortError'));};if(signal.aborted)stop();else signal.addEventListener('abort',stop,{once:true});}));
  const check=options.check??(async(candidate,document,opts)=>(await import('../artifacts/generation-check')).checkGeneratedCandidate(candidate,document,opts));
  const lock=options.lock??(async<T>(name:string,run:()=>Promise<T>,signal:AbortSignal)=>{if(typeof navigator==='undefined'||!navigator.locks)throw Error('This browser cannot safely coordinate automatic preparation across tabs. Use a browser with Web Locks; the paper remains readable.');return navigator.locks.request(name,{signal},run);});
  async function plan(signal:AbortSignal){
   let pending=state.pending?.kind==='plan'?state.pending:undefined;
+  // Session bootstrap is free but can renew browser identity. Only fresh plans and
+  // the exact pre-reservation missing-session rejection may bootstrap; accepted or ambiguous jobs retain their original owner.
+  const knownSessionRejection=!!pending&&!pending.job&&!pending.preserveSessionOwner&&state.status==='blocked'&&state.message==='The browser session for this analysis is missing or expired.';
+  if(pending&&!pending.job&&!knownSessionRejection&&!pending.preserveSessionOwner){pending={...pending,preserveSessionOwner:true};patch({pending});}
+  if(!pending||knownSessionRejection)await prepareBrowserSession(signal);
   if(!pending){pending={kind:'plan',sectionId:state.sectionIds[state.sectionsDone],requestId:crypto.randomUUID()};patch({pending,status:'planning',message:`Meta is choosing figures for section ${state.sectionsDone+1} of ${selected.length}.`});}
+  // Restored jobs are active again before their first awaited response; do not leave the reader showing a stale paused/blocked state.
+  if(state.status!=='planning')patch({status:'planning',message:pending.job?'Retrieving Meta’s saved section plan automatically.':'Resuming Meta’s saved section request automatically.'});
   const context={source,sectionId:pending.sectionId,action:'plan',feedback:planningBrief};
   let reply=enrichmentReplySchema.parse(await transport(`/api/enrichment/${pending.job?'status':'start'}`,{...context,...(pending.job?{job:pending.job}:{requestId:pending.requestId})},signal));
   for(let poll=0;;poll++){
@@ -69,6 +78,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  async function custom(signal:AbortSignal){
   let pending=state.pending?.kind==='custom'?state.pending:undefined;
   if(!pending){const proposal=state.widgets[0],section=selected.find(s=>s.segments.some(x=>x.blockId===proposal?.source.blockId))??selected[0];if(!section)return;const brief=(customBrief+(proposal?` Complement Meta's selected concept: ${proposal.title}.`:'' )).slice(0,1200);pending={kind:'custom',sectionId:section.id,brief,runId:crypto.randomUUID()};patch({pending,status:'generating',message:'Meta is creating a custom interactive figure for this paper.'});}
+  if(state.status!=='generating')patch({status:'generating',message:pending.run&&state.customAttempted?'Retrieving Meta’s saved custom figure automatically.':'Meta is preparing a custom interactive figure automatically.'});
   const context={source,sectionId:pending.sectionId,brief:pending.brief};
   if(!pending.run){const prepared=generationReplySchema.parse(await transport('/api/artifact-generation/prepare',{...context,runId:pending.runId,maxAttempts:1},signal));abort(signal);if(prepared.status!=='prepared'||prepared.run.runId!==pending.runId||prepared.budget.maxAttempts!==1)throw Error('A bounded custom-figure run could not be prepared.');pending={...pending,run:prepared.run};patch({pending});}
   if(!pending.candidate){

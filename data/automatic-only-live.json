@@ -1,0 +1,89 @@
+{
+  "format": "paperplay-automatic-only-live-evidence",
+  "date": "2026-10-28",
+  "scope": "Actual Meta integration on one saved public abstract excerpt; native browser. Not a whole-paper, human, or scientific validation.",
+  "environment": {
+    "expectedVariable": "MODEL_API_KEY",
+    "activeServerConfigured": true,
+    "model": "muse-spark-1.3",
+    "authenticatedModelList": "accepted; selected model available",
+    "keyValuePublished": false,
+    "inferenceRequestsForModelList": 0
+  },
+  "originalFailure": {
+    "endpoint": "/api/enrichment/start",
+    "http": 403,
+    "reason": "The browser session for this analysis is missing or expired.",
+    "providerCreates": 0,
+    "originalRequestPreserved": true
+  },
+  "afterSessionFix": {
+    "freeBrowserSessionHttp": 200,
+    "planStartHttp": 200,
+    "actualProviderCreates": 2,
+    "automaticEntry": "Reopening the paper resumed the same saved failed request without a Generate/Continue button.",
+    "sourceId": "automatic-live-public-excerpt-20261028",
+    "sourceVersion": "public-excerpt-v1",
+    "sourceScope": "Only the original abstract paragraph plus its heading from the CC BY 3.0 prepared priority-search-trees paper.",
+    "planning": {
+      "status": "complete",
+      "acceptedProposals": 1,
+      "rejectedProposals": 0,
+      "title": "Dijkstra toy trace motivating decrease-key",
+      "insertionElement": "source-automatic-live-public-excerpt-20261028-g-abstract-text",
+      "usage": {
+        "inputTokens": 2245,
+        "outputTokens": 1584,
+        "totalTokens": 3829
+      }
+    },
+    "custom": {
+      "attempts": 1,
+      "status": "rejected",
+      "stage": "exact source locator validation",
+      "codeExecuted": false,
+      "inserted": false,
+      "diagnosis": "The selected quote existed verbatim, but the generated block identifier did not exist. The rejection was preserved. A subsequent contextual schema fix constrains future generated IDs/pages to the selected passages.",
+      "newPaidRepairOrReplacement": false,
+      "usage": {
+        "inputTokens": 3849,
+        "outputTokens": 2549,
+        "totalTokens": 6398
+      }
+    },
+    "preparedBaseline": "A separate authored graph was also present because this test source was a prepared-source excerpt. It is not counted as model output.",
+    "actualUsage": {
+      "inputTokens": 6094,
+      "outputTokens": 4133,
+      "totalTokens": 10227
+    }
+  },
+  "reader": {
+    "manualGenerationOrJsonEditorButtons": 0,
+    "reopenModelEndpointRequests": 0,
+    "savedModelFigureRestored": true,
+    "mobileWidth": 320,
+    "mobileRootFontPx": 32,
+    "pageClientWidth": 320,
+    "pageScrollWidth": 320,
+    "statusClientWidth": 282,
+    "statusScrollWidth": 282
+  },
+  "screenshots": [
+    "data/automatic-only-live-desktop.png",
+    "data/automatic-only-live-mobile.png"
+  ],
+  "limits": [
+    "No fresh custom candidate was generated after the contextual schema fix; its enforcement has separate deterministic tests.",
+    "The custom rejection is not reported as success, and no scientific verification or human study is claimed.",
+    "The rejected raw provider response is retained only in ignored private evaluation storage, not published."
+  ],
+  "verification": {
+    "tests": 776,
+    "passed": 776,
+    "failed": 0,
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "contextualAnchorRegressionTests": "passed; wrong block IDs remain rejected"
+  }
+}
