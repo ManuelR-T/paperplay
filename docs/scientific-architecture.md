@@ -1,6 +1,6 @@
 # Scientific representation architecture — M12–M16
 
-Status: **implementation in progress — PP-081 implemented (1/36)**, 28 October 2026. Parent epic: [PP-080 · #35](https://github.com/ManuelR-T/paperplay/issues/35). Completed work and evidence: [representation contracts](representation-contracts.md). The 36 implementation issues and their GitHub references are also recorded in [scientific-backlog.json](scientific-backlog.json). This program extends the existing [M6–M11 delivery](next-roadmap.md); it does not reopen completed issues or change the deferred Railway release.
+Status: **implementation in progress — PP-081/082 implemented (2/36)**, 28 October 2026. Parent epic: [PP-080 · #35](https://github.com/ManuelR-T/paperplay/issues/35). Completed work and evidence: [representation contracts](representation-contracts.md) and [scientific provenance](research-evidence.md). The 36 implementation issues and their GitHub references are also recorded in [scientific-backlog.json](scientific-backlog.json). This program extends the existing [M6–M11 delivery](next-roadmap.md); it does not reopen completed issues or change the deferred Railway release.
 
 ## Product objective
 

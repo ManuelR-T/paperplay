@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { evidenceDeclarationSchema, reportedScientificCheckSchema } from './research-evidence';
 import { validateDocument, type SourceDocument } from './schema';
 import { widgetEnvelopeSchema, validateWidgetEnvelope, type WidgetEnvelope } from './widgets';
 import { name, text } from './widget-primitives';
@@ -23,6 +24,8 @@ export const representationPlanSchema = z.strictObject({
   quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500) })).max(32),
   execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(z.strictObject({ id: name, version: z.string().regex(/^\d+\.\d+\.\d+$/) })).min(1).max(16), assetIds: z.array(name).max(32) }),
   interactions: z.array(z.enum(['widget-controls','select-step','return-source'])).max(3),
+  evidence: z.array(evidenceDeclarationSchema).max(128).optional(),
+  reportedChecks: z.array(reportedScientificCheckSchema).max(64).optional(),
   views: z.array(representationViewSchema).min(1).max(8),
 });
 export type RepresentationPlan = z.infer<typeof representationPlanSchema>;
@@ -60,6 +63,19 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
   }
   if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');
   if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide')) throw Error('This representation has no source-guide steps.');
+  const evidence=new Map((plan.evidence??[]).map(item=>[item.id,item]));
+  unique((plan.evidence??[]).map(item=>item.id),'evidence record');
+  const visited=new Set<string>(),visiting=new Set<string>();
+  function visitEvidence(id:string){if(visiting.has(id))throw Error('Evidence dependencies contain a cycle.');if(visited.has(id))return;const item=evidence.get(id);if(!item)throw Error('An evidence dependency is missing.');visiting.add(id);item.dependsOn.forEach(visitEvidence);visiting.delete(id);visited.add(id);}
+  for(const item of plan.evidence??[]){
+    const subjects=item.subject.kind==='claim'?plan.claims:item.subject.kind==='asset'?plan.assets:plan.views;
+    if(!subjects.some(subject=>subject.id===item.subject.id))throw Error('An evidence record refers to an unknown subject.');
+    if(item.anchorIds.length)checkAnchors(item.anchorIds);
+    if(item.origin==='source-quotation'&&(item.subject.kind!=='claim'||!plan.claims.some(claim=>claim.id===item.subject.id&&claim.kind==='source')))throw Error('Only a source quotation can declare source-quotation evidence.');
+    if(['source-extracted','observed-data','independent-reference'].includes(item.origin)&&!item.anchorIds.length&&!item.references.length)throw Error('This evidence origin needs a source anchor or explicit reference.');
+    unique(item.dependsOn,'evidence dependency');visitEvidence(item.id);
+  }
+  for(const report of plan.reportedChecks??[]){const subjects=report.subject.kind==='claim'?plan.claims:report.subject.kind==='asset'?plan.assets:plan.views;if(!subjects.some(subject=>subject.id===report.subject.id))throw Error('A reported check refers to an unknown subject.');}
   return plan;
 }
 

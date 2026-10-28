@@ -71,10 +71,16 @@
       "priority": "P0",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 37,
         "url": "https://github.com/ManuelR-T/paperplay/issues/37"
+      },
+      "evidence": {
+        "document": "docs/research-evidence.md",
+        "checks": "npm run check: TypeScript, 223 tests, production build",
+        "browser": "Native Chromium at 320 px: observed/illustrative data origins stay separate; a copied passed experiment report does not grant verification",
+        "limitations": "Reference checker fixtures validate policy only; actual scientific reference checks are PP-108."
       }
     },
     {

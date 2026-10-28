@@ -16,7 +16,7 @@ The [M6–M11 roadmap](docs/next-roadmap.md) tracks 34 GitHub issues. Thirty fea
 
 ## Scientific representation architecture
 
-The planned [M12–M16 architecture](docs/scientific-architecture.md) expands Paperplay across biology, physics, computer science and later domains through composed views, scientific data/execution adapters and a separately gated Muse-generated artifact path. [Epic #35](https://github.com/ManuelR-T/paperplay/issues/35) links 36 implementation issues with acceptance criteria and dependencies. This is a planned program; the current product still runs trusted declarative widgets.
+The planned [M12–M16 architecture](docs/scientific-architecture.md) expands Paperplay across biology, physics, computer science and later domains through composed views, scientific data/execution adapters and a separately gated Muse-generated artifact path. [Epic #35](https://github.com/ManuelR-T/paperplay/issues/35) links 36 implementation issues with acceptance criteria and dependencies. Implementation is in progress: versioned representation plans, source-guide previews and per-subject provenance are available. Generated artifact execution remains disabled.
 
 ## Original figures and new widget designs
 
