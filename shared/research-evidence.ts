@@ -4,7 +4,7 @@ import { name, text } from './widget-primitives';
 /** Declarations are portable data. A declaration never grants scientific verification. */
 export const evidenceDeclarationSchema=z.strictObject({
   id:name,subject:z.strictObject({kind:z.enum(['claim','asset','view']),id:name}),
-  origin:z.enum(['source-quotation','authored-assumption','source-extracted','observed-data','computed-output','independent-reference']),
+  origin:z.enum(['user-supplied','source-quotation','authored-assumption','source-extracted','observed-data','computed-output','independent-reference']),
   anchorIds:z.array(name).max(32),assumptions:z.array(text.max(500)).max(16),
   references:z.array(z.strictObject({label:text.max(300),location:text.max(1000)})).max(16),
   dependsOn:z.array(name).max(32),

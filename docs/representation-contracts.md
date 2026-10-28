@@ -4,7 +4,7 @@ The version-1 `paperplay-representation` plan is an additional format; it does n
 
 ## Source and intent
 
-A plan has an exact document/version identity and named quoted passage anchors. Claims distinguish verbatim source quotations from pedagogical additions. Objective, assumptions and requested evidence describe intent, never an automatic scientific certification. Assets and quantities are explicit references/declarations; the typed scientific asset layer and dimensional validation are subsequent issues.
+A plan has an exact document/version identity and named quoted passage anchors. Claims distinguish verbatim source quotations from pedagogical additions. Objective, assumptions and requested evidence describe intent, never an automatic scientific certification. Assets and quantities are explicit references/declarations; the [typed asset layer](scientific-assets.md) checks imported data; dimensional validation is a subsequent issue.
 
 Every view binds to declared source anchors. Existing widget citations are additionally checked against their document metadata. Unknown fields, duplicate identifiers, mismatched quotes/versions, undeclared dependencies and files above 256 KiB are rejected. Unknown versions and unavailable capabilities return an actionable outcome and the original record without storage mutation.
 
@@ -17,7 +17,7 @@ These adapters share plan/build contracts and a discipline-independent renderer.
 
 ## Lifecycle
 
-`buildRepresentation(input, source)` returns a validated artifact or `invalid`, `unsupported` or `missing-data`. Required assets deliberately return `missing-data` until a reviewed asset binding is available; a model's assertion of availability cannot supply a dataset.
+`buildRepresentation(input, source)` returns a validated artifact or `invalid`, `unsupported` or `missing-data`. Required assets return `missing-data` until explicit integrity-checked bindings are supplied; a model's assertion of availability cannot supply a dataset. PP-083 adds the asset-inspector adapter, records bound checksums and refuses adapters that do not consume their requested assets.
 
 `executeRepresentation(artifact, source, {signal, compute})` revalidates the artifact and executes its views, returning typed failure/cancellation or a run. The injected `compute` adapter enables worker execution. Without it, direct calculation is only available server-side; browser execution never silently falls back to the main thread. Every run marks requested evidence as unverified.
 

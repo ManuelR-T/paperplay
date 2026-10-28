@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { scientificAssetSchema } from './scientific-assets';
 import { evidenceDeclarationSchema, reportedScientificCheckSchema } from './research-evidence';
 import { validateDocument, type SourceDocument } from './schema';
 import { widgetEnvelopeSchema, validateWidgetEnvelope, type WidgetEnvelope } from './widgets';
@@ -10,6 +11,7 @@ export const representationAnchorSchema = z.strictObject({ id: name, blockId: z.
 export const evidenceLevelSchema = z.enum(['illustrative-walkthrough','simplified-illustration','mechanism-reproduction','experiment-reproduction']);
 const ids = z.array(name).min(1).max(32);
 export const representationViewSchema = z.discriminatedUnion('kind', [
+  z.strictObject({id:name,kind:z.literal('asset'),assetId:name}),
   z.strictObject({ id: name, kind: z.literal('widget'), widget: widgetEnvelopeSchema }),
   z.strictObject({ id: name, kind: z.literal('source-guide'), steps: z.array(z.strictObject({ id: name, title: text.max(160), explanation: text, anchorIds: ids })).min(1).max(32) }),
 ]);
@@ -20,10 +22,11 @@ export const representationPlanSchema = z.strictObject({
   objective: text.max(1000), anchors: z.array(representationAnchorSchema).min(1).max(32),
   claims: z.array(z.strictObject({ id: name, kind: z.enum(['source','pedagogical-addition']), text, anchorIds: ids })).min(1).max(32),
   assumptions: z.array(text.max(500)).max(16), requestedEvidence: evidenceLevelSchema,
-  assets: z.array(z.strictObject({ id: name, kind: z.enum(['table','tensor','image','sequence','graph','geometry']), description: text.max(500) })).max(32),
+  assets: z.array(z.strictObject({ id: name, kind: z.enum(['table','tensor','image','sequence','graph','geometry']), description: text.max(500), checksum:z.string().regex(/^[a-f0-9]{64}$/).optional() })).max(32),
   quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500) })).max(32),
   execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(z.strictObject({ id: name, version: z.string().regex(/^\d+\.\d+\.\d+$/) })).min(1).max(16), assetIds: z.array(name).max(32) }),
-  interactions: z.array(z.enum(['widget-controls','select-step','return-source'])).max(3),
+  interactions: z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),
+  assetManifests:z.array(scientificAssetSchema).max(32).optional(),
   evidence: z.array(evidenceDeclarationSchema).max(128).optional(),
   reportedChecks: z.array(reportedScientificCheckSchema).max(64).optional(),
   views: z.array(representationViewSchema).min(1).max(8),
@@ -53,14 +56,18 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
   }
   if(plan.execution.assetIds.some(id=>!plan.assets.some(asset=>asset.id===id))) throw Error('Execution requires an undeclared asset.');
   for(const view of plan.views) {
-    const capability=view.kind==='widget'?'widget-v2':'source-guide';
+    const capability=view.kind==='widget'?'widget-v2':view.kind==='asset'?'asset-inspector':'source-guide';
     if(!plan.execution.capabilities.some(item=>item.id===capability)) throw Error('A view requires its declared execution capability.');
     if(view.kind==='widget') {
       validateWidgetEnvelope(view.widget,source);
       if(!plan.anchors.some(anchor=>anchor.blockId===view.widget.source.blockId&&anchor.page===view.widget.source.page&&normalized(anchor.quote)===normalized(view.widget.source.quote))) throw Error('A widget must use an anchor declared in its representation.');
       if(plan.execution.kind!=='local-computation') throw Error('Widget views require local computation.');
-    } else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
+    } else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
+    else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
   }
+  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'))throw Error('This representation has no data inspector.');
+  if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
+  for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
   if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');
   if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide')) throw Error('This representation has no source-guide steps.');
   const evidence=new Map((plan.evidence??[]).map(item=>[item.id,item]));
