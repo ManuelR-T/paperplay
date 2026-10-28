@@ -719,10 +719,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 57,
         "url": "https://github.com/ManuelR-T/paperplay/issues/57"
+      },
+      "evidence": {
+        "document": "docs/physical-fields.md",
+        "checks": "npm run check: TypeScript, 501 tests and production build; independent rational/Fourier/cell-average/convergence/conservation references, exact unit/shape/schedule/result binding, unstable prefixes and disposable worker/resource tests. Final presentation/default-grid/import changes pass typecheck/build plus focused study and field tests.",
+        "browser": "Native Chromium: all three authored fields, linked keyboard ROI/probe/time, stable checksum-checked raster/zoom/fixed palette across scrubs without new workers, geometry invalidation, unstable/oversized failures, active 64x64 CPU cancellation, constant300K correct axes, central data-study roundtrip exact probe/time/source, desktop fit and320px/200% contained reflow. data/field-browser.json.",
+        "limitations": "Trusted scalar constant-coefficient thermal diffusion on uniform cell-average grids, 1D periodic/no-flux and2D periodic only. No arbitrary PDE, original experiment or Joule-energy claim. Local diagnostics/refinement checks are not certified global/model-error bounds. Source/initial-data rights remain separate. No paid inference, held-out evaluation, human review or release change."
       }
     },
     {

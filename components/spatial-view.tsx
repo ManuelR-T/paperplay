@@ -10,12 +10,12 @@ import { scientificUnits } from '@/shared/scientific-quantities';
 import { formatScientificNumber as format } from '@/lib/quantities/format';
 import { Button } from './ui/button';
 import styles from './spatial-view.module.css';
-type Props={viewId:string;spatial:SpatialSpec;assets:readonly ScientificAsset[];store:SemanticSelectionStore;navigation:RepresentationNavigation;onChange:(patch:Partial<SpatialSpec>)=>void;onReturn:(anchorId:string)=>void};
+type Props={fixedFieldRange?:{min:number;max:number};stableGridKey?:string;viewId:string;spatial:SpatialSpec;assets:readonly ScientificAsset[];store:SemanticSelectionStore;navigation:RepresentationNavigation;onChange:(patch:Partial<SpatialSpec>)=>void;onReturn:(anchorId:string)=>void};
 export function SpatialViewRenderer(props:Props){
- try{const checked=preflightSpatialView(props.spatial,props.assets);return <ActiveSpatialView key={`${checked.asset.id}:${checked.asset.checksum.value}`} {...props} checked={checked}/>;}catch(error){return <p role="alert">{error instanceof Error?error.message:'Spatial view unavailable.'} The original source is retained.</p>;}
+ try{const checked=preflightSpatialView(props.spatial,props.assets);if(props.fixedFieldRange&&props.spatial.input.kind==='field'&&checked.asset.kind==='tensor'){const {min,max}=props.fixedFieldRange;if(!Number.isFinite(min)||!Number.isFinite(max)||min>max||checked.asset.data.values.some(value=>value!==null&&(value<min||value>max)))throw Error('The fixed field range must be finite and contain every displayed value.');}return <ActiveSpatialView key={props.stableGridKey&&props.spatial.input.kind==='field'&&checked.asset.kind==='tensor'?`field-grid:${props.stableGridKey}`:`${checked.asset.id}:${checked.asset.checksum.value}`} {...props} checked={checked}/>;}catch(error){return <p role="alert">{error instanceof Error?error.message:'Spatial view unavailable.'} The original source is retained.</p>;}
 }
 type LoadedImage=Awaited<ReturnType<typeof loadSpatialImage>>&{rgba:Uint8ClampedArray};
-function ActiveSpatialView({viewId,spatial,assets,store,navigation,onChange,onReturn,checked}:{checked:ReturnType<typeof preflightSpatialView>}&Props){
+function ActiveSpatialView({viewId,spatial,assets,store,navigation,onChange,onReturn,checked,fixedFieldRange}:{checked:ReturnType<typeof preflightSpatialView>}&Props){
  const [loaded,setLoaded]=useState<LoadedImage|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[draft,setDraft]=useState({left:'0',top:'0',right:'0',bottom:'0'}),[pending,setPending]=useState<PixelBounds|null>(null);
  const canvas=useRef<HTMLCanvasElement>(null),scroll=useRef<HTMLDivElement>(null),abort=useRef<AbortController|null>(null),drag=useRef<{column:number;row:number}|null>(null),panTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
  const viewport=spatial.viewport??{zoom:1,panX:0,panY:0,palette:'blue-gold' as const,visibleOverlayIds:[]};
@@ -25,7 +25,7 @@ function ActiveSpatialView({viewId,spatial,assets,store,navigation,onChange,onRe
  const size=checked.size??(validImage?{width:validImage.width,height:validImage.height}:null),field=checked.asset.kind==='tensor'?checked.asset:null;
  const region=navigation.selections.find(s=>s.kind==='region'&&s.viewId===viewId&&s.scopeId==='spatial');
  const bounds=useMemo(()=>{if(region?.kind!=='region'||!size)return null;try{return pixelsFromRegion(region,spatial.calibration,size);}catch{return null;}},[region,spatial.calibration,size?.width,size?.height]);
- const range=useMemo(()=>{const values=field?.data.values.filter((v):v is number=>v!==null)??[];return values.length?{min:Math.min(...values),max:Math.max(...values)}:null;},[field]);
+ const range=useMemo(()=>{if(field&&fixedFieldRange)return fixedFieldRange;const values=field?.data.values.filter((v):v is number=>v!==null)??[];return values.length?{min:Math.min(...values),max:Math.max(...values)}:null;},[field,fixedFieldRange]);
  const summary=useMemo(()=>size&&bounds&&(field||validImage)?regionSummary(bounds,size,field?field.data.values:validImage!.rgba,field?'field':'image'):null,[size?.width,size?.height,bounds,field,validImage]);
  useEffect(()=>()=>{abort.current?.abort();if(panTimer.current)clearTimeout(panTimer.current);},[]);
  useEffect(()=>{if(bounds)setDraft(Object.fromEntries(Object.entries(bounds).map(([key,value])=>[key,String(value)])) as typeof draft);},[bounds?.left,bounds?.top,bounds?.right,bounds?.bottom]);

@@ -1,0 +1,32 @@
+{
+  "format":"paperplay-field-browser-evidence",
+  "version":1,
+  "recordedAt":"2026-10-28T08:05:02Z",
+  "environment":"Native collaborative Chromium, local production build on port 3001",
+  "inferenceCalls":0,
+  "cases":[
+    {"model":"periodic-1d","grid":[32],"status":"completed","steps":200,"cellUpdates":6400,"finalTime":2,"declaredStability":0.1024,"maxMeanDrift":1.7053025658242404e-13,"maxPrincipleViolation":0,"syntheticRasterShape":[1,32]},
+    {"model":"no-flux-1d","grid":[32],"status":"completed","steps":200,"cellUpdates":6400,"finalTime":2,"declaredStability":0.1024,"maxMeanDrift":1.7053025658242404e-13,"maxPrincipleViolation":0,"syntheticRasterShape":[1,32]},
+    {"model":"periodic-2d","grid":[32,64],"status":"completed","steps":250,"cellUpdates":512000,"finalTime":1,"declaredStability":0.22755555555555557,"stableStepLimit":0.0087890625,"maxMeanDrift":1.0800249583553523e-12,"maxPrincipleViolation":0,"fixedPaletteK":[280.1601691764742,319.8398308235258],"selectedProbe":{"column":1,"row":1,"xMeters":-0.17187500000000003,"yMeters":0.128125,"valueAtFinalTimeK":304.7972179240717}}
+  ],
+  "interactions":{
+    "keyboardArrowsSelectCellAndLinkRegionProbeHistory":true,
+    "timeScrubPreservesCanvasAndProbe":true,
+    "scrubStartsNoNewWorkers":true,
+    "zoomPersistsAcrossSnapshots":true,
+    "custom24By16Grid":{"probeInitialK":315.221470017403,"probeFinalK":303.8528265189374,"probeColumn":1,"probeRow":1,"preservedZoomedCanvasWidth":128},
+    "changedGrid":{"oldProbeFrameInvalidated":true,"canvasRebound":true,"probeReset":[0,0]},
+    "unstableDiffusivity10":{"status":"unstable","actualFinalTime":0,"priorValidFieldRetainedAndLabeled":true,"prefixDownloadOffered":true},
+    "grid65":{"rejectedBeforeWorker":true,"message":"Cells along x: Too big: expected number to be <=64"},
+    "stopActiveSimulation":{"requestedGrid":[64,64],"requestedTimeStep":0.000001,"requestedEndTime":1,"workerStartedObserved":true,"before":{"created":4,"terminated":3,"active":1},"after":{"created":4,"terminated":4,"active":0},"previousFieldRetained":true},
+    "instrumentedPhases":[{"created":5,"terminated":5,"active":0},{"created":3,"terminated":3,"active":0}],
+    "constant300KStudy":{"openedThroughFilesAndSource":true,"status":"completed","allDisplayedProbeValuesK":300,"profileYTicks":[297,300,303],"historyYTicks":[297,300,303]},
+    "centralStudyRoundTrip":{"button":"Open figure or study","sourceAndRequestValidated":true,"sourceOpenedSeparately":true,"restoredColumn":1,"restoredRow":1,"restoredTime":1,"restoredProbeValueK":304.7972179240717,"currentReadingPaperUnchanged":true},
+    "providerRouteRequests":0
+  },
+  "layout":{
+    "desktop":{"viewportWidth":1280,"documentWidth":1280,"dialogWidth":730,"settledCanvasWidth":512,"settledCanvasHeight":256,"screenshot":"data/field-browser/diffusion-desktop.png"},
+    "mobile200PercentRootFont":{"viewportWidth":320,"documentWidth":320,"dialogWidth":288,"dialogClientWidth":286,"dialogScrollWidth":286,"canvasAfterFitWidth":190,"canvasAfterFitHeight":95,"bodyFontPx":32,"minimumVisibleInputHeight":44,"historyPlotWidth":640,"historyRegionClientWidth":242,"historyRegionScrollWidth":640,"screenshot":"data/field-browser/diffusion-mobile-200.png"}
+  },
+  "limits":["Constant-coefficient thermal diffusion only: 1D periodic/no-flux and 2D periodic; no arbitrary PDE or original experiment claim.","Snapshots/probes are stored cell averages; no temporal or sub-cell solution is inferred.","Mean-temperature conservation does not establish energy in joules or physical/material validity.","Diagnostics and analytic engineering checks do not certify a global numerical error bound.","Mobile history plots/tables use contained horizontal scrolling. No paid inference, held-out evaluation, human review, cross-browser or release claim."]
+}

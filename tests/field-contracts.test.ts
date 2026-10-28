@@ -1,0 +1,49 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createDefaultFieldSolver,normalizeFieldRequest,validateFieldRequest,validateFieldResult,fieldGridGeometry,fieldGridIdentity,fieldSnapshotSchedule,fieldTimeAtStep,fieldStability,FIELD_SOLVER_VERSION,type FieldRequest,type FieldResult } from '../shared/physical-fields';
+import { solveField } from '../lib/fields/solver';
+
+function request():FieldRequest{return {format:'paperplay-physical-field',schemaVersion:1,model:'temperature-diffusion',grid:{dimension:1,nx:4,ny:1,origin:[{value:0,unit:'m'}],extent:[{value:4,unit:'m'}],boundary:'periodic'},coefficient:{value:1,lengthUnit:'m',timeUnit:'s',role:'thermal-diffusivity'},initial:{kind:'cell-averages',values:[0,1,0,0],unit:'K',temperatureMode:'absolute'},interval:{start:0,end:.25,unit:'s'},solver:createDefaultFieldSolver(.25,[0,1])};}
+/** Independent rational local-update fixture: [0,1,0,0] -> [1/4,1/2,1/4,0], mu=1/4. */
+function result():FieldResult{const r=request(),n=normalizeFieldRequest(r);return {format:'paperplay-field-result',schemaVersion:1,solverVersion:FIELD_SOLVER_VERSION,request:structuredClone(r),status:'completed',grid:n.grid,timeUnit:'s',valueUnit:'K',valueMeaning:'cell-averages',snapshots:[{step:0,time:0,values:[0,1,0,0],mean:.25,minimum:0,maximum:1,meanDrift:0},{step:1,time:.25,values:[.25,.5,.25,0],mean:.25,minimum:0,maximum:.5,meanDrift:0}],stats:{steps:1,cellUpdates:4,finalTime:.25,stabilityNumber:.25,stabilityLimit:.5,initialMean:.25,maxMeanDrift:0,maxPrincipleViolation:0},diagnostics:[]};}
+test('only the registered uniform temperature model, explicit boundary and squared-length diffusivity role are admitted',()=>{
+ const r=request();assert.equal(validateFieldRequest(r).model,'temperature-diffusion');
+ for(const value of [{...r,model:'arbitrary-pde'},{...r,rhs:'eval(userSource)'},{...r,grid:{...r.grid,boundary:'dirichlet'}},{...r,coefficient:{value:1,unit:'m/s'}},{...r,coefficient:{...r.coefficient,role:'velocity'}},{...r,initial:{...r.initial,temperatureMode:'difference'}},{...r,initial:{kind:'cell-averages',values:[0,null,0,0],unit:'K',temperatureMode:'absolute'}}])assert.throws(()=>validateFieldRequest(value));
+});
+test('absolute Celsius, temperature differences, length-squared/time and grid units normalize without silent energy semantics',()=>{
+ const r=request(),other=structuredClone(r);other.grid.origin=[{value:0,unit:'cm'}];other.grid.extent=[{value:400,unit:'cm'}];other.coefficient={value:10,lengthUnit:'cm',timeUnit:'ms',role:'thermal-diffusivity'};other.interval={start:0,end:250,unit:'ms'};other.solver.dt=250;other.initial={kind:'cell-averages',values:[-273.15,-272.15,-273.15,-273.15],unit:'degC',temperatureMode:'absolute'};
+ const a=normalizeFieldRequest(r),b=normalizeFieldRequest(other);assert.deepEqual(b.grid,a.grid);assert.deepEqual(b.initial,a.initial);assert.equal(b.coefficient,1);assert.equal(b.solver.dt,.25);assert.equal(fieldGridIdentity(other),fieldGridIdentity(r));
+ const cold=normalizeFieldRequest({...r,initial:{kind:'constant',temperature:{value:-10,unit:'degC',temperatureMode:'absolute'}}});assert.ok(cold.initial.every(value=>value===263.15));assert.throws(()=>normalizeFieldRequest({...r,initial:{kind:'constant',temperature:{value:-274,unit:'degC',temperatureMode:'absolute'}}}));
+});
+test('cell-average cosine initialization includes independent sinc factors and preserves row-major rectangular geometry',()=>{
+ const r:FieldRequest={...request(),grid:{dimension:2,nx:4,ny:8,origin:[{value:1,unit:'cm'},{value:-2,unit:'cm'}],extent:[{value:2,unit:'cm'},{value:9,unit:'cm'}],boundary:'periodic'},coefficient:{value:0,lengthUnit:'m',timeUnit:'s',role:'thermal-diffusivity'},initial:{kind:'cosine',mean:{value:20,unit:'degC',temperatureMode:'absolute'},amplitude:{value:5,unit:'degC',temperatureMode:'difference'}}};
+ const n=normalizeFieldRequest(r),expected=293.15+5*(Math.sin(Math.PI/4)/(Math.PI/4))*(Math.sin(Math.PI/8)/(Math.PI/8))*Math.cos(Math.PI/4)*Math.cos(Math.PI/8);assert.deepEqual(n.grid.shape,[8,4]);assert.equal(n.initial.length,32);assert.ok(Math.abs(n.initial[0]-expected)<1e-12);
+ const geom=fieldGridGeometry(r);assert.equal(geom.syntheticRow,false);assert.deepEqual(geom.origin,[.0125,-.014375]);assert.equal(geom.spacing[0],.005);assert.equal(geom.spacing[1],.01125);
+ const noflux=normalizeFieldRequest({...request(),grid:{...request().grid,boundary:'no-flux'},initial:{kind:'cosine',mean:{value:10,unit:'K',temperatureMode:'absolute'},amplitude:{value:2,unit:'K',temperatureMode:'difference'}}});const first=10+2*(Math.sin(Math.PI/8)/(Math.PI/8))*Math.cos(Math.PI/8);assert.ok(Math.abs(noflux.initial[0]-first)<1e-12);
+});
+test('grid geometry distinguishes face origins from centers and 1D synthetic row does not imply a second physical axis',()=>{
+ const r=request(),geom=fieldGridGeometry(r);assert.deepEqual(geom.origin,[.5,0]);assert.deepEqual(geom.spacing,[1,1]);assert.deepEqual(geom.extent,[4,0]);assert.equal(geom.syntheticRow,true);
+ assert.equal(fieldGridIdentity({...r,coefficient:{...r.coefficient,value:0}}),geom.frame);assert.notEqual(fieldGridIdentity({...r,grid:{...r.grid,nx:8},initial:{kind:'constant',temperature:{value:1,unit:'K',temperatureMode:'absolute'}}}),geom.frame);
+ assert.throws(()=>normalizeFieldRequest({...r,grid:{...r.grid,origin:[{value:1e20,unit:'m'}],extent:[{value:1,unit:'m'}]}}));
+});
+test('snapshot schedule is explicit, unique, stable near decimal integer ratios and bounded by total retained field values',()=>{
+ const r=request(),interval={start:0,end:.07,unit:'s' as const};assert.deepEqual(fieldSnapshotSchedule(interval,.01,8),[0,1,2,3,4,5,6,7]);const n=normalizeFieldRequest({...r,interval,solver:{...r.solver,dt:.01,snapshotSteps:[0,7]}});assert.equal(n.targetSteps,7);assert.equal(fieldTimeAtStep(n,7),.07);
+ assert.deepEqual(fieldSnapshotSchedule({start:0,end:.001,unit:'s'},1,64),[0,1]);assert.throws(()=>normalizeFieldRequest({...r,solver:{...r.solver,snapshotSteps:[0,1,1]}}));
+ const large:FieldRequest={...r,grid:{dimension:2,nx:64,ny:64,origin:[{value:0,unit:'m'},{value:0,unit:'m'}],extent:[{value:1,unit:'m'},{value:1,unit:'m'}],boundary:'periodic'},coefficient:{...r.coefficient,value:0},initial:{kind:'constant',temperature:{value:1,unit:'K',temperatureMode:'absolute'}},interval:{start:0,end:7,unit:'s'},solver:createDefaultFieldSolver(1,[0,1,2,3,4,5,6,7])};assert.equal(normalizeFieldRequest(large).initial.length,4096);assert.throws(()=>normalizeFieldRequest({...large,interval:{start:0,end:8,unit:'s'},solver:createDefaultFieldSolver(1,[0,1,2,3,4,5,6,7,8])}));
+});
+test('result metadata binds exact request/grid/scheme, rational retained values, Kelvin domain and complete final time',()=>{
+ const valid=result();assert.equal(validateFieldResult(valid,request()).status,'completed');
+ const changes:Array<(out:FieldResult)=>void>=[out=>{out.request.coefficient.value=2;},out=>{out.grid.nx=5;},out=>{out.snapshots[1].values[0]=NaN;},out=>{out.snapshots[1].values[0]=-1;},out=>{out.snapshots[1].values.pop();},out=>{out.snapshots[1].time=.2;},out=>{out.snapshots[1].mean=0;},out=>{out.snapshots[1].meanDrift=1;},out=>{out.stats.finalTime=0;},out=>{out.stats.steps=0;},out=>{out.stats.cellUpdates=3;}];for(const change of changes){const copy=structuredClone(valid);change(copy);assert.throws(()=>validateFieldResult(copy,request()));}
+});
+test('unstable declarations retain only initial data, zero diffusivity has no finite stability restriction and partial work is honest',()=>{
+ const r=request(),unstableRequest={...r,interval:{...r.interval,end:1},solver:{...r.solver,dt:1}},n=normalizeFieldRequest(unstableRequest);assert.deepEqual(fieldStability(n),{number:1,limit:.5});
+ const out:FieldResult={...result(),request:unstableRequest,status:'unstable',snapshots:result().snapshots.slice(0,1),stats:{...result().stats,steps:0,cellUpdates:0,finalTime:0,stabilityNumber:1},diagnostics:[{code:'unstable',message:'The declared full step exceeds its diffusion bound.'}]};assert.equal(validateFieldResult(out,unstableRequest).status,'unstable');assert.throws(()=>validateFieldResult({...out,stats:{...out.stats,cellUpdates:1}},unstableRequest));
+ const zero=normalizeFieldRequest({...r,coefficient:{...r.coefficient,value:0}});assert.deepEqual(fieldStability(zero),{number:0,limit:null});
+ const partial:FieldResult={...result(),status:'cancelled',snapshots:result().snapshots.slice(0,1),stats:{...result().stats,steps:0,cellUpdates:2,finalTime:0}};assert.equal(validateFieldResult(partial,r).status,'cancelled');assert.throws(()=>validateFieldResult({...partial,status:'completed'},r));
+});
+test('conservation and maximum-principle deviations cannot be hidden as zero diagnostics',()=>{
+ const out=result();out.snapshots[1]={...out.snapshots[1],values:[2,2,2,2],mean:2,minimum:2,maximum:2,meanDrift:1.75};assert.throws(()=>validateFieldResult(out,request()));out.stats.maxMeanDrift=1.75;out.stats.maxPrincipleViolation=1;assert.throws(()=>validateFieldResult(out,request()));out.diagnostics=[{code:'conservation',message:'The retained mean differs; this numerical warning is not a scientific receipt.'},{code:'maximum-principle',message:'The retained extrema exceeded the initial range.'}];assert.equal(validateFieldResult(out,request()).diagnostics.length,2);
+});
+test('a next actual rounded step can be unstable after a valid prefix even when declared dt is at the bound',()=>{
+ const r:FieldRequest={...request(),coefficient:{value:50,lengthUnit:'m',timeUnit:'s',role:'thermal-diffusivity'},initial:{kind:'constant',temperature:{value:300,unit:'K',temperatureMode:'absolute'}},interval:{start:0,end:10,unit:'s'},solver:createDefaultFieldSolver(.01,[0,1000])};const actual=solveField(r);assert.equal(actual.status,'unstable');assert.ok(actual.stats.steps>0);assert.equal(actual.stats.stabilityNumber,.5);assert.equal(validateFieldResult(actual,r).status,'unstable');
+});

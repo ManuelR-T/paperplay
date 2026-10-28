@@ -34,3 +34,7 @@ On 28 October 2026, `npm run check` passed TypeScript, 249 tests and the product
 ## PP-101 stochastic extension
 
 `stochastic-ssa@1.0.0` selects bounded registered integer-count population/reaction models by behavior (`stochastic-events`, `population-replicates`, `reaction-network`). Its local worker uses versioned PCG32 streams, explicit count/hazard semantics and complete requested-replicate accounting. Physical-time selection links observations, process counts and summary inspection. See [seeded experiments](stochastic-adapter.md) for analytic versus empirical spread, source mapping and support limits.
+
+## PP-102 physical field extension
+
+`diffusion-field@1.0.0` adds a bounded constant thermal diffusion capability with linked regions, physical probes and retained times. The trusted worker uses explicit cell-average finite-volume updates and checks stability before committing state. The renderer reuses checksum-checked tensors and spatial calibration, with field-only stable-grid/fixed-palette options; original-image behavior is unchanged. See [bounded physical fields](physical-fields.md) for boundaries, conservation meaning, source/initial-data rights and resource limits.

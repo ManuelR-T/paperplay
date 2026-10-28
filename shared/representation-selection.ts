@@ -1,3 +1,4 @@
+import { fieldGridGeometry } from './physical-fields';
 import { convertValue } from '../lib/quantities/convert';
 import { pixelsFromRegion } from './spatial-coordinates';
 import type { RepresentationPlan } from './representations';
@@ -10,6 +11,13 @@ export function representationInputRevision(plan:RepresentationPlan){
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='physical-field'){
+   const interval=view.field.request.interval;
+   if(selection.kind==='time')return selection.scopeId==='physical-field'&&selection.mode==='physical-time'&&selection.unit==='s'&&selection.frameId===null&&selection.value>=convertValue(interval.start,interval.unit,'s')&&selection.value<=convertValue(interval.end,interval.unit,'s');
+   if(selection.kind!=='region'||selection.scopeId!=='physical-field'||selection.unit!=='m')return false;
+   const grid=fieldGridGeometry(view.field.request);if(selection.frame!==grid.frame||grid.syntheticRow&&(selection.min[1]!==0||selection.max[1]!==0))return false;
+   try{pixelsFromRegion(selection,{frame:grid.frame,kind:'declared',unit:'m',x:{origin:grid.origin[0],spacing:grid.spacing[0],direction:1},y:{origin:grid.origin[1],spacing:grid.spacing[1],direction:1},anchorIds:view.field.anchorIds,interpretation:'Cell-center coordinates; a 1D row uses the explicit zero display sentinel.'},{width:grid.nx,height:grid.ny});return true;}catch{return false;}
+ }
  if(view.kind==='stochastic'){const interval=view.stochastic.request.interval;return selection.kind==='time'&&selection.scopeId==='stochastic'&&selection.mode==='physical-time'&&selection.unit==='s'&&selection.frameId===null&&selection.value>=convertValue(interval.start,interval.unit,'s')&&selection.value<=convertValue(interval.end,interval.unit,'s');}
  if(view.kind==='dynamics'){const interval=view.dynamics.request.interval;return selection.kind==='time'&&selection.scopeId==='dynamics'&&selection.mode==='physical-time'&&selection.unit==='s'&&selection.frameId===null&&selection.value>=convertValue(interval.start,interval.unit,'s')&&selection.value<=convertValue(interval.end,interval.unit,'s');}
  if(view.kind==='reasoning-guide'){const index=view.guide.steps.findIndex(step=>step.id===(selection.kind==='time'?selection.frameId:null));return selection.kind==='time'&&selection.scopeId==='reasoning'&&selection.mode==='authored-step'&&selection.unit==='guide-step'&&index>=0&&selection.value===index;}
@@ -45,7 +53,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='stochastic'&&selection.kind==='time')view.stochastic.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='physical-field'&&(selection.kind==='time'||selection.kind==='region'))view.field.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='stochastic'&&selection.kind==='time')view.stochastic.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='dynamics'&&selection.kind==='time')view.dynamics.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='reasoning-guide'&&selection.kind==='time')view.guide.steps.find(step=>step.id===selection.frameId)?.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='spatial-view'&&selection.kind==='region')view.spatial.anchorIds.forEach(id=>ids.add(id));
