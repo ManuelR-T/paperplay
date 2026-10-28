@@ -83,3 +83,15 @@ test('official dated taxonomy covers every group, exact category and physics arc
  const astro=exploreSubjectIds('archive:astro-ph');assert.equal(astro.length,6);assert.equal(astro.includes('quant-ph'),false);assert.equal(exploreSubjectGroup('archive:astro-ph'),'physics');
  for(const unsupported of ['group:chemistry','group:physics OR all:*','archive:physics.*','physics.unknown','cs.*'])assert.equal(exploreQuerySchema.safeParse({category:unsupported}).success,false);
 });
+
+test('unfiltered discovery uses a dated all-archive query rather than the upstream-failing all-field wildcard', async () => {
+  let observed = '';
+  const search = createExploreSearch({ wait: async () => {}, fetcher: fakeFetch(async url => {
+    observed = new URL(url).searchParams.get('search_query') ?? '';
+    return observed === 'all:*' ? new Response('Internal Server Error', { status: 500 }) : new Response(feed());
+  }) });
+  const result = await search(exploreQuerySchema.parse({}));
+  assert.equal(result.papers.length, 1);
+  assert.equal(observed, 'submittedDate:[199101010000 TO 299912312359]');
+  assert.equal(new URL(arxivSearchUrl(exploreQuerySchema.parse({ start: 12 }))).searchParams.get('start'), '12');
+});

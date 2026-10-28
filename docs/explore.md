@@ -29,3 +29,9 @@ Live browser checks use actual arXiv results and verify discovery, abstract prev
 ## Broader discovery validation
 
 The focused exploration suite verifies all155 unique category identifiers,8 nonempty group filters,13 physics archive filters, exact group/category membership and rejection of unknown/injected filters. Existing feed, cache, coalescing, spacing, queue-overload, pagination and saved-data recovery tests remain in place. This expands the discoverable taxonomy; it does not mirror all arXiv PDFs, bypass publisher access limits or remove the1,008-result refinement boundary.
+
+## Unfiltered discovery query
+
+The all-subjects landing page uses `submittedDate:[199101010000 TO 299912312359]`, ordered by submission date. During diagnosis on28October2026 the previous `all:*` query consistently returned upstream HTTP500, while this date-range query and a category query returned HTTP200 with real feeds. Date-range syntax follows the [official API manual](https://github.com/arXiv/arxiv-docs/blob/develop/source/help/api/user-manual.md). No subject is silently selected and no replacement data is fabricated. The regression exercises the same fetch/query path with the observed upstream-failure pattern.
+
+Verification after the fix:8exploration regression tests, TypeScript and production build pass. The restarted local `/api/explore` returns HTTP200 with12actual papers; the native landing-page browser displays the paper links with no alert. No Meta creation was performed.

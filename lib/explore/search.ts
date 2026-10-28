@@ -13,7 +13,9 @@ export function arxivSearchUrl(input: ExploreQuery) {
   const clauses = terms.length ? [`${prefix}:"${terms.join(' ')}"`] : [];
   if (query.category) { const subjects=exploreSubjectIds(query.category); clauses.push(subjects.length===1?`cat:${subjects[0]}`:`(${subjects.map(id=>`cat:${id}`).join(' OR ')})`); }
   if (query.since) clauses.push(`submittedDate:[${query.since}01010000 TO 299912312359]`);
-  if (!clauses.length) clauses.push('all:*');
+  // A leading all-field wildcard currently fails upstream with HTTP 500.
+  // The documented submission-date range covers the archive without selecting a discipline.
+  if (!clauses.length) clauses.push('submittedDate:[199101010000 TO 299912312359]');
   const url = new URL('https://export.arxiv.org/api/query');
   url.search = new URLSearchParams({ search_query: clauses.join(' AND '), start: String(query.start), max_results: String(EXPLORE_PAGE_SIZE),
     sortBy: !query.q && query.sort === 'relevance' ? 'submittedDate' : { relevance: 'relevance', newest: 'submittedDate', updated: 'lastUpdatedDate' }[query.sort], sortOrder: 'descending' }).toString();
