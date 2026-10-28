@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync,readFileSync,statSync } from 'node:fs';
+import {resolve,dirname} from 'node:path';
 import { readScientificCorpus, reportScientificCorpus } from '../lib/evaluation/scientific-corpus';
 const corpus=readScientificCorpus();
 test('scientific intake has twelve attributed, version-pinned cases and frozen independent split',()=>{
@@ -35,6 +36,20 @@ test('held-out paper identifiers do not enter development source fixtures, promp
  for(const directory of ['data','lib','shared','components','server','scripts'])walk(directory);
  for(const path of files){if(['data/scientific-corpus.json','lib/evaluation/scientific-corpus.ts','scripts/report-scientific-corpus.ts'].includes(path))continue;
    const contents=readFileSync(path,'utf8');for(const identifier of forbidden)assert.ok(!contents.includes(identifier),`Held-out identifier leaked into ${path}`);
-   assert.ok(!contents.includes('scientific-corpus.json'),`Intake corpus imported by development path ${path}`);
+   if(path!=='lib/evaluation/frozen-evaluation.ts')assert.ok(!contents.includes('scientific-corpus.json'),`Intake corpus imported by development path ${path}`);
+ }
+});
+
+test('only the explicit offline evaluation CLI may import the frozen evaluator; reader/provider/development code cannot load it',()=>{
+ const files:string[]=[];function walk(dir:string){for(const name of readdirSync(dir)){const path=`${dir}/${name}`;if(statSync(path).isDirectory())walk(path);else if(/\.(ts|tsx|mjs|js)$/.test(path))files.push(path);}}
+ for(const directory of ['app','components','server','lib','shared','data','scripts'])walk(directory);
+ const evaluator=resolve('lib/evaluation/frozen-evaluation');
+ for(const path of files){const contents=readFileSync(path,'utf8');
+  // Static ESM imports/reexports and literal dynamic imports/CommonJS requires;
+  // this is a repository dependency guard, not a hostile-code admission parser.
+  for(const match of contents.matchAll(/(?:\bfrom\s*|\bimport\s*\(\s*|\brequire\s*\(\s*|\bimport\s*)['"]([^'"]+)['"]/g)){
+   const specifier=match[1],target=specifier.startsWith('@/')?resolve(specifier.slice(2)):specifier.startsWith('.')?resolve(dirname(path),specifier):specifier;
+   if(target.replace(/\.(?:ts|tsx|mjs|js)$/,'')===evaluator)assert.equal(path,'scripts/evaluate-scientific-corpus.ts',`Frozen evaluation may not enter development/runtime path ${path}`);
+  }
  }
 });
