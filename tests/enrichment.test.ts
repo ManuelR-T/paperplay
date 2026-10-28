@@ -89,9 +89,9 @@ test('explicit prose promises cannot invent graph, cell, slider or training cont
     const p=plan(source);p.proposals[0].objective=objective;assert.equal(compile(p).proposals.length,0,objective);
   }
 });
-test('computed kinds need catalog-declared concept support while illustrative fallback stays available',()=>{
+test('Meta-selected kinds are not vetoed by source keyword matching while runtime and source checks remain',()=>{
   const s=validateDocument({schemaVersion:1,id:'unrelated-source',sourceVersion:'v1',title:'An authored terminology fixture',authors:['Test author'],source:{kind:'prepared'},pageCount:1,blocks:[{id:'text',kind:'paragraph',page:1,text:'This source passage discusses terminology and the assumptions a reader should check before accepting an explanation. It contains no supported computational mechanism and provides no measurements.'}],anchors:[],extractionWarnings:[]});
-  const unrelated=compile(plan(s,'attention'),s);assert.equal(unrelated.proposals.length,0);assert.match(unrelated.rejected[0].reason,/concept support/);
+  const selected=compile(plan(s,'attention'),s);assert.equal(selected.proposals.length,1);assert.equal(selected.proposals[0].envelope.authorship.kind,'meta');assert.equal(selected.proposals[0].envelope.source.quote,sourceBlockText(s.blocks[0]).slice(0,80));assert.deepEqual(selected.rejected,[]);
   assert.equal(compile(plan(s,'diagram'),s).proposals.length,1);
 });
 test('a structurally valid configuration with an invalid initial computation is not activated',()=>{
@@ -164,7 +164,7 @@ test('document/global quota, ledger failure and executable edits stop before pai
 });
 test('provider input contains only selected section context, retrieved capabilities and a bounded target',async()=>{
   const section=buildSourceSections(source)[0];const selected=sectionContext(source,section.id);const retrieval=await retrieveCapabilities(await enrichmentRetrievalQuery({source,sectionId:section.id,action:'plan',feedback:''}));const input=JSON.parse(providerInput({action:'plan',context:selected.text,feedback:'',retrieval}));
-  assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.ok(input.capabilityManifest.selected.length<=3);assert.deepEqual(input.capabilityManifest.selected.map((entry:{kind:string})=>entry.kind),retrieval.selected.map(entry=>entry.kind));assert.equal(input.templates,undefined);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
+  assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.equal(input.capabilityManifest.selected.length,10);assert.deepEqual(input.capabilityManifest.selected.map((entry:{kind:string})=>entry.kind),retrieval.selected.map(entry=>entry.kind));assert.equal(input.templates,undefined);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
 });
 
 test('creative direction reaches the provider and its output allowance fits the shared ledger',async()=>{

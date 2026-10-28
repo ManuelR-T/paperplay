@@ -6,9 +6,9 @@ import { type UsageStore, type UsageLimits, type UsageRecord, DEFAULT_USAGE_LIMI
 export * from './model';
 
 /** SQLite serializes all processes sharing the same persistent local volume. */
-export function createSqliteUsageStore(options: { path: string; limits?: UsageLimits; now?: () => number }): UsageStore {
+export function createSqliteUsageStore(options: { path: string; limits?: UsageLimits; enforceLimits?: boolean; now?: () => number }): UsageStore {
   const limits = options.limits ?? DEFAULT_USAGE_LIMITS; validateLimits(limits);
-  const now = options.now ?? Date.now;
+  const now = options.now ?? Date.now;const enforceLimits=options.enforceLimits!==false;
   let db: DatabaseSync;
   try {
     if (options.path !== ':memory:') mkdirSync(dirname(options.path), { recursive: true, mode: 0o700 });
@@ -26,7 +26,7 @@ export function createSqliteUsageStore(options: { path: string; limits?: UsageLi
       return transaction(() => {
         const existing = db.prepare('SELECT record FROM usage_records WHERE id = ?').get(input.id) as { record: string } | undefined;
         if (existing) { const record = JSON.parse(existing.record) as UsageRecord; compatibleReservation(record, input); return { created: false, record }; }
-        const time = now(); checkLimits(all(time - 86_400_000), input, limits, time);
+        const time = now(); if(enforceLimits)checkLimits(all(time - 86_400_000), input, limits, time);
         const record: UsageRecord = { ...input, status: 'reserved', createdAt: time, updatedAt: time, reservedTokens: reservedTokensFor(input) };
         db.prepare('INSERT INTO usage_records(id, created_at, record) VALUES (?, ?, ?)').run(input.id, time, JSON.stringify(record));
         db.prepare('DELETE FROM usage_records WHERE created_at < ?').run(time - 30 * 86_400_000);
@@ -42,7 +42,7 @@ export function createSqliteUsageStore(options: { path: string; limits?: UsageLi
         db.prepare('UPDATE usage_records SET record = ? WHERE id = ?').run(JSON.stringify(record), id);
       });
     },
-    async summary() { try { return summarize(all(dayStart(now())), limits, now(), 'sqlite'); } catch { return unavailableStore(); } },
+    async summary() { try { return summarize(all(dayStart(now())), limits, now(), 'sqlite',enforceLimits); } catch { return unavailableStore(); } },
     close() { db.close(); },
   };
 }

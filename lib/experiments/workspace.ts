@@ -20,6 +20,7 @@ export function authoredWidget(kind:WidgetKind,source:SourceDocument,blockId:str
   const base=createWidgetForSource(kind,source,blockId);
   return validateWidgetEnvelope({...base,id:`authored-${crypto.randomUUID().replaceAll('-','').slice(0,24)}`,title:title?.trim()||base.title,authorship:{kind:'user',label:'Reader-authored teaching model'}},source);
 }
+/** Legacy curated fixtures for tests and export compatibility; the paper reader does not call this. */
 export function readingWidgets(source:SourceDocument):WidgetEnvelope[] {
   if(source.source.kind!=='prepared')return[];
   const equation=source.blocks.find(b=>b.kind==='equation'&&/Aw|quadratic/i.test(b.latex));
@@ -29,4 +30,9 @@ export function readingWidgets(source:SourceDocument):WidgetEnvelope[] {
   const merge=source.blocks.find(b=>b.kind==='paragraph'&&/Powersort|mergesort/i.test(b.text));
   if(merge){const item=createWidgetForSource('diagram',source,merge.id);if(item.spec.kind==='diagram')item.spec={...item.spec,nodes:[{id:'runs',label:'Existing sorted runs',x:15,y:50},{id:'order',label:'Choose adjacent merge order',x:50,y:50},{id:'merge',label:'Stable merged output',x:85,y:50}],edges:[{id:'discover',source:'runs',target:'order',label:'schedule',weight:1},{id:'combine',source:'order',target:'merge',label:'merge',weight:1}],steps:[{label:'Runs',description:'Identify increasing runs in the explicit input.',activeNodeIds:['runs']},{label:'Schedule',description:'The source discusses which adjacent runs to merge; this schematic does not execute a scheduler.',activeNodeIds:['order']},{label:'Merge',description:'The checked sorting figure elsewhere computes an actual merge trace.',activeNodeIds:['merge']}],mapping:'Authored source-linked schematic of adaptive merging, not an execution trace.'};return[item];}
   return[];
+}
+
+/** Reading eligibility only: content and parameters are chosen by Meta, never inferred from source keywords. */
+export function metaReadingWidgets(widgets:readonly WidgetEnvelope[],explicitSharedIds:readonly string[]=[]):WidgetEnvelope[]{
+  const shared=new Set(explicitSharedIds);return widgets.filter(widget=>widget.authorship.kind==='meta'||shared.has(widget.id));
 }

@@ -114,3 +114,16 @@ test('D1 retention removes old metadata without resetting current-day quota', as
     assert.equal((await store.summary()).requests, 1);
   } finally { db.close(); }
 });
+
+test('D1 hackathon admission bypasses optional quotas atomically without dropping metering or duplicate protection',async()=>{
+ const db=memory();
+ try{
+  const limits={globalHourlyRequests:1,sessionTenMinuteRequests:1,dailyRequests:1,dailyTokens:1};
+  const a=createD1UsageStore({db:binding(db),limits,enforceLimits:false}),b=createD1UsageStore({db:binding(db),limits,enforceLimits:false});
+  const results=await Promise.all(Array.from({length:24},(_,i)=>[a,b][i%2].reserve(request(`unlimited-${i}`))));
+  assert.equal(results.filter(r=>r.created).length,24);assert.equal((await b.reserve(request('unlimited-0'))).created,false);
+  await assert.rejects(b.reserve(request('unlimited-0','wrong-owner')),/different input/);
+  await a.settle('unlimited-0',{status:'completed',providerId:'resp_owned',usage:{inputTokens:10,outputTokens:12,totalTokens:22}});
+  const summary=await b.summary();assert.equal(summary.quotasEnabled,false);assert.equal(summary.requests,24);assert.equal(summary.measured.totalTokens,22);assert.equal(summary.accountedTokens,23*24000+22);
+ }finally{db.close();}
+});

@@ -8,7 +8,7 @@ export type UsageRecord = UsageRequest & { createdAt: number; updatedAt: number;
 export type UsageUpdate = { status: Exclude<UsageStatus, 'reserved'>; providerId?: string; usage?: MeasuredUsage };
 export type UsageLimits = { globalHourlyRequests: number; sessionTenMinuteRequests: number; dailyRequests: number; dailyTokens: number };
 export const DEFAULT_USAGE_LIMITS: UsageLimits = { globalHourlyRequests: 60, sessionTenMinuteRequests: 15, dailyRequests: 100, dailyTokens: 2_000_000 };
-export type UsageSummary = { day: string; requests: number; byKind: Record<'analysis' | 'question', number>; byStatus: Partial<Record<UsageStatus, number>>; measured: MeasuredUsage; measuredRequests: number; unavailableRequests: number; reservedUnmeasuredTokens: number; accountedTokens: number; limits: UsageLimits; backend: 'sqlite' | 'redis' | 'd1' };
+export type UsageSummary = { day: string; requests: number; byKind: Record<'analysis' | 'question', number>; byStatus: Partial<Record<UsageStatus, number>>; measured: MeasuredUsage; measuredRequests: number; unavailableRequests: number; reservedUnmeasuredTokens: number; accountedTokens: number; limits: UsageLimits; quotasEnabled: boolean; backend: 'sqlite' | 'redis' | 'd1' };
 export interface UsageStore {
   reserve(input: UsageRequest): Promise<{ created: boolean; record: UsageRecord }>;
   settle(id: string, update: UsageUpdate): Promise<void>;
@@ -26,6 +26,12 @@ export function validateUsageUpdate(update: UsageUpdate) {
   if (!['accepted', 'completed', 'cancelled', 'failed', 'incomplete', 'uncertain', 'rejected', 'validation_failed'].includes(update.status)
     || (update.providerId !== undefined && !/^resp_[a-zA-Z0-9_-]{1,250}$/.test(update.providerId))
     || (update.usage && (!Object.values(update.usage).every(value => Number.isSafeInteger(value) && value >= 0) || update.usage.totalTokens !== update.usage.inputTokens + update.usage.outputTokens))) throw new AnalysisHttpError(400, 'Invalid measured usage metadata.');
+}
+/** Hackathon default: keep durable metering but enforce app quotas only when explicitly enabled. */
+export function applicationQuotasEnabled(environment:Record<string,string|undefined>){
+ const value=environment.PAPERPLAY_QUOTAS_ENABLED;
+ if(value!==undefined&&value!=='true'&&value!=='false')throw new AnalysisHttpError(503,'PAPERPLAY_QUOTAS_ENABLED must be true or false.');
+ return value==='true';
 }
 export function validateLimits(limits: UsageLimits) {
   if (!Object.values(limits).every(value => Number.isSafeInteger(value) && value > 0)) throw new AnalysisHttpError(503, 'Usage limits must be positive whole numbers.');
@@ -61,9 +67,9 @@ export function checkLimits(records: UsageRecord[], input: UsageRequest, limits:
  if(hourly.length>=limits.globalHourlyRequests)throw new UsageQuotaError('global-rate',Math.max(release(hourly,limits.globalHourlyRequests,3_600_000),session.length>=limits.sessionTenMinuteRequests?release(session,limits.sessionTenMinuteRequests,600_000):0));
  if(session.length>=limits.sessionTenMinuteRequests)throw new UsageQuotaError('session-rate',release(session,limits.sessionTenMinuteRequests,600_000));
 }
-export function summarize(records: UsageRecord[], limits: UsageLimits, now: number, backend: UsageSummary['backend']): UsageSummary {
+export function summarize(records: UsageRecord[], limits: UsageLimits, now: number, backend: UsageSummary['backend'],quotasEnabled=true): UsageSummary {
   const today = records.filter(record => record.createdAt >= dayStart(now));
-  const summary: UsageSummary = { day: new Date(now).toISOString().slice(0, 10), requests: today.length, byKind: { analysis: 0, question: 0 }, byStatus: {}, measured: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }, measuredRequests: 0, unavailableRequests: 0, reservedUnmeasuredTokens: 0, accountedTokens: 0, limits, backend };
+  const summary: UsageSummary = { day: new Date(now).toISOString().slice(0, 10), requests: today.length, byKind: { analysis: 0, question: 0 }, byStatus: {}, measured: { inputTokens: 0, outputTokens: 0, totalTokens: 0 }, measuredRequests: 0, unavailableRequests: 0, reservedUnmeasuredTokens: 0, accountedTokens: 0, limits, quotasEnabled, backend };
   for (const record of today) {
     summary.byKind[record.kind]++; summary.byStatus[record.status] = (summary.byStatus[record.status] ?? 0) + 1;
     summary.accountedTokens += accountedTokensFor(record);

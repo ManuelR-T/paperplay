@@ -3,7 +3,7 @@ import { type UsageStore, type UsageLimits, type UsageRequest, type UsageRecord,
 
 // One EVAL is the reservation transaction. No pipeline/check-then-increment race.
 export const RESERVE_LUA = `
-local input = cjson.decode(ARGV[1]); local limits = cjson.decode(ARGV[2]);
+local input = cjson.decode(ARGV[1]); local limits = cjson.decode(ARGV[2]); local enforce = ARGV[4] ~= '0';
 local now = tonumber(ARGV[3]); local start = math.floor(now / 86400000) * 86400000;
 local old = redis.call('HGET', KEYS[1], input.id);
 if old then
@@ -28,7 +28,7 @@ for i=1,#rows,2 do
  end
 end
 local reserved=input.inputCharacters*4+16000+input.maxOutputTokens;
-if hourly >= limits.globalHourlyRequests or session >= limits.sessionTenMinuteRequests or daily >= limits.dailyRequests or tokens+reserved > limits.dailyTokens then return cjson.encode({error='quota'}) end
+if enforce and (hourly >= limits.globalHourlyRequests or session >= limits.sessionTenMinuteRequests or daily >= limits.dailyRequests or tokens+reserved > limits.dailyTokens) then return cjson.encode({error='quota'}) end
 input.createdAt=now; input.updatedAt=now; input.status='reserved'; input.reservedTokens=reserved;
 redis.call('HSET', KEYS[1], input.id, cjson.encode(input));
 return cjson.encode({created=true,record=input});
@@ -43,9 +43,9 @@ if not stale and u.usage then r.usage=u.usage end
 if u.providerId then r.providerId=u.providerId end
 r.updatedAt=tonumber(ARGV[3]); redis.call('HSET', KEYS[1], ARGV[1], cjson.encode(r)); return 1;
 `;
-export function createRedisUsageStore(options: { url: string; token: string; namespace?: string; limits?: UsageLimits; now?: () => number; fetch?: typeof fetch }): UsageStore {
+export function createRedisUsageStore(options: { url: string; token: string; namespace?: string; limits?: UsageLimits; enforceLimits?:boolean; now?: () => number; fetch?: typeof fetch }): UsageStore {
   const limits = options.limits ?? DEFAULT_USAGE_LIMITS; validateLimits(limits);
-  const now = options.now ?? Date.now;
+  const now = options.now ?? Date.now;const enforceLimits=options.enforceLimits!==false;
   let url: URL;
   try { url = new URL(options.url); if (url.protocol !== 'https:' || url.username || url.password || url.search || url.hash || !options.token.trim()) throw Error(); }
   catch { return unavailableStore(); }
@@ -63,7 +63,7 @@ export function createRedisUsageStore(options: { url: string; token: string; nam
   return {
     async reserve(input: UsageRequest) {
       validateUsageRequest(input);
-      const raw = await command(['EVAL', RESERVE_LUA, 1, key, JSON.stringify(input), JSON.stringify(limits), now()]);
+      const raw = await command(['EVAL', RESERVE_LUA, 1, key, JSON.stringify(input), JSON.stringify(limits), now(), enforceLimits?'1':'0']);
       let parsed: { created: boolean; record: UsageRecord; error?: string };
       try { parsed = JSON.parse(String(raw)); } catch { return unavailableStore(); }
       if(parsed.error==='quota'){const rows=await command(['HVALS',key]);if(Array.isArray(rows))checkLimits(rows.map(row=>JSON.parse(String(row))),input,limits,now());throw new UsageQuotaError('global-rate',now()+60_000);}
@@ -74,7 +74,7 @@ export function createRedisUsageStore(options: { url: string; token: string; nam
     async settle(id: string, update: UsageUpdate) { validateUsageUpdate(update); await command(['EVAL', SETTLE_LUA, 1, key, id, JSON.stringify(update), now()]); },
     async summary() {
       const result = await command(['HVALS', key]);
-      try { if (!Array.isArray(result)) throw Error(); return summarize(result.map(item => JSON.parse(String(item)) as UsageRecord), limits, now(), 'redis'); }
+      try { if (!Array.isArray(result)) throw Error(); return summarize(result.map(item => JSON.parse(String(item)) as UsageRecord), limits, now(), 'redis',enforceLimits); }
       catch { return unavailableStore(); }
     },
   };

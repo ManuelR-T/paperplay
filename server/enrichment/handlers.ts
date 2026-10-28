@@ -79,7 +79,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
           reviewCustom: dependencies.reviewCustom, allowedKind:input.retrieval?kind=>validateRetrievedWidgetKind(kind,input.retrieval!):undefined,allowedInteractions: (kind: WidgetKind) => widgetCatalog.find(c => c.format === 'paperplay-widget' && c.kind === kind)?.controls ?? [], usage });
         if(!input.retrieval)result.warnings.push('This job predates frozen capability retrieval; no selected-method receipt was reconstructed. The result remains an unverified teaching proposal.');
         return {status:'complete',result:{...result,retrieval:input.retrieval,accounting:accounting(input.metrics,response,record)}};
-      } catch { return { status: 'failed', error: 'Meta output did not match the bounded plan/source contract. The previous widget is retained.' }; }
+      } catch (error) { return { status: 'failed', error: ('Meta output did not match the bounded plan/source contract. '+(error instanceof z.ZodError?error.issues.slice(0,6).map(issue=>issue.path.join('.')+': '+issue.message).join('; '):'Return a complete valid plan using the supplied templates and exact source quotes.')).slice(0,1500) }; }
     }
     if (response.status === 'queued') return { status: 'queued' };
     if (response.status === 'cancelled') return { status: 'cancelled' };

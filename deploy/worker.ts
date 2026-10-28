@@ -3,7 +3,7 @@ import { createQuestionHandler } from '../server/questions/handler';
 import { readMetaConfig, publicMetaStatus } from '../server/meta/config';
 import { signingKey } from '../server/analysis/security';
 import { createD1UsageStore, type D1UsageDatabase } from '../server/usage/d1';
-import { DEFAULT_USAGE_LIMITS, type UsageLimits } from '../server/usage/model';
+import { DEFAULT_USAGE_LIMITS, applicationQuotasEnabled, type UsageLimits } from '../server/usage/model';
 import { createShortLinkHandlers } from '../server/short-links/handlers';
 import { createD1ShortLinkStore } from '../server/short-links/d1';
 import { GET as importArxiv } from '../app/api/arxiv/route';
@@ -11,7 +11,7 @@ import { GET as importArxiv } from '../app/api/arxiv/route';
 type AssetBinding = { fetch(request: Request): Promise<Response> };
 export type HostedEnvironment = {
   ASSETS: AssetBinding; DB?: D1UsageDatabase;
-  MODEL_API_KEY?: string; META_MODEL?: string; META_ANALYSIS_ENABLED?: string; META_CREDITS_EXPIRE_AT?: string;
+  PAPERPLAY_QUOTAS_ENABLED?: string; MODEL_API_KEY?: string; META_MODEL?: string; META_ANALYSIS_ENABLED?: string; META_CREDITS_EXPIRE_AT?: string;
   ANALYSIS_SIGNING_SECRET?: string; SHORT_LINKS_SIGNING_SECRET?: string; ANALYSIS_APP_ORIGIN?: string;
   USAGE_HOURLY_REQUESTS?: string; USAGE_SESSION_REQUESTS?: string; USAGE_DAILY_REQUESTS?: string; USAGE_DAILY_TOKENS?: string;
 };
@@ -41,13 +41,13 @@ export default {
       if (path === '/api/analysis/status' || path === '/api/analysis/cancel') {
         if (request.method !== 'POST') return json({ error: 'Use POST for this route.' }, 405);
         const handlers = createAnalysisHandlers({ getConfig: () => configured(env), signingSecret: env.ANALYSIS_SIGNING_SECRET,
-          allowedOrigin: env.ANALYSIS_APP_ORIGIN, ...(env.DB ? { usage: createD1UsageStore({ db: env.DB }) } : {}) });
+          allowedOrigin: env.ANALYSIS_APP_ORIGIN, ...(env.DB ? { usage: createD1UsageStore({ db: env.DB,enforceLimits:applicationQuotasEnabled({PAPERPLAY_QUOTAS_ENABLED:env.PAPERPLAY_QUOTAS_ENABLED}) }) } : {}) });
         return handlers.status(request, path.endsWith('/cancel'));
       }
       if (path.startsWith('/api/analysis/') || path === '/api/questions' || path === '/api/short-links' || path.startsWith('/s/')) {
         if (!env.DB) return json({ error: 'The shared D1 store is unavailable. New paid work and public-link storage are disabled.', uncertain: false }, 503);
         const config = configured(env);
-        const usage = createD1UsageStore({ db: env.DB, limits: readLimits(env) });
+        const usage = createD1UsageStore({ db: env.DB, limits: readLimits(env),enforceLimits:applicationQuotasEnabled({PAPERPLAY_QUOTAS_ENABLED:env.PAPERPLAY_QUOTAS_ENABLED}) });
         const shared = { getConfig: () => config, usage, signingSecret: env.ANALYSIS_SIGNING_SECRET, allowedOrigin: env.ANALYSIS_APP_ORIGIN };
         if (path === '/api/questions') return request.method === 'POST' ? createQuestionHandler(shared)(request) : json({ error: 'Use POST for this route.' }, 405);
         if (path.startsWith('/api/analysis/')) {

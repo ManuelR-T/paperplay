@@ -17,7 +17,7 @@ import { GeneratedFigureView } from './figures/generated-figure';
 import {SourceMath} from './reading/source-math';
 import {copySourceMathSelection} from '@/lib/reading/source-math-copy';
 
-export function ImportedPaperReader({ record, remove, busy, sources, openSource, automaticEnabled=true }: { automaticEnabled?:boolean; record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
+export function ImportedPaperReader({ record, remove, busy, sources, openSource, automaticEnabled=true, snapshotFigureId=null }: { snapshotFigureId?:string|null;automaticEnabled?:boolean; record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [evidenceRecoveryError,setEvidenceRecoveryError]=useState('');
@@ -31,7 +31,7 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource,
   const htmlSource = source.source.kind === 'arxiv' && !record.original;
   const session = useReadingSession();
   const analyzed = record.analysis?.figures ?? [];
-  const [bundleViews] = useState(() => session?.state.figures ?? []);
+  const bundleViews = snapshotFigureId ? (session?.state.figures ?? []).filter(view=>view.snapshot.figure.id===snapshotFigureId) : [];
   const restored = bundleViews.filter(view => !analyzed.some(item => item.figure.id === view.snapshot.figure.id)).map(view => {
     const anchor = source.anchors.find(item => item.id === view.snapshot.figure.sourceAnchorIds[0])!;
     return { figure: view.snapshot.figure, explanation: 'This experiment was restored from a local snapshot. Its input and engine versions were validated. No new model request was made.', sourceQuote: anchor.quote, sourcePage: anchor.page };

@@ -1,0 +1,199 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-28T17:56:18Z",
+  "paper": {
+    "arxivId": "2504.17033v2",
+    "title": "Breaking the Sorting Barrier for Directed Single-Source Shortest Paths",
+    "source": "Imported real arXiv HTML",
+    "sections": 43
+  },
+  "provider": {
+    "live": true,
+    "model": "muse-spark-1.3",
+    "applicationQuotasEnabled": false,
+    "mocked": false
+  },
+  "runPhase": "Initial complete-bank whole-paper run, before automatic planning-correction changes added during this observation.",
+  "observed": {
+    "version": 2,
+    "status": "partial",
+    "sectionsDone": 43,
+    "sectionsTotal": 43,
+    "widgets": [
+      {
+        "title": "Toy directed single-source shortest paths",
+        "kind": "graph",
+        "blockId": "html-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Stated SSSP bounds for directed vs undirected graphs",
+        "kind": "table",
+        "blockId": "html-6-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Ordering requirement and the sorting barrier idea",
+        "kind": "diagram",
+        "blockId": "html-7-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Frontier vertices, dependents, and pivots",
+        "kind": "graph",
+        "blockId": "html-21-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Related problems that broke the sorting barrier",
+        "kind": "table",
+        "blockId": "html-25-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Zero-cycle gadget for constant degree",
+        "kind": "graph",
+        "blockId": "html-30-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Relaxation, estimates, and predecessor tree",
+        "kind": "graph",
+        "blockId": "html-36-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Ordered divide-and-conquer partition of U",
+        "kind": "diagram",
+        "blockId": "html-50-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "BMSSP time-bound shape",
+        "kind": "equation",
+        "blockId": "html-54-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "BMSSP success versus size-limited outcome",
+        "kind": "diagram",
+        "blockId": "html-56-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "FindPivots output sizes and covering cases",
+        "kind": "table",
+        "blockId": "html-67-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Forest F roots and k-vertex pivot cover",
+        "kind": "graph",
+        "blockId": "html-75-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Lemma 3.3 operations map",
+        "kind": "diagram",
+        "blockId": "html-79-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Block operation costs at a glance",
+        "kind": "table",
+        "blockId": "html-91-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Equality relaxation that permits edge reuse",
+        "kind": "graph",
+        "blockId": "html-114-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Ordered disjoint children partition of U_x",
+        "kind": "graph",
+        "blockId": "html-127-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "BMSSP correctness induction steps",
+        "kind": "diagram",
+        "blockId": "html-133-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Incomplete path visits complete D vertex",
+        "kind": "graph",
+        "blockId": "html-134-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "S to tilde-U reachability and extracted U",
+        "kind": "graph",
+        "blockId": "html-184-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Reading the Lemma 3.11 size bounds",
+        "kind": "table",
+        "blockId": "html-184-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "N+(U) versus interval-filtered N+_[c,d)(U)",
+        "kind": "graph",
+        "blockId": "html-187-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Successful versus partial size bounds",
+        "kind": "table",
+        "blockId": "html-186-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Level-l time induction roadmap",
+        "kind": "diagram",
+        "blockId": "html-196-p1-b1",
+        "authorship": "meta"
+      },
+      {
+        "title": "Exploring the level-l total time expression",
+        "kind": "equation",
+        "blockId": "html-b204-m1",
+        "authorship": "meta"
+      }
+    ],
+    "generated": 0,
+    "customRequests": 0,
+    "issues": [
+      "Meta output did not match the bounded plan/source contract. The previous widget is retained.",
+      "A proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.",
+      "Meta output did not match the bounded plan/source contract. The previous widget is retained.",
+      "A proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.",
+      "A proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.",
+      "A proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.",
+      "A proposed figure was rejected: The exact quote, source block or page is invalid.",
+      "A proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.",
+      "A proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.",
+      "A proposed figure was rejected: The proposed configuration is not valid JSON."
+    ],
+    "progressText": "24 illustrations ready\n\nMeta reviewed the entire saved paper. Available illustrations are placed beside their passages; some requested interactions remain unavailable.\n\nMeta output did not match the bounded plan/source contract. The previous widget is retained.\nA proposed figure was rejected: The proposed configuration does not match the bounded widget catalog schema.\nAdded illustrations are teaching models, not verified scientific results.",
+    "visibleStockWidgets": 24
+  },
+  "verification": {
+    "tests": 808,
+    "passed": 808,
+    "command": "npx tsx --test --test-concurrency=1 tests/*.test.ts",
+    "typecheck": "passed",
+    "productionBuild": "passed",
+    "parallelAttempts": "Two parallel-suite attempts encountered isolated compiler/guest deadline failures. The complete sequential suite passed without changing execution limits."
+  },
+  "limitations": [
+    "The first live pass ended partial because 10 proposed figures/plans failed validation; 24 valid Meta-authored bank widgets were displayed.",
+    "Automatic correction of rejected plans was implemented after observing these failures and tested without provider calls. This report does not claim a second live whole-paper run with the repair patch.",
+    "Meta requested no SDK-generated interaction in this run; SDK creation/repair/session continuation is covered by provider-free orchestration tests.",
+    "No human-reader evaluation or independent scientific validation was performed."
+  ]
+}

@@ -27,9 +27,9 @@ AND COALESCE((SELECT SUM(
   END
 ) FROM usage_records WHERE created_at >= ?), 0) + ? <= ?`;
 
-export function createD1UsageStore(options: { db: D1UsageDatabase; limits?: UsageLimits; now?: () => number }): UsageStore {
+export function createD1UsageStore(options: { db: D1UsageDatabase; limits?: UsageLimits; enforceLimits?:boolean; now?: () => number }): UsageStore {
   const limits = options.limits ?? DEFAULT_USAGE_LIMITS; validateLimits(limits);
-  const now = options.now ?? Date.now;
+  const now = options.now ?? Date.now;const enforceLimits=options.enforceLimits!==false;
   const { db } = options;
   async function row(id: string) { return db.prepare('SELECT record FROM usage_records WHERE id = ?').bind(id).first<{ record: string }>(); }
   return {
@@ -38,9 +38,9 @@ export function createD1UsageStore(options: { db: D1UsageDatabase; limits?: Usag
       try {
         const time = now(); const today = dayStart(time);
         const record: UsageRecord = { ...input, createdAt: time, updatedAt: time, status: 'reserved', reservedTokens: reservedTokensFor(input) };
-        const result = await db.prepare(D1_RESERVE_SQL).bind(input.id, time, JSON.stringify(record),
+        const result = enforceLimits?await db.prepare(D1_RESERVE_SQL).bind(input.id, time, JSON.stringify(record),
           time - 3_600_000, limits.globalHourlyRequests, input.sessionId, time - 600_000, limits.sessionTenMinuteRequests,
-          today, limits.dailyRequests, today, record.reservedTokens, limits.dailyTokens).run();
+          today, limits.dailyRequests, today, record.reservedTokens, limits.dailyTokens).run():await db.prepare('INSERT OR IGNORE INTO usage_records (id, created_at, record) VALUES (?, ?, ?)').bind(input.id,time,JSON.stringify(record)).run();
         if (result.success === false || !Number.isInteger(result.meta?.changes) || ![0, 1].includes(result.meta!.changes!)) return unavailableStore();
         const stored = await row(input.id);
         if (!stored) {const observed=await db.prepare('SELECT record FROM usage_records WHERE created_at >= ?').bind(time-86_400_000).all<{record:string}>();if(observed.success===false||!Array.isArray(observed.results))return unavailableStore();checkLimits(observed.results.map(row=>JSON.parse(row.record)),input,limits,time);throw new UsageQuotaError('global-rate',time+60_000);}
@@ -72,7 +72,7 @@ export function createD1UsageStore(options: { db: D1UsageDatabase; limits?: Usag
         const time = now();
         const result = await db.prepare('SELECT record FROM usage_records WHERE created_at >= ?').bind(dayStart(time)).all<{ record: string }>();
         if (result.success === false || !Array.isArray(result.results)) return unavailableStore();
-        return summarize(result.results.map(item => JSON.parse(item.record) as UsageRecord), limits, time, 'd1');
+        return summarize(result.results.map(item => JSON.parse(item.record) as UsageRecord), limits, time, 'd1',enforceLimits);
       } catch { return unavailableStore(); }
     },
   };

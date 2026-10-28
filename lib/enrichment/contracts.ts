@@ -3,8 +3,7 @@ import { z } from 'zod';
 import {capabilitySelectionReceiptSchema,modelRequestAccountingSchema,type CapabilitySelectionReceipt,type ModelRequestAccounting} from '../../shared/capability-retrieval';
 import type { SourceDocument } from '../../shared/schema';
 import { validateWidgetEnvelope, validateWidgetSpec, prepareWidgetSource, widgetEnvelopeSchema, WIDGET_KINDS, type WidgetEnvelope } from '../../shared/widgets';
-import { sectionContext, sourceBlockText, type SourceSection } from './sections';
-import { getWidgetDescriptor } from '../widgets/catalog';
+import { sourceBlockText, type SourceSection } from './sections';
 import { computeWidget } from '../widgets/compute';
 
 const plain = z.string().trim().min(1).max(2000).refine(s => !/<\/?[a-z][^>]*>|javascript\s*:/i.test(s), 'Only plain text is supported.');
@@ -18,25 +17,33 @@ function checkControlPromises(prose: string, kind: WidgetEnvelope['spec']['kind'
   if (!['graph','attention','linear','signal'].includes(kind) && new RegExp(instruction + String.raw`(?:edit|toggle|click)\s+(?:the\s+)?cells?\b`, 'i').test(prose)) throw Error('This widget does not declare the promised cell editor.');
   if (new RegExp(instruction + String.raw`(?:train|fine-tune|finetune)\s+(?:the\s+)?(?:original\s+)?(?:model|transformer|network)\b`, 'i').test(prose)) throw Error('The widget catalog does not train an original model.');
 }
+/** Meta requests a new isolated interaction when a catalog specification cannot express its chosen concept. */
+export const enrichmentCustomFigureSchema = z.strictObject({
+  id:z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,39}$/),title:plain.max(200),concept:plain.max(300),objective:plain.max(1000),
+  blockId:z.string().min(1).max(100),page:z.number().int().min(1).max(500),quote:plain.max(1000),brief:plain.max(1200),
+});
+export type EnrichmentCustomFigure = z.infer<typeof enrichmentCustomFigureSchema>;
 export const enrichmentPlanSchema = z.strictObject({
   summary: plain,
   proposals: z.array(z.strictObject({ id: z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,39}$/), title: plain.max(200), concept: plain.max(300), blockId: z.string().min(1).max(100), page: z.number().int().min(1).max(500), quote: plain.max(1000),
     reason: plain.max(1000), objective: plain.max(1000), neededData: z.array(plain.max(300)).max(8), provenance: z.enum(['synthetic', 'illustrative']),
     interactions: z.array(plain.max(100)).max(12), specJson: z.string().min(2).max(20_000), limitations: z.array(plain.max(500)).max(8) })).max(4),
+  customFigures:z.array(enrichmentCustomFigureSchema).max(4).default([]),
   warnings: z.array(plain.max(1000)).max(12), repetitionReason: z.string().max(1000),
 });
 /** Trusted application hook; throwing rejects only this candidate, never mutates source or grants fidelity. */
 export type CustomWidgetReview = (candidate: CustomWidgetSpec, context: { source: SourceDocument; quote: string; blockId: string }) => void;
 export type EnrichmentAction = 'plan' | 'repair' | 'edit';
 export type EnrichmentProposal = { id: string; concept: string; reason: string; objective: string; neededData: string[]; provenance: 'synthetic' | 'illustrative'; interactions: string[]; limitations: string[]; envelope: WidgetEnvelope; diff?: Array<{ path: string; before: string; after: string }> };
-export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number };retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
+export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; customFigures?:EnrichmentCustomFigure[]; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number };retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
 export type EnrichmentJob = { token: string; createdAt: number; action: EnrichmentAction; sectionId: string; model: string };
 export type EnrichmentBudget = { requests: number; maxRequests: number; accountedTokens: number; maxTokens: number };
 export type EnrichmentReply = { status: 'queued' | 'analyzing' | 'complete' | 'failed' | 'cancelled' | 'expired' | 'incomplete'; job?: EnrichmentJob; result?: EnrichmentResult; budget?: EnrichmentBudget; error?: string; uncertain?: boolean;retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
 
 export const enrichmentResultSchema = z.strictObject({ retrieval:capabilitySelectionReceiptSchema.optional(),accounting:modelRequestAccountingSchema.optional(),action: z.enum(['plan','repair','edit']), sectionId: z.string().min(1).max(100), sectionTitle: z.string().min(1).max(1000), catalogVersion: z.string().max(30), model: z.string().max(120), summary: plain,
   proposals: z.array(z.strictObject({ id: z.string().max(40), concept: plain.max(300), reason: plain.max(1000), objective: plain.max(1000), neededData: z.array(plain.max(300)).max(8), provenance: z.enum(['synthetic','illustrative']), interactions: z.array(plain.max(100)).max(12), limitations: z.array(plain.max(500)).max(8), envelope: widgetEnvelopeSchema, diff: z.array(z.strictObject({ path: z.string().max(500), before: z.string().max(25_000), after: z.string().max(25_000) })).max(100).optional() })).max(4),
-  rejected: z.array(z.strictObject({ id: z.string().max(40), reason: z.string().max(2000) })).max(4), warnings: z.array(z.string().max(2000)).max(20), repetitionReason: z.string().max(1000), usage: z.strictObject({ inputTokens: z.number().int().min(0), outputTokens: z.number().int().min(0), totalTokens: z.number().int().min(0) }).optional(),
+  customFigures:z.array(enrichmentCustomFigureSchema).max(4).default([]),
+  rejected: z.array(z.strictObject({ id: z.string().max(40), reason: z.string().max(2000) })).max(8), warnings: z.array(z.string().max(2000)).max(20), repetitionReason: z.string().max(1000), usage: z.strictObject({ inputTokens: z.number().int().min(0), outputTokens: z.number().int().min(0), totalTokens: z.number().int().min(0) }).optional(),
 });
 
 export function configurationDiff(before: unknown, after: unknown) {
@@ -53,7 +60,6 @@ export function configurationDiff(before: unknown, after: unknown) {
 
 export function compileEnrichmentPlan(input: unknown, options: { source: SourceDocument; section: SourceSection; action: EnrichmentAction; target?: WidgetEnvelope; model: string; catalogVersion: string; allowedInteractions: (kind: typeof WIDGET_KINDS[number]) => readonly string[]; usage?: EnrichmentResult['usage']; reviewCustom?: CustomWidgetReview;allowedKind?:(kind:WidgetEnvelope['spec']['kind'])=>void }): EnrichmentResult {
   const plan = enrichmentPlanSchema.parse(input); const { source, section, action, target } = options;
-  const boundedSourceContext = sectionContext(source,section.id,target?.source.blockId).text;
   const proposals: EnrichmentProposal[] = []; const rejected: EnrichmentResult['rejected'] = []; const seen = new Set<string>();
   for (const proposal of plan.proposals) {
     try {
@@ -64,8 +70,6 @@ export function compileEnrichmentPlan(input: unknown, options: { source: SourceD
       if (!section.segments.some(s => s.blockId === block.id && norm(s.text).includes(norm(proposal.quote)))) throw Error('The proposal is outside the selected section coverage.');
       if (target && (proposal.blockId !== target.source.blockId || proposal.quote !== target.source.quote)) throw Error('A targeted change must preserve the widget source anchor.');
       const spec = validateWidgetSpec(JSON.parse(proposal.specJson));options.allowedKind?.(spec.kind);
-      const conceptHints = getWidgetDescriptor(spec.kind).sourceConceptHints ?? [];
-      if (conceptHints.length && !conceptHints.some(pattern => new RegExp(pattern,'i').test(boundedSourceContext))) throw Error('This computed widget has no declared concept support in the selected source context. Use an illustrative diagram or supply an appropriate source.');
       if (spec.kind === 'table' && spec.provenance !== 'illustrative') throw Error('Generated tables must be labeled illustrative; source/computed provenance needs separate verified data.');
       if(spec.kind==='custom'&&options.reviewCustom){
         const candidate=structuredClone(spec);
@@ -86,9 +90,20 @@ export function compileEnrichmentPlan(input: unknown, options: { source: SourceD
       if (diff && !diff.length) throw Error('The proposal is unchanged; the existing valid widget is retained.');
       proposals.push({ id: proposal.id, concept: proposal.concept, reason: proposal.reason, objective: proposal.objective, neededData: proposal.neededData, provenance: proposal.provenance, interactions: proposal.interactions, limitations: spec.kind==='custom'?[...proposal.limitations.slice(0,7),'Model-designed teaching program. Local evaluation does not independently validate scientific correctness.']:proposal.limitations, envelope, ...(diff ? { diff } : {}) });
       if (action !== 'plan') break;
-    } catch (error) { rejected.push({ id: proposal.id, reason: error instanceof z.ZodError ? 'The proposed configuration does not match the bounded widget catalog schema.' : error instanceof SyntaxError ? 'The proposed configuration is not valid JSON.' : error instanceof Error ? error.message.slice(0,1000) : 'This proposal failed validation.' }); }
+    } catch (error) { rejected.push({ id: proposal.id, reason: error instanceof z.ZodError ? ('The proposed configuration does not match the widget catalog schema: '+error.issues.slice(0,6).map(issue=>issue.path.join('.')+': '+issue.message).join('; ')).slice(0,1000) : error instanceof SyntaxError ? 'The proposed configuration is not valid JSON.' : error instanceof Error ? error.message.slice(0,1000) : 'This proposal failed validation.' }); }
+  }
+  const customFigures:EnrichmentCustomFigure[]=[];
+  for(const request of plan.customFigures){
+    try{
+      if(action!=='plan')throw Error('A targeted repair or settings edit cannot request a new generated interaction.');
+      if(seen.has(request.id))throw Error('Duplicate proposal identity.');seen.add(request.id);
+      const block=source.blocks.find(block=>block.id===request.blockId),norm=(value:string)=>value.replace(/\s+/g,' ').trim();
+      if(!block||block.page!==request.page||norm(request.quote).length<12||!norm(sourceBlockText(block)).includes(norm(request.quote)))throw Error('The exact quote, source block or page is invalid.');
+      if(!section.segments.some(segment=>segment.blockId===block.id&&norm(segment.text).includes(norm(request.quote))))throw Error('The custom figure request is outside the selected section coverage.');
+      customFigures.push(request);
+    }catch(error){rejected.push({id:request.id,reason:error instanceof Error?error.message.slice(0,1000):'The custom figure request failed validation.'});}
   }
   const warnings = [...plan.warnings];
   if (proposals.length > 1 && new Set(proposals.map(p => p.envelope.spec.kind)).size === 1 && !plan.repetitionReason.trim()) warnings.push('Repeated widget types have no supplied pedagogical reason; inspect the plan before accepting.');
-  return { action, sectionId: section.id, sectionTitle: section.title, catalogVersion: options.catalogVersion, model: options.model, summary: plan.summary, proposals, rejected, warnings, repetitionReason: plan.repetitionReason, ...(options.usage ? { usage: options.usage } : {}) };
+  return { action, sectionId: section.id, sectionTitle: section.title, catalogVersion: options.catalogVersion, model: options.model, summary: plan.summary, proposals, customFigures, rejected, warnings, repetitionReason: plan.repetitionReason, ...(options.usage ? { usage: options.usage } : {}) };
 }
