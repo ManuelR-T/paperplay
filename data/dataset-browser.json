@@ -1,0 +1,62 @@
+{
+  "issue": "PP-105",
+  "date": "2026-10-28",
+  "browser": "Native T3 Chromium, owned localhost:3001 tab",
+  "checks": {
+    "typecheck": "passed",
+    "tests": 578,
+    "datasetTests": 23,
+    "productionBuild": "passed",
+    "subsequentPresentation": "Rounded summary/fit display, clarified group/usable-unit labels and responsive card fix pass TypeScript/build and final native checks; arithmetic/serialization unchanged."
+  },
+  "observations": [
+    {
+      "check": "Plant means and source n",
+      "result": "20 rows, two genotypes, ten source means each; source n5 per mean retained, independent n unavailable. Initial means0.023826g and0.012534g; supplied SE separate from across-mean sample SD."
+    },
+    {
+      "check": "One-click group filtering and explicit mass conversion",
+      "result": "Col-0 button selects ten rows. g\u2192mg changes source response0.00042000000000000923g to0.4200000000000093mg and SE0.00012409673645989936g to0.12409673645989937mg, original values retained."
+    },
+    {
+      "check": "Descriptive OLS and residuals",
+      "result": "Col-0 rank vs mg: ten pairs, intercept-14.097333333333342, slope6.895151515151517, SSE159.65070060606115, df8, residual variance19.956337575757644. Dashed fit and residual toggle separate from supplied uncertainty."
+    },
+    {
+      "check": "Degenerate predictor",
+      "result": "Selecting constant sourceN predictor gives unavailable varying-x fit; all ten observations and source uncertainty remain inspectable, no alert or invented line."
+    },
+    {
+      "check": "Portable filtered study",
+      "bytes": 13877,
+      "result": "Central Files & source importer restores exact source/fingerprint, Col-0 filter, response mg, OLS rank and selected row col-leaf3. Recomputed summary displays23.826 mean,21.2967 SD with explicit rounding note; raw table/download retain precision."
+    },
+    {
+      "check": "Synthetic missingness and repeated IDs",
+      "artifact": "data/dataset-browser/synthetic-missingness-study.json",
+      "result": "4selected rows,2joint complete,3nonmissing responses mean3/sampleSD2; OLS intercept1/slope2,SSE0,n2,df0,residual variance unavailable. r3x-missing/r4y-missing; repeat IDp shown amongusable rows, independentn unavailable. Explicit illustrative badge."
+    },
+    {
+      "check": "NOAA original uncertainty and dependence",
+      "result": "12monthly observations; mean414.213ppm displayed; fit intercept415.614/slope-2.80044 percalendar-year-offset, SSE31.0382,df10. Supplied source-uncertainty retains unspecified coverage and contributing-day count is not independent replication. No climate-trend claim."
+    },
+    {
+      "check": "B1 reported-only result",
+      "result": "Hodgkin-Huxley Figure11 printedp521, axon31at4C; source-observed and source-calculated cards separate, no selects/plot/raw points/fit/n/uncertainty fabricated. Partial-protocol button focuses the actual18-word caption excerpt."
+    },
+    {
+      "check": "Source focus and local-only interaction",
+      "result": "Source return focuses plant attribution and HHcaption; observed browser resource log has no analysis/enrichment-start/artifact-generation requests."
+    },
+    {
+      "check": "Responsive UI and final fix",
+      "result": "1280px desktop and320px mobile. Text enlargement from16to32CSSpx initially exposed implicit card-grid overflow364pxvs286px. minmax(0,1fr) tracks and child min-width0 fix verified on final build without probe CSS: document320px, dialog scroll/client286px, text32px. Tables/plots scroll locally. Simulation is scoped text enlargement, not OS zoom."
+    }
+  ],
+  "screenshots": [
+    "data/dataset-browser/biomass-fit-desktop.png",
+    "data/dataset-browser/reported-result-mobile.png",
+    "data/dataset-browser/missingness-mobile-200.png"
+  ],
+  "scope": "Admitted source summaries/reported results and finite descriptive methods; no new original-data download, paid inference, held-out paper, human evaluation, simulation or release."
+}

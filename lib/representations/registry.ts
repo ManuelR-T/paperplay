@@ -1,3 +1,6 @@
+import { validateDatasetStudyResult } from '../../shared/dataset-studies';
+import { hasDatasetStudyComputation,datasetSourceFingerprint } from '../datasets/model';
+import type { SourceDocument } from '../../shared/schema';
 import { validateDiscreteResult } from '../../shared/discrete-algorithms';
 import { validateDiscreteNavigation } from '../discrete/navigation';
 import { validateMoleculeView } from '../../shared/molecular-geometry';
@@ -16,7 +19,7 @@ import type { WidgetEnvelope } from '../../shared/widgets';
 import type { WidgetResult } from '../widgets/compute';
 import type { ExecutedRepresentationView, RepresentationView } from './lifecycle';
 
-export type AdapterContext={plan:RepresentationPlan;assets:readonly ScientificAsset[];signal?:AbortSignal;compute?:(widget:WidgetEnvelope,signal?:AbortSignal)=>Promise<WidgetResult>};
+export type AdapterContext={plan:RepresentationPlan;source?:SourceDocument;assets:readonly ScientificAsset[];signal?:AbortSignal;compute?:(widget:WidgetEnvelope,signal?:AbortSignal)=>Promise<WidgetResult>};
 export type RepresentationAdapter={descriptor:CapabilityDescriptor;execute:(view:RepresentationView,context:AdapterContext)=>Promise<ExecutedRepresentationView>};
 export function defaultCapabilityEnvironment():CapabilityEnvironment{
  const browser=typeof window!=='undefined',facilities:CapabilityEnvironment['facilities'][number][]=[];
@@ -74,6 +77,7 @@ export function createCapabilityRegistry(input:readonly RepresentationAdapter[])
      if(context.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
      if(output.id!==view.id||output.kind!==view.kind||new TextEncoder().encode(JSON.stringify(output)).length>adapter.descriptor.limits.maxOutputBytes)throw Error('The adapter returned an incompatible or oversized result.');
      if(output.kind==='source-guide'||output.kind==='composed-scene'||output.kind==='spatial-view'||output.kind==='reasoning-guide')representationViewSchema.parse(output);
+     if(output.kind==='dataset-study'){const original=view as Extract<RepresentationView,{kind:'dataset-study'}>;if(JSON.stringify(output.dataset)!==JSON.stringify(original.dataset)||!hasDatasetStudyComputation(output.result))throw Error('The dataset adapter substituted its analysis or an unchecked computation declaration.');validateDatasetStudyResult(output.result,original.dataset.request);if(!context.source||output.result.bindings.source.fingerprint!==await datasetSourceFingerprint(context.source))throw Error('Dataset computation belongs to different source content.');if(output.result.mode==='data'&&!context.assets.some(asset=>asset.id===output.result.bindings.assetId&&asset.checksum.value===output.result.bindings.checksum&&hasCheckedAssetIntegrity(asset)))throw Error('The dataset result does not use its exact checked table.');}
      if(output.kind==='discrete-trace'){const original=view as Extract<RepresentationView,{kind:'discrete-trace'}>;if(JSON.stringify(output.discrete)!==JSON.stringify(original.discrete))throw Error('The discrete adapter substituted its algorithm or command inputs.');validateDiscreteResult(output.result,original.discrete.request);validateDiscreteNavigation(output.result,context.plan.navigation?.selections??[],view.id);}
      if(output.kind==='molecular-view'){const original=view as Extract<RepresentationView,{kind:'molecular-view'}>,asset=context.assets.find(asset=>asset.id===output.molecule.assetId);if(JSON.stringify(output.molecule)!==JSON.stringify(original.molecule)||!hasCheckedAssetIntegrity(asset))throw Error('The molecular adapter substituted its structure/settings or unchecked geometry.');validateMoleculeView(output.molecule,asset);}
      if(output.kind==='physical-field'){const original=view as Extract<RepresentationView,{kind:'physical-field'}>;if(JSON.stringify(output.field)!==JSON.stringify(original.field))throw Error('The field adapter substituted its declared model/settings.');validateFieldResult(output.result,original.field.request);}

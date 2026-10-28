@@ -1,0 +1,233 @@
+{
+  "format": "paperplay-data-study",
+  "version": 2,
+  "source": {
+    "schemaVersion": 1,
+    "id": "dataset-missing-qa",
+    "sourceVersion": "authored-v1",
+    "title": "Synthetic missingness inspection",
+    "authors": [
+      "Paperplay"
+    ],
+    "source": {
+      "kind": "prepared"
+    },
+    "pageCount": 1,
+    "blocks": [
+      {
+        "id": "fixture",
+        "page": 1,
+        "kind": "paragraph",
+        "text": "Authored missingness and repeated-unit fixture, with no empirical or source-measured values."
+      }
+    ],
+    "anchors": [
+      {
+        "id": "fixture",
+        "blockId": "fixture",
+        "page": 1,
+        "quote": "Authored missingness and repeated-unit fixture, with no empirical or source-measured values."
+      }
+    ],
+    "extractionWarnings": [
+      "Synthetic QA values, not original observations."
+    ]
+  },
+  "representation": {
+    "format": "paperplay-representation",
+    "schemaVersion": 1,
+    "id": "dataset-missing-qa",
+    "title": "Synthetic missingness inspection",
+    "source": {
+      "documentId": "dataset-missing-qa",
+      "sourceVersion": "authored-v1"
+    },
+    "authorship": {
+      "kind": "prepared",
+      "label": "Synthetic QA example"
+    },
+    "objective": "Inspect missing pairs without zero-fill or independent-replicate inference.",
+    "anchors": [
+      {
+        "id": "fixture",
+        "blockId": "fixture",
+        "page": 1,
+        "quote": "Authored missingness and repeated-unit fixture, with no empirical or source-measured values."
+      }
+    ],
+    "claims": [
+      {
+        "id": "fixture",
+        "kind": "pedagogical-addition",
+        "text": "Authored missingness and repeated-unit fixture, with no empirical or source-measured values.",
+        "anchorIds": [
+          "fixture"
+        ]
+      }
+    ],
+    "assumptions": [
+      "Synthetic numbers only."
+    ],
+    "requestedEvidence": "simplified-illustration",
+    "assets": [
+      {
+        "id": "qa-table",
+        "kind": "table",
+        "description": "Authored missingness values",
+        "checksum": "a3494ff2f411144bd83b37a262e2e1075520d4a79a1ce5326126a54a82ee1cad"
+      }
+    ],
+    "quantities": [],
+    "execution": {
+      "kind": "local-computation",
+      "capabilities": [
+        {
+          "id": "dataset-exploration",
+          "version": "1.0.0"
+        }
+      ],
+      "assetIds": [
+        "qa-table"
+      ]
+    },
+    "interactions": [
+      "widget-controls",
+      "select-entity",
+      "inspect-data",
+      "return-source"
+    ],
+    "assetManifests": [
+      {
+        "format": "paperplay-scientific-asset",
+        "schemaVersion": 1,
+        "id": "qa-table",
+        "label": "Authored missingness values",
+        "shape": [
+          4,
+          4
+        ],
+        "coordinates": {
+          "system": "Authored tabular fixture",
+          "axes": []
+        },
+        "missingValues": "null",
+        "provenance": {
+          "origin": "illustrative",
+          "attribution": "Paperplay synthetic fixture",
+          "rights": "Project-authored values"
+        },
+        "transformations": [],
+        "checksum": {
+          "algorithm": "sha256",
+          "scope": "manifest-and-data",
+          "value": "a3494ff2f411144bd83b37a262e2e1075520d4a79a1ce5326126a54a82ee1cad"
+        },
+        "kind": "table",
+        "data": {
+          "columns": [
+            {
+              "id": "x",
+              "label": "Predictor",
+              "type": "number",
+              "unit": "s"
+            },
+            {
+              "id": "y",
+              "label": "Response",
+              "type": "number",
+              "unit": "g"
+            },
+            {
+              "id": "unit",
+              "label": "Repeated declared unit",
+              "type": "text",
+              "unit": "id"
+            },
+            {
+              "id": "n",
+              "label": "Source n unavailable",
+              "type": "number",
+              "unit": "count"
+            }
+          ],
+          "rows": [
+            {
+              "id": "r1",
+              "values": [
+                0,
+                1,
+                "p",
+                null
+              ]
+            },
+            {
+              "id": "r2",
+              "values": [
+                1,
+                3,
+                "p",
+                null
+              ]
+            },
+            {
+              "id": "r3",
+              "values": [
+                null,
+                5,
+                "q",
+                null
+              ]
+            },
+            {
+              "id": "r4",
+              "values": [
+                3,
+                null,
+                "r",
+                null
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "views": [
+      {
+        "id": "dataset",
+        "kind": "dataset-study",
+        "dataset": {
+          "title": "Synthetic missingness inspection",
+          "anchorIds": [
+            "fixture"
+          ],
+          "request": {
+            "format": "paperplay-dataset-study",
+            "schemaVersion": 1,
+            "source": {
+              "documentId": "dataset-missing-qa",
+              "sourceVersion": "authored-v1"
+            },
+            "mode": "data",
+            "assetId": "qa-table",
+            "checksum": "a3494ff2f411144bd83b37a262e2e1075520d4a79a1ce5326126a54a82ee1cad",
+            "variables": {
+              "xColumn": "x",
+              "yColumn": "y"
+            },
+            "groupColumn": null,
+            "method": "linear-ols",
+            "transformations": [],
+            "replication": {
+              "observationUnit": "Synthetic row",
+              "experimentalUnit": "Authored repeated IDs; no empirical unit claim",
+              "unitIdColumn": "unit",
+              "dependence": "repeated-measures",
+              "sourceNColumn": "n",
+              "sourceNMeaning": "Unavailable; no replication count invented"
+            }
+          }
+        }
+      }
+    ]
+  }
+}

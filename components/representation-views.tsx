@@ -14,6 +14,7 @@ import { ScientificQuantityView } from './scientific-quantity-view';
 import { StatisticalChartView } from './statistical-chart';
 import { ComposedSceneView } from './composed-scene';
 import { ReasoningGuideView } from './reasoning-guide';
+import { DatasetStudyView } from './dataset-study';
 import { DiscreteView } from './discrete-view';
 import { MolecularView } from './molecular-view';
 import { PhysicalFieldView } from './physical-field-view';
@@ -28,6 +29,7 @@ export function RepresentationViews({plan,source,assets,store,navigation,onUpdat
  const returnToAnchor=(id:string)=>onReturn(plan.anchors.find(anchor=>anchor.id===id)!.blockId);
  return <>{plan.views.map(view=>{
    switch(view.kind){
+     case 'dataset-study':return <DatasetStudyView key={view.id} dataset={view.dataset} source={source} assets={assets} viewId={view.id} store={store} navigation={navigation} onReturn={returnToAnchor} onChange={patch=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='dataset-study'?{...item,dataset:{...item.dataset,...patch}}:item)}))}/>;
      case 'discrete-trace':return <DiscreteView key={view.id} discrete={view.discrete} viewId={view.id} store={store} navigation={navigation} onReturn={returnToAnchor} onChange={patch=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='discrete-trace'?{...item,discrete:{...item.discrete,...patch}}:item)}))}/>;
      case 'molecular-view':return <MolecularView key={view.id} molecule={view.molecule} assets={assets} viewId={view.id} store={store} navigation={navigation} onReturn={returnToAnchor} onChange={patch=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='molecular-view'?{...item,molecule:{...item.molecule,...patch}}:item)}))}/>;
      case 'physical-field':return <PhysicalFieldView key={view.id} request={view.field.request} anchorId={view.field.anchorIds[0]} onSource={returnToAnchor} viewId={view.id} store={store} navigation={navigation} onConfigure={request=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='physical-field'?{...item,field:{...item.field,request}}:item)}))}/>;

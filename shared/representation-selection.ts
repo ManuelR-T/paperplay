@@ -13,6 +13,15 @@ export function representationInputRevision(plan:RepresentationPlan){
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection,resolvedAssets?:readonly ScientificAsset[]):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='dataset-study'){
+   if(selection.kind!=='entity'||selection.scopeId!=='dataset'||view.dataset.request.mode!=='data')return false;
+   const request=view.dataset.request,asset=resolvedAssets?.find(asset=>asset.id===request.assetId)??plan.assetManifests?.find(asset=>asset.id===request.assetId);
+   if(!asset)return /^[A-Za-z0-9_-]{1,100}$/.test(selection.entityId);
+   if(asset.kind!=='table'||asset.checksum.value!==request.checksum)return false;
+   const row=asset.data.rows.find(row=>row.id===selection.entityId);if(!row||request.selectedRowIds?.length&&!request.selectedRowIds.includes(row.id))return false;
+   if(request.groupColumn!==null&&!!request.selectedGroups?.length){const index=asset.data.columns.findIndex(column=>column.id===request.groupColumn);if(index<0||!request.selectedGroups.some(value=>value===row.values[index]))return false;}
+   return true;
+ }
  if(view.kind==='discrete-trace'){
    if(selection.scopeId!=='discrete')return false;
    if(selection.kind==='time')return selection.mode==='authored-step'&&selection.frameId===null&&selection.unit==='frame'&&Number.isInteger(selection.value)&&selection.value>=0&&selection.value<view.discrete.request.limits.maxFrames;
@@ -67,7 +76,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='discrete-trace'&&(selection.kind==='entity'||selection.kind==='time'))view.discrete.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='dataset-study'&&selection.kind==='entity')view.dataset.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='discrete-trace'&&(selection.kind==='entity'||selection.kind==='time'))view.discrete.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='molecular-view'&&selection.kind==='entity')view.molecule.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='physical-field'&&(selection.kind==='time'||selection.kind==='region'))view.field.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='stochastic'&&selection.kind==='time')view.stochastic.anchorIds.forEach(id=>ids.add(id));

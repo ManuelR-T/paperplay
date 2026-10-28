@@ -821,10 +821,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 60,
         "url": "https://github.com/ManuelR-T/paperplay/issues/60"
+      },
+      "evidence": {
+        "document": "docs/dataset-studies.md",
+        "checks": "TypeScript, 578 deterministic tests (23 dataset), production build; final presentation TypeScript/build/native checks",
+        "browser": "Native Chromium: empirical plant/NOAA filtering, conversion, supplied uncertainty vs summaries/OLS/residuals, missingness/repeated-unit synthetic fixture, B1 reported-only/protocol, selected-row portable replay and 320 px enlarged-text grid fix",
+        "limitations": "Descriptive summaries/unweighted OLS only; source n not pooled, no inferred SEM/CI or raw measurements; reported cards are declarations, computation receipts are not scientific validation. No paid/held-out/human/release work."
       }
     },
     {
