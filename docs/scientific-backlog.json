@@ -2,7 +2,7 @@
   "version": 1,
   "createdAt": "2026-10-28",
   "repository": "ManuelR-T/paperplay",
-  "status": "planned-not-implemented",
+  "status": "implementation-in-progress",
   "epic": {
     "id": "PP-080",
     "title": "Build an extensible architecture for scientific paper representations",
@@ -19,8 +19,8 @@
     "M16": "Coverage, validation, performance and adoption"
   },
   "sizeLegend": {
-    "M": "roughly 3–5 focused solo days; re-estimate after design",
-    "L": "roughly 6–10 focused solo days; split into reviewable increments",
+    "M": "roughly 3\u20135 focused solo days; re-estimate after design",
+    "L": "roughly 6\u201310 focused solo days; split into reviewable increments",
     "discovery": "timebox a prototype/design before committing to implementation estimates",
     "external": "depends on participant/expert availability, not only engineering time"
   },
@@ -41,10 +41,16 @@
       "priority": "P0",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 36,
         "url": "https://github.com/ManuelR-T/paperplay/issues/36"
+      },
+      "evidence": {
+        "document": "docs/representation-contracts.md",
+        "checks": "npm run check: TypeScript, 218 tests, production build",
+        "browser": "Native Chromium: guide step/quote, mobile source return with focus, widget-format import, unsupported-version recovery",
+        "limitations": "Synthetic structural corpus; no new paid inference or independent scientific validation."
       }
     },
     {

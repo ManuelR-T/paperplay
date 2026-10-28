@@ -26,3 +26,5 @@ npx tsx --test tests/contracts.test.ts
 Generic graph inputs can represent negative weights and array inputs can be empty. These are structural contracts: each implemented engine must separately enforce its mathematical preconditions (for example, nonnegative weights for Dijkstra) rather than impose one algorithm’s constraints on every figure.
 
 M1 implementations live in `lib/engines/`; optional graph distances/frontier and array original-identity/run/merge-range fields extend version 1 without invalidating M0 structural fixtures. See `docs/engines.md` for precise engine assumptions and counting conventions.
+
+Research representations use the additional version-1 contract in `representations.ts`; existing v2 widget files remain unchanged. See [the contracts and adapters](../docs/representation-contracts.md).
