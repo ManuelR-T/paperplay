@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "Interactive research papers with source-linked figures and Meta AI",
   "scripts": {
-    "test": "tsx --test tests/*.test.ts",
+    "test": "tsx --test --test-concurrency=4 tests/*.test.ts",
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start --hostname 0.0.0.0",
@@ -42,6 +42,7 @@
     "@jitl/quickjs-singlefile-browser-release-sync": "0.32.0",
     "@next/env": "^16.4.3",
     "@tailwindcss/postcss": "^4.3.3",
+    "acorn": "8.19.0",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

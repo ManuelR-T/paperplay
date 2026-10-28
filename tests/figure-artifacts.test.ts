@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createDynamicSequenceArtifact } from '../lib/artifacts/fixtures/dynamic-sequence';
+import { createDynamicSequenceArtifact as createFixture } from '../lib/artifacts/fixtures/dynamic-sequence';
 import { declarativeFigureArtifact } from '../lib/artifacts/declarative';
 import { buildFigureArtifact,runFigureArtifact } from '../lib/artifacts/lifecycle';
 import { evaluateGuestFrame } from '../lib/artifacts/guest-engine';
@@ -8,6 +8,7 @@ import { createReasoningExample } from '../lib/representations/reasoning-example
 import { validateFigureArtifact } from '../shared/figure-artifacts';
 import { sealScientificAsset } from '../lib/assets/local';
 import { validateSdkFrame } from '../shared/figure-sdk';
+async function createDynamicSequenceArtifact(){const value=await createFixture();value.artifact.resources.maxExecutionMs=1000;return value;}
 const referenceAdapter={id:'restricted-interpreter-reference-only',execute:evaluateGuestFrame};
 test('one build/run interface preserves a declarative guide and generated variable-length SDK interaction',async()=>{
  const study=createReasoningExample('bell'),declarative=await buildFigureArtifact(declarativeFigureArtifact(study.plan,study.source),study.source);assert.equal(declarative.status,'ready');if(declarative.status!=='ready')throw Error();assert.equal((await runFigureArtifact(declarative.value,study.source)).status,'ready');

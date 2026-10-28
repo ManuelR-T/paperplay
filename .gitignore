@@ -26,3 +26,5 @@ public/pdfjs/
 public/engine.worker.mjs
 public/widget.worker.mjs
 public/library.worker.mjs
+# Rebuilt trusted interpreter/compiler infrastructure; no generated artifact code.
+public/artifact-compiler.worker.mjs

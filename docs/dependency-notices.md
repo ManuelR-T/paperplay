@@ -94,6 +94,7 @@ Generated from the installed, locked dependency tree. Package license files rema
 | @types/react | 19.3.0 | MIT |
 | @types/react-dom | 19.3.0 | MIT |
 | @typescript/typescript-linux-x64 | 7.0.2 | Apache-2.0 |
+| acorn | 8.19.0 | MIT |
 | aria-hidden | 1.2.6 | MIT |
 | axe-core | 4.14.0 | MPL-2.0 |
 | baseline-browser-mapping | 2.11.33 | Apache-2.0 |

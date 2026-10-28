@@ -1,0 +1,87 @@
+{
+  "format": "paperplay-compiler-browser-spike",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-28T04:18:56.486Z",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+  "origin": "http://127.0.0.1:3002",
+  "repeat": {
+    "one": "d223be0cdd3b1cb0cabc7ec7bc8d013a8e36c9b605dd50509043e16c2044556e",
+    "two": "d223be0cdd3b1cb0cabc7ec7bc8d013a8e36c9b605dd50509043e16c2044556e",
+    "same": true,
+    "status": "ready",
+    "elapsedMs": [
+      135,
+      142
+    ],
+    "toolchain": {
+      "compiler": "paperplay-script-admission@1.0.0",
+      "parser": "acorn@8.19.0",
+      "parserSha256": "b95392d79457d0357555c5ed3e56302d074b92dff119bcf3b44179500b10e9df",
+      "engine": "quickjs-emscripten@0.32.0-singlefile-browser-release-sync",
+      "engineModuleSha256": "49c171aa6ee9c782f40229c95cdfaeb282b6740dd8eea4cc8e655986276a766a",
+      "grammar": "ecmascript-2022-script",
+      "policy": "synchronous-update-v1"
+    }
+  },
+  "results": [
+    {
+      "id": "throw-not-executed",
+      "status": "ready",
+      "diagnostics": [],
+      "elapsedMs": 118
+    },
+    {
+      "id": "loop-not-executed",
+      "status": "ready",
+      "diagnostics": [],
+      "elapsedMs": 126
+    },
+    {
+      "id": "nested-import",
+      "status": "rejected",
+      "diagnostics": [
+        {
+          "code": "dependency",
+          "message": "Imports and module loaders are not supported.",
+          "position": 42
+        }
+      ],
+      "elapsedMs": 125
+    },
+    {
+      "id": "syntax-private-name",
+      "status": "rejected",
+      "diagnostics": [
+        {
+          "code": "syntax",
+          "message": "The script has invalid syntax.",
+          "position": 64
+        }
+      ],
+      "elapsedMs": 1080
+    },
+    {
+      "id": "complexity",
+      "status": "rejected",
+      "diagnostics": [
+        {
+          "code": "complexity",
+          "message": "The source exceeds the permitted syntax complexity.",
+          "position": 128
+        }
+      ],
+      "elapsedMs": 129
+    }
+  ],
+  "cancelled": {
+    "status": "cancelled",
+    "elapsedMs": 10
+  },
+  "killed": {
+    "status": "watchdog-killed",
+    "elapsedMs": 10
+  },
+  "active": 0,
+  "heartbeatDelta": 38,
+  "diagnosticsContainPrivateName": false
+}
