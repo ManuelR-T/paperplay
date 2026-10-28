@@ -1,0 +1,24 @@
+{
+  "scope": "Actual accepted C4 job retrieval under operator execution+creation disabled; no new generation request sent",
+  "policy": {
+    "format": "paperplay-adoption-policy",
+    "schemaVersion": 1,
+    "policyVersion": "1.0.0",
+    "generatedExecution": false,
+    "newModelCreation": false,
+    "reason": "Generated compilation and execution are disabled by the operator. Source, notes, exports and recorded replay remain available."
+  },
+  "cacheControl": "no-store, max-age=0",
+  "httpStatus": 200,
+  "status": "complete",
+  "attemptsClaimed": 1,
+  "candidateSha256": "62d2a6aa75ac84e0d40e07c75040200b116fb709af9a2931a9f84e4aa3e63156",
+  "candidateMatchesOriginal": true,
+  "actualUsage": {
+    "inputTokens": 4267,
+    "outputTokens": 2370,
+    "totalTokens": 6637
+  },
+  "newCreateRequestsSent": 0,
+  "originalCookieOrJobCapabilitiesPublished": false
+}

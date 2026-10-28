@@ -1,3 +1,4 @@
+import {readAdoptionPolicy} from '../../shared/adoption';
 import {retrieveCapabilities,generationRetrievalQuery} from '../../lib/retrieval/selection';
 import {createCapabilitySelectionReceipt,validateCapabilitySelectionReceipt} from '../../lib/retrieval/manifest';
 import type {ModelRequestAccounting} from '../../shared/capability-retrieval';
@@ -124,7 +125,6 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     },
     async start(request: Request) {
       try { const { config, key, session } = configFor(request); const input = generationStartSchema.parse(await readJson(request)); const run = authorize(input.run, session.sid, key); const checked = await checkedContext(input, run);
-        if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         if (input.attempt > run.maxAttempts) return json(reply(run, key, { status: 'exhausted', error: 'The authorized attempt budget is exhausted.' }));
         if (!run.attempts[input.attempt - 1] && (run.closed || now() >= run.deadlineAt)) return json(reply(run, key, { status: run.closed ? 'cancelled' : 'expired', error: 'No new paid work can start in this closed or expired run.' }));
         if (input.attempt === 1 && (input.previous || input.feedback)) throw new AnalysisHttpError(400, 'Initial creation does not accept repair feedback.');
@@ -145,6 +145,8 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
         const id=usageIdFor(session.sid,`artifact-${run.runId}-${input.attempt}`);
         const fingerprint=hash({frozen:run.contextHash,context:checked.selected.text,brief:input.brief,attempt:input.attempt,previous:input.previous??null,feedback:input.feedback??null,retrieval:run.retrieval?.receiptSha256??null,model:run.model});
         const acceptedAttempt=run.attempts[input.attempt-1];if(acceptedAttempt){if(run.retrieval&&acceptedAttempt.fingerprint!==fingerprint)throw new AnalysisHttpError(409,'This attempt already belongs to different frozen input.');const pending=running.get(id);if(pending)return json(await pending);return json(await retrieve(run,input.attempt,checked,config,key));}
+        if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
+        if(!readAdoptionPolicy(process.env).generatedExecution)throw new AnalysisHttpError(503,'New generated artifacts are disabled by the operator. Accepted jobs and recorded replay remain available.');
         if(!run.retrieval)throw new AnalysisHttpError(409,'This run predates frozen capability retrieval. Retrieve accepted work; explicitly prepare a new run for new creation.');
         if(run.promptContractSha256!==hash({instructions:GENERATION_INSTRUCTIONS,schema:generationProviderRequest({context:checked.selected.text,brief:input.brief,attempt:1}).text.format.schema})||run.sdkSha256!==textHash(FIGURE_SDK_SOURCE))throw new AnalysisHttpError(409,'The frozen prompt/SDK contract changed. Retrieve accepted work or explicitly prepare a new run.');
         const selection=await retrieveCapabilities(checked.query);if(selection.selectionSha256!==run.retrieval.selectionSha256)throw new AnalysisHttpError(409,'The frozen catalog changed. Retrieve existing attempts or explicitly prepare a new run; no repair was submitted.');
@@ -158,7 +160,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
         catch (error) { if (!(error instanceof AnalysisHttpError && error.uncertain)) store().settle(id, { status: 'rejected', actualTokens: 0 }); throw error; }
         const work = (async () => {
           let response: ProviderResponse;
-          try { const current = store().generationRun(run.runId, run.owner); if (current.closed || now() >= current.deadlineAt) throw new AnalysisHttpError(410, 'This run closed or expired before provider submission.'); response = await provider({ ...config, model: run.model }).start(providerInput); }
+          try { const latestConfig=dependencies.getConfig();if(!readAdoptionPolicy(process.env).generatedExecution)throw new AnalysisHttpError(503,'New generated artifacts are disabled by the operator.');if(!latestConfig.inferenceEnabled)throw new AnalysisHttpError(503,latestConfig.disabledReason??'New Meta requests are disabled.');const current = store().generationRun(run.runId, run.owner); if (current.closed || now() >= current.deadlineAt) throw new AnalysisHttpError(410, 'This run closed or expired before provider submission.'); response = await provider({ ...config, model: run.model }).start(providerInput); }
           catch (error) { const safe = safeProviderError(error, true); try { store().settle(id, { status: safe.uncertain ? 'uncertain' : 'rejected', ...(safe.uncertain ? {} : { actualTokens: 0 }) }); } catch {} try { await usage().settle(id, { status: safe.uncertain ? 'uncertain' : 'rejected' }); } catch {} throw safe; }
           if (!providerId.test(response.id)) { try { store().settle(id, { status: 'uncertain' }); } catch {} throw new AnalysisHttpError(504, 'Meta may have accepted this attempt without a recoverable reference. No replacement was sent.', true); }
           // Persist the accepted reference before validation or optional usage reporting.

@@ -57,7 +57,7 @@ test('prepare is inference-free; accepted work deduplicates and recovers across 
   assert.equal(done.candidate!.artifact.kind, 'generated');
   const artifact = done.candidate!.artifact; if (artifact.kind === 'generated') { assert.equal(artifact.provenance.evidence, 'unverified'); assert.equal(artifact.provenance.origin, 'model-authored'); assert.deepEqual(artifact.assetIds, []); }
   assert.equal(done.paperBudget!.accountedTokens, 100); assert.equal(done.paperBudget!.requests, 1);
-  assert.equal((await recreated.start(req(body, f.cookie))).status, 503); assert.equal(f.counts().starts, 1);
+  assert.equal((await recreated.start(req(body, f.cookie))).status, 200); assert.equal(f.counts().starts, 1);
 });
 
 test('source, brief, model capability and ownership are bound before retrieval or paid creation', async t => {

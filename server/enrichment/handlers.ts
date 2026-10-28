@@ -106,12 +106,13 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
       try {
         requireSameOrigin(request, dependencies.allowedOrigin);
         const input = startSchema.parse(await readEnrichmentJson(request)); const config = dependencies.getConfig();
-        if (!config.inferenceEnabled || !config.apiKey) throw new AnalysisHttpError(503, config.disabledReason ?? 'Meta enrichment is not configured. Reading and local widgets remain available.');
+        if (!config.apiKey) throw new AnalysisHttpError(503, 'The Meta key needed for this accepted job is unavailable. Reading and saved references remain available.');
         const key=signingKey(config.apiKey,dependencies.signingSecret);
         sessionFor(request,key,now(),false);const session=sessionFor(request,key,now(),true);cookie=session.cookie;
         const id=usageIdFor(session.sid,`enrichment-${input.requestId}`),existing=store().record(id,session.sid);
         const prepared=await prepare(input,config,existing);
         if(existing){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
+        if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: ENRICHMENT_MAX_OUTPUT_TOKENS, inputCharacters: prepared.metrics!.characters, model: config.model, fingerprint: prepared.contextHash };
         const reserved = store().reserve({ id, owner: session.sid, documentHash: prepared.documentHash, contextHash: prepared.contextHash, action: input.action, sectionId: input.sectionId, reservedTokens: reservedTokensFor(reservationInput),retrieval:prepared.retrieval,requestMetrics:prepared.metrics,requestSha256:prepared.requestSha256 });
         if (!reserved.created) {
@@ -125,7 +126,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         } catch (error) { store().settle(id, { status: 'rejected', actualTokens: 0 }); throw error; }
         const work = (async (): Promise<EnrichmentReply> => {
           let response: ProviderResponse;
-          try { response = await provider(config).start(prepared.request); }
+          try { const current=dependencies.getConfig();if(!current.inferenceEnabled)throw new AnalysisHttpError(503,current.disabledReason??'New Meta requests are disabled.');response = await provider(config).start(prepared.request); }
           catch (error) {
             const e = safeProviderError(error, true); const status = e.uncertain ? 'uncertain' : 'rejected';
             try { store().settle(id, { status, ...(e.uncertain ? {} : { actualTokens: 0 }) }); } catch { /* reservation retained */ }

@@ -30,7 +30,10 @@ test('compiler owner validates instance/content responses and terminates on canc
  const { compileFigureInWorker }=await import('../lib/artifacts/compiler-client');const original=globalThis.Worker,input=await request('function update(input,state,event){}'),built=await compileFigureSource(input,parser);if(built.status!=='ready')throw Error();let terminated=0,spoof=true;
  class FakeWorker{onmessage:((event:{data:unknown})=>void)|null=null;onerror:(()=>void)|null=null;postMessage(message:{instanceId:string}){queueMicrotask(()=>this.onmessage?.({data:{instanceId:spoof?'wrong-instance':message.instanceId,result:built}}));}terminate(){terminated++;}}
  try{globalThis.Worker=FakeWorker as unknown as typeof Worker;assert.equal((await compileFigureInWorker(input,{workerUrl:'/artifact-compiler.worker.mjs'})).status,'failed');assert.equal(terminated,1);spoof=false;assert.equal((await compileFigureInWorker(input,{workerUrl:'/artifact-compiler.worker.mjs'})).status,'ready');assert.equal(terminated,2);
- class HangingWorker extends FakeWorker{postMessage(){}}
- globalThis.Worker=HangingWorker as unknown as typeof Worker;const controller=new AbortController(),pending=compileFigureInWorker(input,{workerUrl:'/artifact-compiler.worker.mjs',signal:controller.signal});controller.abort();assert.equal((await pending).status,'cancelled');assert.equal(terminated,3);
+ let markStarted!:()=>void;const started=new Promise<void>(resolve=>{markStarted=resolve;});
+ class HangingWorker extends FakeWorker{postMessage(){markStarted();}}
+ globalThis.Worker=HangingWorker as unknown as typeof Worker;const controller=new AbortController(),pending=compileFigureInWorker(input,{workerUrl:'/artifact-compiler.worker.mjs',signal:controller.signal});
+ // This case exercises cancellation of an admitted compiler, after the free policy check.
+ await Promise.race([started,pending.then(()=>{throw Error('Compiler finished before the cancellation fixture was admitted.');})]);controller.abort();assert.equal((await pending).status,'cancelled');assert.equal(terminated,3);
  }finally{if(original===undefined)Reflect.deleteProperty(globalThis,'Worker');else globalThis.Worker=original;}
 });

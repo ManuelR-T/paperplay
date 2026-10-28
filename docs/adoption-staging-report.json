@@ -1,0 +1,319 @@
+{
+  "format": "paperplay-adoption-fixture-staging",
+  "schemaVersion": 1,
+  "scope": "Deterministic authored/public fixture inspection, not a migration of user storage or a release approval.",
+  "runs": [
+    {
+      "format": "paperplay-adoption-migration",
+      "schemaVersion": 1,
+      "mode": "dry-run",
+      "fromVersion": "1.1.0",
+      "toVersion": "scientific-architecture-v1",
+      "stages": [
+        "inventory",
+        "validate-exact-versions",
+        "plan-cache-invalidation",
+        "retain-originals"
+      ],
+      "storageWrites": 0,
+      "executionCount": 0,
+      "records": [
+        {
+          "id": "release-1.1.0-0",
+          "kind": "snapshot",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "5f99ffa33912a9d60fa897fbe2460af8735eb55331b4e8c422de02c56f0a03bd",
+          "bytes": 1372
+        },
+        {
+          "id": "release-1.1.0-1",
+          "kind": "snapshot",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "0a6aa676adb94783457f09c553b436c5a14867f20d9407ba4866d30dd7f86928",
+          "bytes": 866
+        },
+        {
+          "id": "release-1.1.0-2",
+          "kind": "snapshot",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "69b2d4a656d8afd16bcf7fbac24a52be05853a999ee689edef29427f40a4ff16",
+          "bytes": 1088
+        }
+      ],
+      "rollback": {
+        "automaticRewrites": false,
+        "originalsRetained": true,
+        "instruction": "Keep original exports and the prior application. Reopen them with a compatible version; do not delete unknown/newer stores or overwrite original accepted records."
+      },
+      "limitations": [
+        "No storage migration, execution, human study or release approval is performed.",
+        "Private compiler receipts never survive reload. Imported reports remain historical and must not gain verified labels.",
+        "A prior application may not read newer formats; retain its original export separately."
+      ],
+      "reportSha256": "7cf12285dff65ee182612d474c90867c075663ee922e616372836ea97cb9d5bf"
+    },
+    {
+      "format": "paperplay-adoption-migration",
+      "schemaVersion": 1,
+      "mode": "dry-run",
+      "fromVersion": "1.1.0",
+      "toVersion": "scientific-architecture-v1",
+      "stages": [
+        "inventory",
+        "validate-exact-versions",
+        "plan-cache-invalidation",
+        "retain-originals"
+      ],
+      "storageWrites": 0,
+      "executionCount": 0,
+      "records": [
+        {
+          "id": "source",
+          "kind": "source",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "ec6ca4d64798d557570f8210ea3c905bc3828b1f21253b34a301017a6e0dc17a",
+          "bytes": 12787
+        },
+        {
+          "id": "import-record-ready",
+          "kind": "import-record",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "e4a96c98e3d7517a2e54b42d7d4d535af8da7d7f48819979a37a06ca5f36b6ca",
+          "bytes": 12883
+        },
+        {
+          "id": "reading-state-v1",
+          "kind": "reading-state",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "b9e6e62543072e60e121be2ddfaa9e324e997ab94a396b78dfc6cebfd97f252b",
+          "bytes": 190
+        },
+        {
+          "id": "widget-v2",
+          "kind": "widget",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "55de79cf2e0f2642cda09a958585eb480cd28e5a7b25644177d5c6e469f29639",
+          "bytes": 1781
+        },
+        {
+          "id": "workspace-v2",
+          "kind": "workspace",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "4a6e16408317d704c19d660afd393664bbc0150f3ca131910ed6bc282d7c0f4e",
+          "bytes": 1838
+        },
+        {
+          "id": "accepted-enrichment-v2",
+          "kind": "enrichment",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "402ed66f9af80957ac96b79bff9992ad5ee90039f690fce16160467c8f35048a",
+          "bytes": 2102
+        },
+        {
+          "id": "unknown-workspace-version",
+          "kind": "workspace",
+          "disposition": "incompatible",
+          "reason": "Unsupported, corrupt or differently bound record. Original bytes are retained; export them or reopen with a compatible version.",
+          "invalidations": [],
+          "sha256": "cce9b0bb3fd319380a7673338a9e2fa2cc454e4f62d704f6ead0992bc37b3b7b",
+          "bytes": 1839
+        }
+      ],
+      "rollback": {
+        "automaticRewrites": false,
+        "originalsRetained": true,
+        "instruction": "Keep original exports and the prior application. Reopen them with a compatible version; do not delete unknown/newer stores or overwrite original accepted records."
+      },
+      "limitations": [
+        "No storage migration, execution, human study or release approval is performed.",
+        "Private compiler receipts never survive reload. Imported reports remain historical and must not gain verified labels.",
+        "A prior application may not read newer formats; retain its original export separately."
+      ],
+      "reportSha256": "ca6c91eaf24b1829ab7d98847c756a8866e47e009ff1565bd96b7e5d737ec477"
+    },
+    {
+      "format": "paperplay-adoption-migration",
+      "schemaVersion": 1,
+      "mode": "dry-run",
+      "fromVersion": "1.1.0",
+      "toVersion": "scientific-architecture-v1",
+      "stages": [
+        "inventory",
+        "validate-exact-versions",
+        "plan-cache-invalidation",
+        "retain-originals"
+      ],
+      "storageWrites": 0,
+      "executionCount": 0,
+      "records": [
+        {
+          "id": "data-study-v1",
+          "kind": "data-study",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "3b27d7958b6e94262fb1770a7428ff4ce0db7c4bb6d65e266f6b2bde9f871288",
+          "bytes": 11381
+        },
+        {
+          "id": "data-study-v2",
+          "kind": "data-study",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "a14bac557042e1ba761c182bbadbf98665393ed660eeb48513036edde38667b2",
+          "bytes": 21347
+        },
+        {
+          "id": "legacy-bundle-v1",
+          "kind": "experiment-bundle",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "38e16096da9f0e96dedc82998c9b837d8a86edcd9dfcea8e40941ffed80062b0",
+          "bytes": 2044
+        },
+        {
+          "id": "artifact-with-source-v1",
+          "kind": "artifact-bundle",
+          "disposition": "requires-recompile",
+          "reason": "Generated source needs a fresh local compilation and explicit Run under the current policy. Recorded frames remain historical.",
+          "invalidations": [
+            "build"
+          ],
+          "sha256": "1f84a813dec3b77723d477adf2d25b3657166fc86dc283773a8e0184231b04b3",
+          "bytes": 6954
+        },
+        {
+          "id": "artifact-without-source-v1",
+          "kind": "artifact-bundle",
+          "disposition": "read-only",
+          "reason": "The exact source is absent. The artifact stays inert; import or select that source before execution.",
+          "invalidations": [],
+          "sha256": "41c7c14ea45c2336bc8d3d5188ee07a1020b9e4d03811520734a89c8ced66ff2",
+          "bytes": 5880
+        },
+        {
+          "id": "experience-v1",
+          "kind": "scientific-experience",
+          "disposition": "read-only",
+          "reason": "Portable reports and captures are historical. Opening an interaction requires its normal current host gates.",
+          "invalidations": [],
+          "sha256": "1a0db73c55357de3ee6b3c12dde73f8d706e467f7e0575aeca88a46425f29f0d",
+          "bytes": 9320
+        },
+        {
+          "id": "extraction-v1",
+          "kind": "extraction",
+          "disposition": "compatible",
+          "reason": "The existing validator accepts this record. This inspection performs no execution and grants no scientific verification.",
+          "invalidations": [],
+          "sha256": "156478229e0e2b90d5826aa1d2774a5cdc51fa5610f98c7cbf02deb4417972aa",
+          "bytes": 1006
+        },
+        {
+          "id": "persisted-build-metadata",
+          "kind": "artifact-cache",
+          "disposition": "requires-recompile",
+          "reason": "Persisted build metadata cannot restore a private compiler receipt.",
+          "invalidations": [
+            "build"
+          ],
+          "sha256": "14023e1d33450a33e1c9e72892301f50f178e7ad416589cd723bfbf7d5d94031",
+          "bytes": 1284
+        },
+        {
+          "id": "unsupported-compiler-cache",
+          "kind": "artifact-cache",
+          "disposition": "read-only",
+          "reason": "Cache versions differ. Retain original accepted source and recorded output; recompute only on explicit action.",
+          "invalidations": [
+            "build",
+            "execution",
+            "report"
+          ],
+          "sha256": "be83b191c031e7e000eb0c4cd0b9a40aa862f69b3283700cdbbcfcda43cb5d80",
+          "bytes": 1174
+        },
+        {
+          "id": "future-format-original",
+          "kind": "scientific-experience",
+          "disposition": "incompatible",
+          "reason": "[\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"paperplay-scientific-experience\"\n    ],\n    \"path\": [\n      \"format\"\n    ],\n    \"message\": \"Invalid input: expected \\\"paperplay-scientific-experience\\\"\"\n  },\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      1\n    ],\n    \"path\": [\n      \"schemaVersion\"\n    ],\n    \"message\": \"Invalid input: expected 1\"\n  },\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      \"definitions-and-quoted-excerpts\"\n    ],\n    \"path\": [\n      \"contents\"\n    ],\n    \"message\": \"Invalid input: expected \\\"definitions-and-quoted-excerpts\\\"\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"sourceReference\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"attribution\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"pa",
+          "invalidations": [],
+          "sha256": "292ad7247805f5161ce3396d1257bb6a6c313e0afaa62c468f166fb6a3356859",
+          "bytes": 102
+        }
+      ],
+      "rollback": {
+        "automaticRewrites": false,
+        "originalsRetained": true,
+        "instruction": "Keep original exports and the prior application. Reopen them with a compatible version; do not delete unknown/newer stores or overwrite original accepted records."
+      },
+      "limitations": [
+        "No storage migration, execution, human study or release approval is performed.",
+        "Private compiler receipts never survive reload. Imported reports remain historical and must not gain verified labels.",
+        "A prior application may not read newer formats; retain its original export separately."
+      ],
+      "reportSha256": "37919cd2f7387609140cfe475b2f47cea5fa47edc40465cc8b7eee6ba61588a8"
+    }
+  ],
+  "totals": {
+    "records": 20,
+    "storageWrites": 0,
+    "generatedExecutions": 0,
+    "providerCalls": 0
+  },
+  "cacheInvalidationExamples": {
+    "unchanged": [],
+    "qualityOnly": [
+      "report"
+    ],
+    "runtimeOnly": [
+      "execution",
+      "report"
+    ],
+    "compilerOnly": [
+      "build",
+      "execution",
+      "report"
+    ]
+  },
+  "rollback": {
+    "automaticWrites": false,
+    "originalRecordsRetained": true,
+    "notesAndSourcesDeletionCandidates": false,
+    "action": "Keep original exports and the prior compatible app. Newer/unsupported formats remain original read-only records; derived cache metadata cannot restore execution or scientific authority."
+  },
+  "limitations": [
+    "Fixture construction seals bounded metadata and creates inert serialized definitions; no chemistry solver, generated interpreter, Worker or provider is launched.",
+    "Compatible means accepted by existing record validators; it is not scientific verification.",
+    "The legacy M2 start endpoint still rejects retry under creation cutoff; its existing status/cancel paths remain available. Enrichment/generated idempotent accepted recovery is supported under cutoff.",
+    "No Railway, public access, deployment, user-data rewrite or human-study acceptance occurs."
+  ],
+  "fixtureFiles": [
+    {
+      "path": "tests/fixtures/release-1.1.0-snapshots.json",
+      "sha256": "b1cf0da04644e5c38cd0ffed0dde051bdaff091c9699ba83401e75a76f038e65",
+      "bytes": 5894
+    }
+  ]
+}

@@ -2,7 +2,7 @@
   "version": 1,
   "createdAt": "2026-10-28",
   "repository": "ManuelR-T/paperplay",
-  "status": "implementation-in-progress",
+  "status": "engineering-implemented-human-evaluation-pending",
   "epic": {
     "id": "PP-080",
     "title": "Build an extensible architecture for scientific paper representations",
@@ -1205,10 +1205,21 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 71,
         "url": "https://github.com/ManuelR-T/paperplay/issues/71"
+      },
+      "implementation": {
+        "document": "docs/architecture-adoption.md",
+        "evidence": [
+          "docs/adoption-staging-report.json",
+          "data/adoption-server-recovery.json",
+          "data/adoption-browser-ui.json"
+        ],
+        "checks": "750 tests, TypeScript and production build pass; final CSS build/native44px check and deterministic20-fixture CLI rerun pass.",
+        "summary": "Exact versions and non-destructive compatibility recovery; generated execution/new creation policy; queued/active revocation; accepted status recovery with zero new creates; no user-storage migration.",
+        "limitations": "PP114 and #24 await real participants. Railway #31/#33/#34 deferred; private access unchanged. Legacy M2 start retry under cutoff remains503 with status/cancel recovery available."
       }
     }
   ]

@@ -1,0 +1,157 @@
+{
+  "format": "paperplay-adoption-native-ui-evidence",
+  "schemaVersion": 1,
+  "scope": "PP116 engineering UI and host-policy observations; no model creation, publication, human study or scientific-validation claim.",
+  "actualOffServer": {
+    "url": "http://localhost:3004",
+    "operatorFlags": {
+      "PAPERPLAY_GENERATED_EXECUTION_ENABLED": false,
+      "META_ANALYSIS_ENABLED": false
+    },
+    "profile": "Own incognito tab_y; default profile and .env.local unchanged",
+    "publicPolicy": {
+      "status": 200,
+      "cacheControl": "no-store, max-age=0",
+      "generatedExecution": false,
+      "newModelCreation": false
+    },
+    "readOnlyBehavior": {
+      "fixture": "Project-authored healthy SDK sequence",
+      "sourceIncludedExperienceOpens": true,
+      "explicitRunDisabled": true,
+      "checkCodeDisabled": true,
+      "applySettingsDisabled": true,
+      "disabledNativeClickAttempts": 2,
+      "artifactCompilerOrRuntimeWorkersCreated": 0,
+      "sourceDetailsAvailable": true,
+      "downloadFigureSucceeded": true,
+      "downloadedFormat": "paperplay-figure-artifact"
+    },
+    "recordedReplay": {
+      "origin": "Actual local execution on default-ON3001, exported through existing experiment-bundle UI then imported on OFF3004",
+      "sourceIncluded": true,
+      "executionRecords": 2,
+      "restoredDescription": "1 item.",
+      "resumeDisabled": true,
+      "addRemoveResetDisabled": true,
+      "frameVisible": true,
+      "artifactWorkersCreated": 0,
+      "downloadsRemainAvailable": true
+    },
+    "modelCreation": {
+      "enrichmentPlanDisabled": true,
+      "repairDisabled": true,
+      "settingsEditDisabled": true,
+      "newGeneratedCreateDisabled": true,
+      "clearDisabledMessagesVisible": true,
+      "creationEndpointRequestsAttempted": 0,
+      "pendingJobRecovery": "No accepted pending job was fabricated for this UI case. Coordinator separately exercises accepted real status; backend recovery/cancel checks remain outside this native slice."
+    },
+    "trustedLocal": {
+      "fixture": "Authored editable graph",
+      "worker": "/widget.worker.mjs?v=2.1.0",
+      "actualComputedDijkstraRendered": true,
+      "shortestPath": "a → b → c",
+      "targetDistance": 3,
+      "keyboardOrButtonPlayback": "Host Next click advanced Step1→2 of3",
+      "noArtifactWorkers": true,
+      "notSavedInPaper": true
+    },
+    "storage": {
+      "beforePolicyGetSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "afterPolicyGetSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "unchanged": true,
+      "scope": "localStorage sorted entries; empty baseline on OFF origin",
+      "notes": "Native Notes panel said No notes yet. This does not claim a populated-note storage regression test.",
+      "source": "Existing prepared reader source remained selected; importing the authored artifact did not replace it."
+    },
+    "responsive": {
+      "viewport": [
+        320,
+        900
+      ],
+      "rootFontPx": 32,
+      "page": [
+        320,
+        320
+      ],
+      "dialog": [
+        286,
+        286
+      ],
+      "frame": [
+        242,
+        242
+      ],
+      "buttonHeights": [
+        44,
+        123.4375,
+        126.375,
+        77.8828125,
+        77.8828125,
+        77.8828125,
+        200.7890625,
+        129.3125
+      ],
+      "minimum44Satisfied": true
+    }
+  },
+  "controlledTransportOnServer": {
+    "url": "http://localhost:3001",
+    "profile": "Own incognito tab_x",
+    "scope": "Only public policy GET responses controlled in the QA tab; actual server environment stayed ON. No worker responses or guest code were mocked.",
+    "positiveControl": {
+      "realPolicyRefreshEnabledExplicitRun": true,
+      "actualCompilerAndRuntimeWorkersCreated": 2,
+      "actualAddRendered": "1 item.",
+      "seed": 73
+    },
+    "focusRevocation": {
+      "action": "Actual Add requested, then focus event after observing one active worker; public policy GET returned controlled false",
+      "activeBefore": 1,
+      "createdBefore": 3,
+      "createdAfter": 4,
+      "activeAfter180ms": 0,
+      "previousFrameRetained": "1 item.",
+      "resumeDisabled": true,
+      "addDisabled": true,
+      "applyDisabled": true
+    },
+    "malformedPolicy": {
+      "response": "{}",
+      "result": "unavailable; fail closed",
+      "frameRetained": "1 item.",
+      "workersCreatedTotal": 4,
+      "activeWorkers": 0
+    },
+    "unavailablePolicy": {
+      "transport": "Rejected public policy GET",
+      "result": "unavailable; fail closed",
+      "frameRetained": "1 item.",
+      "workersCreatedTotal": 4,
+      "activeWorkers": 0
+    },
+    "restoreRealPolicy": {
+      "mode": "real",
+      "disabledOrUnavailableMessageRemoved": true,
+      "workersCreatedTotal": 4,
+      "activeWorkers": 0,
+      "automaticExecutionCreated": false
+    },
+    "cleanup": {
+      "all4ObservedWorkersTerminated": true,
+      "creationRequestsAttempted": 0,
+      "transportRestoredToRealPolicy": true
+    },
+    "limitations": [
+      "Initial QA fetch-wrapper setup used the wrong native-fetch receiver and failed closed; corrected before the successful ON positive control. No product code changed.",
+      "Disabled-button native clicks do not establish a direct low-level receipt bypass test; core lease/queue/security tests belong to the separate automated suite.",
+      "Initial unknown policy was not timed before hydration in this browser slice; controlled malformed/unavailable and actual OFF cases were measured."
+    ]
+  },
+  "screenshots": [
+    "data/adoption-browser-ui-off.png",
+    "data/adoption-browser-ui-large-text.png"
+  ],
+  "changes": "No product changes were needed after native QA."
+}
