@@ -1,0 +1,24 @@
+import { z } from 'zod';
+import { name, text } from './widget-primitives';
+export const capabilityReferenceSchema=z.strictObject({id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/)});
+export const representationKindSchema=z.enum(['widget','source-guide','asset','quantity']);
+export type RepresentationKind=z.infer<typeof representationKindSchema>;
+export const defaultViewCapabilities={widget:{id:'widget-v2',version:'2.1.0'},'source-guide':{id:'source-guide',version:'1.0.0'},asset:{id:'asset-inspector',version:'1.0.0'},quantity:{id:'quantity-inspector',version:'1.0.0'}} as const;
+export function viewCapability(view:{kind:RepresentationKind;adapter?:z.infer<typeof capabilityReferenceSchema>}){return view.adapter??defaultViewCapabilities[view.kind];}
+export const facilitySchema=z.enum(['trusted-computation','asset-integrity','webgl','network']);
+export const capabilityDescriptorSchema=z.strictObject({
+ id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/),label:text.max(160),viewKinds:z.array(representationKindSchema).min(1).max(4),
+ roles:z.array(z.enum(['view','data','execution'])).min(1).max(3),behaviors:z.array(name).min(1).max(32),
+ assetKinds:z.array(z.enum(['table','tensor','image','sequence','graph','geometry'])).max(6),
+ interactions:z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),
+ facilities:z.array(facilitySchema).max(4),permissions:z.strictObject({network:z.boolean(),generatedCode:z.literal(false)}),
+ limits:z.strictObject({maxInputBytes:z.number().int().positive().max(2*1024*1024),maxOutputBytes:z.number().int().positive().max(3*1024*1024),maxExecutionMs:z.number().int().positive().max(30000)}),
+ evidencePolicy:z.literal('no-automatic-verification'),description:text.max(1000),
+});
+export type CapabilityDescriptor=z.infer<typeof capabilityDescriptorSchema>;
+export const capabilityNeedSchema=z.strictObject({behaviors:z.array(name).max(32),assetKinds:z.array(z.enum(['table','tensor','image','sequence','graph','geometry'])).max(6),interactions:z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),inputBytes:z.number().int().nonnegative().max(2*1024*1024),requestedEvidence:z.enum(['illustration','mechanism-reproduction','experiment-reproduction'])});
+export type CapabilityNeed=z.infer<typeof capabilityNeedSchema>;
+export type CapabilityGap={kind:'capability'|'environment'|'resource'|'evidence';requirement:string;reason:string;nextAction:string};
+export type CapabilityEnvironment={facilities:readonly z.infer<typeof facilitySchema>[];offline:boolean;maxInputBytes?:number};
+
+export const capabilityEnvironmentSchema=z.strictObject({facilities:z.array(facilitySchema).max(4),offline:z.boolean(),maxInputBytes:z.number().int().nonnegative().max(2*1024*1024).optional()});

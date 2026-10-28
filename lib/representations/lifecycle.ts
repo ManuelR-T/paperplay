@@ -1,3 +1,6 @@
+import { representationRegistry } from './adapters';
+import type { CapabilityRegistry } from './registry';
+import type { CapabilityEnvironment } from '../../shared/representation-capabilities';
 import { bindScientificQuantity } from '../quantities/convert';
 import type { ScientificQuantity } from '../../shared/scientific-quantities';
 import { hasCheckedAssetIntegrity } from '../assets/local';
@@ -5,7 +8,7 @@ import type { ScientificAsset } from '../../shared/scientific-assets';
 import { validateRepresentationPlan, type RepresentationPlan } from '../../shared/representations';
 import type { SourceDocument } from '../../shared/schema';
 import type { WidgetEnvelope } from '../../shared/widgets';
-import { computeWidget, type WidgetResult } from '../widgets/compute';
+import { type WidgetResult } from '../widgets/compute';
 
 export type RepresentationFailure = { status:'invalid'|'unsupported'|'missing-data'|'cancelled'|'failed'; reason:string; nextAction:string; original:unknown; gaps?:string[] };
 export type RepresentationOutcome<T> = { status:'ready'; value:T } | RepresentationFailure;
@@ -14,21 +17,14 @@ export type RepresentationView = RepresentationPlan['views'][number];
 export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity};
 export type RepresentationRun = { artifact:RepresentationArtifact; views:ExecutedRepresentationView[]; evidence:{requested:RepresentationPlan['requestedEvidence']; verified:false} };
 
-/** The two actual adapters share planning/build/run contracts; neither knows a discipline. */
-const adapters = {
-  'widget-v2': { version:'2.1.0' },
-  'source-guide': { version:'1.0.0' },
-  'asset-inspector': { version:'1.0.0' },
-  'quantity-inspector': { version:'1.0.0' },
-} as const;
-export function representationCapabilities() { return Object.entries(adapters).map(([id,value])=>({id,...value})); }
-export function buildRepresentation(input:unknown,source:SourceDocument,options:{assets?:readonly ScientificAsset[]}={}):RepresentationOutcome<RepresentationArtifact> {
+export function representationCapabilities() { return representationRegistry.list().map(({id,version})=>({id,version})); }
+export function buildRepresentation(input:unknown,source:SourceDocument,options:{assets?:readonly ScientificAsset[];registry?:CapabilityRegistry;environment?:CapabilityEnvironment}={}):RepresentationOutcome<RepresentationArtifact> {
   try {
     const version=input as {schemaVersion?:unknown};
     if(version?.schemaVersion!==1)return {status:'unsupported',reason:'This representation format/version is unavailable.',nextAction:'Keep or export the original file; open it in a compatible Paperplay version.',original:input};
     const plan=validateRepresentationPlan(input,source);
-    const gaps=plan.execution.capabilities.filter(cap=>!representationCapabilities().some(available=>available.id===cap.id&&available.version===cap.version)).map(cap=>`${cap.id}@${cap.version}`);
-    if(gaps.length)return {status:'unsupported',reason:'Required representation capabilities are unavailable.',nextAction:'Use an available representation or retain this file for a compatible runtime.',original:input,gaps};
+    const registry=options.registry??representationRegistry,gaps=registry.gaps(plan,options.environment,options.assets);
+    if(gaps.length)return {status:'unsupported',reason:gaps.map(gap=>gap.reason).join(' '),nextAction:gaps.map(gap=>gap.nextAction).join(' '),original:input,gaps:gaps.map(gap=>gap.requirement)};
     for(const view of plan.views)if(view.kind==='quantity'){const measurement=plan.quantities.find(quantity=>quantity.id===view.quantityId)!.measurement;if(!measurement)return {status:'missing-data',reason:'A declared scientific quantity has no measurement.',nextAction:'Supply a validated quantity with its units and shape in the representation file. No values were invented.',original:input,gaps:[`quantity:${view.quantityId}`]};bindScientificQuantity(measurement,view.requirement);}
     const supplied=options.assets??[];
     if(new Set(supplied.map(asset=>asset.id)).size!==supplied.length)throw Error('Duplicate supplied asset.');
@@ -42,20 +38,15 @@ export function buildRepresentation(input:unknown,source:SourceDocument,options:
     return {status:'ready',value:{format:'paperplay-representation-artifact',schemaVersion:1,plan:{...plan,assets:plan.assets.map(ref=>{const bound=supplied.find(asset=>asset.id===ref.id);return bound?{...ref,checksum:bound.checksum.value}:ref;})},...(supplied.length?{assets:supplied}:{})}};
   }catch(error){return {status:'invalid',reason:error instanceof Error?error.message:'Invalid representation.',nextAction:'Check the source anchors and configuration. The original file was retained.',original:input};}
 }
-export async function executeRepresentation(artifact:RepresentationArtifact,source:SourceDocument,options:{signal?:AbortSignal;compute?:(widget:WidgetEnvelope,signal?:AbortSignal)=>Promise<WidgetResult>}={}):Promise<RepresentationOutcome<RepresentationRun>> {
+export async function executeRepresentation(artifact:RepresentationArtifact,source:SourceDocument,options:{registry?:CapabilityRegistry;environment?:CapabilityEnvironment;signal?:AbortSignal;compute?:(widget:WidgetEnvelope,signal?:AbortSignal)=>Promise<WidgetResult>}={}):Promise<RepresentationOutcome<RepresentationRun>> {
   // Revalidate imported/mutated artifacts; a caller-supplied artifact cannot skip build policy.
   if(artifact?.format!=='paperplay-representation-artifact'||artifact.schemaVersion!==1)return {status:'unsupported',reason:'This artifact version is unavailable.',nextAction:'Retain the original artifact and open it with a compatible runtime.',original:artifact};
-  const built=buildRepresentation(artifact.plan,source,{assets:artifact.assets});
+  const built=buildRepresentation(artifact.plan,source,{assets:artifact.assets,registry:options.registry,environment:options.environment});
   if(built.status!=='ready')return built;
   const views:ExecutedRepresentationView[]=[];
   try {
-    if(typeof window!=='undefined'&&!options.compute&&built.value.plan.views.some(view=>view.kind==='widget'))return {status:'unsupported',reason:'Browser computation requires the trusted worker adapter.',nextAction:'Use a browser with worker support; no blocking fallback was started.',original:artifact.plan};
     for(const view of built.value.plan.views){
-      if(options.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
-      if(view.kind==='source-guide')views.push(view);
-      else if(view.kind==='quantity')views.push({kind:'quantity',id:view.id,quantity:bindScientificQuantity(built.value.plan.quantities.find(quantity=>quantity.id===view.quantityId)!.measurement!,view.requirement)});
-      else if(view.kind==='asset')views.push({...view,asset:built.value.assets!.find(asset=>asset.id===view.assetId)!});
-      else {const result=options.compute?await options.compute(view.widget,options.signal):computeWidget(view.widget.spec,view.widget.seed);views.push({...view,result});}
+      views.push(await (options.registry??representationRegistry).execute(view,{plan:built.value.plan,assets:built.value.assets??[],signal:options.signal,compute:options.compute},options.environment));
     }
     if(options.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
     return {status:'ready',value:{artifact:built.value,views,evidence:{requested:artifact.plan.requestedEvidence,verified:false}}};

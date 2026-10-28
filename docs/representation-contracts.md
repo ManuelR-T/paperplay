@@ -4,16 +4,16 @@ The version-1 `paperplay-representation` plan is an additional format; it does n
 
 ## Source and intent
 
-A plan has an exact document/version identity and named quoted passage anchors. Claims distinguish verbatim source quotations from pedagogical additions. Objective, assumptions and requested evidence describe intent, never an automatic scientific certification. Assets and quantities are explicit references/declarations; the [typed asset layer](scientific-assets.md) checks imported data; dimensional validation is a subsequent issue.
+A plan has an exact document/version identity and named quoted passage anchors. Claims distinguish verbatim source quotations from pedagogical additions. Objective, assumptions and requested evidence describe intent, never an automatic scientific certification. Assets and quantities are explicit references/declarations; the [typed asset layer](scientific-assets.md) checks imported data; [quantity/unit validation](scientific-quantities.md) checks explicit dimensions and conventions.
 
 Every view binds to declared source anchors. Existing widget citations are additionally checked against their document metadata. Unknown fields, duplicate identifiers, mismatched quotes/versions, undeclared dependencies and files above 256 KiB are rejected. Unknown versions and unavailable capabilities return an actionable outcome and the original record without storage mutation.
 
-## Two current adapters
+## Original adapters
 
 - **`widget-v2@2.1.0`** wraps the existing envelope without changing any spec, seed, view, source citation or authorship. The generic preview delegates to the existing `WidgetView`, whose interactive computation remains in the trusted worker.
 - **`source-guide@1.0.0`** presents named explanatory steps and exact quotes, with a direct return to the original passage. It computes no scientific trace. The manual editor can create an explicitly labeled reader scaffold without inference; imported plans may supply more specific authored explanations.
 
-These adapters share plan/build contracts and a discipline-independent renderer. They do not infer behavior from labels such as biology or physics. The source-guide scaffold itself is not a domain-specific explanation or a newly generated scientific interpretation.
+PP-083/084 add asset and quantity inspectors. PP-085 routes all four through the [approved capability registry](representation-capabilities.md), with optional exact adapter references on views. These adapters share plan/build contracts and a discipline-independent renderer. They do not infer behavior from labels such as biology or physics. The source-guide scaffold itself is not a domain-specific explanation or a newly generated scientific interpretation.
 
 ## Lifecycle
 

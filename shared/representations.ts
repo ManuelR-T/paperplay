@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { capabilityReferenceSchema, viewCapability } from './representation-capabilities';
 import { scientificQuantitySchema, quantityRequirementSchema, validateScientificQuantity } from './scientific-quantities';
 import { scientificAssetSchema } from './scientific-assets';
 import { evidenceDeclarationSchema, reportedScientificCheckSchema } from './research-evidence';
@@ -12,10 +13,10 @@ export const representationAnchorSchema = z.strictObject({ id: name, blockId: z.
 export const evidenceLevelSchema = z.enum(['illustrative-walkthrough','simplified-illustration','mechanism-reproduction','experiment-reproduction']);
 const ids = z.array(name).min(1).max(32);
 export const representationViewSchema = z.discriminatedUnion('kind', [
-  z.strictObject({id:name,kind:z.literal('quantity'),quantityId:name,requirement:quantityRequirementSchema}),
-  z.strictObject({id:name,kind:z.literal('asset'),assetId:name}),
-  z.strictObject({ id: name, kind: z.literal('widget'), widget: widgetEnvelopeSchema }),
-  z.strictObject({ id: name, kind: z.literal('source-guide'), steps: z.array(z.strictObject({ id: name, title: text.max(160), explanation: text, anchorIds: ids })).min(1).max(32) }),
+  z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('quantity'),quantityId:name,requirement:quantityRequirementSchema}),
+  z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('asset'),assetId:name}),
+  z.strictObject({ id: name, adapter:capabilityReferenceSchema.optional(), kind: z.literal('widget'), widget: widgetEnvelopeSchema }),
+  z.strictObject({ id: name, adapter:capabilityReferenceSchema.optional(), kind: z.literal('source-guide'), steps: z.array(z.strictObject({ id: name, title: text.max(160), explanation: text, anchorIds: ids })).min(1).max(32) }),
 ]);
 export const representationPlanSchema = z.strictObject({
   format: z.literal('paperplay-representation'), schemaVersion: z.literal(REPRESENTATION_VERSION), id: name, title: text.max(200),
@@ -26,7 +27,7 @@ export const representationPlanSchema = z.strictObject({
   assumptions: z.array(text.max(500)).max(16), requestedEvidence: evidenceLevelSchema,
   assets: z.array(z.strictObject({ id: name, kind: z.enum(['table','tensor','image','sequence','graph','geometry']), description: text.max(500), checksum:z.string().regex(/^[a-f0-9]{64}$/).optional() })).max(32),
   quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500), measurement:scientificQuantitySchema.optional() })).max(32),
-  execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(z.strictObject({ id: name, version: z.string().regex(/^\d+\.\d+\.\d+$/) })).min(1).max(16), assetIds: z.array(name).max(32) }),
+  execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(capabilityReferenceSchema).min(1).max(16), assetIds: z.array(name).max(32) }),
   interactions: z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),
   assetManifests:z.array(scientificAssetSchema).max(32).optional(),
   evidence: z.array(evidenceDeclarationSchema).max(128).optional(),
@@ -58,8 +59,8 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
   }
   if(plan.execution.assetIds.some(id=>!plan.assets.some(asset=>asset.id===id))) throw Error('Execution requires an undeclared asset.');
   for(const view of plan.views) {
-    const capability=view.kind==='widget'?'widget-v2':view.kind==='asset'?'asset-inspector':view.kind==='quantity'?'quantity-inspector':'source-guide';
-    if(!plan.execution.capabilities.some(item=>item.id===capability)) throw Error('A view requires its declared execution capability.');
+    const capability=viewCapability(view);
+    if(!plan.execution.capabilities.some(item=>item.id===capability.id&&item.version===capability.version)) throw Error('A view requires its declared execution capability.');
     if(view.kind==='widget') {
       validateWidgetEnvelope(view.widget,source);
       if(!plan.anchors.some(anchor=>anchor.blockId===view.widget.source.blockId&&anchor.page===view.widget.source.page&&normalized(anchor.quote)===normalized(view.widget.source.quote))) throw Error('A widget must use an anchor declared in its representation.');

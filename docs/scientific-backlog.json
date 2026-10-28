@@ -19,8 +19,8 @@
     "M16": "Coverage, validation, performance and adoption"
   },
   "sizeLegend": {
-    "M": "roughly 3\u20135 focused solo days; re-estimate after design",
-    "L": "roughly 6\u201310 focused solo days; split into reviewable increments",
+    "M": "roughly 3–5 focused solo days; re-estimate after design",
+    "L": "roughly 6–10 focused solo days; split into reviewable increments",
     "discovery": "timebox a prototype/design before committing to implementation estimates",
     "external": "depends on participant/expert availability, not only engineering time"
   },
@@ -166,10 +166,16 @@
       "priority": "P0",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 40,
         "url": "https://github.com/ManuelR-T/paperplay/issues/40"
+      },
+      "evidence": {
+        "document": "docs/representation-capabilities.md",
+        "checks": "npm run check: TypeScript, 249 tests, production build",
+        "browser": "Native Chromium: metadata discovery, behavior selection, unavailable ODE and evidence gaps, quantity/widget previews at 320 pixels",
+        "limitations": "Trusted local adapters only; no generated-code execution, generic Muse planning or automatic scientific verification."
       }
     },
     {

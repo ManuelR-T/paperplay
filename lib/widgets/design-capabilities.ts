@@ -9,6 +9,7 @@ export function getWidgetDesignCapabilities() {
   const catalog=widgetCatalog.filter(c=>c.format==='paperplay-widget');
   return {
     format:'paperplay-widget-design-capabilities',version:2,catalogVersion:WIDGET_CATALOG_VERSION,catalog,
+    representationDiscovery:{path:'/api/representation-capabilities',activeProposalFormat:'paperplay-widget',genericPlanGenerationEnabled:false},
     templates:catalog.map(c=>({kind:c.kind,spec:createWidgetPreset(c.kind as WidgetKind)})),
     customRuntime:{
       version:CUSTOM_RUNTIME_VERSION,limits:CUSTOM_LIMITS,canvas:{width:600,height:320},
