@@ -1024,7 +1024,7 @@
       "priority": "P1",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "implemented-pending-frozen-evaluation",
+      "status": "implemented",
       "github": {
         "number": 66,
         "url": "https://github.com/ManuelR-T/paperplay/issues/66"
@@ -1032,8 +1032,8 @@
       "evidence": {
         "document": "docs/retrieval-budget.md",
         "checks": "npm run check: TypeScript, 706 tests, production build; no paid inference",
-        "measurements": "data/retrieval-payload-development.json: 8 development contexts measured with explicit scope; 4 held-out payloads and all actual usage remain null",
-        "limitations": "Frozen-corpus measurement criterion remains pending PP-113. Metadata-only development contexts are not admitted full paper sources."
+        "measurements": "docs/evaluation/pp113-summary.json: all12frozen cases,10actual admitted excerpts/2unavailable; complete request bodies; actual3Muse calls/19869tokens, usage separate from reservations",
+        "limitations": "Development report remains historical and excludes held-out bodies. Frozen evaluation preserves P4grounding rejection, B3clipped labels and P2/P3access failures; no broad quality/scientific claim."
       }
     },
     {
@@ -1094,10 +1094,18 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 68,
         "url": "https://github.com/ManuelR-T/paperplay/issues/68"
+      },
+      "evidence": {
+        "document": "docs/frozen-evaluation-results.md",
+        "freeze": "7af5f4c;379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c;548frozen files unchanged through outcomes",
+        "checks": "11focused evaluator tests+5guards and TypeScript pass; initialfullsuite725/726 with existingtest ordering timeout retained; unchanged focused scheduler6/6, separate post-freeze correction pending",
+        "browser": "Fresh authored adversarial fixtures and actualB3/C4 model outputs; source/controls/layout/cancellation/worker cleanup measured. B3layout fails; C4observed bounded controls work. P4source blockID rejected.",
+        "cost": "3actualMuse creates, no repairs/retries/replacements;19869measured tokens;276700conservative reservations",
+        "limitations": "10saved excerpts are not10substantive paper explanations. P2/P3not accessible. No paper scientifically verified or human reviewed. Fullscripted quality of custom imports not exposed in frozenUI; actualnative manual scope recorded."
       }
     },
     {

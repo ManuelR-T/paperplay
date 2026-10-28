@@ -36,4 +36,4 @@ Generated execution, scientific references, visual layout, accessibility and iso
 
 ## Evidence status
 
-The evaluator infrastructure is tested with authored development inputs, malformed/stale identities, changed code, explicit original-byte admission, aborts and protected first-round files. Source admission and actual frozen evaluation outcomes will be recorded separately after the baseline commit.
+The evaluator infrastructure is tested with authored development inputs, malformed/stale identities, changed code, explicit original-byte admission, aborts and protected first-round files. Source admission and actual frozen outcomes are now recorded in [the first-round results](frozen-evaluation-results.md). The offline runner remains provider-free; the separately authorized live appendix used normal application budget handlers, at most3creates and no repairs.

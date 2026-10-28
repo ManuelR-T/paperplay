@@ -1,0 +1,276 @@
+{
+  "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+  "scope": "Post-freeze actual source access and exact local-byte admission; public metadata only. No source bodies or original pixels included.",
+  "biology": {
+    "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+    "cases": [
+      {
+        "caseId": "B1",
+        "canonicalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1392413/",
+        "admittedDownloadUrl": "https://cdn.ncbi.nlm.nih.gov/pmc/blobs/5164/1392413/079c3ee6ac75/jphysiol01442-0107.png",
+        "originalFile": "B1.original",
+        "sourceFile": "B1.source.json",
+        "scope": "saved-excerpt",
+        "locator": "Figure 1 caption first sentence and first sentence under \u201cThe nature of the permeability changes\u201d, printed p. 501; actual PMC archive page image visually inspected (not NJIT PDF page 4).",
+        "wordCount": 18,
+        "rights": "1952 publication rights remain unknown. PMC public access is not a general redistribution license; original page pixels and normalized excerpt stay local. Public evaluation metadata only.",
+        "accessNotes": [
+          "Actual page image visually inspected, including Figure 1; only two short prose sentences are transcribed. Circuit symbols/equations and image pixels are not transcribed or publicly bundled.",
+          "Original journal printed page is 501. SourceDocument page 1 is a logical saved-excerpt card, not original p. 1.",
+          "This is the 1952 article page, not the separately listed 2019 supplement."
+        ]
+      },
+      {
+        "caseId": "B2",
+        "canonicalUrl": "https://royalsocietypublishing.org/doi/10.1098/rstb.1952.0012",
+        "admittedDownloadUrl": "https://www.damtp.cam.ac.uk/user/gold/pdfs/teaching/turing1952.pdf",
+        "originalFile": "B2.original",
+        "sourceFile": "B2.source.json",
+        "scope": "saved-excerpt",
+        "locator": "Section 1, \u201cA Model for the Embryo. Morphogens\u201d, printed p. 37 (Cambridge/JSTOR scan PDF page 2 after cover): two complete short sentences from the opening model discussion. Printed p. 38 and later derivations are not admitted.",
+        "wordCount": 20,
+        "rights": "Rights unknown for this frozen publisher edition. Cambridge hosts an original 1952 journal scan with JSTOR personal/non-commercial-use notice. Original and excerpt stay local; public report metadata only.",
+        "accessNotes": [
+          "Printed p. 37 was visually inspected from the actual downloaded Cambridge PDF. The complete original PDF bytes are retained locally, but only the named two sentences are normalized.",
+          "SourceDocument page 1 is a logical saved-excerpt card; original printed page 37 corresponds to PDF page 2, not PDF page 1.",
+          "Typography/line wrapping normalized. No model equations, reaction-diffusion solution or later pages are represented by this admission."
+        ]
+      },
+      {
+        "caseId": "B3",
+        "canonicalUrl": "https://www.nature.com/articles/nbt.2859",
+        "admittedDownloadUrl": "https://www.nature.com/articles/nbt.2859?error=cookies_not_supported",
+        "originalFile": "B3-article.original",
+        "sourceFile": "B3.source.json",
+        "scope": "saved-excerpt",
+        "locator": "Publisher public Abstract, HTML #Abs2-section, first complete sentence (25 words). Only this abstract sentence is admitted; article body, figures, methods and datasets were not admitted.",
+        "wordCount": 25,
+        "rights": "Publication copyright/redistribution permission unestablished. Publisher provides a public abstract preview and identifies the rest as subscription content. Downloaded HTML and the short normalized excerpt stay local; public evaluation metadata only.",
+        "accessNotes": [
+          "Held-out B3 admission occurred only after freeze 379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c.",
+          "Actual publisher HTML was downloaded and inspected; source text is the first complete abstract sentence, not intake metadata. DOI 10.1038/nbt.2859 and 2014 journal citation verified in the downloaded page.",
+          "SourceDocument page 1 is a logical abstract card, not a printed article page. No original cell data, ordering run, figure or source experiment is included.",
+          "Initial PubMed and publisher PDF attempts returned browser challenges; those bytes are rejected as source originals. The admitted HTML is the publicly available publisher abstract page."
+        ]
+      },
+      {
+        "caseId": "B4",
+        "canonicalUrl": "https://www.nature.com/articles/s41586-021-03819-2",
+        "admittedDownloadUrl": "https://www.nature.com/articles/s41586-021-03819-2?error=cookies_not_supported",
+        "originalFile": "B4-article.original",
+        "sourceFile": "B4.source.json",
+        "scope": "saved-excerpt",
+        "locator": "Methods \u2192 Inference regimen, publisher HTML heading #Sec15: first two paragraphs only, covering model selection and the CASP14 ensemble/timing description. Later paragraphs and figures are not admitted.",
+        "wordCount": 129,
+        "rights": "Publisher Rights and permissions explicitly declares article CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/), with third-party credit exceptions. Authors/source credited; whitespace normalized. Despite article license, public evaluation output is metadata-only; local source/original not bundled.",
+        "accessNotes": [
+          "Downloaded publisher HTML explicitly identifies Version of record: 18 August 2021; first online publication was 15 July 2021, and those dates are not conflated.",
+          "SourceDocument page 1 is a logical methods-excerpt card, not a printed page or PDF coordinate. Only the first two paragraphs under #Sec15 were normalized.",
+          "The raw HTML is the live publisher page downloaded after the freeze, with exact byte identity below; no historical 2021 HTTP snapshot is claimed.",
+          "Article CC BY 4.0 does not establish rights or availability for all model weights, sequence databases or external code. No inference, trained model or GPU experiment is executed."
+        ]
+      }
+    ],
+    "failures": [],
+    "rejectedTransportPages": [
+      {
+        "file": "B3.original",
+        "reason": "PubMed reCAPTCHA, not an abstract."
+      },
+      {
+        "file": "B3-publisher.original",
+        "reason": "Nature IDP client challenge, not a PDF."
+      },
+      {
+        "file": "B4.original",
+        "reason": "Nature IDP client challenge, not an article."
+      }
+    ]
+  },
+  "computerScience": {
+    "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+    "cases": [
+      {
+        "caseId": "C1",
+        "status": "admitted-local-saved-excerpt",
+        "rawFile": "C1.html",
+        "rawSha256": "31f0c4917bb65f2cf80a710bf5d19f19e0ce244e5166fe770bd2151f0af417e6",
+        "rawBytes": 117906,
+        "mediaType": "text/html",
+        "sourceFingerprint": "995c23c4bca965213583dc0f3d5c0de661162df1eb8d4c40e6a814f1165d213b",
+        "admissionSha256": "08e626009e60f12324823a8f137eb56e9298a3817bb3bcd5fc6059224160150b",
+        "edition": "Publisher article, 5 September 2019",
+        "locator": "Publisher landing-page Abstract (.metadata.abstract > pre), exact conference record; one logical saved page, not PDF page numbering.",
+        "normalizedCharacters": 635,
+        "rights": "metadata-only",
+        "limitations": [
+          "This prepared saved-source excerpt is copied from the actual downloaded publisher Abstract, not from an existing app card or the full PDF.",
+          "Schema source kind prepared denotes operator extraction of publisher HTML; this is neither an arXiv source nor an original PDF.",
+          "One logical HTML page only; no full-paper body, original figure pixels, proof artifacts or benchmark inputs are admitted."
+        ]
+      },
+      {
+        "caseId": "C2",
+        "status": "admitted-local-saved-excerpt",
+        "rawFile": "C2.html",
+        "rawSha256": "7bf67416790722bd776a0a6bac707c88ea3d6cb63226679874185fbd7fe8c101",
+        "rawBytes": 118327,
+        "mediaType": "text/html",
+        "sourceFingerprint": "32c7d17fa78866fe9fbdd216ba69ac83f48046e5dac9e19085e8fdfa612198b6",
+        "admissionSha256": "99435e890ec7760d76b9de70e4c8263adec713e5d92352d4cf0a46f25acc9056",
+        "edition": "2018 conference edition; arXiv v1 is a separate extended source",
+        "locator": "Publisher landing-page Abstract (.metadata.abstract > pre), exact conference record; one logical saved page, not PDF page numbering.",
+        "normalizedCharacters": 552,
+        "rights": "metadata-only",
+        "limitations": [
+          "This prepared saved-source excerpt is copied from the actual downloaded publisher Abstract, not from an existing app card or the full PDF.",
+          "Schema source kind prepared denotes operator extraction of publisher HTML; this is neither an arXiv source nor an original PDF.",
+          "One logical HTML page only; no full-paper body, original figure pixels, proof artifacts or benchmark inputs are admitted."
+        ]
+      },
+      {
+        "caseId": "C3",
+        "status": "admitted-local-saved-excerpt",
+        "rawFile": "C3.html",
+        "rawSha256": "fe1288e9c6f8322156429ab44bf5ced203155f8ecc7ea9fe6cfd125872c72a3b",
+        "rawBytes": 188707,
+        "mediaType": "text/html",
+        "sourceFingerprint": "955399113d7862f1e0ae9f76c84eab5ba180260bf9c65862161fbc096df98788",
+        "admissionSha256": "960cfa9ba130f2ee669107b4f84697a199d94b3d0b1a7f750af798763d463f73",
+        "edition": "arXiv 1706.03762v7, revised 2 August 2023",
+        "locator": "Pinned arXiv HTML v7, section #S3.SS2.SSS1 paragraphs p1/p2; equation #S3.E1 original MathML alttext; figure #S3.F2 caption only. One logical HTML page.",
+        "normalizedCharacters": 775,
+        "rights": "metadata-only",
+        "limitations": [
+          "Saved excerpt only: first two section3.2.1 paragraphs, original equation1 MathML alttext and Figure2 caption; all other paper content excluded.",
+          "HTML is pinned v7 dated02 Aug2023. Logical page1 is not an original PDF physical page.",
+          "MathML alttext retained as provided, not independently checked against figure pixels; Figure2 images, weights, training data and experiment outputs are not bundled."
+        ]
+      },
+      {
+        "caseId": "C4",
+        "status": "admitted-local-saved-excerpt",
+        "rawFile": "C4.pdf",
+        "rawSha256": "e6345fcba31cbc747ab41755aa62654859c4403dbb687da0021079f78181a7b5",
+        "rawBytes": 609953,
+        "mediaType": "application/pdf",
+        "sourceFingerprint": "b78b80f0953f7e815d9e4b1cc76c83dab2a7b68bbab41d2637d515c975b268e3",
+        "admissionSha256": "1123162c8e325edf4216316e12aecc4d4e8804490edcb1b8e79d0bd313c471c8",
+        "edition": "USENIX ATC 2014 conference edition, pp. 305\u2013319; ISBN 978-1-931971-10-2",
+        "locator": "USENIX ATC2014 conference PDF: physicalpage4 (printed307) section5 opening; physicalpage5 (printed308) Figure2 caption; physicalpage6 (printed309) section5.1 before5.2. Coverpage physical1 retained in numbering.",
+        "normalizedCharacters": 4977,
+        "rights": "metadata-only",
+        "limitations": [
+          "Exact USENIX ATC2014 conference PDF, ISBN978-1-931971-10-2; not the separate extended report.",
+          "Saved excerpt only from PDFphysicalpages4/5/6; original16-page PDF retained locally, no complete normalized edition claimed.",
+          "Text extracted using installed pdftotext -raw; linebreak whitespace collapsed. Hyphenation, two-column ordering and mathematical notation remain extraction limitations.",
+          "Figure2 caption only; the complete tabular pseudocode/diagram is not reconstructed, and original pixels remain in the local PDF.",
+          "No Raft implementation, distributed messages, proof replay, experimental benchmark or original user study was executed."
+        ]
+      }
+    ]
+  },
+  "physics": {
+    "transportAttempts": [
+      {
+        "id": "P1",
+        "url": "https://journals.ametsoc.org/doi/pdf/10.1175/1520-0469%281963%29020%3C0130%3ADNF%3E2.0.CO%3B2",
+        "finalUrl": "https://journals.ametsoc.org/view/journals/atsc/20/2/1520-0469_1963_020_0130_dnf_2_0_co_2.xml",
+        "status": 403,
+        "mediaType": "text/html",
+        "byteLength": 919,
+        "sha256": "c764793437f4cd19e2b83cfb634545078d32f91dfea9765a6e4bc67f433f180c",
+        "retrievedAt": "2026-10-28T11:58:19.141Z"
+      },
+      {
+        "id": "P2",
+        "url": "https://journals.aps.org/ppf/pdf/10.1103/PhysicsPhysiqueFizika.1.195",
+        "finalUrl": "https://journals.aps.org/ppf/pdf/10.1103/PhysicsPhysiqueFizika.1.195",
+        "status": 403,
+        "mediaType": "text/html; charset=UTF-8",
+        "byteLength": 5717,
+        "sha256": "51c39250fb5ec52180bb84b96de78e2e662c2ba969e741d31523a47730ab8e0e",
+        "retrievedAt": "2026-10-28T11:58:18.749Z"
+      },
+      {
+        "id": "P3",
+        "url": "https://www.science.org/doi/10.1126/science.269.5221.198",
+        "finalUrl": "https://www.science.org/doi/10.1126/science.269.5221.198",
+        "status": 403,
+        "mediaType": "text/html; charset=UTF-8",
+        "byteLength": 5704,
+        "sha256": "66519440a821e7d47c19bc6e1567cda7b3a4d390afe1bd555983e5ee6b3688b6",
+        "retrievedAt": "2026-10-28T11:58:18.829Z"
+      },
+      {
+        "id": "P4",
+        "url": "https://arxiv.org/abs/hep-th/0405152v3",
+        "finalUrl": "https://arxiv.org/abs/hep-th/0405152v3",
+        "status": 200,
+        "mediaType": "text/html; charset=utf-8",
+        "byteLength": 44696,
+        "sha256": "a3bd746e79c6965c8139db6cfd949d38e4340aa3eccc2ae00cefc608ea249e89",
+        "retrievedAt": "2026-10-28T11:58:18.757Z"
+      },
+      {
+        "id": "P1-mit",
+        "url": "https://wind.mit.edu/~emanuel/Lorenz/EdLorenz/Deterministic_63.pdf",
+        "finalUrl": "https://wind.mit.edu/~emanuel/Lorenz/EdLorenz/Deterministic_63.pdf",
+        "status": 200,
+        "mediaType": "application/pdf",
+        "byteLength": 1066948,
+        "sha256": "35cbe8a9e3ac36f210031376989b3b838de85ca3ba0290ba44131dcfd204cc2f",
+        "retrievedAt": "2026-10-28T11:59:09.756Z"
+      },
+      {
+        "id": "P2-harvest",
+        "url": "https://harvest.aps.org/v2/journals/articles/10.1103/PhysicsPhysiqueFizika.1.195/fulltext",
+        "finalUrl": "https://harvest.aps.org/v2/journals/articles/10.1103/PhysicsPhysiqueFizika.1.195/fulltext",
+        "status": 401,
+        "mediaType": "application/json",
+        "byteLength": 75,
+        "sha256": "e2df613907ab7c53e7b7376e48cdccd1317c264e00f76699c8218b9be60126ba",
+        "retrievedAt": "2026-10-28T11:59:09.182Z"
+      },
+      {
+        "id": "P2-cern",
+        "url": "https://cds.cern.ch/record/111654/files/vol1p195-200_001.pdf",
+        "finalUrl": "https://cds.cern.ch/record/111654/files/vol1p195-200_001.pdf",
+        "status": 200,
+        "mediaType": "text/html; charset=utf-8",
+        "byteLength": 7557,
+        "sha256": "620fdbbe3ea71d7dc2ada9bbf00b30323f9efaeeb3b1caf6b0bdb2f010a11074",
+        "retrievedAt": "2026-10-28T11:59:08.923Z"
+      },
+      {
+        "id": "P3-pdf",
+        "url": "https://www.science.org/doi/pdf/10.1126/science.269.5221.198",
+        "finalUrl": "https://www.science.org/doi/pdf/10.1126/science.269.5221.198",
+        "status": 403,
+        "mediaType": "text/html; charset=UTF-8",
+        "byteLength": 5716,
+        "sha256": "e21b323ae3a1d8e81bb82792ab21ac230275e63b9f0ef1984d30e8f083f0391f",
+        "retrievedAt": "2026-10-28T11:59:08.915Z"
+      }
+    ],
+    "admittedCases": [
+      "P1",
+      "P4"
+    ],
+    "sourceUnavailableCases": [
+      {
+        "caseId": "P2",
+        "reason": "Publisher returned403, official fulltext API401; institutional PDF URL returned a browser challenge (HTTP200 HTML). No raw publication bytes admitted."
+      },
+      {
+        "caseId": "P3",
+        "reason": "Publisher landing page and PDF returned403. Institutional bibliography metadata was not substituted for the original Figure2 pixels/caption."
+      }
+    ],
+    "limitations": [
+      "P1 publisher403, actual author MIT archive PDF200; first Abstract paragraph manually transcribed from visually inspected scan, printed130/physical1.",
+      "P4 exact arXivv3 landing page200; first two Abstract sentences plus correction Comments, not the body derivation.",
+      "All physics source originals and normalized excerpts stay local with metadata-only redistribution."
+    ]
+  }
+}

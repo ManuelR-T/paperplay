@@ -1,0 +1,31 @@
+{
+  "format": "paperplay-frozen-automated-check-evidence",
+  "schemaVersion": 1,
+  "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+  "typecheck": "passed",
+  "evaluatorFocused": {
+    "tests": 11,
+    "passed": 11
+  },
+  "corpusAndDependencyGuards": {
+    "tests": 5,
+    "passed": 5
+  },
+  "firstCompleteSuite": {
+    "tests": 726,
+    "passed": 725,
+    "failed": 1,
+    "failure": {
+      "test": "runtime waits for global admission with a private immutable input snapshot and no third worker",
+      "type": "existing scheduler test order assumption; fake worker1 need not correspond to request0 after asynchronous hashing",
+      "reportedError": "FigureRuntimeError resource at1500ms watchdog",
+      "productionTimeoutChanged": false
+    }
+  },
+  "unchangedFocusedSchedulerRerun": {
+    "tests": 6,
+    "passed": 6,
+    "failed": 0
+  },
+  "policy": "First failed run retained; no production checker/prompt/runtime changes during frozen paper evaluation. Any test correction is a separate post-freeze commit."
+}

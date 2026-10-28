@@ -1,0 +1,318 @@
+{
+  "format": "paperplay-live-candidate-native-observation",
+  "schemaVersion": 1,
+  "frozenGitCommit": "7af5f4cbb030548a795bbc87df0dd37be4eacb21",
+  "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+  "scope": "Native engineering observations of two actual Muse outputs supplied by the evaluation coordinator. No scientific validation or paper reproduction is asserted.",
+  "transport": {
+    "source": "Private /tmp bundles prepared with existing createScientificExperience; no source body, candidate code, or raw bundle is published in this report",
+    "includeSource": true,
+    "includeAssets": false,
+    "includeResults": false,
+    "rights": "Unknown quotation/candidate redistribution rights. Temporary bundle remains private local evaluation transport only.",
+    "browser": "Own incognito tab_y on localhost3001"
+  },
+  "candidates": [
+    {
+      "id": "C4",
+      "candidateSha256": "62d2a6aa75ac84e0d40e07c75040200b116fb709af9a2931a9f84e4aa3e63156",
+      "entrySha256": "4d36fcdc942095107abcbe29e92188c086c3e16f51fdddc4d561e7068bc4e044",
+      "artifactId": "generated-3bbd8d17-1",
+      "stages": {
+        "sourceBinding": "ready via exact source-included experience",
+        "readonlyReview": "passed;0workers",
+        "previewBeforeRun": "passed;0workers",
+        "compiler": "passed through explicit Open interactive preview",
+        "runtimeInitialize": "passed;8validated SVG marks rendered",
+        "manualControls": "observed working Topic0→1→2 via Next and2→0 via keyboardHome",
+        "keyboardEntitySelection": "Synthetic leader selected using keyboardEnter; matched SVG/list pressed state",
+        "fullScriptedCustomQuality": "not-run: existing frozen artifact-lab accepts only authored fixtures, preview has no custom quality-run action",
+        "scientificValidation": "not-run",
+        "layout": "no measured text clipped in observed states at1280/16px or320/32px"
+      },
+      "seed": 42,
+      "declaredMaxExecutionMs": 100,
+      "measurements": {
+        "initial": {
+          "marks": 8,
+          "textLabels": 2,
+          "tableRows": 11,
+          "viewBox": {
+            "x": -24,
+            "y": -24,
+            "width": 468,
+            "height": 348
+          },
+          "textBounds": [
+            {
+              "x": 148.62109375,
+              "y": 29.7265625,
+              "width": 122.7578125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 117.95703125,
+              "y": 259.7265625,
+              "width": 184.0859375,
+              "height": 18,
+              "clipped": false
+            }
+          ]
+        },
+        "desktop": {
+          "dialog": [
+            728,
+            728
+          ],
+          "frame": [
+            672,
+            672
+          ]
+        },
+        "mobile": {
+          "viewport": [
+            320,
+            900
+          ],
+          "rootFontPx": 32,
+          "page": [
+            320,
+            320
+          ],
+          "dialog": [
+            286,
+            286
+          ],
+          "frame": [
+            241,
+            241
+          ],
+          "intentionalPanScrollWidth": 516,
+          "textBounds": [
+            {
+              "x": 87.2421875,
+              "y": 19.453125,
+              "width": 245.515625,
+              "height": 36,
+              "clipped": false
+            },
+            {
+              "x": 25.9140625,
+              "y": 249.453125,
+              "width": 368.171875,
+              "height": 36,
+              "clipped": false
+            }
+          ]
+        }
+      },
+      "workersCreated": 7,
+      "workersTerminatedBeforeNextCandidate": 7,
+      "windowErrors": 0,
+      "consoleErrors": 0,
+      "visibleQualification": "Generated figure unverified; conceptual synthetic diagram"
+    },
+    {
+      "id": "B3",
+      "candidateSha256": "3bf2b8983774d58ee7a6e0784af9fc3d9743110ca27ec37a521eeeca75f223b6",
+      "entrySha256": "83206db16c281164c63b823cedf8bb0208400662cabbc87b64729c4799a09c21",
+      "artifactId": "generated-155167ea-1",
+      "stages": {
+        "sourceBinding": "ready via exact source-included experience",
+        "readonlyReview": "passed;0additional workers",
+        "previewBeforeRun": "passed;0additional workers",
+        "compiler": "passed through explicit Open interactive preview",
+        "runtimeInitialize": "passed;18validated SVG marks rendered",
+        "manualControls": "observed working Spread50→0 via keyboardHome and0→100 via keyboardEnd, then Next;18marks retained and no alerts",
+        "entitySelection": "not-applicable: no entity-selection controls in rendered output",
+        "fullScriptedCustomQuality": "not-run: no frozen UI custom quality action",
+        "scientificValidation": "not-run",
+        "layout": "failed: clipped SVG text at normal and enlarged font"
+      },
+      "seed": 42,
+      "declaredMaxExecutionMs": 100,
+      "measurements": {
+        "initial": {
+          "title": "Cell variability over time",
+          "description": "Unverified conceptual illustration of why defining transcriptional dynamics is challenging when synthetic cells vary. No source measurements.",
+          "viewBox": {
+            "x": -24,
+            "y": -24,
+            "width": 448,
+            "height": 308
+          },
+          "textBounds": [
+            {
+              "x": -46.23828125,
+              "y": 17.7265625,
+              "width": 140.4765625,
+              "height": 18,
+              "clipped": true
+            },
+            {
+              "x": -50.25390625,
+              "y": 35.7265625,
+              "width": 148.5078125,
+              "height": 18,
+              "clipped": true
+            },
+            {
+              "x": 5.7734375,
+              "y": 207.7265625,
+              "width": 36.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 304.4296875,
+              "y": 207.7265625,
+              "width": 31.140625,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 31.7734375,
+              "y": 67.2265625,
+              "width": 20.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 89.7734375,
+              "y": 77.1265640258789,
+              "width": 20.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 147.7734375,
+              "y": 87.02656555175781,
+              "width": 20.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 205.7734375,
+              "y": 96.92655944824219,
+              "width": 20.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 263.7734375,
+              "y": 73.0015640258789,
+              "width": 20.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": 321.7734375,
+              "y": 82.90156555175781,
+              "width": 20.453125,
+              "height": 18,
+              "clipped": false
+            },
+            {
+              "x": -10.234375,
+              "y": 227.7265625,
+              "width": 68.46875,
+              "height": 18,
+              "clipped": false
+            }
+          ],
+          "geometry": 7,
+          "tableRows": 24
+        },
+        "desktop": {
+          "dialog": [
+            728,
+            728
+          ],
+          "frame": [
+            672,
+            672
+          ],
+          "clippedTextCount": 2,
+          "leftBoundary": -24,
+          "failures": [
+            {
+              "x": -46.23828125,
+              "width": 140.4765625
+            },
+            {
+              "x": -50.25390625,
+              "width": 148.5078125
+            }
+          ]
+        },
+        "mobile": {
+          "viewport": [
+            320,
+            900
+          ],
+          "rootFontPx": 32,
+          "page": [
+            320,
+            320
+          ],
+          "dialog": [
+            286,
+            286
+          ],
+          "frame": [
+            240,
+            240
+          ],
+          "intentionalPanScrollWidth": 496,
+          "clippedTextCount": 3,
+          "leftBoundary": -24,
+          "failures": [
+            {
+              "x": -116.4765625,
+              "width": 280.953125
+            },
+            {
+              "x": -124.5078125,
+              "width": 297.015625
+            },
+            {
+              "x": -44.46875,
+              "width": 136.9375
+            }
+          ]
+        }
+      },
+      "workersCreated": 5,
+      "windowErrors": 0,
+      "consoleErrors": 0,
+      "visibleQualification": "Generated figure unverified; conceptual illustration, synthetic cells, no source measurements"
+    }
+  ],
+  "cleanup": {
+    "totalWorkersCreated": 12,
+    "totalWorkersTerminated": 12,
+    "activeWorkersAfterClosingBothDialogs": 0,
+    "dialogsRemaining": 0,
+    "windowErrors": 0,
+    "consoleErrors": 0
+  },
+  "inference": {
+    "newCallsAuthorized": 0,
+    "routesDeniedByTabInterceptor": true,
+    "requestsAttempted": 0
+  },
+  "limitations": [
+    "Manual DOM text bounds were inspected on the actual production SVG; this is not a claimed execution of the full scripted quality runner.",
+    "No editing, repair, harness route, oracle tuning, or candidate/code modification occurred after seeing these outputs.",
+    "Point/line scenes are conceptual illustrations, not evidence of scientific fidelity or successful whole-paper reproduction.",
+    "P4 has no candidate according to coordinator; native stages for P4 are not-run.",
+    "Only visible generated content is captured in screenshots. Raw source text, candidate code and temporary experiences remain outside the repository."
+  ],
+  "screenshots": [
+    "data/pp113-live-browser-C4-desktop.png",
+    "data/pp113-live-browser-C4-mobile.png",
+    "data/pp113-live-browser-B3-desktop.png",
+    "data/pp113-live-browser-B3-mobile.png"
+  ]
+}

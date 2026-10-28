@@ -1,0 +1,1725 @@
+{
+  "format": "paperplay-frozen-scientific-evaluation",
+  "schemaVersion": 1,
+  "reportSha256": "50bd5f1fe43753df66542d7fc1bce0306ed58831843239fbe23c76c3b3c813c3",
+  "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+  "roundId": "first-offline",
+  "parentReportSha256": null,
+  "createdAt": "2026-10-28T12:04:06.832Z",
+  "mode": "offline-provider-free",
+  "cases": [
+    {
+      "caseId": "B1",
+      "split": "development",
+      "domain": "biology",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "792b31ed3039386b703d1e7d920f7aa52ffdb7f905aff4499b39330ee457c01c",
+        "sourceFingerprint": "0ee4fc8e16cafa5899b5e4f7fbb00304037a46cf55a69f35c7409ac210da76da",
+        "originalSha256": "edc1ead748175c8d2ac96e46eee31f280af5a48a925c156d426e553952091a23",
+        "originalBytes": 83005,
+        "edition": "1952 published article; excludes 2019 supplement",
+        "locator": "Figure 1 caption first sentence and first sentence under “The nature of the permeability changes”, printed p. 501; actual PMC archive page image visually inspected (not NJIT PDF page 4).",
+        "rightsBasis": "1952 publication rights remain unknown. PMC public access is not a general redistribution license; original page pixels and normalized excerpt stay local. Public evaluation metadata only.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "9823bbca493d2873aa61dbd9f791cd16da990d69ca94260e1ba4ed63cd3915bd",
+        "fallbackPlanSha256": "448d79cc46bb5c0b0487c8bf8f7bbfdee1a976e46c19ed77ac8fa41eeb075aae",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "excerpt-1",
+            "page": 1,
+            "quoteSha256": "7fbed555e1c96ae28f0e8fb371505d4df9408cb0749c2426c6d125979ebb2323"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 128
+      },
+      "payload": {
+        "sectionId": "section-0-26e555db",
+        "planning": {
+          "phase": "planning",
+          "characters": 11349,
+          "bytes": 11351,
+          "estimatedInputTokens": 11607,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 67396,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 5077,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 16807,
+          "bytes": 16807,
+          "estimatedInputTokens": 17063,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 89228,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 10850,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "7f12c6d0dbc029ce164bc34c167c63bb37cf7f1f9e1b40ebe68c1c421f323ebe",
+          "selectionSha256": "0771e84258fa0b624fc49567dbca29ff6c2311d5ac9ba055cd8b66b0bce8370e",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "3ead4ead0d20fecb9adbcd5359f32d1c558026ac2bec0b824bab8478a262ea90",
+            "sourceFingerprint": "0ee4fc8e16cafa5899b5e4f7fbb00304037a46cf55a69f35c7409ac210da76da",
+            "sectionId": "section-0-26e555db"
+          },
+          "querySha256": "efc7712dcfa702bdf84b6cf2b77826668a63139aafa1d63cbdb14d130eae4d2e",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-diagram",
+              "version": "2.1.0",
+              "kind": "diagram",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [
+            {
+              "id": "no-specialized-relevance-match",
+              "version": null,
+              "blocking": false,
+              "reason": "No specialized lexical match was found. The selected diagram is a conceptual fallback only, not an executable substitute for an unknown scientific method.",
+              "nextAction": "Retain the original/source-linked fallback. Choose a registered exact capability version or export a developer-extension request; do not invent SDK methods or install packages."
+            }
+          ],
+          "contentSha256": "591b17beaed38f968d9dfc21c543673851f82376baee407cca2587859572671a",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 0,
+            "contentCharacters": 3121,
+            "contentBytes": 3121
+          },
+          "receiptSha256": "9d280f0fdf1f809a16a296f02612ac4c9c087d92c00708ba9dac05370c7582fc"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "9fa953c697c2e124bfbfe8625db1ad7c3c2b92c13db223dd1c984fc11bd6de8c",
+          "selectionSha256": "0a08d5234345dc03283c0e8b4fbf1dbc60012885eda260ead641683d6f2c71e1",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "3ead4ead0d20fecb9adbcd5359f32d1c558026ac2bec0b824bab8478a262ea90",
+            "sourceFingerprint": "0ee4fc8e16cafa5899b5e4f7fbb00304037a46cf55a69f35c7409ac210da76da",
+            "sectionId": "section-0-26e555db"
+          },
+          "querySha256": "e7479a7d08a2cb5e8f7db8a7bb1b8359dfde5a2f2fc236dc5dc75a1d9ce7ea47",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "0a9ff9907e366cf862dec34d6572f6ec759b26be56ab7add083a0173c71ed867"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "B2",
+      "split": "development",
+      "domain": "biology",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "b777cc78d12aceb7e72792c30ec5ba3f8f96544e2bf6eec107fcc88e5218c291",
+        "sourceFingerprint": "8ec62ef734c7ecfa8bbc74f2fac48c793955674656528b286f4cc0cad5cc2613",
+        "originalSha256": "f1683df83d12c7079b7d60c046a59cddba951aa297abb29c2358afa374b10f56",
+        "originalBytes": 1242899,
+        "edition": "1952 published article, volume 237, pp. 37–72",
+        "locator": "Section 1, “A Model for the Embryo. Morphogens”, printed p. 37 (Cambridge/JSTOR scan PDF page 2 after cover): two complete short sentences from the opening model discussion. Printed p. 38 and later derivations are not admitted.",
+        "rightsBasis": "Rights unknown for this frozen publisher edition. Cambridge hosts an original 1952 journal scan with JSTOR personal/non-commercial-use notice. Original and excerpt stay local; public report metadata only.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "c5a56657152c7ed2da6b0205f4bead096fbc3f17e2d75af5047f683824431c54",
+        "fallbackPlanSha256": "276d60a5d8037d8c01fc7a5295c39af98aebe8d7dcd615c5703bc3de16707d56",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "excerpt-1",
+            "page": 1,
+            "quoteSha256": "90bdfb6fe13be87893469ffc2fefcf05617bd85029f5575ee4768925f3c7b4d8"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 135
+      },
+      "payload": {
+        "sectionId": "section-0-5ec7c64e",
+        "planning": {
+          "phase": "planning",
+          "characters": 10072,
+          "bytes": 10077,
+          "estimatedInputTokens": 10333,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 62288,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 3928,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 16767,
+          "bytes": 16769,
+          "estimatedInputTokens": 17025,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 89068,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 10812,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "f5e64709f46898f94867cb227056d9a936f0e4d558876aa52dd5d6ecb99fa52e",
+          "selectionSha256": "92a731f92eb5a8d608b1069ff1e56972f313f830b65fa51b0c905171ade61e0e",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "c2afb35738c0c63665ad125ff4b97a8c2c671a82512507d794bba83399c15010",
+            "sourceFingerprint": "8ec62ef734c7ecfa8bbc74f2fac48c793955674656528b286f4cc0cad5cc2613",
+            "sectionId": "section-0-5ec7c64e"
+          },
+          "querySha256": "007308a4140f842f101026adc330c7bdd8a4a3c45e24faeef172795052ae05b0",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-linear",
+              "version": "2.1.0",
+              "kind": "linear",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "8b8122c18578df478d68e6181c476b98e8208fc64973d57a5dbbe1caf593d781",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 0,
+            "contentCharacters": 2439,
+            "contentBytes": 2440
+          },
+          "receiptSha256": "8974ac7ed748e6ccdadee6963aaf49901591147f0534218b151db7f4c1ede62f"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "21ed32a0aa5aa9916d6ca38a5711ee2d3455c890ff785c036c007131b2370482",
+          "selectionSha256": "f7f1a9b11ff6345d0fee9f5398af1f78f97bc2565333cd0a6525bcb5b3f8bccb",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "c2afb35738c0c63665ad125ff4b97a8c2c671a82512507d794bba83399c15010",
+            "sourceFingerprint": "8ec62ef734c7ecfa8bbc74f2fac48c793955674656528b286f4cc0cad5cc2613",
+            "sectionId": "section-0-5ec7c64e"
+          },
+          "querySha256": "3166f72723a03ff4ef43a5a31f1a0e0b179bff7316763cf93a10fec04a9c71c8",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "8588099dae4771ea7acc91e748f877fadf1b29dfe58600271838dfcf33e5fce0"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "B3",
+      "split": "held-out",
+      "domain": "biology",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "66b432fbc87c98efdfeeb898579e1986e79ff800eb5f26787399a9c394933ac8",
+        "sourceFingerprint": "08efdce515b442755e03102a42d61bea506461889166b0c7205a2f1c1e18f551",
+        "originalSha256": "a52ba8645a7791e24289b069101f291db4ee370e76a6ca5c15fd4fcffba59184",
+        "originalBytes": 326737,
+        "edition": "2014 published article",
+        "locator": "Publisher public Abstract, HTML #Abs2-section, first complete sentence (25 words). Only this abstract sentence is admitted; article body, figures, methods and datasets were not admitted.",
+        "rightsBasis": "Publication copyright/redistribution permission unestablished. Publisher provides a public abstract preview and identifies the rest as subscription content. Downloaded HTML and the short normalized excerpt stay local; public evaluation metadata only.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "48d42810feecdb71056c72f4a84ffc25a847bd90d34ea3c060a732be028f3483",
+        "fallbackPlanSha256": "dded708b1ca207b8f2214c57267872ac59a63ea2dec15a54e0fe38fc21fda913",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "excerpt-1",
+            "page": 1,
+            "quoteSha256": "9bb757da432e9adbbcfe8a5d49ce47ca93e17d52135170a999ad43a917d270ff"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 178
+      },
+      "payload": {
+        "sectionId": "section-0-e0ae8794",
+        "planning": {
+          "phase": "planning",
+          "characters": 24270,
+          "bytes": 24278,
+          "estimatedInputTokens": 24534,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 119080,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 16020,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 17197,
+          "bytes": 17197,
+          "estimatedInputTokens": 17453,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 90788,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 11236,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "8743887b8e72309fc205e96a8b69d67290d9223303f42f01548b8eda69035402",
+          "selectionSha256": "1f01c9b67488393c022b81337a8804e37183fab2efce7d22859c9837464c5e6a",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "523fda66b01fce63eb31f2660740f3533413c086acb33c7b7cd5189256b9f249",
+            "sourceFingerprint": "08efdce515b442755e03102a42d61bea506461889166b0c7205a2f1c1e18f551",
+            "sectionId": "section-0-e0ae8794"
+          },
+          "querySha256": "06ab42a9833603ab21bb4ca031a8d97968e02f1504bd905b80bfb8afaacd9342",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-custom",
+              "version": "2.1.0",
+              "kind": "custom",
+              "exampleRefs": [
+                {
+                  "id": "annotated-dynamics",
+                  "version": "1.0.0",
+                  "sha256": "14c81b7c69f0d662b2d6cd0fe1d54c4630e223823e2c298b5cfb85a96b4cdcb4"
+                },
+                {
+                  "id": "phase-composition",
+                  "version": "1.0.0",
+                  "sha256": "1a1efd8d56fa6fabe88c875bf2dab9986620ed687dfc4442c68f1bce2e671341"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "50eee2df69b4f8113d68b80732d9946cdd9513bb2625bb35cae3fd4c5d5b1d9f",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 12199,
+            "contentBytes": 12200
+          },
+          "receiptSha256": "0ebd87ed393e9c2ddfa5a21f6ae485116ce0f1af02048669f15af6ad0462d069"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "c3ce09fd4d059e385132485e8b64197b84007f886aaee007e2f3726c968524df",
+          "selectionSha256": "686bc5ca37e7f2dc056e26e2b3ea6b3296faafb4abdd71cd40d83823d664e469",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "523fda66b01fce63eb31f2660740f3533413c086acb33c7b7cd5189256b9f249",
+            "sourceFingerprint": "08efdce515b442755e03102a42d61bea506461889166b0c7205a2f1c1e18f551",
+            "sectionId": "section-0-e0ae8794"
+          },
+          "querySha256": "1184c3c38083576532a82f89456dd0f793461b65f67ce5009bdd3ed910da9b18",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "054d9b8ba9f7e76e92b1946b16eb5c8ffef638772a811f7213494905a4afe80a"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "B4",
+      "split": "development",
+      "domain": "biology",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "2d297cf0c3d272f5e6bdd7f0f53b26641564e713806e0b39f0824f2f0eacba24",
+        "sourceFingerprint": "45047744072ea35f7b80abd64594a0b6a3fd3cdaea7d6122def96abdf8e50184",
+        "originalSha256": "fe004f0aef7b22fadb5ae68fba176e05affefe186cdb8e944efa12bb5980ea6c",
+        "originalBytes": 620399,
+        "edition": "Version of record, 18 August 2021",
+        "locator": "Methods → Inference regimen, publisher HTML heading #Sec15: first two paragraphs only, covering model selection and the CASP14 ensemble/timing description. Later paragraphs and figures are not admitted.",
+        "rightsBasis": "Publisher Rights and permissions explicitly declares article CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/), with third-party credit exceptions. Authors/source credited; whitespace normalized. Despite article license, public evaluation output is metadata-only; local source/original not bundled.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "652a57fc049bb8ce58ac11353b11281ba7b24179c0a073dd343e6236489cf4fc",
+        "fallbackPlanSha256": "7f78aefb2194219aeed2f5b074a22bb6681655e4e8cd011e6f81046e4d6ee0df",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "excerpt-1",
+            "page": 1,
+            "quoteSha256": "3647d71b6529be124c6a9f2f2c022af0058ed7f9e3c7de53c2d2776382fcb2f2"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 773
+      },
+      "payload": {
+        "sectionId": "section-0-fa414701",
+        "planning": {
+          "phase": "planning",
+          "characters": 12866,
+          "bytes": 12870,
+          "estimatedInputTokens": 13126,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 73464,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 6528,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 18324,
+          "bytes": 18326,
+          "estimatedInputTokens": 18582,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 95296,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 12301,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "3daf42b4f2dca101837da16099c3dc0207b5e4919cf569500f6b3ee2ae4df276",
+          "selectionSha256": "05eaf844bcb26e6a9439caf7a1479154cfe291c188e376810f50d1fe939e4fef",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "2975c52d5fbc1397380c0600323871022695cce0565b8c81ca7d0043923fc1c6",
+            "sourceFingerprint": "45047744072ea35f7b80abd64594a0b6a3fd3cdaea7d6122def96abdf8e50184",
+            "sectionId": "section-0-fa414701"
+          },
+          "querySha256": "186aac8ebcaa87f7859db8b85e2bf73271c82098af91b21407a9ec24331dad7f",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-diagram",
+              "version": "2.1.0",
+              "kind": "diagram",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [
+            {
+              "id": "no-specialized-relevance-match",
+              "version": null,
+              "blocking": false,
+              "reason": "No specialized lexical match was found. The selected diagram is a conceptual fallback only, not an executable substitute for an unknown scientific method.",
+              "nextAction": "Retain the original/source-linked fallback. Choose a registered exact capability version or export a developer-extension request; do not invent SDK methods or install packages."
+            }
+          ],
+          "contentSha256": "591b17beaed38f968d9dfc21c543673851f82376baee407cca2587859572671a",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 0,
+            "contentCharacters": 3121,
+            "contentBytes": 3121
+          },
+          "receiptSha256": "401d934ed868acd24dfa166fe4fd9bbfba938eca3d0ebc9bbad92cd74218b21f"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "13de75049bff0ee2b417e1badbd38b4e11597f9465f9bb3a73cb9dff3144a958",
+          "selectionSha256": "febcbdc356b7607309765933d2a920748bd507552175f579d6d92af6b5de4725",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "2975c52d5fbc1397380c0600323871022695cce0565b8c81ca7d0043923fc1c6",
+            "sourceFingerprint": "45047744072ea35f7b80abd64594a0b6a3fd3cdaea7d6122def96abdf8e50184",
+            "sectionId": "section-0-fa414701"
+          },
+          "querySha256": "af2b4b9f4ec48da28b2586d288255113dfdf4af517efd35464364b243149653e",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "dab4f4cee32612c50511860f319ae427b46650609f4e865e151b0877ec941073"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "P1",
+      "split": "development",
+      "domain": "physics",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "616b957d2133408c26409899dfe0af0a5569b0661647fd51341d5b1f6ddd010a",
+        "sourceFingerprint": "8c5d45f3e6e061b34ad1f39edbfd3dea7aca07e7b0eeed8edd82feeee49194a3",
+        "originalSha256": "35cbe8a9e3ac36f210031376989b3b838de85ca3ba0290ba44131dcfd204cc2f",
+        "originalBytes": 1066948,
+        "edition": "March 1963 article, pp. 130–141",
+        "locator": "Abstract first paragraph, printed p.130 / physical PDF page1, manually transcribed from inspected MIT author-archive scan; no body equations admitted.",
+        "rightsBasis": "Actual 1963 published article scan from Lorenz author institutional archive at MIT. Access does not grant redistribution; source retained locally.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "5723a88e8fbb0c409016c0a92601345a994c5c07c9a60343add9490bc3805e3e",
+        "fallbackPlanSha256": "b6b06dcc2b9232a02f38da253916db7f7c8e3d5ec9f6237b2ac5108163799b54",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "passage-0",
+            "page": 1,
+            "quoteSha256": "96d87b6910ee58ce799ed006559a297e844477d1fd0814797e33e696b17ddd0d"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 541
+      },
+      "payload": {
+        "sectionId": "section-0-c8288d01",
+        "planning": {
+          "phase": "planning",
+          "characters": 23812,
+          "bytes": 23820,
+          "estimatedInputTokens": 24076,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 117248,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 15576,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 16739,
+          "bytes": 16739,
+          "estimatedInputTokens": 16995,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 88956,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 10792,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "a36156221e0325eb7fb37a1820bee542e393ed66d8a948d7ba70ad5ec611165f",
+          "selectionSha256": "8a9c88551126747daa4a34f4322890ed35e04d0d6c5dab5dc4f42fbe553a8c5e",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "7da34c8f9f9caca2d108eeb5d5ea7b4a71a4de110122160c027461c7fb39ddc5",
+            "sourceFingerprint": "8c5d45f3e6e061b34ad1f39edbfd3dea7aca07e7b0eeed8edd82feeee49194a3",
+            "sectionId": "section-0-c8288d01"
+          },
+          "querySha256": "55d34d769889e2b3385f7009fed43b61c7ce2e4dd4e9d84154c4714f05225607",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-custom",
+              "version": "2.1.0",
+              "kind": "custom",
+              "exampleRefs": [
+                {
+                  "id": "annotated-dynamics",
+                  "version": "1.0.0",
+                  "sha256": "14c81b7c69f0d662b2d6cd0fe1d54c4630e223823e2c298b5cfb85a96b4cdcb4"
+                },
+                {
+                  "id": "phase-composition",
+                  "version": "1.0.0",
+                  "sha256": "1a1efd8d56fa6fabe88c875bf2dab9986620ed687dfc4442c68f1bce2e671341"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "50eee2df69b4f8113d68b80732d9946cdd9513bb2625bb35cae3fd4c5d5b1d9f",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 12199,
+            "contentBytes": 12200
+          },
+          "receiptSha256": "d1af595b44bd385b3613d9860321d9104c3cf903b2957d2e419f7f06754abe5d"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "f9596a2163745837b79715d876a46b8b5bb65c03c4dbf00c789fea9c21f2564d",
+          "selectionSha256": "a77e9e45bb7de0fe2b244b34068ecd8037136bbfd09ab10ae328316a1d337193",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "7da34c8f9f9caca2d108eeb5d5ea7b4a71a4de110122160c027461c7fb39ddc5",
+            "sourceFingerprint": "8c5d45f3e6e061b34ad1f39edbfd3dea7aca07e7b0eeed8edd82feeee49194a3",
+            "sectionId": "section-0-c8288d01"
+          },
+          "querySha256": "f58eebc9db2d6256ac0ee1a0d27fa6de0e7e606504d0622aa69547f71fbb6701",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "42cf0833ff87059b82becaf94b2cbfaa9391330bd9e49d98c521fcec46474202"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "P2",
+      "split": "development",
+      "domain": "physics",
+      "sourceStatus": "source-unavailable",
+      "sourceBinding": null,
+      "catalogPath": {
+        "status": "not-executed",
+        "coverageSha256": null,
+        "fallbackPlanSha256": null,
+        "anchors": [],
+        "anchoredCharacters": null,
+        "notAnalyzedCharacters": null
+      },
+      "payload": null,
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "P3",
+      "split": "held-out",
+      "domain": "physics",
+      "sourceStatus": "source-unavailable",
+      "sourceBinding": null,
+      "catalogPath": {
+        "status": "not-executed",
+        "coverageSha256": null,
+        "fallbackPlanSha256": null,
+        "anchors": [],
+        "anchoredCharacters": null,
+        "notAnalyzedCharacters": null
+      },
+      "payload": null,
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "P4",
+      "split": "held-out",
+      "domain": "physics",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "7cf2dbbfd3c92cc7f44ad58d91bcf28c9d9af1397b02f03ca2c09c05211805d9",
+        "sourceFingerprint": "66a5e4a8bbb0a0b3db3478e0d2b0db35320643bdf27215e0625b4bee2b589e74",
+        "originalSha256": "a3bd746e79c6965c8139db6cfd949d38e4340aa3eccc2ae00cefc608ea249e89",
+        "originalBytes": 44696,
+        "edition": "arXiv hep-th/0405152v3, revised 2 October 2008",
+        "locator": "Exact arXiv hep-th/0405152v3 landing page: first two Abstract sentences plus v3 correction Comments; body derivation not admitted.",
+        "rightsBasis": "Exact v3 arXiv metadata/abstract and correction Comments publicly accessible. No redistribution license assumed; excerpts retained locally.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "404df771826bdfc3b415b9377d147188a75a2acb093c1268fdb4ea791138452e",
+        "fallbackPlanSha256": "28ebc3e6b321a7be558ca5cd4dc263248e213f582fb6840749696f5eb151c2eb",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "passage-0",
+            "page": 1,
+            "quoteSha256": "3eeea10a72f7be7d90dbec49aa3c58044c05922a7dd78b243bbb7a735e053711"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 386
+      },
+      "payload": {
+        "sectionId": "section-0-6cb2e48c",
+        "planning": {
+          "phase": "planning",
+          "characters": 12342,
+          "bytes": 12349,
+          "estimatedInputTokens": 12605,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 71368,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 5940,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 16748,
+          "bytes": 16748,
+          "estimatedInputTokens": 17004,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 88992,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 10785,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "6b935551bf0180baae02e4bf2444f4f23cecf804744228cdb72307b9fd3b0c56",
+          "selectionSha256": "7132fe24a484a672c48923fbdbe95e4e7484ab5afb29bf03d72dd3e53b8f2fd3",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "22ce4b5e2ef8928e9502402d93a18212e1f7037f85ec24269097286adeaa0927",
+            "sourceFingerprint": "66a5e4a8bbb0a0b3db3478e0d2b0db35320643bdf27215e0625b4bee2b589e74",
+            "sectionId": "section-0-6cb2e48c"
+          },
+          "querySha256": "023801df551bc1a1e7ede421a806f817d6d6cc9d954f47e1baa6a7113b046e91",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-equation",
+              "version": "2.1.0",
+              "kind": "equation",
+              "exampleRefs": []
+            },
+            {
+              "id": "widget-linear",
+              "version": "2.1.0",
+              "kind": "linear",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "17b73ed68219809ef1ac51545baebac480eab012df2573bfce5d50a1c4807786",
+          "metrics": {
+            "selectedCapabilities": 2,
+            "selectedExamples": 0,
+            "contentCharacters": 4478,
+            "contentBytes": 4483
+          },
+          "receiptSha256": "6d186788da7ab2586d399f171f32c5a8c4aa941515be982e407b03e994b6df6e"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "a26bbdf1580642926f7d33cc15c25a1745dcafd5eb906cbf6eeb7b40687b5b48",
+          "selectionSha256": "4111bfb94c88747f0a6beff4a771bd47ca4c7bf9eac16d53094532a8e4df8b4e",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "22ce4b5e2ef8928e9502402d93a18212e1f7037f85ec24269097286adeaa0927",
+            "sourceFingerprint": "66a5e4a8bbb0a0b3db3478e0d2b0db35320643bdf27215e0625b4bee2b589e74",
+            "sectionId": "section-0-6cb2e48c"
+          },
+          "querySha256": "5b657ae22251c26c8a45bf7d15509a0efbe75ecf9eb04b484d2f0b5d14e0da1b",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "2a5baa315270c93a72d33ae4119f394db26f6ef233eb1d9978a335e4434e9cb9"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "C1",
+      "split": "development",
+      "domain": "computer-science",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "08e626009e60f12324823a8f137eb56e9298a3817bb3bcd5fc6059224160150b",
+        "sourceFingerprint": "995c23c4bca965213583dc0f3d5c0de661162df1eb8d4c40e6a814f1165d213b",
+        "originalSha256": "31f0c4917bb65f2cf80a710bf5d19f19e0ce244e5166fe770bd2151f0af417e6",
+        "originalBytes": 117906,
+        "edition": "Publisher article, 5 September 2019",
+        "locator": "Publisher landing-page Abstract (.metadata.abstract > pre), exact conference record; one logical saved page, not PDF page numbering.",
+        "rightsBasis": "Publisher record links CC BY3.0; report stores metadata only.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "8f896b43237ac003960c957c7c114242a28f05eb3074b5d5207b06e94345f51b",
+        "fallbackPlanSha256": "8fc354a67f311ed2698e7d7a62f2048f51a455fe99e175102ca09c6454508d12",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "c1-publisher-abstract",
+            "page": 1,
+            "quoteSha256": "e8ebf54f937cf62525c4aef0aff1a6bf6b706699aa0baf5b4d5b56513b8e55ae"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 635
+      },
+      "payload": {
+        "sectionId": "section-0-fb437bc3",
+        "planning": {
+          "phase": "planning",
+          "characters": 10973,
+          "bytes": 10983,
+          "estimatedInputTokens": 11239,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 65892,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 4717,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 17108,
+          "bytes": 17114,
+          "estimatedInputTokens": 17370,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 90432,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 11157,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "06c8bbc9cfdbd0cf602a06dd0f0d33f82126465d15ae27137fb01860248d6084",
+          "selectionSha256": "70e3eb8bf863735d631c2f7dda699be6281d35b593387da9fa6b79cdab83df70",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "ae7e15dd7b95344940fe635fce9ca8a6a2753f0526e64ca95b8f7f5221f8a743",
+            "sourceFingerprint": "995c23c4bca965213583dc0f3d5c0de661162df1eb8d4c40e6a814f1165d213b",
+            "sectionId": "section-0-fb437bc3"
+          },
+          "querySha256": "d0eb4b995e6e4519376eb83fcb51c8d8e3cb694f2bde02f32db3263ce64cec49",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-graph",
+              "version": "2.1.0",
+              "kind": "graph",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "710c6429be6475cd59d896a0169e9542f6a46920dce4dc5670a708df5dfc7800",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 0,
+            "contentCharacters": 2883,
+            "contentBytes": 2885
+          },
+          "receiptSha256": "fed16e6c111e8f6e4d57eeea50affd486d268fcda147df6bc4582d0e50b26509"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "f6eb6fd81db8891db53e2362d4d7e03d6856d91ccd98436e4792a5c3bfe79e02",
+          "selectionSha256": "311a22cf74844d004a91f763d0a56dc5b8db21f8942e6cdb8c3c2e9186f4b219",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "ae7e15dd7b95344940fe635fce9ca8a6a2753f0526e64ca95b8f7f5221f8a743",
+            "sourceFingerprint": "995c23c4bca965213583dc0f3d5c0de661162df1eb8d4c40e6a814f1165d213b",
+            "sectionId": "section-0-fb437bc3"
+          },
+          "querySha256": "977e5376200f2c81d1f212715d993796d1b6e1c846e213228d5e19e39b3886a9",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "cb2bae7bc8102a712f93bd61b27315ec23fd373723919c536a4d934903cb142d"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "C2",
+      "split": "development",
+      "domain": "computer-science",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "99435e890ec7760d76b9de70e4c8263adec713e5d92352d4cf0a46f25acc9056",
+        "sourceFingerprint": "32c7d17fa78866fe9fbdd216ba69ac83f48046e5dac9e19085e8fdfa612198b6",
+        "originalSha256": "7bf67416790722bd776a0a6bac707c88ea3d6cb63226679874185fbd7fe8c101",
+        "originalBytes": 118327,
+        "edition": "2018 conference edition; arXiv v1 is a separate extended source",
+        "locator": "Publisher landing-page Abstract (.metadata.abstract > pre), exact conference record; one logical saved page, not PDF page numbering.",
+        "rightsBasis": "Publisher record links CC BY3.0; report stores metadata only.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "1ec3d0768a6e09def5666f239243797b77d16526483b268bd304074ed080b099",
+        "fallbackPlanSha256": "267f4f96f549d1b0d1627f6fffb9ab4383701d36f4cd43222b27e11bf67d5085",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "c2-publisher-abstract",
+            "page": 1,
+            "quoteSha256": "2f113cbfde2dcfa309716de9f9692f8bba47b6cec22bbb44d1a3c3e3045725c0"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 552
+      },
+      "payload": {
+        "sectionId": "section-0-9ef30877",
+        "planning": {
+          "phase": "planning",
+          "characters": 11563,
+          "bytes": 11565,
+          "estimatedInputTokens": 11821,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 68252,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 5289,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 17021,
+          "bytes": 17021,
+          "estimatedInputTokens": 17277,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 90084,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 11062,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "d596415e6fd8a1cc78d30ae3f944fa31f73abe1d322de8b326233a16bd124a0b",
+          "selectionSha256": "5ef8de92a27c41796da2833b57ec2c9cec2b392d213915c7d52ff22518cc59ec",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "8915968d5ce49df279c0b37798c99632b0219eeb8e4f5f467f309cffc9d14b74",
+            "sourceFingerprint": "32c7d17fa78866fe9fbdd216ba69ac83f48046e5dac9e19085e8fdfa612198b6",
+            "sectionId": "section-0-9ef30877"
+          },
+          "querySha256": "1736673ea69ed222ad1994823938863bda90680688c2291302252c5e76c6b683",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-diagram",
+              "version": "2.1.0",
+              "kind": "diagram",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [
+            {
+              "id": "no-specialized-relevance-match",
+              "version": null,
+              "blocking": false,
+              "reason": "No specialized lexical match was found. The selected diagram is a conceptual fallback only, not an executable substitute for an unknown scientific method.",
+              "nextAction": "Retain the original/source-linked fallback. Choose a registered exact capability version or export a developer-extension request; do not invent SDK methods or install packages."
+            }
+          ],
+          "contentSha256": "591b17beaed38f968d9dfc21c543673851f82376baee407cca2587859572671a",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 0,
+            "contentCharacters": 3121,
+            "contentBytes": 3121
+          },
+          "receiptSha256": "e9d658726bd5ce2385c646b27940ad37d38413a360f7637bfa7bfcf126e1fcde"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "039d2cad4efd608fe21cce5b3ddcc4a647ab8d2cf513fb02e861421ec0975ea8",
+          "selectionSha256": "3c8dc24bf651b8dd71a7fce23990efe4f6b4d95fdde6b015fe9e8feb9761688b",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "8915968d5ce49df279c0b37798c99632b0219eeb8e4f5f467f309cffc9d14b74",
+            "sourceFingerprint": "32c7d17fa78866fe9fbdd216ba69ac83f48046e5dac9e19085e8fdfa612198b6",
+            "sectionId": "section-0-9ef30877"
+          },
+          "querySha256": "2392737d5b2771bb9fb0fd0bfe2fbd6870b040ccaebfcf78190528b5d51bb933",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "8a68429e73f685c2a1ac112bf80762d5455b35da211e89d554d0acec6c27cc40"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "C3",
+      "split": "development",
+      "domain": "computer-science",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "960cfa9ba130f2ee669107b4f84697a199d94b3d0b1a7f750af798763d463f73",
+        "sourceFingerprint": "955399113d7862f1e0ae9f76c84eab5ba180260bf9c65862161fbc096df98788",
+        "originalSha256": "fe1288e9c6f8322156429ab44bf5ced203155f8ecc7ea9fe6cfd125872c72a3b",
+        "originalBytes": 188707,
+        "edition": "arXiv 1706.03762v7, revised 2 August 2023",
+        "locator": "Pinned arXiv HTML v7, section #S3.SS2.SSS1 paragraphs p1/p2; equation #S3.E1 original MathML alttext; figure #S3.F2 caption only. One logical HTML page.",
+        "rightsBasis": "arXiv nonexclusive distribution terms; no general republication grant inferred.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "ed412fe86b5160d47c6e4e5904524433e1ff662fab3d624cd1c143b08372ecf2",
+        "fallbackPlanSha256": "4817e9c4511a8fc2ae5aa76edc81f0144b68d597ebed0b9d3ed4e44701cb08c4",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "c3-S3-SS2-SSS1-p1",
+            "page": 1,
+            "quoteSha256": "697423c9959a15e3625230ba8ae20dcc524a30b5295f866589ca19e60bc92fca"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 775
+      },
+      "payload": {
+        "sectionId": "section-0-3de18df4",
+        "planning": {
+          "phase": "planning",
+          "characters": 14539,
+          "bytes": 14551,
+          "estimatedInputTokens": 14807,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 80156,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 7967,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 17564,
+          "bytes": 17565,
+          "estimatedInputTokens": 17821,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 92256,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 11545,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "c2a069eabac086969485708f3226d591844d46e6e746f80c7b61df8d96be8454",
+          "selectionSha256": "37c36394cebab50d62b667caf8a32aef03bd4d99eb35acae39d33b599589f136",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "cb6281082ab92b5ebc7cbd8a2aedf530354969329ee302f4f4b5131fa4f8ccf1",
+            "sourceFingerprint": "955399113d7862f1e0ae9f76c84eab5ba180260bf9c65862161fbc096df98788",
+            "sectionId": "section-0-3de18df4"
+          },
+          "querySha256": "bca423e7355c9992bbe1e6b40ea816bfb1592f42acfef843a7362096139e053f",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-attention",
+              "version": "2.1.0",
+              "kind": "attention",
+              "exampleRefs": []
+            },
+            {
+              "id": "widget-function",
+              "version": "2.1.0",
+              "kind": "function",
+              "exampleRefs": []
+            },
+            {
+              "id": "widget-linear",
+              "version": "2.1.0",
+              "kind": "linear",
+              "exampleRefs": []
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "50b844a81ca2553c9529269d258c28ef081a163c5014c76ccbe74912798ad2af",
+          "metrics": {
+            "selectedCapabilities": 3,
+            "selectedExamples": 0,
+            "contentCharacters": 5745,
+            "contentBytes": 5754
+          },
+          "receiptSha256": "23091809c063ab39e9e9e35850a5ae14d52b6ee648b873dd31224f050a3396b5"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "402e6ed71ed861aa8ce004c7b093cec937aae4db0d74587173325c32f2ad7b38",
+          "selectionSha256": "638dcad8c240c9157879e26592249bc1aed679cbf57efb0e21c1b367d360bfa0",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "cb6281082ab92b5ebc7cbd8a2aedf530354969329ee302f4f4b5131fa4f8ccf1",
+            "sourceFingerprint": "955399113d7862f1e0ae9f76c84eab5ba180260bf9c65862161fbc096df98788",
+            "sectionId": "section-0-3de18df4"
+          },
+          "querySha256": "5f7da96d2ef66de15cd79742b8152e48c5b5f866373b064ff0e240259b1c0c22",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "18be2e207a8bdec97ee836187349f875b0144b3e0dd286639bd101120bcd1ca6"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    },
+    {
+      "caseId": "C4",
+      "split": "held-out",
+      "domain": "computer-science",
+      "sourceStatus": "admitted-saved-excerpt",
+      "sourceBinding": {
+        "admissionSha256": "1123162c8e325edf4216316e12aecc4d4e8804490edcb1b8e79d0bd313c471c8",
+        "sourceFingerprint": "b78b80f0953f7e815d9e4b1cc76c83dab2a7b68bbab41d2637d515c975b268e3",
+        "originalSha256": "e6345fcba31cbc747ab41755aa62654859c4403dbb687da0021079f78181a7b5",
+        "originalBytes": 609953,
+        "edition": "USENIX ATC 2014 conference edition, pp. 305–319; ISBN 978-1-931971-10-2",
+        "locator": "USENIX ATC2014 conference PDF: physicalpage4 (printed307) section5 opening; physicalpage5 (printed308) Figure2 caption; physicalpage6 (printed309) section5.1 before5.2. Coverpage physical1 retained in numbering.",
+        "rightsBasis": "USENIX open access does not establish a general redistribution license; original/excerpt kept local, metadata-only public reporting.",
+        "redistribution": "metadata-only"
+      },
+      "catalogPath": {
+        "status": "source-guide-created",
+        "coverageSha256": "e3637460e34077ed5e95c40d9df0a6012ade4903f93bf17cd2f96f78ab5d4ded",
+        "fallbackPlanSha256": "640f35629b23d587c48a5efddec0dfebfa8059afd9d426450982c9c02cace3f3",
+        "anchors": [
+          {
+            "id": "passage",
+            "blockId": "c4-section5-opening",
+            "page": 4,
+            "quoteSha256": "719a0b091b2a705207deff63ebf930faa5e0a1c462ef2f8efc6e4c1dba94f18e"
+          }
+        ],
+        "anchoredCharacters": 0,
+        "notAnalyzedCharacters": 4977
+      },
+      "payload": {
+        "sectionId": "section-0-48241cf3",
+        "planning": {
+          "phase": "planning",
+          "characters": 27170,
+          "bytes": 27187,
+          "estimatedInputTokens": 27443,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 130680,
+          "components": {
+            "instructionsCharacters": 4019,
+            "inputCharacters": 18794,
+            "responseSchemaCharacters": 1492,
+            "feedbackCharacters": 0
+          }
+        },
+        "generation": {
+          "phase": "generation",
+          "characters": 18796,
+          "bytes": 18803,
+          "estimatedInputTokens": 19059,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 97184,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 12809,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "selection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "48857145125775bedb3f6d228a912726b18cf6e8f30d05e0c4df13caa03687da",
+          "selectionSha256": "b5931c6a0d7437283cd114efa6f4efb1ff78eb0f67945399fccc182bf42bb5dd",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "ccbd1cbfc2cf9cf0ac63937dd29aa551d31394ca79034054fd02cc1d4cd3c41f",
+            "sourceFingerprint": "b78b80f0953f7e815d9e4b1cc76c83dab2a7b68bbab41d2637d515c975b268e3",
+            "sectionId": "section-0-48241cf3"
+          },
+          "querySha256": "000d3f8f016a44105ee2493acf506266fb5f6024b671a0c970252d3d1198d9da",
+          "purpose": "widget-plan",
+          "selected": [
+            {
+              "id": "widget-attention",
+              "version": "2.1.0",
+              "kind": "attention",
+              "exampleRefs": []
+            },
+            {
+              "id": "widget-custom",
+              "version": "2.1.0",
+              "kind": "custom",
+              "exampleRefs": [
+                {
+                  "id": "annotated-dynamics",
+                  "version": "1.0.0",
+                  "sha256": "14c81b7c69f0d662b2d6cd0fe1d54c4630e223823e2c298b5cfb85a96b4cdcb4"
+                },
+                {
+                  "id": "phase-composition",
+                  "version": "1.0.0",
+                  "sha256": "1a1efd8d56fa6fabe88c875bf2dab9986620ed687dfc4442c68f1bce2e671341"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "3405fba79daef16dc2f4311e5b01625af0e8c814d5dcc7224e6b1432527bfc73",
+          "metrics": {
+            "selectedCapabilities": 2,
+            "selectedExamples": 2,
+            "contentCharacters": 13400,
+            "contentBytes": 13403
+          },
+          "receiptSha256": "89ddab3734672d695d83261e1ab03cafda6c67848cb29f5a37d692a583b8d3a0"
+        },
+        "generatedSelection": {
+          "format": "paperplay-capability-selection-receipt",
+          "schemaVersion": 1,
+          "policyVersion": "1.0.0",
+          "selectionId": "a853ca22536df85987696daa02a31c9c6066cc4d384dce7e234735e98ecec626",
+          "selectionSha256": "726b039e135e904026202ab64d6de97474523a202f7cc27f5eb37a025d1801a5",
+          "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+          "context": {
+            "sha256": "ccbd1cbfc2cf9cf0ac63937dd29aa551d31394ca79034054fd02cc1d4cd3c41f",
+            "sourceFingerprint": "b78b80f0953f7e815d9e4b1cc76c83dab2a7b68bbab41d2637d515c975b268e3",
+            "sectionId": "section-0-48241cf3"
+          },
+          "querySha256": "a3ba06875943d4e9ddf458862a4ba2d2eb3a82af817d0bef6c3f8ad98e0a1fdd",
+          "purpose": "artifact-generate",
+          "selected": [
+            {
+              "id": "figure-sdk",
+              "version": "1.0.0",
+              "kind": "generated-sdk",
+              "exampleRefs": [
+                {
+                  "id": "sdk-controlled-point",
+                  "version": "1.0.0",
+                  "sha256": "6ad5783b2a466259cdcb4ed9fb51e834e18a081d74f8f199c7337928dc1b2eb8"
+                },
+                {
+                  "id": "sdk-bounded-sequence",
+                  "version": "1.0.0",
+                  "sha256": "7278bfa07539f624535d76f52a865ea4b48acc3ed08279cba87812162ed533b0"
+                }
+              ]
+            }
+          ],
+          "gaps": [],
+          "contentSha256": "40e9aca70ae12a961db45e8b7c69eab751d5ab35ff1ce0407fccf766b012f38c",
+          "metrics": {
+            "selectedCapabilities": 1,
+            "selectedExamples": 2,
+            "contentCharacters": 3240,
+            "contentBytes": 3240
+          },
+          "receiptSha256": "334e454cb0c4c02a9dcf35130ca6bdb2ed5694815468d00a8dfa1e6020106899"
+        }
+      },
+      "generatedPath": {
+        "status": "not-executed",
+        "reason": "No real frozen Muse output was supplied or executed. Prompt sizes are measurements only; no generated success or failure is invented."
+      },
+      "scientificChecks": "not-executed",
+      "layout": "not-measured",
+      "accessibility": "not-measured",
+      "isolation": "not-run-per-paper",
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "limitations": [
+        "Only local supplied source is inspected; absent source keeps payload/usage unavailable.",
+        "A source-linked scaffold is not a scientific reproduction or a substantive usefulness/expert assessment.",
+        "No native-browser layout/accessibility/worker-isolation result is inferred from this offline serialization pass.",
+        "The catalog/generated comparison records an actual host reading scaffold versus generated execution not performed."
+      ]
+    }
+  ],
+  "engineering": {
+    "status": "separate-suite-evidence-required",
+    "reason": "Use separately captured actual reference/quality/isolation/browser reports; this runner does not fabricate their execution."
+  },
+  "counts": {
+    "cases": 12,
+    "admittedSources": 10,
+    "sourceGuides": 10,
+    "generatedExecutions": 0,
+    "inferenceCalls": 0,
+    "scientificPasses": 0
+  },
+  "limitations": [
+    "Twelve-case frozen membership is not universal scientific coverage.",
+    "No paid provider calls, model outputs, human sessions or scientific validation are claimed.",
+    "The public report contains metadata/hashes only, no source bodies, assets, raw PDFs, job tokens or secrets.",
+    "Post-freeze fixes require a new labeled freeze/round; preserve original failures and source admission history."
+  ]
+}

@@ -1,0 +1,506 @@
+{
+  "format": "paperplay-frozen-engineering-browser-evidence",
+  "schemaVersion": 1,
+  "freeze": {
+    "gitCommit": "7af5f4cbb030548a795bbc87df0dd37be4eacb21",
+    "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c"
+  },
+  "scope": "Project-authored engineering fixtures only. Not research-paper performance, scientific validity, a model generation benchmark, or a human usability study.",
+  "browser": {
+    "url": "http://localhost:3001/artifact-lab",
+    "profile": "Own incognito tab_y navigated freshly to diagnostic page; no default-profile state changed",
+    "note": "Opening a new tab was refused because the browser tab limit was reached; reused only this agent's own tab with a full navigation.",
+    "autorun": false
+  },
+  "actualQualityReports": [
+    {
+      "format": "paperplay-artifact-quality-browser",
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-28T11:57:43.164Z",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "fixtureId": "healthy",
+      "expectedCodes": [],
+      "failingSteps": [],
+      "artifactId": "quality-healthy",
+      "artifactSchemaVersion": 1,
+      "artifactSha256": "edcba1462a07a44afbef1cc6cf7ac8abd767914c6644612e9fc4497fa9b4877b",
+      "entrySha256": "20f74e912e917b306bfdab4c6abff695174b869e9ce2894b7fdd7b33e8aa990b",
+      "sdkVersion": "1.0.0",
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "textScale": 1,
+        "reducedMotion": false
+      },
+      "windowErrors": 0,
+      "unhandledRejections": 0,
+      "consoleErrors": 0,
+      "result": {
+        "status": "passed",
+        "diagnostics": [],
+        "framesChecked": 12,
+        "textMeasurements": "provided",
+        "repairable": false,
+        "steps": [
+          {
+            "step": 0,
+            "id": "initialize",
+            "status": "passed"
+          },
+          {
+            "step": 1,
+            "id": "button",
+            "status": "passed"
+          },
+          {
+            "step": 2,
+            "id": "entity",
+            "status": "passed"
+          },
+          {
+            "step": 3,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 4,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 5,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 6,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 7,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 8,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 9,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 10,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 11,
+            "id": "sequential",
+            "status": "passed"
+          }
+        ]
+      }
+    },
+    {
+      "format": "paperplay-artifact-quality-browser",
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-28T11:57:58.846Z",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "fixtureId": "clipped-label",
+      "expectedCodes": [
+        "text-clipped"
+      ],
+      "failingSteps": [
+        0
+      ],
+      "artifactId": "quality-clipped-label",
+      "artifactSchemaVersion": 1,
+      "artifactSha256": "ecfb38acb1d9abba2244ab046a6d1ac93dee0b85ce3b0f7349e1627754c8f1bf",
+      "entrySha256": "e2fde6a92883ebc1bb33121faa91d542afe941aa61ab0d2afafb9a7151eff73c",
+      "sdkVersion": "1.0.0",
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "textScale": 1,
+        "reducedMotion": false
+      },
+      "windowErrors": 0,
+      "unhandledRejections": 0,
+      "consoleErrors": 0,
+      "result": {
+        "status": "failed",
+        "diagnostics": [
+          {
+            "code": "text-clipped",
+            "scope": "artifact",
+            "step": 0,
+            "markIndex": 0,
+            "viewport": {
+              "width": 1280,
+              "height": 800,
+              "textScale": 1,
+              "reducedMotion": false
+            }
+          }
+        ],
+        "framesChecked": 1,
+        "textMeasurements": "provided",
+        "repairable": true,
+        "steps": [
+          {
+            "step": 0,
+            "id": "initialize",
+            "status": "failed"
+          }
+        ]
+      }
+    },
+    {
+      "format": "paperplay-artifact-quality-browser",
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-28T11:58:00.434Z",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "fixtureId": "unreachable-control",
+      "expectedCodes": [
+        "unreachable-control"
+      ],
+      "failingSteps": [
+        0
+      ],
+      "artifactId": "quality-unreachable-control",
+      "artifactSchemaVersion": 1,
+      "artifactSha256": "d22690ea59cf4ecaf04acab64e8f7dd2ca05f37defbc4268f621a6d52acd7ea5",
+      "entrySha256": "dd4e682ca77431df39c4e02ad659579ed239eac706acc3d2ff364dc627b5ceca",
+      "sdkVersion": "1.0.0",
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "textScale": 1,
+        "reducedMotion": false
+      },
+      "windowErrors": 0,
+      "unhandledRejections": 0,
+      "consoleErrors": 0,
+      "result": {
+        "status": "failed",
+        "diagnostics": [
+          {
+            "code": "unreachable-control",
+            "scope": "artifact",
+            "step": 0,
+            "controlIndex": 0,
+            "viewport": {
+              "width": 1280,
+              "height": 800,
+              "textScale": 1,
+              "reducedMotion": false
+            }
+          }
+        ],
+        "framesChecked": 1,
+        "textMeasurements": "not-run",
+        "repairable": true,
+        "steps": [
+          {
+            "step": 0,
+            "id": "initialize",
+            "status": "failed"
+          }
+        ]
+      }
+    },
+    {
+      "format": "paperplay-artifact-quality-browser",
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-28T11:58:02.111Z",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "fixtureId": "blank-after-action",
+      "expectedCodes": [
+        "blank-scene"
+      ],
+      "failingSteps": [
+        1
+      ],
+      "artifactId": "quality-blank-after-action",
+      "artifactSchemaVersion": 1,
+      "artifactSha256": "dd1d9a81ec0cf62d1cee07007a979d9c531088d4ca0958119b18d700dcb83eec",
+      "entrySha256": "f9551e273ba8bc8301a77a7d8487013468415631b4b8a596e400054aa58ce6d9",
+      "sdkVersion": "1.0.0",
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "textScale": 1,
+        "reducedMotion": false
+      },
+      "windowErrors": 0,
+      "unhandledRejections": 0,
+      "consoleErrors": 0,
+      "result": {
+        "status": "failed",
+        "diagnostics": [
+          {
+            "code": "blank-scene",
+            "scope": "artifact",
+            "step": 1,
+            "viewport": {
+              "width": 1280,
+              "height": 800,
+              "textScale": 1,
+              "reducedMotion": false
+            }
+          }
+        ],
+        "framesChecked": 2,
+        "textMeasurements": "not-run",
+        "repairable": true,
+        "steps": [
+          {
+            "step": 0,
+            "id": "initialize",
+            "status": "passed"
+          },
+          {
+            "step": 1,
+            "id": "button",
+            "status": "failed"
+          }
+        ]
+      }
+    },
+    {
+      "format": "paperplay-artifact-quality-browser",
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-28T11:58:03.844Z",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "fixtureId": "runaway",
+      "expectedCodes": [
+        "execution"
+      ],
+      "failingSteps": [
+        2
+      ],
+      "artifactId": "quality-runaway",
+      "artifactSchemaVersion": 1,
+      "artifactSha256": "6ffe6f53cf78e704c6e54061ea97f9687bc30e4ae9ff5646844f6de8e1e6709e",
+      "entrySha256": "e57b6c7f5ad8db5a6d41d9657b0e089721dec2e8c6585e03b94ce4c1d72f5110",
+      "sdkVersion": "1.0.0",
+      "viewport": {
+        "width": 1280,
+        "height": 800,
+        "textScale": 1,
+        "reducedMotion": false
+      },
+      "windowErrors": 0,
+      "unhandledRejections": 0,
+      "consoleErrors": 0,
+      "result": {
+        "status": "failed",
+        "diagnostics": [
+          {
+            "code": "execution",
+            "scope": "artifact",
+            "step": 2,
+            "viewport": {
+              "width": 1280,
+              "height": 800,
+              "textScale": 1,
+              "reducedMotion": false
+            }
+          }
+        ],
+        "framesChecked": 2,
+        "textMeasurements": "not-run",
+        "repairable": true,
+        "steps": [
+          {
+            "step": 0,
+            "id": "initialize",
+            "status": "passed"
+          },
+          {
+            "step": 1,
+            "id": "button",
+            "status": "passed"
+          }
+        ]
+      }
+    },
+    {
+      "format": "paperplay-artifact-quality-browser",
+      "schemaVersion": 1,
+      "checkedAt": "2026-10-28T11:58:18.264Z",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+      "fixtureId": "healthy",
+      "expectedCodes": [],
+      "failingSteps": [],
+      "artifactId": "quality-healthy",
+      "artifactSchemaVersion": 1,
+      "artifactSha256": "edcba1462a07a44afbef1cc6cf7ac8abd767914c6644612e9fc4497fa9b4877b",
+      "entrySha256": "20f74e912e917b306bfdab4c6abff695174b869e9ce2894b7fdd7b33e8aa990b",
+      "sdkVersion": "1.0.0",
+      "viewport": {
+        "width": 320,
+        "height": 900,
+        "textScale": 2,
+        "reducedMotion": false
+      },
+      "windowErrors": 0,
+      "unhandledRejections": 0,
+      "consoleErrors": 0,
+      "result": {
+        "status": "passed",
+        "diagnostics": [],
+        "framesChecked": 12,
+        "textMeasurements": "provided",
+        "repairable": false,
+        "steps": [
+          {
+            "step": 0,
+            "id": "initialize",
+            "status": "passed"
+          },
+          {
+            "step": 1,
+            "id": "button",
+            "status": "passed"
+          },
+          {
+            "step": 2,
+            "id": "entity",
+            "status": "passed"
+          },
+          {
+            "step": 3,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 4,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 5,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 6,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 7,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 8,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 9,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 10,
+            "id": "sequential",
+            "status": "passed"
+          },
+          {
+            "step": 11,
+            "id": "sequential",
+            "status": "passed"
+          }
+        ]
+      }
+    }
+  ],
+  "responsive": {
+    "viewport": {
+      "width": 320,
+      "height": 900
+    },
+    "rootFontPx": 32,
+    "document": {
+      "clientWidth": 320,
+      "scrollWidth": 320
+    },
+    "dialog": {
+      "clientWidth": 286,
+      "scrollWidth": 286
+    },
+    "surface": {
+      "clientWidth": 242,
+      "scrollWidth": 242
+    },
+    "qualityStatus": "passed",
+    "framesChecked": 12,
+    "textMeasurements": "provided",
+    "intentionalSvgOrTablePan": "Contained in renderer; no dialog/page overflow measured"
+  },
+  "stop": {
+    "actualAction": "Host-owned Stop checks clicked after observing one active actual worker",
+    "before": {
+      "activeWorkers": 1,
+      "createdWorkers": 38
+    },
+    "after150ms": {
+      "activeWorkers": 0,
+      "createdWorkers": 38
+    },
+    "message": "Checks stopped. The last rendered frame and source remain available.",
+    "sourceStillPresent": true,
+    "sourceReturn": {
+      "actualAction": "Read fixture source",
+      "focused": true,
+      "dialogClosed": true
+    },
+    "priorSuccessfulReportRetained": false,
+    "note": "The diagnostic lab clears its displayed report at each new Run. Stop cancels the active run without creating a terminal downloadable quality report. Earlier downloaded reports remain captured in this evidence. No cancelled-quality result is fabricated."
+  },
+  "infrastructure": {
+    "sdkSha256": "a25e9d981c863bf3c0186d958bc35e9a1177896d0e64ee2e873356977f8abfb3",
+    "manifestFileSha256": "1e05545076fc1aeb524d735a8d249d4b4608d4f339bf56a326f954ff1d28a218",
+    "workers": [
+      {
+        "kind": "compiler",
+        "url": "/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs",
+        "sha256": "59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4",
+        "byteLength": 1583041,
+        "browserFetchedBytesHashMatchedManifest": true
+      },
+      {
+        "kind": "runtime",
+        "url": "/artifact-runtime.073186d57d91f1a73d0b16717ee844c18ebccc153fe0ef412f49b9b45ff2366d.worker.mjs",
+        "sha256": "073186d57d91f1a73d0b16717ee844c18ebccc153fe0ef412f49b9b45ff2366d",
+        "byteLength": 1399462,
+        "browserFetchedBytesHashMatchedManifest": true
+      }
+    ],
+    "finalActiveWorkers": 0,
+    "all38ObservedWorkersTerminated": true,
+    "physicalHeapMeasurement": "not-run; reservations/limits are not a browser physical heap guarantee"
+  },
+  "network": {
+    "inferenceRoutesDeniedByTabInterceptor": true,
+    "inferenceRequestsAttempted": 0
+  },
+  "limitations": [
+    "Only the healthy case was rerun at320px/32px enlarged text; four deliberate failures were run at1280px/16px.",
+    "The lab reports the runaway as finite execution diagnostic atstep2, not a precise public timeout code. It was not relabelled as an exact timeout failure.",
+    "Scientific reference checks and mixed scheduler stress were not rerun in this slice. Existing older reports are not asserted to have frozen-baseline authority here.",
+    "No model was called and no claims about automatic model repair success are made.",
+    "No held-out paper was accessed. No runtime/repository source code was modified."
+  ],
+  "screenshots": [
+    "data/pp113-engineering-browser-mobile.png",
+    "data/pp113-engineering-browser-desktop.png"
+  ]
+}

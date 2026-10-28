@@ -1,0 +1,180 @@
+{
+  "format": "paperplay-bounded-live-frozen-evaluation",
+  "schemaVersion": 1,
+  "freezeSha256": "379cb0c19df1e46429b49b093295a3297ad45111d11707fbbd874d66cbf84a9c",
+  "mode": "explicit-live-appendix",
+  "maximumCreateCalls": 3,
+  "maxAttemptsPerCase": 1,
+  "repairCalls": 0,
+  "brief": "Explain the selected concept with bounded synthetic controls.",
+  "createsClaimed": 3,
+  "cases": [
+    {
+      "caseId": "P4",
+      "status": "failed",
+      "httpStatus": 200,
+      "model": "muse-spark-1.3",
+      "selectionSha256": "4111bfb94c88747f0a6beff4a771bd47ca4c7bf9eac16d53094532a8e4df8b4e",
+      "accounting": {
+        "request": {
+          "phase": "generation",
+          "characters": 16726,
+          "bytes": 16726,
+          "estimatedInputTokens": 16982,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 88904,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 10785,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "actualUsage": {
+          "inputTokens": 3813,
+          "outputTokens": 3023,
+          "totalTokens": 6836
+        },
+        "estimatePurpose": "conservative-quota-reservation-not-financial-quote",
+        "localTests": "provider-free"
+      },
+      "budget": {
+        "maxAttempts": 1,
+        "attemptsClaimed": 1,
+        "maxReservedTokens": 666000,
+        "reservedTokens": 88904,
+        "maxOutputTokensPerAttempt": 6000,
+        "maxInputCharactersPerAttempt": 50000
+      },
+      "attemptsAuthorized": 1,
+      "startsSent": 1,
+      "statusCalls": 8,
+      "candidateSha256": null,
+      "rejection": "Exact source quotation occurred in saved text, but the model returned a nonexistent block ID; bounded admission rejected the candidate.",
+      "privateCandidateRetained": false,
+      "privateRejectedOutputRetention": {
+        "caseId": "P4",
+        "operation": "read-only retrieval of existing owned provider response; zero additional generation calls",
+        "rawResponseRetainedPrivately": true,
+        "byteLength": 11370,
+        "sha256": "8d1464f303d11db8f4e3ab8befe33156ddd7d84de54b25eec3185d89b1d6132b",
+        "diagnostics": {
+          "schema": "admitted",
+          "sdkMethods": "admitted",
+          "selectedAnchor": "rejected",
+          "anchorDetails": {
+            "blockIdExists": false,
+            "pageMatches": false,
+            "quoteNormalizedCharacters": 93,
+            "quoteOccursInAnySavedBlock": true
+          }
+        }
+      }
+    },
+    {
+      "caseId": "C4",
+      "status": "complete",
+      "httpStatus": 200,
+      "model": "muse-spark-1.3",
+      "selectionSha256": "726b039e135e904026202ab64d6de97474523a202f7cc27f5eb37a025d1801a5",
+      "accounting": {
+        "request": {
+          "phase": "generation",
+          "characters": 18774,
+          "bytes": 18781,
+          "estimatedInputTokens": 19037,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 97096,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 12809,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "actualUsage": {
+          "inputTokens": 4267,
+          "outputTokens": 2370,
+          "totalTokens": 6637
+        },
+        "estimatePurpose": "conservative-quota-reservation-not-financial-quote",
+        "localTests": "provider-free"
+      },
+      "budget": {
+        "maxAttempts": 1,
+        "attemptsClaimed": 1,
+        "maxReservedTokens": 666000,
+        "reservedTokens": 97096,
+        "maxOutputTokensPerAttempt": 6000,
+        "maxInputCharactersPerAttempt": 50000
+      },
+      "attemptsAuthorized": 1,
+      "startsSent": 1,
+      "statusCalls": 6,
+      "candidateSha256": "62d2a6aa75ac84e0d40e07c75040200b116fb709af9a2931a9f84e4aa3e63156",
+      "rejection": null,
+      "privateCandidateRetained": true
+    },
+    {
+      "caseId": "B3",
+      "status": "complete",
+      "httpStatus": 200,
+      "model": "muse-spark-1.3",
+      "selectionSha256": "686bc5ca37e7f2dc056e26e2b3ea6b3296faafb4abdd71cd40d83823d664e469",
+      "accounting": {
+        "request": {
+          "phase": "generation",
+          "characters": 17175,
+          "bytes": 17175,
+          "estimatedInputTokens": 17431,
+          "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+          "maxOutputTokens": 6000,
+          "reservedTokens": 90700,
+          "components": {
+            "instructionsCharacters": 2016,
+            "inputCharacters": 11236,
+            "responseSchemaCharacters": 2311,
+            "feedbackCharacters": 0
+          }
+        },
+        "actualUsage": {
+          "inputTokens": 3934,
+          "outputTokens": 2462,
+          "totalTokens": 6396
+        },
+        "estimatePurpose": "conservative-quota-reservation-not-financial-quote",
+        "localTests": "provider-free"
+      },
+      "budget": {
+        "maxAttempts": 1,
+        "attemptsClaimed": 1,
+        "maxReservedTokens": 666000,
+        "reservedTokens": 90700,
+        "maxOutputTokensPerAttempt": 6000,
+        "maxInputCharactersPerAttempt": 50000
+      },
+      "attemptsAuthorized": 1,
+      "startsSent": 1,
+      "statusCalls": 7,
+      "candidateSha256": "3bf2b8983774d58ee7a6e0784af9fc3d9743110ca27ec37a521eeeca75f223b6",
+      "rejection": null,
+      "privateCandidateRetained": true
+    }
+  ],
+  "limitations": [
+    "Actual returned usage only; null denotes unavailable usage, not zero.",
+    "Model outputs are unverified proposals. Local checks and native-browser QA are separate.",
+    "No source bodies, cookies, provider IDs, run tokens or raw errors are exported.",
+    "The public application handlers expose only a finite rejection. A separate operator read-only retrieval of the existing owned response retained the rejected raw output privately (zero additional generation calls); only byte hash/length and validator diagnostics are public. Accepted candidates also remain privately preserved."
+  ],
+  "actualUsageTotals": {
+    "inputTokens": 12014,
+    "outputTokens": 7855,
+    "totalTokens": 19869
+  },
+  "actualUsageAllKnown": true,
+  "conservativeReservedTokensTotal": 276700,
+  "authorizedCallsExhausted": true
+}
