@@ -8,6 +8,9 @@ import { compilerRequestFromBuild } from './compiler-request';
 import { compileFigureInWorker } from './compiler-client';
 import { createCompiledFigureAdapter,validateFigureEvent } from './runtime-client';
 import { figureRuntimeInput } from './runtime-input';
+import { runFigureQuality } from './quality-check';
+import { createSdkTextMeasurer } from './quality-dom';
+import type { FigureTextBounds } from '../../shared/figure-quality';
 import type { SdkEvent,SdkFrame } from '../../shared/figure-sdk';
 export type GenerationCheck={id:string;status:'passed'|'failed'|'skipped';message:string};
 export type GenerationCheckResult={feedback:GenerationFeedback;checks:GenerationCheck[];repairable:boolean};
@@ -58,5 +61,15 @@ export async function checkGeneratedCandidate(candidate:GenerationCandidate,sour
  const entity=initial.marks.find(mark=>mark.entityId);if(entity?.entityId)scenarios.push({id:'entity',event:{kind:'entity',id:entity.entityId}});
  for(const {id,event} of scenarios){validateFigureEvent(initial,event);if(!await scenario(id,event,initial.state))return failed();}
  if(!scenarios.length)checks.push({id:'interactions',status:'skipped',message:'The initial frame declares no enabled interaction. Only initialization was checked.'});
- feedback.runtime={status:'ready'};checks.push({id:'evidence',status:'skipped',message:'These smoke scenarios do not verify equations, experimental claims or scientific accuracy.'});return result();
+ feedback.runtime={status:'ready'};
+ let measurer:ReturnType<typeof createSdkTextMeasurer>|undefined;
+ try{
+  if(typeof document!=='undefined')measurer=createSdkTextMeasurer();
+  const quality=await runFigureQuality(executable,source,{adapter,signal:options.signal,promisedInteractions:candidate.plan.interactions.length>0,...(measurer?{onFrame:(frame:SdkFrame)=>({textBounds:frame.marks.flatMap((mark,markIndex):FigureTextBounds[]=>{if(mark.kind!=='text')return [];const box=measurer!.measure(mark.text);return [{markIndex,x:mark.at[0]+box.left,y:mark.at[1]+box.top,width:box.right-box.left,height:box.bottom-box.top}];})})}:{})});
+  feedback.quality={status:quality.status,diagnostics:quality.diagnostics,framesChecked:quality.framesChecked,textMeasurements:quality.textMeasurements};
+  checks.push({id:'quality',status:quality.status==='passed'?'passed':quality.status==='cancelled'?'skipped':'failed',message:quality.status==='passed'?'Bounded sequential layout and interaction checks passed; inspect the measured coverage.':'Sequential figure quality checks did not pass. Inspect the finite diagnostic codes.'});
+  if(quality.status!=='passed')return result(quality.repairable);
+ }catch{feedback.quality={status:'unavailable',diagnostics:[{code:'infrastructure',scope:'host',step:0}],framesChecked:0,textMeasurements:'not-run'};checks.push({id:'quality',status:'failed',message:'The host could not measure this figure. No paid repair was started.'});return result();}
+ finally{measurer?.dispose();}
+ checks.push({id:'evidence',status:'skipped',message:'These smoke scenarios do not verify equations, experimental claims or scientific accuracy.'});return result();
 }

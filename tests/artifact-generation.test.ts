@@ -179,7 +179,7 @@ test('fake provider novel polymer candidate passes actual compiler and restricte
   const generated = generationReplySchema.parse(await (await f.handlers.start(req({ ...f.context, attempt: 1 }, f.cookie))).json()); assert.equal(generated.status, 'complete'); assert.equal(generated.candidate!.artifact.kind, 'generated');
   const checked = await checkGeneratedCandidate(generated.candidate!, f.source, { compile: request => compileFigureSource(request, readFileSync('node_modules/acorn/dist/acorn.js', 'utf8')), adapter: () => ({ id: 'restricted-test-interpreter', async execute(artifact,input,state,event) { try { return await evaluateGuestFrame(artifact,input,state,event); } catch { throw new FigureRuntimeError('execution'); } } }) });
   assert.equal(checked.feedback.compiler.status, 'ready'); assert.equal(checked.feedback.runtime.status, 'ready'); assert.equal(checked.repairable, false);
-  assert.deepEqual(checked.checks.filter(check => check.status === 'passed').map(check => check.id), ['manifest','compiler','initialize','slider-min','slider-max','button','entity']);
+  assert.deepEqual(checked.checks.filter(check => check.status === 'passed').map(check => check.id), ['manifest','compiler','initialize','slider-min','slider-max','button','entity','quality']);
   assert.equal(checked.checks.find(check => check.id === 'evidence')?.status, 'skipped');
   assert.equal(generated.candidate!.artifact.kind === 'generated' && generated.candidate!.artifact.provenance.evidence, 'unverified'); assert.equal(f.counts().starts, 1);
 });
@@ -192,4 +192,15 @@ test('late queued or cancelled reports preserve terminal artifact metadata and m
   const stale = await (await f.handlers.status(req({ ...f.context, attempt: 1 }, f.cookie))).json(); assert.equal(stale.status, 'uncertain');
   f.store.settle(record.id, { status: 'cancelled', actualTokens: 0 });
   const retained = f.store.generationAttempt(run.runId, run.owner, 1); assert.equal(retained.status, 'completed'); assert.equal(retained.actualTokens, 100); assert.equal(f.store.budget(run.owner, run.documentHash).accountedTokens, 100); assert.equal(f.store.generationRun(run.runId, run.owner).attempts[0].candidateSha256, candidateHash);
+});
+
+test('quality repair accepts bounded artifact diagnostics but never pays to repair host layout',async t=>{
+ const f=await fixture(t);f.startResult({status:'completed',output_text:JSON.stringify(f.output)});
+ const first=generationReplySchema.parse(await(await f.handlers.start(req({...f.context,attempt:1},f.cookie))).json());const previous=first.candidate!;
+ const feedback={candidateSha256:previous.sha256,compiler:{status:'ready',diagnostics:[]},runtime:{status:'ready'},quality:{status:'failed',diagnostics:[{code:'text-clipped',scope:'artifact',step:0,markIndex:0}],framesChecked:1,textMeasurements:'provided'}};
+ const host={...feedback,quality:{...feedback.quality,diagnostics:[{code:'small-target',scope:'host',step:0}]}};
+ assert.equal((await f.handlers.start(req({...f.context,attempt:2,previous,feedback:host},f.cookie))).status,400);assert.equal(f.counts().starts,1);
+ const rawText={...feedback,quality:{...feedback.quality,diagnostics:[{...feedback.quality.diagnostics[0],labelText:'private label must not reach the model'}]}};
+ assert.equal((await f.handlers.start(req({...f.context,attempt:2,previous,feedback:rawText},f.cookie))).status,400);assert.equal(f.counts().starts,1);
+ assert.equal((await f.handlers.start(req({...f.context,attempt:2,previous,feedback},f.cookie))).status,200);assert.equal(f.counts().starts,2);
 });

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { figureQualityFeedbackSchema } from './figure-quality';
 import { sourceDocumentSchema } from './schema';
 import { figureArtifactSchema } from './figure-artifacts';
 import { compileDiagnosticSchema } from './figure-compilation';
@@ -9,7 +10,7 @@ const prose = z.string().trim().min(1).max(1000);
 export const generationPlanSchema = z.strictObject({ objective: prose, mechanism: prose, representation: z.enum(['conceptual','synthetic']), assumptions: z.array(prose.max(500)).max(8), missingDetails: z.array(prose.max(500)).max(8), interactions: z.array(prose.max(150)).max(8) });
 export const generationRunSchema = z.strictObject({ runId: z.string().uuid(), token: z.string().min(1).max(5000), model: z.string().min(1).max(120), createdAt: z.number().int().nonnegative(), deadlineAt: z.number().int().nonnegative() });
 export const generationCandidateSchema = z.strictObject({ plan: generationPlanSchema, artifact: figureArtifactSchema, sha256: sha }).refine(value => value.artifact.kind === 'generated', 'Expected generated source.');
-export const generationFeedbackSchema = z.strictObject({ candidateSha256: sha.optional(), compiler: z.strictObject({ status: z.enum(['not-run','ready','rejected','failed','cancelled','unavailable']), diagnostics: z.array(compileDiagnosticSchema.pick({ code: true, position: true })).max(4).default([]) }), runtime: z.strictObject({ status: z.enum(['not-run','ready','cancelled','failed']), code: z.enum(['integrity','resource','invalid-input','invalid-output','execution','unavailable']).optional() }) });
+export const generationFeedbackSchema = z.strictObject({ candidateSha256: sha.optional(), quality: figureQualityFeedbackSchema.optional(), compiler: z.strictObject({ status: z.enum(['not-run','ready','rejected','failed','cancelled','unavailable']), diagnostics: z.array(compileDiagnosticSchema.pick({ code: true, position: true })).max(4).default([]) }), runtime: z.strictObject({ status: z.enum(['not-run','ready','cancelled','failed']), code: z.enum(['integrity','resource','invalid-input','invalid-output','execution','unavailable']).optional() }) });
 const context = { source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), brief: z.string().trim().min(1).max(1200) };
 export const generationPrepareSchema = z.strictObject({ ...context, runId: z.string().uuid(), maxAttempts: z.number().int().min(1).max(3) });
 export const generationStartSchema = z.strictObject({ ...context, run: generationRunSchema, attempt: z.number().int().min(1).max(3), previous: generationCandidateSchema.optional(), feedback: generationFeedbackSchema.optional() });

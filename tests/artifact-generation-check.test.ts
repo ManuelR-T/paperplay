@@ -20,7 +20,7 @@ const local={compile:(request:Parameters<typeof compileFigureSource>[0])=>compil
 test('candidate local checks admit source, initialize and exercise declared interactions without scientific promotion',async()=>{
  const {candidate,source}=await fixture();const checked=await checkGeneratedCandidate(candidate,source,local);
  assert.equal(checked.feedback.compiler.status,'ready');assert.equal(checked.feedback.runtime.status,'ready');assert.equal(checked.repairable,false);
- assert.deepEqual(checked.checks.filter(c=>c.status==='passed').map(c=>c.id),['manifest','compiler','initialize','button']);
+ assert.deepEqual(checked.checks.filter(c=>c.status==='passed').map(c=>c.id),['manifest','compiler','initialize','button','quality']);
  assert.equal(checked.checks.find(c=>c.id==='evidence')?.status,'skipped');assert.equal(candidate.artifact.kind==='generated'&&candidate.artifact.provenance.evidence,'unverified');
 });
 test('failed compiler feedback contains fixed codes and positions, never supplied diagnostic text',async()=>{
@@ -39,7 +39,7 @@ test('runtime failures remain inspectable repair hints without raw guest errors 
 });
 test('bounded slider endpoints and entity events branch from the initial frame',async()=>{
  const code=`function update(input,state,event){const x=event.kind==='control'?event.value:5;return sdk.frame({title:'Slider',description:'Authored structural fixture',coordinateSpace:{width:100,height:80},marks:[sdk.circle({id:'node',entityId:'item',anchorId:'passage',center:[50,40],radius:10,label:'Selected node'})],controls:[sdk.slider({id:'level',label:'Level',min:0,max:10,step:1,value:x})],state:{items:[],nextId:1}});}`;
- const {candidate,source}=await fixture(code);const checked=await checkGeneratedCandidate(candidate,source,local);assert.equal(checked.feedback.runtime.status,'ready');assert.deepEqual(checked.checks.filter(c=>c.status==='passed').map(c=>c.id),['manifest','compiler','initialize','slider-min','slider-max','entity']);
+ const {candidate,source}=await fixture(code);const checked=await checkGeneratedCandidate(candidate,source,local);assert.equal(checked.feedback.runtime.status,'ready');assert.deepEqual(checked.checks.filter(c=>c.status==='passed').map(c=>c.id),['manifest','compiler','initialize','slider-min','slider-max','entity','quality']);
 });
 
 test('unknown platform failures never authorize a paid repair',async()=>{
