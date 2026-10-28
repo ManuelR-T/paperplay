@@ -15,6 +15,7 @@ import { useReadingSession } from './reading-session';
 import {AutomaticPaperEnhancement} from './automatic-paper';
 import { GeneratedFigureView } from './figures/generated-figure';
 import {SourceMath} from './reading/source-math';
+import {copySourceMathSelection} from '@/lib/reading/source-math-copy';
 
 export function ImportedPaperReader({ record, remove, busy, sources, openSource, automaticEnabled=true }: { automaticEnabled?:boolean; record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -37,7 +38,7 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource,
   });
   const figures = [...analyzed, ...restored];
   const anchored = figures.map(entry => ({ entry, anchor: source.anchors.find(item => item.id === entry.figure.sourceAnchorIds[0]) }));
-  return <article className="paper-article research-article imported-article">
+  return <article className="paper-article research-article imported-article" onCopy={copySourceMathSelection}>
     <div className="article-kicker"><span>{htmlSource ? 'arXiv' : 'Imported PDF'}</span></div>
     <h1>{source.title}</h1><p className="source-authors">{source.authors.join(' · ')}</p>
     <div className="paper-links">{originalUrl && <a href={originalUrl} target="_blank" rel="noreferrer">{htmlSource ? 'Original article' : 'Original PDF'} <ArrowUpRight size={14}/></a>}{source.source.url && source.source.url !== originalUrl && <a href={source.source.url} target="_blank" rel="noreferrer">Source record <ArrowUpRight size={14}/></a>}<span>{record.originalName ?? 'Saved in this browser'}</span></div>

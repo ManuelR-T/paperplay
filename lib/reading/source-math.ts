@@ -61,5 +61,5 @@ export function splitSourceMath(text:string):SourceMathPart[]{
 /** Rendering is bounded and untrusted; unsupported syntax stays readable as its exact original text. */
 export function renderSourceMath(latex:string):string|null{
  if(!latex||latex.length>MAX_INLINE_MATH)return null;
- try{return katex.renderToString(latex,{displayMode:false,throwOnError:true,trust:false,strict:'ignore',maxExpand:100,maxSize:4,output:'htmlAndMathml'});}catch{return null;}
+ try{return katex.renderToString(latex,{displayMode:false,throwOnError:true,trust:false,strict:'ignore',maxExpand:100,maxSize:4,macros:{'\\textsc':'\\mathrm{#1}'},output:'htmlAndMathml'});}catch{return null;}
 }

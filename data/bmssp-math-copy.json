@@ -1,0 +1,61 @@
+{
+  "format": "paperplay-bmssp-math-copy-evidence",
+  "date": "2026-10-28",
+  "reportedProblems": [
+    "Unsupported textsc algorithm names exposed raw LaTeX.",
+    "Selecting/copying KaTeX included both semantic MathML and the visual HTML, duplicating alpha, hats and bounds."
+  ],
+  "sourceCheck": {
+    "primaryUrl": "https://arxiv.org/html/2504.17033v2",
+    "actualHtmlBytes": 547467,
+    "extractionAlreadyCorrect": true,
+    "alphaOccurrencesInFirstStoredParagraph": 1,
+    "boundaryRemainsOriginal": "B^{\\prime}\\leq B",
+    "intentionalAdjacentRepeatsPreserved": true,
+    "sourceTextOrAnchorRewrites": false
+  },
+  "fix": {
+    "textscPresentation": "Bounded trusted macro alias to upright algorithm names; original TeX stays unchanged.",
+    "selection": "Semantic MathML is non-selectable but remains available to assistive technology.",
+    "clipboard": "Selected source formulas copied once as their original delimited TeX; partial formula selection expands to its complete original formula.",
+    "punctuation": "Punctuation stays beside its formula rather than wrapping to the next line."
+  },
+  "nativeBrowser": {
+    "server": "localhost:3004",
+    "serverModelCreationEnabled": false,
+    "serverGeneratedExecutionEnabled": false,
+    "modelCreationResources": 0,
+    "paragraphsCopiedExactlyAsStored": [
+      true,
+      true
+    ],
+    "partialFormulaClipboard": "\\(\\widehat{d}[u]\\)",
+    "renderedFormulas": 17,
+    "renderedTextscLabels": 4,
+    "mathMLRepresentationsRetained": 17,
+    "katexErrors": 0,
+    "ordinaryCurrencyCopyNotIntercepted": true,
+    "viewportWidth": 320,
+    "enlargedRootFontPx": 32,
+    "pageClientWidth": 320,
+    "pageScrollWidth": 320
+  },
+  "verification": {
+    "fullCheckpointTests": 787,
+    "fullCheckpointPass": 787,
+    "fullCheckpointFail": 0,
+    "finalTargetedTests": 14,
+    "typecheck": "passed",
+    "productionBuild": "passed after final punctuation grouping",
+    "nativeClipboard": "Actual DOM selection and native ClipboardEvent through reader React handlers; no provider response mocks needed."
+  },
+  "screenshots": [
+    "data/bmssp-math-rendering.png",
+    "data/bmssp-math-large-text.png"
+  ],
+  "limits": [
+    "The source is a dedicated readonly card of the user-reported excerpts, not a complete imported paper.",
+    "Unknown math syntax still falls back to original text.",
+    "Copying a formula uses TeX intentionally to retain notation rather than flattening hats or superscripts."
+  ]
+}

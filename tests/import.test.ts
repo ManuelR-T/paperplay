@@ -95,3 +95,16 @@ test('arXiv HTML absence falls back to a bounded pinned PDF without an arbitrary
   assert.equal(calls, 1);
   await assert.rejects(fetchArxivResource('https://arxiv.org/pdf/1805.04154v1', 4, asFetch(async () => new Response(new Uint8Array(10)))), /download size/);
 });
+
+test('arXiv presentation MathML and its TeX annotation yield one source expression without deleting intentional repetitions',async()=>{
+  // Mirrors the semantic/presentation structure inspected in arXiv2504.17033v2.
+  // These sentences are authored regression data; no paper body is bundled.
+  const html=String.raw`<article class="ltx_document"><h1>Semantic math extraction fixture</h1>
+  <p>Compare <math alttext="u\neq\textsc{Pred}[v]"><semantics><mrow><mi>u</mi><mo>≠</mo><mtext>Pred</mtext><mo>[</mo><mi>v</mi><mo>]</mo></mrow><annotation encoding="application/x-tex">u\neq\textsc{Pred}[v]</annotation></semantics></math>, then inspect <math alttext="\alpha"><semantics><mi>α</mi><annotation encoding="application/x-tex">\alpha</annotation></semantics></math> and <math alttext="\widehat{d}[u]"><semantics><mrow><mover><mi>d</mi><mo>^</mo></mover><mo>[</mo><mi>u</mi><mo>]</mo></mrow><annotation encoding="application/x-tex">\widehat{d}[u]</annotation></semantics></math>.</p>
+  <p>A boundary is <math alttext="B^{\prime}\leq B"><semantics><mrow><msup><mi>B</mi><mo>′</mo></msup><mo>≤</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">B^{\prime}\leq B</annotation></semantics></math>. Two intentionally adjacent symbols remain <math alttext="\alpha"><mi>α</mi></math><math alttext="\alpha"><mi>α</mi></math>.</p></article>`;
+  const source=await parseArxivHtml(html,'2504.17033v2','https://arxiv.org/html/2504.17033v2');
+  const paragraphs=source.blocks.filter(block=>block.kind==='paragraph');
+  assert.equal(paragraphs[0].text,String.raw`Compare \(u\neq\textsc{Pred}[v]\), then inspect \(\alpha\) and \(\widehat{d}[u]\).`);
+  assert.equal(paragraphs[1].text,String.raw`A boundary is \(B^{\prime}\leq B\). Two intentionally adjacent symbols remain \(\alpha\)\(\alpha\).`);
+  for(const block of paragraphs)for(const anchor of source.anchors.filter(anchor=>anchor.blockId===block.id))assert.ok(block.text.includes(anchor.quote));
+});

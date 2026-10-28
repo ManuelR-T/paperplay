@@ -2,6 +2,7 @@
 import {ExecutionMonitor} from './execution-monitor';
 import { OriginalSourceFigure } from './reading/original-source-figure';
 import {SourceMath} from './reading/source-math';
+import {copySourceMathSelection} from '@/lib/reading/source-math-copy';
 import { SourceInformation } from './reading/source-information';
 
 import { useEffect, useState, useRef, useMemo } from 'react';
@@ -224,7 +225,7 @@ function ReadingArticle({ paper, sources, openSource,automaticEnabled }: { autom
     setState({ ...state, seed, input: createDefaultInput(state.input.kind, seed) }); setSeedError('');
   }
   const inputControls = <><div className="seed-toolbar"><div><strong>One reproducible input</strong><span>Used by the figures and comparisons in this paper.</span></div><label htmlFor={`${paper.id}-seed`}>Example seed<input id={`${paper.id}-seed`} type="number" min={0} max={4_294_967_295} step={1} value={seedDraft} onChange={event => setSeedDraft(event.target.value)}/></label><Button variant="outline" size="sm" onClick={generate}><RefreshCw size={14}/>Generate input</Button><output>Current seed: {state.seed}</output></div>{seedError && <p role="alert" className="figure-error">{seedError}</p>}</>;
-  return <article className="paper-article research-article">
+  return <article className="paper-article research-article" onCopy={copySourceMathSelection}>
     <div className="article-kicker"><span>{paper.attribution.venue}</span></div><h1>{paper.document.title}</h1><p className="source-authors">{paper.document.authors.join(' · ')}</p><div className="paper-links"><a href={paper.pdfUrl} target="_blank" rel="noreferrer">{paper.pdfUrl === paper.sourceUrl ? 'Original article' : 'Complete original PDF'} <ArrowUpRight size={13}/></a><span>{paper.attribution.license}</span></div>
     <SourceInformation source={paper.document} description={paper.coverage}><p>{paper.attribution.notice}</p><p><a href={paper.sourceUrl} target="_blank" rel="noreferrer">Publisher record</a></p><p>{paper.attribution.authors} · {paper.attribution.venue} · <a href={paper.attribution.licenseUrl} target="_blank" rel="noreferrer">{paper.attribution.license}</a></p></SourceInformation>
     <AutomaticPaperEnhancement source={paper.document} enabled={automaticEnabled}/>

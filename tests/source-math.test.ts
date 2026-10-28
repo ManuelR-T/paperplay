@@ -46,3 +46,13 @@ test('new arXiv extraction retains real inline math boundaries and exact source 
  for(const block of paragraphs){renderToStaticMarkup(createElement(SourceMath,{text:block.text}));for(const anchor of source.anchors.filter(anchor=>anchor.blockId===block.id))assert.ok(block.text.includes(anchor.quote));}
  assert.equal(JSON.stringify(source),original);
 });
+
+test('algorithm labels in the reported shortest-path passages render without exposing unsupported textsc commands',()=>{
+ const text=String.raw`If u\neq\textsc{Pred}[v], even if there is a tie in l and \(\alpha\), compare u and \textsc{Pred}[v]. Then use \textsc{BMSSP}(l,B,S) with \(B^{\prime}\leq B\) and \(\widehat{d}[u]\).`;
+ const parts=splitSourceMath(text),math=parts.filter(part=>part.kind==='math');
+ assert.equal(parts.map(part=>part.raw).join(''),text);
+ assert.ok(math.every(part=>renderSourceMath(part.latex)!==null));
+ const html=renderToStaticMarkup(createElement(SourceMath,{text}));
+ assert.match(html,/Pred/);assert.match(html,/BMSSP/);assert.equal(html.includes('katex-error'),false);
+ assert.equal((html.match(/data-source-math=/g)??[]).length,6);
+});
