@@ -1024,10 +1024,16 @@
       "priority": "P1",
       "size": "M",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented-pending-frozen-evaluation",
       "github": {
         "number": 66,
         "url": "https://github.com/ManuelR-T/paperplay/issues/66"
+      },
+      "evidence": {
+        "document": "docs/retrieval-budget.md",
+        "checks": "npm run check: TypeScript, 706 tests, production build; no paid inference",
+        "measurements": "data/retrieval-payload-development.json: 8 development contexts measured with explicit scope; 4 held-out payloads and all actual usage remain null",
+        "limitations": "Frozen-corpus measurement criterion remains pending PP-113. Metadata-only development contexts are not admitted full paper sources."
       }
     },
     {

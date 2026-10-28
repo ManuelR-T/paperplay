@@ -2,14 +2,16 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { AnalysisHttpError } from '../analysis/security';
+import {capabilitySelectionReceiptSchema,modelRequestMetricsSchema,type CapabilitySelectionReceipt,type ModelRequestMetrics} from '../../shared/capability-retrieval';
 import type { EnrichmentAction, EnrichmentBudget } from '../../lib/enrichment/contracts';
 
 export const DOCUMENT_LIMITS = { maxRequests: 8, maxTokens: 1_000_000 } as const;
-export type EnrichmentRecord = { id: string; owner: string; documentHash: string; contextHash: string; action: EnrichmentAction | 'artifact'; sectionId: string; createdAt: number; reservedTokens: number; status: 'reserved' | 'accepted' | 'completed' | 'cancelled' | 'failed' | 'incomplete' | 'validation_failed' | 'uncertain' | 'rejected'; providerId?: string; actualTokens?: number };
-export type GenerationRunRecord = { runId: string; owner: string; documentHash: string; contextHash: string; model: string; sectionId: string; maxAttempts: number; createdAt: number; deadlineAt: number; reservedTokens: number; closed: boolean; attempts: Array<{ id: string; fingerprint: string; candidateSha256?: string }> };
+export type EnrichmentRecord = { id: string; owner: string; documentHash: string; contextHash: string; action: EnrichmentAction | 'artifact'; sectionId: string; createdAt: number; reservedTokens: number; status: 'reserved' | 'accepted' | 'completed' | 'cancelled' | 'failed' | 'incomplete' | 'validation_failed' | 'uncertain' | 'rejected'; providerId?: string; actualTokens?: number;actualUsage?:{inputTokens:number;outputTokens:number;totalTokens:number};retrieval?:CapabilitySelectionReceipt;requestMetrics?:ModelRequestMetrics;requestSha256?:string };
+export type GenerationRunRecord = { runId: string; owner: string; documentHash: string; contextHash: string; model: string; sectionId: string; maxAttempts: number; createdAt: number; deadlineAt: number; reservedTokens: number; closed: boolean; retrieval?:CapabilitySelectionReceipt;previewMetrics?:ModelRequestMetrics;promptContractSha256?:string;sdkSha256?:string; attempts: Array<{ id: string; fingerprint: string; candidateSha256?: string }> };
 export type EnrichmentStore = {
+  record(id:string,owner:string):EnrichmentRecord|undefined;
   reserve(input: Omit<EnrichmentRecord, 'status' | 'createdAt'>): { created: boolean; record: EnrichmentRecord };
-  settle(id: string, update: { status: EnrichmentRecord['status']; providerId?: string; actualTokens?: number }): void;
+  settle(id: string, update: { status: EnrichmentRecord['status']; providerId?: string; actualTokens?: number;actualUsage?:{inputTokens:number;outputTokens:number;totalTokens:number} }): void;
   budget(owner: string, documentHash: string): EnrichmentBudget;
   prepareGenerationRun(input: Omit<GenerationRunRecord, 'createdAt' | 'deadlineAt' | 'reservedTokens' | 'closed' | 'attempts'>): GenerationRunRecord;
   generationRun(runId: string, owner: string): GenerationRunRecord;
@@ -50,6 +52,7 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
     return JSON.parse(row.record) as EnrichmentRecord;
   }
   function reserve(input: Omit<EnrichmentRecord, 'status' | 'createdAt'>) {
+      if(input.retrieval)capabilitySelectionReceiptSchema.parse(input.retrieval);if(input.requestMetrics){modelRequestMetricsSchema.parse(input.requestMetrics);if(input.requestMetrics.reservedTokens!==input.reservedTokens)throw new AnalysisHttpError(400,'Prompt accounting differs from the durable token reservation.');}if(input.requestSha256&&!/^[a-f0-9]{64}$/.test(input.requestSha256))throw new AnalysisHttpError(400,'Invalid prompt digest.');
       if (!/^[a-f0-9]{64}$/.test(input.id) || !/^[a-f0-9]{48}$/.test(input.owner) || !/^[a-f0-9]{64}$/.test(input.documentHash) || !/^[a-f0-9]{64}$/.test(input.contextHash) || !Number.isSafeInteger(input.reservedTokens) || input.reservedTokens < 1 || input.reservedTokens > limits.maxTokens) throw new AnalysisHttpError(400, 'Invalid bounded paper reservation.');
         const existing = db.prepare('SELECT record FROM enrichment_records WHERE id=?').get(input.id) as { record: string } | undefined;
         if (existing) {
@@ -64,12 +67,14 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
         return { created: true, record };
   }
   return {
+    record(id,owner){const row=db.prepare('SELECT record FROM enrichment_records WHERE id=? AND owner=?').get(id,owner) as {record:string}|undefined;return row?JSON.parse(row.record) as EnrichmentRecord:undefined;},
     reserve(input) { return transaction(() => reserve(input)); },
     prepareGenerationRun(input) {
+      if(input.retrieval)capabilitySelectionReceiptSchema.parse(input.retrieval);if(input.previewMetrics)modelRequestMetricsSchema.parse(input.previewMetrics);
       if (!/^[a-f0-9-]{36}$/i.test(input.runId) || !/^[a-f0-9]{48}$/.test(input.owner) || !/^[a-f0-9]{64}$/.test(input.documentHash) || !/^[a-f0-9]{64}$/.test(input.contextHash) || !Number.isInteger(input.maxAttempts) || input.maxAttempts < 1 || input.maxAttempts > 3) throw new AnalysisHttpError(400, 'Invalid generation run.');
       return transaction(() => {
         const existing = db.prepare('SELECT record FROM artifact_generation_runs WHERE id=?').get(input.runId);
-        if (existing) { const run = readRun(input.runId, input.owner); if (run.contextHash !== input.contextHash || run.documentHash !== input.documentHash || run.maxAttempts !== input.maxAttempts || run.model !== input.model || run.sectionId !== input.sectionId) throw new AnalysisHttpError(409, 'The run identifier belongs to different frozen context.'); return run; }
+        if (existing) { const run = readRun(input.runId, input.owner); if (run.contextHash !== input.contextHash || run.documentHash !== input.documentHash || run.maxAttempts !== input.maxAttempts || run.model !== input.model || run.sectionId !== input.sectionId||run.retrieval?.receiptSha256!==input.retrieval?.receiptSha256) throw new AnalysisHttpError(409, 'The run identifier belongs to different frozen context.'); return run; }
         const createdAt = now(); const run: GenerationRunRecord = { ...input, createdAt, deadlineAt: createdAt + 300_000, reservedTokens: 0, closed: false, attempts: [] };
         db.prepare('INSERT INTO artifact_generation_runs(id,record) VALUES(?,?)').run(run.runId, JSON.stringify(run)); return run;
       });
@@ -80,6 +85,7 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
       return transaction(() => {
         const run = readRun(runId, owner);
         if (!Number.isInteger(attempt) || attempt < 1 || attempt > run.maxAttempts || input.owner !== owner || input.documentHash !== run.documentHash || input.sectionId !== run.sectionId || input.action !== 'artifact') throw new AnalysisHttpError(409, 'Invalid generation attempt scope.');
+        if(run.retrieval&&input.retrieval?.receiptSha256!==run.retrieval.receiptSha256)throw new AnalysisHttpError(409,'The attempt capability selection differs from the frozen run.');
         const existing = run.attempts[attempt - 1];
         if (existing) { if (existing.id !== input.id || existing.fingerprint !== input.contextHash) throw new AnalysisHttpError(409, 'This attempt already belongs to different input.'); return { created: false, record: readAttempt(run, attempt) }; }
         if (run.closed || now() >= run.deadlineAt) throw new AnalysisHttpError(410, 'The generation run is closed or its five-minute creation budget expired.');
@@ -96,6 +102,7 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
     },
     closeGenerationRun(runId, owner) { return transaction(() => { const run = readRun(runId, owner); run.closed = true; writeRun(run); return run; }); },
     settle(id, update) {
+      if(update.actualUsage&&(!Object.values(update.actualUsage).every(value=>Number.isSafeInteger(value)&&value>=0)||update.actualUsage.totalTokens!==update.actualUsage.inputTokens+update.actualUsage.outputTokens))throw new AnalysisHttpError(400,'Invalid measured provider usage.');
       if (update.actualTokens !== undefined && (!Number.isSafeInteger(update.actualTokens) || update.actualTokens < 0)) throw new AnalysisHttpError(400, 'Invalid measured enrichment usage.');
       if (update.providerId !== undefined && !/^resp_[a-zA-Z0-9_-]{1,250}$/.test(update.providerId)) throw new AnalysisHttpError(400, 'Invalid provider reference.');
       transaction(() => {
@@ -107,7 +114,7 @@ export function createEnrichmentStore(options: { path: string; now?: () => numbe
         // or reduce already measured spend. Existing catalog settlement stays compatible.
         const artifactTerminal = terminal && previous.action === 'artifact';
         const actualTokens = update.actualTokens === undefined ? previous.actualTokens : Math.max(previous.actualTokens ?? 0, update.actualTokens);
-        db.prepare('UPDATE enrichment_records SET record=? WHERE id=?').run(JSON.stringify({ ...previous, ...update, ...(artifactTerminal ? { status: previous.status } : {}), ...(actualTokens === undefined ? {} : { actualTokens }) }), id);
+        db.prepare('UPDATE enrichment_records SET record=? WHERE id=?').run(JSON.stringify({ ...previous, ...update, ...(artifactTerminal ? { status: previous.status } : {}), ...(actualTokens === undefined ? {} : { actualTokens }),...((previous.actualUsage?.totalTokens??-1)>(update.actualUsage?.totalTokens??-1)?{actualUsage:previous.actualUsage}:{}) }), id);
       });
     },
     budget(owner, documentHash) { try { return budget(owner, documentHash); } catch { return unavailable(); } },

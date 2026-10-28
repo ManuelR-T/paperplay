@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import {capabilitySelectionReceiptSchema,modelRequestAccountingSchema} from './capability-retrieval';
 import { figureQualityFeedbackSchema } from './figure-quality';
 import { sourceDocumentSchema } from './schema';
 import { figureArtifactSchema } from './figure-artifacts';
@@ -11,13 +12,13 @@ export const generationPlanSchema = z.strictObject({ objective: prose, mechanism
 export const generationRunSchema = z.strictObject({ runId: z.string().uuid(), token: z.string().min(1).max(5000), model: z.string().min(1).max(120), createdAt: z.number().int().nonnegative(), deadlineAt: z.number().int().nonnegative() });
 export const generationCandidateSchema = z.strictObject({ plan: generationPlanSchema, artifact: figureArtifactSchema, sha256: sha }).refine(value => value.artifact.kind === 'generated', 'Expected generated source.');
 export const generationFeedbackSchema = z.strictObject({ candidateSha256: sha.optional(), quality: figureQualityFeedbackSchema.optional(), compiler: z.strictObject({ status: z.enum(['not-run','ready','rejected','failed','cancelled','unavailable']), diagnostics: z.array(compileDiagnosticSchema.pick({ code: true, position: true })).max(4).default([]) }), runtime: z.strictObject({ status: z.enum(['not-run','ready','cancelled','failed']), code: z.enum(['integrity','resource','invalid-input','invalid-output','execution','unavailable']).optional() }) });
-const context = { source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), brief: z.string().trim().min(1).max(1200) };
+const context = { retrievalSelectionSha256:sha.optional(),source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), brief: z.string().trim().min(1).max(1200) };
 export const generationPrepareSchema = z.strictObject({ ...context, runId: z.string().uuid(), maxAttempts: z.number().int().min(1).max(3) });
 export const generationStartSchema = z.strictObject({ ...context, run: generationRunSchema, attempt: z.number().int().min(1).max(3), previous: generationCandidateSchema.optional(), feedback: generationFeedbackSchema.optional() });
 export const generationStatusSchema = z.strictObject({ ...context, run: generationRunSchema, attempt: z.number().int().min(1).max(3) });
 export const generationCancelSchema = z.strictObject({ run: generationRunSchema });
 export const generationBudgetSchema = z.strictObject({ maxAttempts: z.number().int().min(1).max(3), attemptsClaimed: z.number().int().min(0).max(3), maxReservedTokens: z.literal(666000), reservedTokens: z.number().int().nonnegative(), maxOutputTokensPerAttempt: z.literal(6000), maxInputCharactersPerAttempt: z.literal(50000) });
-export const generationReplySchema = z.strictObject({ status: z.enum(['prepared','queued','analyzing','complete','failed','incomplete','cancelled','expired','exhausted','uncertain']), run: generationRunSchema, attempt: z.number().int().min(1).max(3).optional(), budget: generationBudgetSchema, paperBudget: z.strictObject({ requests: z.number().int().nonnegative(), maxRequests: z.number().int().positive(), accountedTokens: z.number().int().nonnegative(), maxTokens: z.number().int().positive() }).optional(), candidate: generationCandidateSchema.optional(), error: z.string().max(1000).optional(), uncertain: z.boolean().optional() });
+export const generationReplySchema = z.strictObject({ retrieval:capabilitySelectionReceiptSchema.optional(),accounting:modelRequestAccountingSchema.optional(),status: z.enum(['prepared','queued','analyzing','complete','failed','incomplete','cancelled','expired','exhausted','uncertain']), run: generationRunSchema, attempt: z.number().int().min(1).max(3).optional(), budget: generationBudgetSchema, paperBudget: z.strictObject({ requests: z.number().int().nonnegative(), maxRequests: z.number().int().positive(), accountedTokens: z.number().int().nonnegative(), maxTokens: z.number().int().positive() }).optional(), candidate: generationCandidateSchema.optional(), error: z.string().max(1000).optional(), uncertain: z.boolean().optional() });
 export type GenerationRunRef = z.infer<typeof generationRunSchema>;
 export type GenerationPlan = z.infer<typeof generationPlanSchema>;
 export type GenerationCandidate = z.infer<typeof generationCandidateSchema>;

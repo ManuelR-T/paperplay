@@ -1,3 +1,6 @@
+import {retrieveCapabilities,generationRetrievalQuery} from '../../lib/retrieval/selection';
+import {createCapabilitySelectionReceipt,validateCapabilitySelectionReceipt} from '../../lib/retrieval/manifest';
+import type {ModelRequestAccounting} from '../../shared/capability-retrieval';
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 import { GENERATION_POLICY, generationPrepareSchema, generationStartSchema, generationStatusSchema, generationCancelSchema, type GenerationReply, type GenerationRunRef, type GenerationCandidate } from '../../shared/artifact-generation';
@@ -12,7 +15,7 @@ import { getUsageStore } from '../usage/service';
 import { reservedTokensFor, usageIdFor, type UsageStore } from '../usage/model';
 import { getEnrichmentStore, type EnrichmentStore, type GenerationRunRecord, type EnrichmentRecord } from '../enrichment/store';
 import type { MetaConfig } from '../meta/config';
-import { createArtifactGenerationProvider, generationModelOutputSchema, generationPromptCharacters, type ArtifactGenerationProvider, type GenerationProviderInput } from './provider';
+import { createArtifactGenerationProvider, generationModelOutputSchema, generationPromptCharacters,generationProviderRequest,GENERATION_INSTRUCTIONS,generationPromptMetrics,validateGeneratedMethodSelection,type ArtifactGenerationProvider, type GenerationProviderInput } from './provider';
 
 const hash = (value: unknown) => createHash('sha256').update(canonicalArtifactJson(value)).digest('hex');
 const textHash = (text: string) => createHash('sha256').update(text).digest('hex');
@@ -40,13 +43,18 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     const key = signingKey(config.apiKey, dependencies.signingSecret);
     return { config, key, session: sessionFor(request, key, now(), createSession) };
   }
-  function context(input: Context, model: string) {
+  async function context(input: Context, model: string,frozen?:GenerationRunRecord) {
     const source = validateDocument(input.source); const selected = sectionContext(source, input.sectionId);
     // Match the existing catalog ledger identity byte-for-byte to share its allowance.
     const documentHash = textHash(JSON.stringify({ ...source, anchors: [] }));
-    const contextHash = hash({ documentHash, selected: selected.text, brief: input.brief, model, policy: GENERATION_POLICY, sdkSha256: textHash(FIGURE_SDK_SOURCE) });
-    return { source, selected, documentHash, contextHash };
+    const query=await generationRetrievalQuery({...input,source});
+    const legacy=!!frozen&&!frozen.retrieval,selection=frozen?undefined:await retrieveCapabilities(query);let retrieval;try{retrieval=frozen?.retrieval?await validateCapabilitySelectionReceipt(frozen.retrieval,query):legacy?undefined:await createCapabilitySelectionReceipt(selection!);}catch{throw new AnalysisHttpError(409,'Source, section and brief are frozen for this generation run.');}
+    if(input.retrievalSelectionSha256&&input.retrievalSelectionSha256!==retrieval?.selectionSha256)throw new AnalysisHttpError(409,'The reviewed capability selection differs from this frozen run.');
+    const promptContractSha256=frozen?.promptContractSha256??hash({instructions:GENERATION_INSTRUCTIONS,schema:generationProviderRequest({context:selected.text,brief:input.brief,attempt:1}).text.format.schema}),sdkSha256=frozen?.sdkSha256??textHash(FIGURE_SDK_SOURCE);
+    const contextHash=hash({documentHash,selected:selected.text,brief:input.brief,model,policy:GENERATION_POLICY,sdkSha256,...(frozen&&!frozen.retrieval?{}:{retrieval:retrieval?.selectionSha256,promptContractSha256})});
+    return {source,selected,documentHash,contextHash,retrieval,selection,query,promptContractSha256,sdkSha256};
   }
+
   function ref(run: GenerationRunRecord, key: string): GenerationRunRef {
     return { runId: run.runId, model: run.model, createdAt: run.createdAt, deadlineAt: run.deadlineAt, token: signToken({ kind: 'artifact-generation-run', owner: run.owner, runId: run.runId, contextHash: run.contextHash, model: run.model, createdAt: run.createdAt, deadlineAt: run.deadlineAt, exp: run.createdAt + 86_400_000 }, key) };
   }
@@ -57,22 +65,25 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     if (token.contextHash !== run.contextHash || run.model !== input.model || run.createdAt !== input.createdAt || run.deadlineAt !== input.deadlineAt) throw new AnalysisHttpError(403, 'Generation capability differs from its durable run.');
     return run;
   }
-  function checkedContext(input: Context, run: GenerationRunRecord) {
-    const checked = context(input, run.model);
+  async function checkedContext(input: Context, run: GenerationRunRecord) {
+    const checked = await context(input,run.model,run);
     if (checked.contextHash !== run.contextHash || checked.documentHash !== run.documentHash || input.sectionId !== run.sectionId) throw new AnalysisHttpError(409, 'Source, section and brief are frozen for this generation run.');
     return checked;
   }
   function reply(run: GenerationRunRecord, key: string, value: Omit<GenerationReply, 'run' | 'budget' | 'paperBudget'>): GenerationReply {
     const current = store().generationRun(run.runId, run.owner);
-    return { ...value, run: ref(current, key), budget: { maxAttempts: current.maxAttempts, attemptsClaimed: current.attempts.length, maxReservedTokens: 666000, reservedTokens: current.reservedTokens, maxOutputTokensPerAttempt: 6000, maxInputCharactersPerAttempt: 50000 }, paperBudget: store().budget(current.owner, current.documentHash) };
+    const attempt=value.attempt??current.attempts.length,record=attempt?store().generationAttempt(current.runId,current.owner,attempt):undefined;
+    const metrics=record?.requestMetrics??current.previewMetrics;const accounting:ModelRequestAccounting|undefined=metrics?{request:metrics,actualUsage:record?.actualUsage??null,estimatePurpose:'conservative-quota-reservation-not-financial-quote',localTests:'provider-free'}:undefined;
+    return { ...value,retrieval:current.retrieval,...(accounting?{accounting}:{}), run: ref(current, key), budget: { maxAttempts: current.maxAttempts, attemptsClaimed: current.attempts.length, maxReservedTokens: 666000, reservedTokens: current.reservedTokens, maxOutputTokensPerAttempt: 6000, maxInputCharactersPerAttempt: 50000 }, paperBudget: store().budget(current.owner, current.documentHash) };
   }
-  function candidate(response: ProviderResponse, checked: ReturnType<typeof context>, run: GenerationRunRecord, attempt: number): GenerationCandidate {
+  function candidate(response: ProviderResponse, checked: Awaited<ReturnType<typeof context>>, run: GenerationRunRecord, attempt: number): GenerationCandidate {
     if (!response.output_text || Buffer.byteLength(response.output_text) > 96*1024) throw Error('Output exceeds limit.');
     const output = generationModelOutputSchema.parse(JSON.parse(response.output_text));
+    if(checked.retrieval)validateGeneratedMethodSelection(output.sourceCode,checked.retrieval);
     const norm = (text: string) => text.replace(/\s+/g, ' ').trim();
     if (!checked.selected.section.segments.some(segment => segment.blockId === output.anchor.blockId && segment.page === output.anchor.page && norm(segment.text).includes(norm(output.anchor.quote))) || norm(output.anchor.quote).length < 12) throw Error('Anchor outside selected coverage.');
     const fields = (items: typeof output.inputFields) => items.map(({ maxItems, ...field }) => ({ ...field, ...(maxItems === null ? {} : { maxItems }) }));
-    const artifact = validateFigureArtifact({ format: 'paperplay-figure-artifact', schemaVersion: 1, id: `generated-${run.runId.slice(0,8)}-${attempt}`, title: output.title, kind: 'generated', source: { documentId: checked.source.id, sourceVersion: checked.source.sourceVersion }, authorship: { kind: 'meta', label: 'Meta-proposed unverified teaching interaction' }, anchors: [{ id: 'passage', ...output.anchor }], assumptions: output.plan.assumptions, rights: 'Model-authored teaching code. Source paper/data rights remain separate; no third-party assets are bundled.', sdk: { id: 'paperplay-figure-sdk', version: '1.0.0' }, entry: { file: 'figure.js', export: 'update', language: 'javascript', source: output.sourceCode, sha256: textHash(output.sourceCode) }, dependencyLock: [{ id: 'paperplay-figure-sdk', version: '1.0.0', sha256: textHash(FIGURE_SDK_SOURCE), license: 'ISC' }], capabilityRequests: ['draw-2d','controls','source-return','entity-selection'], interfaces: { input: fields(output.inputFields), state: fields(output.stateFields), output: 'paperplay-sdk-frame-v1' }, initialInput: JSON.parse(output.initialInputJson), assetIds: [], assetBindings: [], resources: { maxSourceBytes: 16384, maxInputBytes: 16384, maxStateBytes: 16384, maxOutputBytes: 65536, maxMarks: 256, maxControls: 8, maxExecutionMs: 100, maxMemoryBytes: 8*1024*1024, maxStackBytes: 256*1024 }, tests: output.checks.map((description,index) => ({ id: `declared-${index}`, kind: 'invariant', description, expected: 'Not executed. Model-declared expectation; scientific evidence remains unverified.' })), provenance: { origin: 'model-authored', evidence: 'unverified', references: [] } }, checked.source);
+    const artifact = validateFigureArtifact({ format: 'paperplay-figure-artifact', schemaVersion: 1, id: `generated-${run.runId.slice(0,8)}-${attempt}`, title: output.title, kind: 'generated', source: { documentId: checked.source.id, sourceVersion: checked.source.sourceVersion }, authorship: { kind: 'meta', label: 'Meta-proposed unverified teaching interaction' }, anchors: [{ id: 'passage', ...output.anchor }], assumptions: output.plan.assumptions, rights: 'Model-authored teaching code. Source paper/data rights remain separate; no third-party assets are bundled.', sdk: { id: 'paperplay-figure-sdk', version: '1.0.0' }, entry: { file: 'figure.js', export: 'update', language: 'javascript', source: output.sourceCode, sha256: textHash(output.sourceCode) }, dependencyLock: [{ id: 'paperplay-figure-sdk', version: '1.0.0', sha256:run.sdkSha256??textHash(FIGURE_SDK_SOURCE), license: 'ISC' }], capabilityRequests: ['draw-2d','controls','source-return','entity-selection'], interfaces: { input: fields(output.inputFields), state: fields(output.stateFields), output: 'paperplay-sdk-frame-v1' }, initialInput: JSON.parse(output.initialInputJson), assetIds: [], assetBindings: [], resources: { maxSourceBytes: 16384, maxInputBytes: 16384, maxStateBytes: 16384, maxOutputBytes: 65536, maxMarks: 256, maxControls: 8, maxExecutionMs: 100, maxMemoryBytes: 8*1024*1024, maxStackBytes: 256*1024 }, tests: output.checks.map((description,index) => ({ id: `declared-${index}`, kind: 'invariant', description, expected: 'Not executed. Model-declared expectation; scientific evidence remains unverified.' })), provenance: { origin: 'model-authored', evidence: 'unverified', references: [] } }, checked.source);
     const value = { plan: output.plan, artifact }; return { ...value, sha256: hash(value) };
   }
   async function settle(record: EnrichmentRecord, response: ProviderResponse, status: Exclude<EnrichmentRecord['status'], 'reserved'>) {
@@ -80,10 +91,10 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     const finalStatus = terminal ? record.status as Exclude<EnrichmentRecord['status'], 'reserved'> : status;
     const acceptMeasurement = !terminal || (record.actualTokens === undefined ? status === record.status : (response.usage?.total_tokens ?? -1) >= record.actualTokens);
     const measured = response.usage && acceptMeasurement ? { inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, totalTokens: response.usage.total_tokens } : undefined;
-    try { store().settle(record.id, { status: finalStatus, providerId: response.id, ...(measured ? { actualTokens: measured.totalTokens } : {}) }); } catch { /* conservative reservation remains */ }
+    try { store().settle(record.id, { status: finalStatus, providerId: response.id, ...(measured ? { actualTokens: measured.totalTokens,actualUsage:measured } : {}) }); } catch { /* conservative reservation remains */ }
     try { await usage().settle(record.id, { status: finalStatus, providerId: response.id, ...(measured ? { usage: measured } : {}) }); } catch { /* conservative reservation remains */ }
   }
-  async function map(response: ProviderResponse, checked: ReturnType<typeof context>, run: GenerationRunRecord, attempt: number, record: EnrichmentRecord, key: string) {
+  async function map(response: ProviderResponse, checked: Awaited<ReturnType<typeof context>>, run: GenerationRunRecord, attempt: number, record: EnrichmentRecord, key: string) {
     if (response.id !== record.providerId) throw new AnalysisHttpError(502, 'Provider response differs from the accepted job.');
     if (!['reserved','accepted','uncertain'].includes(record.status) && !['completed','failed','cancelled','incomplete'].includes(response.status ?? '')) return reply(run, key, { status: 'uncertain', attempt, uncertain: true, error: 'The provider returned an older job state. The durable terminal record and previous candidate are retained; no replacement was created.' });
     let value: Omit<GenerationReply, 'run' | 'budget' | 'paperBudget'>;
@@ -95,7 +106,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
     else { value = { status: response.status === 'queued' ? 'queued' : 'analyzing', attempt }; status = 'accepted'; }
     await settle(record, response, status); return reply(run, key, value);
   }
-  async function retrieve(run: GenerationRunRecord, attempt: number, checked: ReturnType<typeof context>, config: MetaConfig, key: string, cancel = false) {
+  async function retrieve(run: GenerationRunRecord, attempt: number, checked: Awaited<ReturnType<typeof context>>, config: MetaConfig, key: string, cancel = false) {
     const record = store().generationAttempt(run.runId, run.owner, attempt);
     if (!record.providerId) return reply(run, key, { status: record.status === 'rejected' ? 'failed' : 'uncertain', attempt, error: 'No recoverable provider reference is available. No replacement request was sent.', uncertain: record.status !== 'rejected' });
     let response: ProviderResponse;
@@ -105,13 +116,14 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   }
   return {
     async prepare(request: Request) {
-      try { const { config, key, session } = configFor(request, true); const input = generationPrepareSchema.parse(await readJson(request)); const checked = context(input, config.model);
-        const run = store().prepareGenerationRun({ runId: input.runId, owner: session.sid, documentHash: checked.documentHash, contextHash: checked.contextHash, sectionId: input.sectionId, model: config.model, maxAttempts: input.maxAttempts });
+      try { const { config, key, session } = configFor(request, true); const input = generationPrepareSchema.parse(await readJson(request)); let existing:GenerationRunRecord|undefined;try{existing=store().generationRun(input.runId,session.sid);}catch(error){if(!(error instanceof AnalysisHttpError)||error.status!==404)throw error;}const checked=await context(input,config.model,existing);
+        const previewMetrics=checked.selection?generationPromptMetrics({context:checked.selected.text,brief:input.brief,attempt:1,retrieval:checked.selection},config.model):existing?.previewMetrics;if(previewMetrics&&previewMetrics.characters>GENERATION_POLICY.maxInputCharacters)throw new AnalysisHttpError(400,'The complete generation prompt exceeds the bounded input budget.');
+        const run = store().prepareGenerationRun({ runId: input.runId, owner: session.sid, documentHash: checked.documentHash, contextHash: checked.contextHash, sectionId: input.sectionId, model: config.model, maxAttempts: input.maxAttempts,retrieval:existing?existing.retrieval:checked.retrieval,previewMetrics,promptContractSha256:existing?.promptContractSha256??checked.promptContractSha256,sdkSha256:existing?.sdkSha256??checked.sdkSha256 });
         return json(reply(run, key, { status: run.closed ? 'cancelled' : now() >= run.deadlineAt ? 'expired' : 'prepared' }), 200, session.cookie);
       } catch (error) { return fail(error); }
     },
     async start(request: Request) {
-      try { const { config, key, session } = configFor(request); const input = generationStartSchema.parse(await readJson(request)); const run = authorize(input.run, session.sid, key); const checked = checkedContext(input, run);
+      try { const { config, key, session } = configFor(request); const input = generationStartSchema.parse(await readJson(request)); const run = authorize(input.run, session.sid, key); const checked = await checkedContext(input, run);
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         if (input.attempt > run.maxAttempts) return json(reply(run, key, { status: 'exhausted', error: 'The authorized attempt budget is exhausted.' }));
         if (!run.attempts[input.attempt - 1] && (run.closed || now() >= run.deadlineAt)) return json(reply(run, key, { status: run.closed ? 'cancelled' : 'expired', error: 'No new paid work can start in this closed or expired run.' }));
@@ -130,12 +142,17 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
             if (!actionable) throw new AnalysisHttpError(400, 'No actionable local failure was supplied for repair.');
           } else if (input.previous || input.feedback?.candidateSha256) throw new AnalysisHttpError(409, 'The preceding attempt produced no admitted candidate.');
         }
-        const providerInput: GenerationProviderInput = { context: checked.selected.text, brief: input.brief, attempt: input.attempt, ...(input.previous ? { previous: input.previous } : {}), ...(input.feedback ? { feedback: input.feedback } : {}) };
-        const characters = generationPromptCharacters(providerInput); if (characters > GENERATION_POLICY.maxInputCharacters) throw new AnalysisHttpError(400, 'The complete generation prompt exceeds its input budget. No source scope was silently removed.');
-        const fingerprint = hash({ frozen: run.contextHash, providerInput, model: run.model });
-        const id = usageIdFor(session.sid, `artifact-${run.runId}-${input.attempt}`);
+        const id=usageIdFor(session.sid,`artifact-${run.runId}-${input.attempt}`);
+        const fingerprint=hash({frozen:run.contextHash,context:checked.selected.text,brief:input.brief,attempt:input.attempt,previous:input.previous??null,feedback:input.feedback??null,retrieval:run.retrieval?.receiptSha256??null,model:run.model});
+        const acceptedAttempt=run.attempts[input.attempt-1];if(acceptedAttempt){if(run.retrieval&&acceptedAttempt.fingerprint!==fingerprint)throw new AnalysisHttpError(409,'This attempt already belongs to different frozen input.');const pending=running.get(id);if(pending)return json(await pending);return json(await retrieve(run,input.attempt,checked,config,key));}
+        if(!run.retrieval)throw new AnalysisHttpError(409,'This run predates frozen capability retrieval. Retrieve accepted work; explicitly prepare a new run for new creation.');
+        if(run.promptContractSha256!==hash({instructions:GENERATION_INSTRUCTIONS,schema:generationProviderRequest({context:checked.selected.text,brief:input.brief,attempt:1}).text.format.schema})||run.sdkSha256!==textHash(FIGURE_SDK_SOURCE))throw new AnalysisHttpError(409,'The frozen prompt/SDK contract changed. Retrieve accepted work or explicitly prepare a new run.');
+        const selection=await retrieveCapabilities(checked.query);if(selection.selectionSha256!==run.retrieval.selectionSha256)throw new AnalysisHttpError(409,'The frozen catalog changed. Retrieve existing attempts or explicitly prepare a new run; no repair was submitted.');
+        if(selection.gaps.some(g=>g.blocking))throw new AnalysisHttpError(409,'A required exact capability is unavailable. Retain the source-linked fallback.');
+        const providerInput:GenerationProviderInput={context:checked.selected.text,brief:input.brief,attempt:input.attempt,retrieval:selection,...(input.previous?{previous:input.previous}:{}),...(input.feedback?{feedback:input.feedback}:{})};
+        const metrics=generationPromptMetrics(providerInput,run.model),characters=metrics.characters;if(characters>GENERATION_POLICY.maxInputCharacters)throw new AnalysisHttpError(400,'The complete generation prompt (instructions/input/schema/feedback) exceeds its input budget. No source scope was silently removed.');
         const reservation = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: 6000, inputCharacters: characters, model: run.model, fingerprint };
-        const claimed = store().claimGenerationAttempt(run.runId, session.sid, input.attempt, { id, owner: session.sid, documentHash: run.documentHash, contextHash: fingerprint, action: 'artifact', sectionId: run.sectionId, reservedTokens: reservedTokensFor(reservation) });
+        const claimed = store().claimGenerationAttempt(run.runId, session.sid, input.attempt, { id, owner: session.sid, documentHash: run.documentHash, contextHash: fingerprint, action: 'artifact', sectionId: run.sectionId, reservedTokens: reservedTokensFor(reservation),retrieval:run.retrieval,requestMetrics:metrics,requestSha256:textHash(JSON.stringify(generationProviderRequest(providerInput,run.model))) });
         if (!claimed.created) { const pending = running.get(id); if (pending) return json(await pending); return json(await retrieve(run, input.attempt, checked, config, key)); }
         try { const global = await usage().reserve(reservation); if (!global.created) { store().settle(id, { status: 'uncertain' }); throw new AnalysisHttpError(409, 'The shared request identifier is already unresolved.', true); } }
         catch (error) { if (!(error instanceof AnalysisHttpError && error.uncertain)) store().settle(id, { status: 'rejected', actualTokens: 0 }); throw error; }
@@ -152,7 +169,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
       } catch (error) { return fail(error); }
     },
     async status(request: Request) {
-      try { const { config, key, session } = configFor(request); const input = generationStatusSchema.parse(await readJson(request)); const run = authorize(input.run, session.sid, key); const checked = checkedContext(input, run); return json(await retrieve(run, input.attempt, checked, config, key)); } catch (error) { return fail(error); }
+      try { const { config, key, session } = configFor(request); const input = generationStatusSchema.parse(await readJson(request)); const run = authorize(input.run, session.sid, key); const checked = await checkedContext(input, run); return json(await retrieve(run, input.attempt, checked, config, key)); } catch (error) { return fail(error); }
     },
     async cancel(request: Request) {
       try { const { config, key, session } = configFor(request); const input = generationCancelSchema.parse(await readJson(request)); const run = authorize(input.run, session.sid, key); store().closeGenerationRun(run.runId, run.owner);

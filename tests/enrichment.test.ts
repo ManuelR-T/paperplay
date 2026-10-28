@@ -15,6 +15,7 @@ import { createEnrichmentHandlers } from '../server/enrichment/handlers';
 import { createSqliteUsageStore } from '../server/usage/store';
 import { readMetaConfig } from '../server/meta/config';
 import { AnalysisHttpError } from '../server/analysis/security';
+import {retrieveCapabilities,enrichmentRetrievalQuery} from '../lib/retrieval/selection';
 import { providerInput, type EnrichmentProvider } from '../server/enrichment/provider';
 import { validateDocument, type SourceDocument } from '../shared/schema';
 import type { WidgetEnvelope, WidgetKind } from '../shared/widgets';
@@ -125,7 +126,7 @@ function request(body: unknown,cookie?: string,path='start') { return new Reques
 async function fixture(t: { after(fn:()=>void):void }) {
   let creates=0,retrieves=0,cancels=0,enabled=true; const clock=10_000;
   const usage=createSqliteUsageStore({path:':memory:',now:()=>clock}); const store=createEnrichmentStore({path:':memory:',now:()=>clock});t.after(()=>{usage.close?.();store.close();});
-  const provider:EnrichmentProvider={async start(){creates++;return{id:`resp_fixture_${creates}`,status:'queued'}},async retrieve(id){retrieves++;return{id,status:'completed',output_text:JSON.stringify(plan(source)),usage:{input_tokens:40,output_tokens:60,total_tokens:100}}},async cancel(id){cancels++;return{id,status:'cancelled'}}};
+  const provider:EnrichmentProvider={async start(){creates++;return{id:`resp_fixture_${creates}`,status:'queued'}},async retrieve(id){retrieves++;return{id,status:'completed',output_text:JSON.stringify(plan(source,'graph')),usage:{input_tokens:40,output_tokens:60,total_tokens:100}}},async cancel(id){cancels++;return{id,status:'cancelled'}}};
   const dependencies={getConfig:()=>readMetaConfig({MODEL_API_KEY:'not-real-fixture',META_ANALYSIS_ENABLED:enabled?'true':'false'}),usage,store,provider:()=>provider,signingSecret:'enrichment-fixture-signing',now:()=>clock};
   const handlers=createEnrichmentHandlers(dependencies);const bootstrap=await handlers.session(request({},undefined,'session'));assert.equal(bootstrap.status,200);const cookie=bootstrap.headers.get('set-cookie')!.split(';')[0];
   const body={source,sectionId:buildSourceSections(source).find(s=>s.segments.some(x=>x.blockId===contentBlock(source).id))!.id,action:'plan',feedback:'',requestId:'enrichment-request-00001'};
@@ -161,18 +162,18 @@ test('document/global quota, ledger failure and executable edits stop before pai
   const tinyUsage=createSqliteUsageStore({path:':memory:',limits:{globalHourlyRequests:20,sessionTenMinuteRequests:5,dailyRequests:100,dailyTokens:1}});t.after(()=>tinyUsage.close?.());
   const limited=createEnrichmentHandlers({...f.dependencies,usage:tinyUsage});assert.equal((await limited.start(request(f.body,f.cookie))).status,429);assert.equal(f.counts().creates,0);
 });
-test('provider input contains only selected section context, declared capabilities and a bounded target',()=>{
-  const section=buildSourceSections(source)[0];const selected=sectionContext(source,section.id);const input=JSON.parse(providerInput({action:'plan',context:selected.text,feedback:''}));
-  assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.equal(input.templates.length,10);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
+test('provider input contains only selected section context, retrieved capabilities and a bounded target',async()=>{
+  const section=buildSourceSections(source)[0];const selected=sectionContext(source,section.id);const retrieval=await retrieveCapabilities(await enrichmentRetrievalQuery({source,sectionId:section.id,action:'plan',feedback:''}));const input=JSON.parse(providerInput({action:'plan',context:selected.text,feedback:'',retrieval}));
+  assert.equal(input.catalogVersion,WIDGET_CATALOG_VERSION);assert.ok(input.capabilityManifest.selected.length<=3);assert.deepEqual(input.capabilityManifest.selected.map((entry:{kind:string})=>entry.kind),retrieval.selected.map(entry=>entry.kind));assert.equal(input.templates,undefined);assert.equal(input.selectedSource.section.id,section.id);assert.equal(input.selectedSource.coverage.includes('Only selected'),true);assert.equal('source' in input,false);
 });
 
 test('creative direction reaches the provider and its output allowance fits the shared ledger',async()=>{
   const {ENRICHMENT_MAX_OUTPUT_TOKENS}=await import('../server/enrichment/provider');
   const {validateUsageRequest}=await import('../server/usage/model');
   const section=buildSourceSections(source)[0];
-  const text=providerInput({action:'plan',context:sectionContext(source,section.id).text,feedback:'Explain geometry using an animated model.'});
+  const feedback='Design a custom state recurrence model.',retrieval=await retrieveCapabilities(await enrichmentRetrievalQuery({source,sectionId:section.id,action:'plan',feedback}));const text=providerInput({action:'plan',context:sectionContext(source,section.id).text,feedback,retrieval});
   const input=JSON.parse(text);
-  assert.equal(input.feedback,'Explain geometry using an animated model.');
+  assert.equal(input.feedback,feedback);assert.ok(retrieval.selected.some(entry=>entry.kind==='custom'));
   assert.ok(input.customRuntime.sceneShapes.includes('arrow'));
   assert.ok(input.customRuntime.sceneShapes.includes('label'));
   assert.ok(text.length<70000);

@@ -1,5 +1,6 @@
 import type { CustomWidgetSpec } from '../../shared/custom-widget';
 import { z } from 'zod';
+import {capabilitySelectionReceiptSchema,modelRequestAccountingSchema,type CapabilitySelectionReceipt,type ModelRequestAccounting} from '../../shared/capability-retrieval';
 import type { SourceDocument } from '../../shared/schema';
 import { validateWidgetEnvelope, validateWidgetSpec, prepareWidgetSource, widgetEnvelopeSchema, WIDGET_KINDS, type WidgetEnvelope } from '../../shared/widgets';
 import { sectionContext, sourceBlockText, type SourceSection } from './sections';
@@ -28,12 +29,12 @@ export const enrichmentPlanSchema = z.strictObject({
 export type CustomWidgetReview = (candidate: CustomWidgetSpec, context: { source: SourceDocument; quote: string; blockId: string }) => void;
 export type EnrichmentAction = 'plan' | 'repair' | 'edit';
 export type EnrichmentProposal = { id: string; concept: string; reason: string; objective: string; neededData: string[]; provenance: 'synthetic' | 'illustrative'; interactions: string[]; limitations: string[]; envelope: WidgetEnvelope; diff?: Array<{ path: string; before: string; after: string }> };
-export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number } };
+export type EnrichmentResult = { action: EnrichmentAction; sectionId: string; sectionTitle: string; catalogVersion: string; model: string; summary: string; proposals: EnrichmentProposal[]; rejected: Array<{ id: string; reason: string }>; warnings: string[]; repetitionReason: string; usage?: { inputTokens: number; outputTokens: number; totalTokens: number };retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
 export type EnrichmentJob = { token: string; createdAt: number; action: EnrichmentAction; sectionId: string; model: string };
 export type EnrichmentBudget = { requests: number; maxRequests: number; accountedTokens: number; maxTokens: number };
-export type EnrichmentReply = { status: 'queued' | 'analyzing' | 'complete' | 'failed' | 'cancelled' | 'expired' | 'incomplete'; job?: EnrichmentJob; result?: EnrichmentResult; budget?: EnrichmentBudget; error?: string; uncertain?: boolean };
+export type EnrichmentReply = { status: 'queued' | 'analyzing' | 'complete' | 'failed' | 'cancelled' | 'expired' | 'incomplete'; job?: EnrichmentJob; result?: EnrichmentResult; budget?: EnrichmentBudget; error?: string; uncertain?: boolean;retrieval?:CapabilitySelectionReceipt;accounting?:ModelRequestAccounting };
 
-export const enrichmentResultSchema = z.strictObject({ action: z.enum(['plan','repair','edit']), sectionId: z.string().min(1).max(100), sectionTitle: z.string().min(1).max(1000), catalogVersion: z.string().max(30), model: z.string().max(120), summary: plain,
+export const enrichmentResultSchema = z.strictObject({ retrieval:capabilitySelectionReceiptSchema.optional(),accounting:modelRequestAccountingSchema.optional(),action: z.enum(['plan','repair','edit']), sectionId: z.string().min(1).max(100), sectionTitle: z.string().min(1).max(1000), catalogVersion: z.string().max(30), model: z.string().max(120), summary: plain,
   proposals: z.array(z.strictObject({ id: z.string().max(40), concept: plain.max(300), reason: plain.max(1000), objective: plain.max(1000), neededData: z.array(plain.max(300)).max(8), provenance: z.enum(['synthetic','illustrative']), interactions: z.array(plain.max(100)).max(12), limitations: z.array(plain.max(500)).max(8), envelope: widgetEnvelopeSchema, diff: z.array(z.strictObject({ path: z.string().max(500), before: z.string().max(25_000), after: z.string().max(25_000) })).max(100).optional() })).max(4),
   rejected: z.array(z.strictObject({ id: z.string().max(40), reason: z.string().max(2000) })).max(4), warnings: z.array(z.string().max(2000)).max(20), repetitionReason: z.string().max(1000), usage: z.strictObject({ inputTokens: z.number().int().min(0), outputTokens: z.number().int().min(0), totalTokens: z.number().int().min(0) }).optional(),
 });
@@ -50,7 +51,7 @@ export function configurationDiff(before: unknown, after: unknown) {
   visit(before, after, '', 0); return changes;
 }
 
-export function compileEnrichmentPlan(input: unknown, options: { source: SourceDocument; section: SourceSection; action: EnrichmentAction; target?: WidgetEnvelope; model: string; catalogVersion: string; allowedInteractions: (kind: typeof WIDGET_KINDS[number]) => readonly string[]; usage?: EnrichmentResult['usage']; reviewCustom?: CustomWidgetReview }): EnrichmentResult {
+export function compileEnrichmentPlan(input: unknown, options: { source: SourceDocument; section: SourceSection; action: EnrichmentAction; target?: WidgetEnvelope; model: string; catalogVersion: string; allowedInteractions: (kind: typeof WIDGET_KINDS[number]) => readonly string[]; usage?: EnrichmentResult['usage']; reviewCustom?: CustomWidgetReview;allowedKind?:(kind:WidgetEnvelope['spec']['kind'])=>void }): EnrichmentResult {
   const plan = enrichmentPlanSchema.parse(input); const { source, section, action, target } = options;
   const boundedSourceContext = sectionContext(source,section.id,target?.source.blockId).text;
   const proposals: EnrichmentProposal[] = []; const rejected: EnrichmentResult['rejected'] = []; const seen = new Set<string>();
@@ -62,7 +63,7 @@ export function compileEnrichmentPlan(input: unknown, options: { source: SourceD
       if (!block || block.page !== proposal.page || norm(proposal.quote).length < 12 || !norm(sourceBlockText(block)).includes(norm(proposal.quote))) throw Error('The exact quote, source block or page is invalid.');
       if (!section.segments.some(s => s.blockId === block.id && norm(s.text).includes(norm(proposal.quote)))) throw Error('The proposal is outside the selected section coverage.');
       if (target && (proposal.blockId !== target.source.blockId || proposal.quote !== target.source.quote)) throw Error('A targeted change must preserve the widget source anchor.');
-      const spec = validateWidgetSpec(JSON.parse(proposal.specJson));
+      const spec = validateWidgetSpec(JSON.parse(proposal.specJson));options.allowedKind?.(spec.kind);
       const conceptHints = getWidgetDescriptor(spec.kind).sourceConceptHints ?? [];
       if (conceptHints.length && !conceptHints.some(pattern => new RegExp(pattern,'i').test(boundedSourceContext))) throw Error('This computed widget has no declared concept support in the selected source context. Use an illustrative diagram or supply an appropriate source.');
       if (spec.kind === 'table' && spec.provenance !== 'illustrative') throw Error('Generated tables must be labeled illustrative; source/computed provenance needs separate verified data.');

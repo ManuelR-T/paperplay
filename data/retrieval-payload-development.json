@@ -1,0 +1,964 @@
+{
+  "format": "paperplay-retrieval-payload-report",
+  "schemaVersion": 1,
+  "phase": "development-policy",
+  "corpusId": "scientific-intake-2026-10-28",
+  "splitSha256": "e026de172c7d72f9d755d7994b723b05a4ffed7050b9f921c3e75df934ad3db0",
+  "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+  "policy": {
+    "version": "1.0.0",
+    "maxSelected": 3,
+    "maxExamples": 2,
+    "maxContentBytes": 24576,
+    "maxContextCharacters": 20000,
+    "maxConceptCharacters": 1200,
+    "maxRequired": 8
+  },
+  "modelIdentity": "offline-configured-model-placeholder",
+  "scope": "Offline full-request serialization measurements, not model execution, scientific verification or held-out performance.",
+  "inferenceCalls": 0,
+  "actualUsage": null,
+  "cases": [
+    {
+      "id": "B1",
+      "split": "development",
+      "status": "measured-existing-saved-context",
+      "sourceContextBasis": "Existing admitted short Figure11 caption/attribution card; not full paper or raw recordings.",
+      "sourceCharacters": 1106,
+      "sourceBytes": 1109,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "a88a5d7625b866641c81fc0a0746bfa85d5ccb28e729118050c4b3d2f489557e",
+        "selectionSha256": "c6d6fc9ce2cf9db336d0a306850068dd2e47660c9b7a3b707a2069ab40b4a4be",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "a3db8b2b0b836d4e957635fddbad79fa32cf02340878d575a647f6702fea94f9",
+          "sourceFingerprint": "b4ff1da0795f6a443d637fbf620c8923a534299a553af843040b9b11abedf883",
+          "sectionId": "section-0-6df875a2"
+        },
+        "querySha256": "03f76a110bc6bf611475a9718e5dd03017be41702a9c53adcb74638259a94b05",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-table",
+            "version": "2.1.0",
+            "kind": "table",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "d98ad479b66b60b95b86e080311aa032749a13ad3c87c143a4e4227962e901bd",
+        "metrics": {
+          "selectedCapabilities": 1,
+          "selectedExamples": 0,
+          "contentCharacters": 2600,
+          "contentBytes": 2600
+        },
+        "receiptSha256": "b5709a8d8d725d086126278e727f1c10a16034ff12284af90a9fcfd0b69c6831"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 9998,
+        "bytes": 10003,
+        "estimatedInputTokens": 10259,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 61992,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 3812,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 34739,
+        "bytes": 34780,
+        "estimatedInputTokens": 35036,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 160956,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 25437,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 24777,
+      "generation": {
+        "phase": "generation",
+        "characters": 16474,
+        "bytes": 16477,
+        "estimatedInputTokens": 16733,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 87896,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 10535,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "cd2d6fbab87ce4ff3d44fa3046ec49a6e459e338cd9e3d59dc6438bad6c5d8be",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-b1-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "Measured locally only; explicit reviewed action would still be required."
+    },
+    {
+      "id": "B2",
+      "split": "development",
+      "status": "measured-metadata-context-only",
+      "sourceContextBasis": "Frozen development intake metadata only, not publication body/abstract. This measurement cannot establish real paper coverage.",
+      "sourceCharacters": 379,
+      "sourceBytes": 379,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "125bccdef5e4b855a3a09ea628f3e0ab58539a4137e66b8eaabddc3a5fec37ab",
+        "selectionSha256": "a2149a29f230da2a9806744563872d89b6973ac1dad8cc2d7407cbc4dadc23ab",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "e4ec05dc2ab80d0c0073d484c47d9bb8b2badc5322f40274796500e4b1d98227",
+          "sourceFingerprint": null,
+          "sectionId": "intake-B2"
+        },
+        "querySha256": "9bef822683c3fb7d0145ba27b821795f06e21d911b7caf400b0c67291d962a38",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-custom",
+            "version": "2.1.0",
+            "kind": "custom",
+            "exampleRefs": [
+              {
+                "id": "annotated-dynamics",
+                "version": "1.0.0",
+                "sha256": "14c81b7c69f0d662b2d6cd0fe1d54c4630e223823e2c298b5cfb85a96b4cdcb4"
+              },
+              {
+                "id": "phase-composition",
+                "version": "1.0.0",
+                "sha256": "1a1efd8d56fa6fabe88c875bf2dab9986620ed687dfc4442c68f1bce2e671341"
+              }
+            ]
+          },
+          {
+            "id": "widget-diagram",
+            "version": "2.1.0",
+            "kind": "diagram",
+            "exampleRefs": []
+          },
+          {
+            "id": "widget-linear",
+            "version": "2.1.0",
+            "kind": "linear",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "b39eb0b20f376d14586cce48c768c263edcbb6de044a57062e5da6bcf0375f7f",
+        "metrics": {
+          "selectedCapabilities": 3,
+          "selectedExamples": 2,
+          "contentCharacters": 15140,
+          "contentBytes": 15142
+        },
+        "receiptSha256": "8ebf6d05098e5dc5c5bd79af586a2756cb507033228b8223de965bd82a895338"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 26019,
+        "bytes": 26028,
+        "estimatedInputTokens": 26284,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 126076,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 17533,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 33980,
+        "bytes": 34018,
+        "estimatedInputTokens": 34274,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 157920,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 24710,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 7990,
+      "generation": {
+        "phase": "generation",
+        "characters": 15728,
+        "bytes": 15728,
+        "estimatedInputTokens": 15984,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 84912,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 9821,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "cfb3cd1f399f4e471cc45de5a02605b53946c1a5138c2066f0813d0abe7e0b4a",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-b2-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "No source-grounded provider request authorized from metadata-only fixture."
+    },
+    {
+      "id": "B3",
+      "split": "held-out",
+      "status": "deferred-to-frozen-evaluation-PP113",
+      "sourceContextBasis": "No held-out body/abstract/asset read by this script.",
+      "payload": null,
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "reason": "Keep held-out sources out of retrieval-policy tuning. Freeze implementation/catalog/prompt hashes before admitting and measuring these sources in PP113."
+    },
+    {
+      "id": "B4",
+      "split": "development",
+      "status": "measured-metadata-context-only",
+      "sourceContextBasis": "Frozen development intake metadata only, not publication body/abstract. This measurement cannot establish real paper coverage.",
+      "sourceCharacters": 403,
+      "sourceBytes": 403,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "0293f6617d8e3d7432897e87e0fe7afb55f88b5f08f1b9ae410e1e325cb916a1",
+        "selectionSha256": "f692150e9ddbecbc7213d040b4cc8c791fe6a5f97225023013040844fd262b70",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "a397abf2ba9bb7b189a7b27a815eedc19b53c6fee1862473c3312c88fab78318",
+          "sourceFingerprint": null,
+          "sectionId": "intake-B4"
+        },
+        "querySha256": "a8287b1a3da201068ed57670e97e2e3a4371da0c49835d461ee2cb4ea7d3a4ee",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-diagram",
+            "version": "2.1.0",
+            "kind": "diagram",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "ee290cb2e527488aeb009597e84bd4c19483fdb12aa2b8745f17ab3d6b6740ae",
+        "metrics": {
+          "selectedCapabilities": 1,
+          "selectedExamples": 0,
+          "contentCharacters": 3122,
+          "contentBytes": 3122
+        },
+        "receiptSha256": "4429afa118cbf2f82eb66151f155aa727dd48432f713ed6797d4f8dcd61c0fc5"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 9837,
+        "bytes": 9839,
+        "estimatedInputTokens": 10095,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 61348,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 3631,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 34004,
+        "bytes": 34042,
+        "estimatedInputTokens": 34298,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 158016,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 24734,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 24203,
+      "generation": {
+        "phase": "generation",
+        "characters": 15752,
+        "bytes": 15752,
+        "estimatedInputTokens": 16008,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 85008,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 9845,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "eb974ad9c3406628e3724f1fecc5a6923ccbe553d6848aad437ebea5d34a099a",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-b4-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "No source-grounded provider request authorized from metadata-only fixture."
+    },
+    {
+      "id": "P1",
+      "split": "development",
+      "status": "measured-metadata-context-only",
+      "sourceContextBasis": "Frozen development intake metadata only, not publication body/abstract. This measurement cannot establish real paper coverage.",
+      "sourceCharacters": 367,
+      "sourceBytes": 367,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "fec5e99af15e95fefd502e9c3bfd515c86c15d2495a6edb690c6a8578f1c8974",
+        "selectionSha256": "a0c3057ecb83fde4902bcee6620a761e2deffbd0de4ce8005f42be64b8c7991b",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "98eb3db47af456ac1815408768ef1e45ebed2498e6cf1dcc4fd9be4a3267a7d4",
+          "sourceFingerprint": null,
+          "sectionId": "intake-P1"
+        },
+        "querySha256": "017f54ec48b1a065ab19dac701c3fa3c69215c5b729a66a2bbcc2ece9a296c6f",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-diagram",
+            "version": "2.1.0",
+            "kind": "diagram",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "ee290cb2e527488aeb009597e84bd4c19483fdb12aa2b8745f17ab3d6b6740ae",
+        "metrics": {
+          "selectedCapabilities": 1,
+          "selectedExamples": 0,
+          "contentCharacters": 3122,
+          "contentBytes": 3122
+        },
+        "receiptSha256": "be5edfc8b7a6a727972325b77a94614266df59410d0e0016abdcb941add9cde2"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 9801,
+        "bytes": 9803,
+        "estimatedInputTokens": 10059,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 61204,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 3595,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 33968,
+        "bytes": 34006,
+        "estimatedInputTokens": 34262,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 157872,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 24698,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 24203,
+      "generation": {
+        "phase": "generation",
+        "characters": 15713,
+        "bytes": 15713,
+        "estimatedInputTokens": 15969,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 84852,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 9806,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "c54941e1f21af586ea181d9a119974ec880c0cfc856fa1a1d7782f882dcfabb6",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-p1-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "No source-grounded provider request authorized from metadata-only fixture."
+    },
+    {
+      "id": "P2",
+      "split": "development",
+      "status": "measured-metadata-context-only",
+      "sourceContextBasis": "Frozen development intake metadata only, not publication body/abstract. This measurement cannot establish real paper coverage.",
+      "sourceCharacters": 368,
+      "sourceBytes": 368,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "96e94dba32db7530f08d84997f8dea6135180e9e3d10c8ae8ccd61be1744eb0c",
+        "selectionSha256": "dafe7e57e85fca143725141c5e841161689436d1ea625296c646ac1fa5174268",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "67112a21ae2b797ebee05e79447bdd362a6bbbfb468adfda4b2d82cc50baad0c",
+          "sourceFingerprint": null,
+          "sectionId": "intake-P2"
+        },
+        "querySha256": "561e3050f6169fa5c0767cc607af57591a4215c47bdea78d5afb663c5aa7744b",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-diagram",
+            "version": "2.1.0",
+            "kind": "diagram",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "ee290cb2e527488aeb009597e84bd4c19483fdb12aa2b8745f17ab3d6b6740ae",
+        "metrics": {
+          "selectedCapabilities": 1,
+          "selectedExamples": 0,
+          "contentCharacters": 3122,
+          "contentBytes": 3122
+        },
+        "receiptSha256": "810bb8ac0450bad08e59522995accb063bfeb53a64e78344ac9610a7bed1e27f"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 9802,
+        "bytes": 9804,
+        "estimatedInputTokens": 10060,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 61208,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 3596,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 33969,
+        "bytes": 34007,
+        "estimatedInputTokens": 34263,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 157876,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 24699,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 24203,
+      "generation": {
+        "phase": "generation",
+        "characters": 15703,
+        "bytes": 15703,
+        "estimatedInputTokens": 15959,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 84812,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 9796,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "8d75b42452e3cb05779007aff3e8732d0430687cab03e9db22b60fd854eff2d3",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-p2-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "No source-grounded provider request authorized from metadata-only fixture."
+    },
+    {
+      "id": "P3",
+      "split": "held-out",
+      "status": "deferred-to-frozen-evaluation-PP113",
+      "sourceContextBasis": "No held-out body/abstract/asset read by this script.",
+      "payload": null,
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "reason": "Keep held-out sources out of retrieval-policy tuning. Freeze implementation/catalog/prompt hashes before admitting and measuring these sources in PP113."
+    },
+    {
+      "id": "P4",
+      "split": "held-out",
+      "status": "deferred-to-frozen-evaluation-PP113",
+      "sourceContextBasis": "No held-out body/abstract/asset read by this script.",
+      "payload": null,
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "reason": "Keep held-out sources out of retrieval-policy tuning. Freeze implementation/catalog/prompt hashes before admitting and measuring these sources in PP113."
+    },
+    {
+      "id": "C1",
+      "split": "development",
+      "status": "measured-existing-saved-context",
+      "sourceContextBasis": "Existing prepared/public saved excerpt; not complete publication.",
+      "sourceCharacters": 2061,
+      "sourceBytes": 2067,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "0f1ad19c09302e9e4fb80c9d9c9185d54f76a11bb9da1eb9bd23d40076421027",
+        "selectionSha256": "db53a2c22d066dd6cd93b8355d55cbf2826017a2469b5d7f89196bc95b6e01e4",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "56b989163f6a53a79f31e62ec66a84b67035904128b2ba0c681dd1c28c7c59d1",
+          "sourceFingerprint": "f1ea7d77697a3355116879e8fd75dac8e31e8b4a3750ef6c266a9152f3c258c0",
+          "sectionId": "section-0-e89c5927"
+        },
+        "querySha256": "b5ec2723add716be7a7fc3d20a0755ed58042d037824d6247bb3643aa8de4662",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-graph",
+            "version": "2.1.0",
+            "kind": "graph",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "710c6429be6475cd59d896a0169e9542f6a46920dce4dc5670a708df5dfc7800",
+        "metrics": {
+          "selectedCapabilities": 1,
+          "selectedExamples": 0,
+          "contentCharacters": 2883,
+          "contentBytes": 2885
+        },
+        "receiptSha256": "9b1547d68c0bd56a4fce2f15c24ad3464690f92cd0aa780012700aba2f174a9f"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 11326,
+        "bytes": 11336,
+        "estimatedInputTokens": 11592,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 67304,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 5050,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 35726,
+        "bytes": 35770,
+        "estimatedInputTokens": 36026,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 164904,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 26392,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 24434,
+      "generation": {
+        "phase": "generation",
+        "characters": 17461,
+        "bytes": 17467,
+        "estimatedInputTokens": 17723,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 91844,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 11490,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "692bc007eb8afde56762bb6e874a262554a7aa36043ecc7b5de101bae066de65",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-c1-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "Measured locally only; explicit reviewed action would still be required."
+    },
+    {
+      "id": "C2",
+      "split": "development",
+      "status": "measured-existing-saved-context",
+      "sourceContextBasis": "Existing prepared/public saved excerpt; not complete publication.",
+      "sourceCharacters": 1961,
+      "sourceBytes": 1969,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "bef328dbd4cb844dc5793ac99683007b2b4111f52499d3259ac17d1244d37fb8",
+        "selectionSha256": "1f632af5dfb1a38d843c9db093c5fdef576a147bd8897192578aae4799218a94",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "f383941a28180a40911762ffe8c1db48032ba2a06c2ea8f65cc3afa8edef6b4d",
+          "sourceFingerprint": "a027bf8833eaf7ffa2e8b650dcbaff05389a169b8538c2a5b1e9e8b934946e48",
+          "sectionId": "section-0-c727e2b8"
+        },
+        "querySha256": "931ced4b056a75c0aa4894c9775963713cb311a49c152db1086d668f53581281",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-diagram",
+            "version": "2.1.0",
+            "kind": "diagram",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [
+          {
+            "id": "no-specialized-relevance-match",
+            "version": null,
+            "blocking": false,
+            "reason": "No specialized lexical match was found. The selected diagram is a conceptual fallback only, not an executable substitute for an unknown scientific method.",
+            "nextAction": "Retain the original/source-linked fallback. Choose a registered exact capability version or export a developer-extension request; do not invent SDK methods or install packages."
+          }
+        ],
+        "contentSha256": "591b17beaed38f968d9dfc21c543673851f82376baee407cca2587859572671a",
+        "metrics": {
+          "selectedCapabilities": 1,
+          "selectedExamples": 0,
+          "contentCharacters": 3121,
+          "contentBytes": 3121
+        },
+        "receiptSha256": "62e89c22a15bc776fa84b0902af1ba068b23b58d7b53fd163e2b2114fe2e22f4"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 11903,
+        "bytes": 11913,
+        "estimatedInputTokens": 12169,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 69612,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 5617,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 35626,
+        "bytes": 35672,
+        "estimatedInputTokens": 35928,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 164504,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 26292,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 23759,
+      "generation": {
+        "phase": "generation",
+        "characters": 17361,
+        "bytes": 17369,
+        "estimatedInputTokens": 17625,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 91444,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 11390,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "ddf2117a913503b4ba5de64720b679a1f0d847662272b1e4948d67c65499ace1",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-c2-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "Measured locally only; explicit reviewed action would still be required."
+    },
+    {
+      "id": "C3",
+      "split": "development",
+      "status": "measured-metadata-context-only",
+      "sourceContextBasis": "Frozen development intake metadata only, not publication body/abstract. This measurement cannot establish real paper coverage.",
+      "sourceCharacters": 370,
+      "sourceBytes": 370,
+      "selectionReceipt": {
+        "format": "paperplay-capability-selection-receipt",
+        "schemaVersion": 1,
+        "policyVersion": "1.0.0",
+        "selectionId": "e9ccc2a6121b464758b445bf61cedcd6c7236c36c5b9ce5d4b89878d0251f55c",
+        "selectionSha256": "3595e37a8641e1024d921ae7ae1e66e630331fa14a20f796577df89b5dd98a20",
+        "catalogSha256": "34b0a6057feb1ee95ce91f5a4291781e3c5554ef48983607e2218751c68006da",
+        "context": {
+          "sha256": "fe4819103ef7b58cccf1c8ab1ae3c55beb79d9fa112ffc2d15e57dba674bdf92",
+          "sourceFingerprint": null,
+          "sectionId": "intake-C3"
+        },
+        "querySha256": "d8dd5f4c661478ecee4adee85646057c2164b48e513f743447221bcee2924119",
+        "purpose": "widget-plan",
+        "selected": [
+          {
+            "id": "widget-attention",
+            "version": "2.1.0",
+            "kind": "attention",
+            "exampleRefs": []
+          },
+          {
+            "id": "widget-diagram",
+            "version": "2.1.0",
+            "kind": "diagram",
+            "exampleRefs": []
+          }
+        ],
+        "gaps": [],
+        "contentSha256": "380b1632f9573850fa8d014f9a597d93d8ced9833cea721d8687aeecb1683d63",
+        "metrics": {
+          "selectedCapabilities": 2,
+          "selectedExamples": 0,
+          "contentCharacters": 4323,
+          "contentBytes": 4325
+        },
+        "receiptSha256": "fad4c8134434b6e1e2e429f6fa7a33d8b401a508ad34f57f22b5885cdde3596b"
+      },
+      "planning": {
+        "phase": "planning",
+        "characters": 11105,
+        "bytes": 11109,
+        "estimatedInputTokens": 11365,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 66420,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 4799,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "counterfactualBroadCatalog": {
+        "phase": "planning",
+        "characters": 33971,
+        "bytes": 34009,
+        "estimatedInputTokens": 34265,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 157884,
+        "components": {
+          "instructionsCharacters": 4019,
+          "inputCharacters": 24701,
+          "responseSchemaCharacters": 1492,
+          "feedbackCharacters": 0
+        }
+      },
+      "planningBytesSaved": 22900,
+      "generation": {
+        "phase": "generation",
+        "characters": 15720,
+        "bytes": 15720,
+        "estimatedInputTokens": 15976,
+        "tokenEstimateMethod": "utf8-bytes-plus-256-conservative-estimate-not-usage",
+        "maxOutputTokens": 6000,
+        "reservedTokens": 84880,
+        "components": {
+          "instructionsCharacters": 2016,
+          "inputCharacters": 9813,
+          "responseSchemaCharacters": 2311,
+          "feedbackCharacters": 0
+        }
+      },
+      "generatedSelection": {
+        "selectionSha256": "9ea0fb689c3b19169cc681e3accd606f98cdbcd490ef34a1f3c69a949e975d17",
+        "selectedIds": [
+          "figure-sdk@1.0.0"
+        ],
+        "contentBytes": 3240
+      },
+      "unsupportedExactRequirementProbe": {
+        "syntheticEngineeringProbe": true,
+        "blockingGaps": [
+          {
+            "id": "unavailable-c3-engineering-probe",
+            "version": "1.0.0",
+            "reason": "This exact capability ID is not available in this reviewed creation interface/catalog."
+          }
+        ],
+        "providerCreated": false
+      },
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "creationDisposition": "No source-grounded provider request authorized from metadata-only fixture."
+    },
+    {
+      "id": "C4",
+      "split": "held-out",
+      "status": "deferred-to-frozen-evaluation-PP113",
+      "sourceContextBasis": "No held-out body/abstract/asset read by this script.",
+      "payload": null,
+      "actualUsage": null,
+      "inferenceCalls": 0,
+      "reason": "Keep held-out sources out of retrieval-policy tuning. Freeze implementation/catalog/prompt hashes before admitting and measuring these sources in PP113."
+    }
+  ],
+  "limitations": [
+    "All12 frozen membership entries are recorded, but four held-out payload/usage measurements remain null until PP113 freezes and evaluates the policy.",
+    "Only C1/C2 saved excerpts and B1 attribution card are existing source contexts; other development entries measure explicitly labeled intake metadata only.",
+    "Counterfactual broad planning body holds current instructions/schema/model fixed; this is a size comparison, not a reconstructed historical network trace.",
+    "Byte/character counts include serialized instructions, input, response schema and included feedback; offline model identity is an explicit placeholder.",
+    "Token estimates/reservations are not measured provider usage or a financial quote; local tests and this report make zero model calls.",
+    "Generated SDK source remains necessary common code. Bounding retrieval does not promise every generation prompt becomes smaller."
+  ]
+}

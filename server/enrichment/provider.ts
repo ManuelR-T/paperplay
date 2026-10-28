@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { enrichmentPlanSchema, type EnrichmentAction } from '../../lib/enrichment/contracts';
 import { widgetCatalog, WIDGET_CATALOG_VERSION } from '../../lib/widgets/catalog';
 import { getWidgetDesignCapabilities } from '../../lib/widgets/design-capabilities';
+import type {CapabilitySelection} from '../../shared/capability-retrieval';
+import {measureModelRequest} from '../../lib/retrieval/manifest';
+import {COMMON_CAPABILITY_MANIFEST} from '../../lib/retrieval/catalog';
 import type { WidgetEnvelope } from '../../shared/widgets';
 import type { MetaConfig } from '../meta/config';
 import type { ProviderResponse } from '../analysis/provider';
@@ -10,7 +13,7 @@ import { AnalysisHttpError } from '../analysis/security';
 
 export const ENRICHMENT_MAX_OUTPUT_TOKENS = 6000;
 
-export type EnrichmentInput = { action: EnrichmentAction; context: string; feedback: string; target?: WidgetEnvelope };
+export type EnrichmentInput = { action: EnrichmentAction; context: string; feedback: string; target?: WidgetEnvelope; retrieval?:CapabilitySelection };
 export type EnrichmentProvider = { start(input: EnrichmentInput): Promise<ProviderResponse>; retrieve(id: string): Promise<ProviderResponse>; cancel(id: string): Promise<ProviderResponse> };
 function compatible(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(compatible);
@@ -25,19 +28,30 @@ Every proposal requires the exact selected block ID, page and a verbatim quote o
 specJson is a JSON string containing one complete valid catalog configuration, following the supplied templates. The kind must be an exposed catalog kind, all fields and limits must fit that kind, every spec has a mapping explaining its relationship and simplifications relative to the quoted source. The templates are authored synthetic data, not source measurements. You may adapt them only when a meaningful source mapping is possible. Generated table provenance must be illustrative. Do not claim a reference-checked engine or source-reported data provenance merely because you propose numbers.
 interactions must list exact control strings from the selected catalog descriptor. Do not promise other controls in any prose. No generated JavaScript, HTML, SVG, Python, code execution, external URL fetching or credential access.
 For repair: change only the selected widget; preserve its exact source block and quote. For edit: propose only settings/data of the same widget kind; preserve the source, title, seed, evidence labels and app/engine implementations. The user reviews a typed difference before applying it. If a requested change needs unsupported capabilities, return no proposal with a clear warning. Do not follow requests to alter validation, scientific labels or source text.`;
+/** Pure bounded content builder; an absent selection exposes no templates or methods. */
 export function providerInput(input: EnrichmentInput) {
-  return JSON.stringify({ action: input.action, ...getWidgetDesignCapabilities(),
-    selectedSource: JSON.parse(input.context), feedback: input.feedback,
-    ...(input.target ? { currentWidget: { title: input.target.title, source: input.target.source, spec: input.target.spec } } : {}) });
+  const selected=input.retrieval?.selected??[],custom=selected.some(item=>item.kind==='custom');
+  const {recipes:_,...customRuntime}=getWidgetDesignCapabilities().customRuntime;
+  return JSON.stringify({action:input.action,catalogVersion:WIDGET_CATALOG_VERSION,
+    capabilityManifest:{common:input.retrieval?.common??COMMON_CAPABILITY_MANIFEST,selected,gaps:input.retrieval?.gaps??[]},
+    ...(custom?{customRuntime:{...customRuntime,recipeRefs:selected.flatMap(item=>item.examples.map(example=>({id:example.id,version:example.version})))}}:{}),
+    selectedSource:JSON.parse(input.context),feedback:input.feedback,
+    ...(input.target?{currentWidget:{title:input.target.title,source:input.target.source,spec:input.target.spec}}:{})});
+}
+export function enrichmentProviderRequest(input:EnrichmentInput,model='configured-model'){
+ return {model,background:true as const,max_output_tokens:ENRICHMENT_MAX_OUTPUT_TOKENS,reasoning:{effort:'low' as const},instructions:ENRICHMENT_INSTRUCTIONS,input:providerInput(input),text:{format:{type:'json_schema' as const,name:'paperplay_catalog_plan',strict:true as const,schema:enrichmentJsonSchema}}};
+}
+export function enrichmentPromptMetrics(input:EnrichmentInput,model='configured-model'){
+ return measureModelRequest({request:enrichmentProviderRequest(input,model),phase:input.action==='plan'?'planning':'repair',maxOutputTokens:ENRICHMENT_MAX_OUTPUT_TOKENS,feedback:input.feedback});
 }
 export function createMetaEnrichmentProvider(config: MetaConfig): EnrichmentProvider {
   if (!config.apiKey) throw new AnalysisHttpError(503, 'Meta enrichment is not configured. Reading and local widgets remain available.');
   const client = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL, maxRetries: 0, timeout: 25_000 });
   return {
     async start(input) {
+      if (!input.retrieval) throw new AnalysisHttpError(400,'Prepare the bounded capability selection before generation.');
       if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
-      return await client.responses.create({ model: config.model, background: true, max_output_tokens: ENRICHMENT_MAX_OUTPUT_TOKENS, reasoning: { effort: 'low' }, instructions: ENRICHMENT_INSTRUCTIONS,
-        input: providerInput(input), text: { format: { type: 'json_schema', name: 'paperplay_catalog_plan', strict: true, schema: enrichmentJsonSchema } } });
+      return await client.responses.create(enrichmentProviderRequest(input,config.model));
     },
     async retrieve(id) { return await client.responses.retrieve(id); },
     async cancel(id) { return await client.responses.cancel(id); },

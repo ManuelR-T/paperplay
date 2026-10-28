@@ -1,0 +1,247 @@
+{
+  "issue": "PP111",
+  "date": "2026-10-28",
+  "profile": "Own new incognito tab; default-profile cookies untouched",
+  "application": "http://localhost:3001",
+  "transport": "Only /api/enrichment/* and /api/artifact-generation/* intercepted to local deterministic fake harness localhost:3003 with isolated incognito cookies. No real provider endpoint used.",
+  "initial": {
+    "requestsBeforeExplicitAction": 0,
+    "planningSelection": {
+      "capabilities": 1,
+      "examples": 0,
+      "contentBytes": 2885
+    },
+    "generationSelection": {
+      "capabilities": 1,
+      "examples": 2,
+      "contentBytes": 3240
+    }
+  },
+  "workflow": {
+    "maxGenerationAttempts": 2,
+    "attempt1": "Authored blank-after-action fixture failed actual browser engineering quality checks",
+    "automaticRepairAttempt2": "Authored dynamic-sequence fixture passed actual browser compiler/runtime/quality checks",
+    "sameSelectionHashAcrossGenerationAndRepair": true,
+    "planning": "One fake catalog planning job completed, receipt matched displayed selection",
+    "actualUsage": null,
+    "usageDisplay": "Unknown / not reported; distinct from conservative estimate and reservation",
+    "localRecheck": "Completed without another fake creation",
+    "localControls": "Opened actual isolated SDK preview and used Add/Remove; creation counters unchanged",
+    "reopen": "Both candidate histories restored without new creation"
+  },
+  "counts": {
+    "enrichmentCreates": 1,
+    "generationCreates": 2,
+    "retrieves": 3,
+    "cancels": 0,
+    "externalInferenceCalls": 0
+  },
+  "requests": [
+    {
+      "path": "/api/enrichment/session",
+      "reviewedHash": null,
+      "action": null,
+      "attempt": null
+    },
+    {
+      "path": "/api/artifact-generation/prepare",
+      "reviewedHash": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "action": null,
+      "attempt": null
+    },
+    {
+      "path": "/api/artifact-generation/start",
+      "reviewedHash": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "action": null,
+      "attempt": 1
+    },
+    {
+      "path": "/api/artifact-generation/status",
+      "reviewedHash": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "action": null,
+      "attempt": 1
+    },
+    {
+      "path": "/api/artifact-generation/start",
+      "reviewedHash": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "action": null,
+      "attempt": 2
+    },
+    {
+      "path": "/api/artifact-generation/status",
+      "reviewedHash": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "action": null,
+      "attempt": 2
+    },
+    {
+      "path": "/api/enrichment/session",
+      "reviewedHash": null,
+      "action": null,
+      "attempt": null
+    },
+    {
+      "path": "/api/enrichment/start",
+      "reviewedHash": "db53a2c22d066dd6cd93b8355d55cbf2826017a2469b5d7f89196bc95b6e01e4",
+      "action": "plan",
+      "attempt": null
+    },
+    {
+      "path": "/api/enrichment/status",
+      "reviewedHash": "db53a2c22d066dd6cd93b8355d55cbf2826017a2469b5d7f89196bc95b6e01e4",
+      "action": "plan",
+      "attempt": null
+    }
+  ],
+  "replies": [
+    {
+      "path": "/api/enrichment/session",
+      "http": 403,
+      "selectionSha256": null,
+      "metrics": null,
+      "phase": null,
+      "actualUsage": null
+    },
+    {
+      "path": "/api/artifact-generation/prepare",
+      "status": "prepared",
+      "http": 200,
+      "selectionSha256": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 2,
+        "contentCharacters": 3240,
+        "contentBytes": 3240
+      },
+      "phase": "generation",
+      "actualUsage": null
+    },
+    {
+      "path": "/api/artifact-generation/start",
+      "status": "queued",
+      "http": 200,
+      "selectionSha256": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 2,
+        "contentCharacters": 3240,
+        "contentBytes": 3240
+      },
+      "phase": "generation",
+      "actualUsage": null
+    },
+    {
+      "path": "/api/artifact-generation/status",
+      "status": "complete",
+      "http": 200,
+      "selectionSha256": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 2,
+        "contentCharacters": 3240,
+        "contentBytes": 3240
+      },
+      "phase": "generation",
+      "actualUsage": null
+    },
+    {
+      "path": "/api/artifact-generation/start",
+      "status": "queued",
+      "http": 200,
+      "selectionSha256": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 2,
+        "contentCharacters": 3240,
+        "contentBytes": 3240
+      },
+      "phase": "repair",
+      "actualUsage": null
+    },
+    {
+      "path": "/api/artifact-generation/status",
+      "status": "complete",
+      "http": 200,
+      "selectionSha256": "4030068f65a73d0e155aab4682e6913e49c401d24680268664122199f532bfef",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 2,
+        "contentCharacters": 3240,
+        "contentBytes": 3240
+      },
+      "phase": "repair",
+      "actualUsage": null
+    },
+    {
+      "path": "/api/enrichment/session",
+      "http": 200,
+      "selectionSha256": null,
+      "metrics": null,
+      "phase": null,
+      "actualUsage": null
+    },
+    {
+      "path": "/api/enrichment/start",
+      "status": "queued",
+      "http": 200,
+      "selectionSha256": "db53a2c22d066dd6cd93b8355d55cbf2826017a2469b5d7f89196bc95b6e01e4",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 0,
+        "contentCharacters": 2883,
+        "contentBytes": 2885
+      },
+      "phase": "planning",
+      "actualUsage": null
+    },
+    {
+      "path": "/api/enrichment/status",
+      "status": "complete",
+      "http": 200,
+      "selectionSha256": "db53a2c22d066dd6cd93b8355d55cbf2826017a2469b5d7f89196bc95b6e01e4",
+      "metrics": {
+        "selectedCapabilities": 1,
+        "selectedExamples": 0,
+        "contentCharacters": 2883,
+        "contentBytes": 2885
+      },
+      "phase": "planning",
+      "actualUsage": null
+    }
+  ],
+  "layout": {
+    "desktop": {
+      "pageClientWidth": 1280,
+      "pageScrollWidth": 1280,
+      "panelClientWidth": 594,
+      "panelScrollWidth": 594,
+      "minimumButtonHeightPx": 44
+    },
+    "mobile": {
+      "viewportWidth": 320,
+      "pageClientWidth": 320,
+      "pageScrollWidth": 320,
+      "planningPanelClientWidth": 250,
+      "planningPanelScrollWidth": 250,
+      "generationPanelClientWidth": 250,
+      "generationPanelScrollWidth": 250,
+      "minimumButtonHeightPx": 44,
+      "outsideInputOverflows": 0
+    }
+  },
+  "limitations": [
+    "These are deterministic fake-provider responses, not actual Muse quality or scientific validation.",
+    "Initial fake session request returned403 because test transport forwarded cross-port Fetch Metadata. Parent corrected only temporary harness headers; counts remained zero until retry.",
+    "No optional held-job cancellation matrix repeated; parent reports38 automated cancel/reopen tests.",
+    "No generated candidate or planned widget was accepted into the default reader. Incognito caches remain isolated; fake-only fetch routing remains installed in this owned tab to prevent accidental real calls."
+  ],
+  "screenshots": [
+    {
+      "path": "data/retrieval-browser-desktop.png",
+      "sha256": "959f0b86deb1ea69a67505b94c91c7957e24a7ba95f107e0d0c316d4ffa821f4"
+    },
+    {
+      "path": "data/retrieval-browser-mobile.png",
+      "sha256": "96bb0df1b892abd669a5c5455798732334eaed4b6a2d2ed15470328c23634d47"
+    }
+  ]
+}
