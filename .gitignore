@@ -36,3 +36,5 @@ public/artifact-runtime.worker.mjs
 
 public/artifact-*.worker.mjs
 public/artifact-workers.json
+
+/public/discrete.worker.mjs

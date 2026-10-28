@@ -1,0 +1,73 @@
+{
+  "issue": "PP-104",
+  "date": "2026-10-28",
+  "browser": "Native T3 Chromium, owned localhost:3001 tab",
+  "checks": {
+    "typecheck": "passed",
+    "tests": 555,
+    "discreteTests": 24,
+    "productionBuild": "passed"
+  },
+  "observations": [
+    {
+      "check": "Actual disposable worker",
+      "result": "discrete.worker.mjs?v=1.0.0 executes all three examples without provider creation requests."
+    },
+    {
+      "check": "DAG and editable variable length",
+      "result": "Five vertices: 29 frames, 27 declared operations, output A/B/C/E/D. Adding isolated F via editor recomputes six-vertex trace: 32 frames, 30 operations."
+    },
+    {
+      "check": "Cycle and downstream tail",
+      "result": "Completed cycle-blocked-remainder, 16 frames/14 operations; output A, blocked B/C/D/E explicitly distinguished from actual cycle membership."
+    },
+    {
+      "check": "Growing union-find",
+      "result": "Default 11 commands: 57 frames, 53 operations, five nodes under root A. Edited 14 commands: 74 frames, 70 operations, six nodes under root A, historical find(F)=A."
+    },
+    {
+      "check": "Selection creation/rewind/undo",
+      "result": "Selected D at final frame, Home to frame 0 removes unavailable D and leaves zero rows. Undo restores a coherent prior frame 28 and D, with no alerts."
+    },
+    {
+      "check": "Source focus",
+      "result": "Read algorithm source focuses exact authored algorithm excerpt. Original-paper claims are not fabricated."
+    },
+    {
+      "check": "Portable study reopening",
+      "bytes": 6957,
+      "result": "Central Files & source importer restores union-find, frame 56, selected stable ID D and historical answers with no alerts."
+    },
+    {
+      "check": "Invalid edited precondition",
+      "result": "find UNKNOWN fails before execution, preserves old valid trace labeled read-only; corrected variable-length command list runs successfully."
+    },
+    {
+      "check": "Active worker cancellation",
+      "method": "Temporary native Worker subclass intercepts real started event and clicks actual Stop computation button; globals restored afterwards.",
+      "created": 1,
+      "started": 1,
+      "completeReceived": 0,
+      "terminated": 1,
+      "result": "Previous valid trace retained with explicit cancellation. No claim of measured CPU execution duration."
+    },
+    {
+      "check": "Missing worker fallback",
+      "method": "Temporarily removed Worker constructor before opening a fresh example, then restored it.",
+      "result": "Explicit unavailable execution; conceptual authored pseudocode, source and inputs remain. No computed-frame highlights or main-thread fallback."
+    },
+    {
+      "check": "Operation ceiling in imported study",
+      "result": "maxOperations=1: limit-reached/incomplete, five retained frames, one operation, one completed command. No invented final answer or cycle outcome."
+    },
+    {
+      "check": "Responsive and enlarged text",
+      "result": "1280 px desktop; 320 px mobile with document width 320, dialog scroll/client width both 286. Scoped text increased from 16 to 32 CSS px stays contained; wide diagrams/tables scroll locally. This is text-enlargement simulation, not OS zoom."
+    }
+  ],
+  "screenshots": [
+    "data/discrete-browser/parent-forest-desktop.png",
+    "data/discrete-browser/collections-mobile-200.png"
+  ],
+  "scope": "Finite named trusted algorithms; no paid inference, held-out corpus use, human evaluation, general algorithm language or release work."
+}

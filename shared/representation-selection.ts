@@ -13,6 +13,12 @@ export function representationInputRevision(plan:RepresentationPlan){
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection,resolvedAssets?:readonly ScientificAsset[]):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='discrete-trace'){
+   if(selection.scopeId!=='discrete')return false;
+   if(selection.kind==='time')return selection.mode==='authored-step'&&selection.frameId===null&&selection.unit==='frame'&&Number.isInteger(selection.value)&&selection.value>=0&&selection.value<view.discrete.request.limits.maxFrames;
+   if(selection.kind!=='entity')return false;const request=view.discrete.request;
+   return request.model==='kahn-topological'?request.graph.nodes.some(n=>n.id===selection.entityId)||request.graph.edges.some(e=>e.id===selection.entityId):request.commands.some(c=>c.kind==='make'&&c.element.id===selection.entityId);
+ }
  if(view.kind==='molecular-view'){
    if(selection.kind!=='entity'||selection.scopeId!=='molecular')return false;
    const asset=resolvedAssets?.find(asset=>asset.id===view.molecule.assetId)??plan.assetManifests?.find(asset=>asset.id===view.molecule.assetId);
@@ -61,7 +67,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='molecular-view'&&selection.kind==='entity')view.molecule.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='discrete-trace'&&(selection.kind==='entity'||selection.kind==='time'))view.discrete.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='molecular-view'&&selection.kind==='entity')view.molecule.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='physical-field'&&(selection.kind==='time'||selection.kind==='region'))view.field.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='stochastic'&&selection.kind==='time')view.stochastic.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='dynamics'&&selection.kind==='time')view.dynamics.anchorIds.forEach(id=>ids.add(id));

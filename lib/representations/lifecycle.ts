@@ -1,3 +1,4 @@
+import type { DiscreteResult } from '../../shared/discrete-algorithms';
 import { validateMoleculeView } from '../../shared/molecular-geometry';
 import { isRepresentationSelection } from '../../shared/representation-selection';
 import type { FieldResult } from '../../shared/physical-fields';
@@ -21,7 +22,7 @@ export type RepresentationFailure = { status:'invalid'|'unsupported'|'missing-da
 export type RepresentationOutcome<T> = { status:'ready'; value:T } | RepresentationFailure;
 export type RepresentationArtifact = { format:'paperplay-representation-artifact'; schemaVersion:1; plan:RepresentationPlan; assets?:readonly ScientificAsset[] };
 export type RepresentationView = RepresentationPlan['views'][number];
-export type ExecutedRepresentationView = (Extract<RepresentationView,{kind:'physical-field'}> & {result:FieldResult}) | (Extract<RepresentationView,{kind:'stochastic'}> & {result:StochasticResult}) | (Extract<RepresentationView,{kind:'dynamics'}> & {result:DynamicsResult}) | { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'|'composed-scene'|'spatial-view'|'reasoning-guide'|'molecular-view'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity} | {kind:'statistical-chart';id:string;model:ChartModel};
+export type ExecutedRepresentationView = (Extract<RepresentationView,{kind:'discrete-trace'}> & {result:DiscreteResult}) | (Extract<RepresentationView,{kind:'physical-field'}> & {result:FieldResult}) | (Extract<RepresentationView,{kind:'stochastic'}> & {result:StochasticResult}) | (Extract<RepresentationView,{kind:'dynamics'}> & {result:DynamicsResult}) | { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'|'composed-scene'|'spatial-view'|'reasoning-guide'|'molecular-view'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity} | {kind:'statistical-chart';id:string;model:ChartModel};
 export type RepresentationRun = { artifact:RepresentationArtifact; views:ExecutedRepresentationView[]; evidence:{requested:RepresentationPlan['requestedEvidence']; verified:false} };
 
 export function representationCapabilities() { return representationRegistry.list().map(({id,version})=>({id,version})); }

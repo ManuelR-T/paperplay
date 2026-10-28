@@ -787,10 +787,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 59,
         "url": "https://github.com/ManuelR-T/paperplay/issues/59"
+      },
+      "evidence": {
+        "document": "docs/discrete-algorithms.md",
+        "checks": "TypeScript, 555 deterministic tests (24 discrete), production build",
+        "browser": "Native Chromium: actual Kahn/union-find worker, editable variable-length inputs, blocked-tail semantics, rewind/undo, source focus, selected-step study roundtrip, real-worker termination, conceptual fallback, bounded prefix and 320 px enlarged text",
+        "limitations": "Two named finite trusted algorithms; authored pseudocode, no original-paper benchmark or complexity proof. No arbitrary collection DSL, paid inference or human evaluation."
       }
     },
     {
