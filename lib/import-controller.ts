@@ -1,8 +1,11 @@
+import { ExtractionEvidenceError, validateExtractionEvidenceManifest } from './extraction/model';
+import type { ExtractionEvidenceManifest } from '../shared/extraction-evidence';
 import { ANALYSIS_PIPELINE_VERSION, type AnalysisReply, type ImportedSource, type ImportRecord, type ImportStage } from '../shared/import-types';
 import { prepareAnalysisContext, validateAnalysisResult } from './analysis';
 import { type ImportStorage } from './import-storage';
 
 export type ImportControllerState = {
+  failureExtraction?:{manifest:ExtractionEvidenceManifest;original:Blob;name:string};
   records: ImportRecord[]; currentId: string | null; stage: ImportStage | null;
   busy: boolean; error: string | null; warning: string | null; progress: { page: number; total: number } | null;
 };
@@ -75,7 +78,7 @@ export class ImportController {
     this.abortController = new AbortController();
     this.activeId = id;
     const operation = ++this.generation;
-    this.update({ busy: true, stage, error: null, progress: null });
+    this.update({ busy: true, stage, error: null, progress: null, failureExtraction:undefined });
     return { operation, signal: this.abortController.signal };
   }
   private active(operation: number) { return !this.disposed && operation === this.generation; }
@@ -117,6 +120,15 @@ export class ImportController {
       const existing = this.record(extracted.source.id);
       // The original source record is immutable input; a generated result has its own anchored document copy.
       if (existing?.source.sourceVersion === extracted.source.sourceVersion && existing.pipelineVersion === ANALYSIS_PIPELINE_VERSION) {
+        // A repeat import may refresh extraction without repeating an accepted or uncertain model job.
+        if(extracted.extractionEvidence){
+          const extractionEvidence=await validateExtractionEvidenceManifest(extracted.extractionEvidence,existing.source);
+          if(!this.active(operation))return;
+          await this.save({...existing,extractionEvidence,
+            ...(extracted.original?{original:extracted.original,originalName:extracted.originalName}:{}),
+            ...(extracted.originalUrl?{originalUrl:extracted.originalUrl}:{}),updatedAt:this.now()});
+          if(!this.active(operation))return;
+        }
         this.select(existing.id);
         if (existing.analysis && existing.stage === 'complete') { this.update({ stage: 'complete' }); return existing.id; }
         if (existing.job || existing.stage === 'uncertain' || existing.stage === 'submitting') {
@@ -137,6 +149,7 @@ export class ImportController {
       await this.analyze(record.id);
     } catch (error) {
       if (!this.active(operation)) return;
+      if(error instanceof ExtractionEvidenceError)this.update({failureExtraction:{manifest:error.extractionEvidence,original:error.original,name:error.originalName}});
       if (aborted(error)) this.update({ stage: 'cancelled' });
       else {
         const record = this.activeId ? this.record(this.activeId) : undefined;

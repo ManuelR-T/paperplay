@@ -1,12 +1,14 @@
 import * as cheerio from 'cheerio';
 import { cleanText, normalizeSource, paragraphBlocks, type RawSourceBlock } from './normalize';
 import type { SourceDocument } from '../../shared/schema';
+import type {ExtractionEvidenceManifest} from '../../shared/extraction-evidence';
+import {extractHtmlEvidence} from '../extraction/html';
 
 const ID_PATTERN = /^(?:\d{4}\.\d{4,5}|[a-z][a-z.-]*(?:\.[A-Z]{2})?\/\d{7})(?:v[1-9]\d{0,2})?$/;
 const HOSTS = new Set(['arxiv.org', 'export.arxiv.org']);
 const MAX_HTML_BYTES = 2_000_000;
 const MAX_ARXIV_PDF_BYTES = 3_000_000;
-export type ArxivPayload = { kind: 'html'; source: SourceDocument; originalUrl: string; arxivId: string }
+export type ArxivPayload = { kind: 'html'; source: SourceDocument; originalUrl: string; arxivId: string;extractionEvidence?:ExtractionEvidenceManifest }
   | { kind: 'pdf'; pdfBase64: string; originalUrl: string; arxivId: string; title?: string; authors?: string[] };
 
 export function parseArxivId(value: string): string {
@@ -111,6 +113,13 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
     warnings: ['Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.', 'Available original image asset locations are retained; illustrations without usable image assets keep the original article reference. Inline mathematical notation may remain TeX text; check the original article for exact layout.'] });
 }
 
+/** Original structural evidence remains separate from the legacy normalized source block union. */
+export async function parseArxivHtmlEvidenced(html:string,arxivId:string,url:string,options:{originalBytes?:Uint8Array}={}){
+ const source=await parseArxivHtml(html,arxivId,url);
+ const extractionEvidence=await extractHtmlEvidence(html,source,{url,originalBytes:options.originalBytes});
+ return {source,extractionEvidence};
+}
+
 export async function resolveArxiv(input: string, options: { signal?: AbortSignal; fetcher?: typeof fetch } = {}): Promise<ArxivPayload> {
   let id = parseArxivId(input); const fetcher = options.fetcher ?? fetch;
   let title: string | undefined; let authors: string[] | undefined;
@@ -129,7 +138,8 @@ export async function resolveArxiv(input: string, options: { signal?: AbortSigna
     const response = await fetchArxivResource(htmlUrl, MAX_HTML_BYTES, fetcher, options.signal);
     if (parseArxivId(response.url) !== id) throw new Error('arXiv redirected to a different paper version.');
     if (!(response.response.headers.get('content-type') || '').includes('html')) throw new Error('Structured HTML unavailable.');
-    return { kind: 'html', source: await parseArxivHtml(new TextDecoder().decode(response.bytes), id, response.url), originalUrl: response.url, arxivId: id };
+    const html=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(response.bytes);
+    return { kind: 'html', ...await parseArxivHtmlEvidenced(html,id,response.url,{originalBytes:response.bytes}), originalUrl: response.url, arxivId: id };
   } catch (error) {
     if (options.signal?.aborted) throw error;
     htmlFailure = error instanceof Error ? error.message : 'Structured HTML unavailable.';

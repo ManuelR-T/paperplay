@@ -1,5 +1,7 @@
 'use client';
 
+import type { ExtractionEvidenceManifest } from '@/shared/extraction-evidence';
+
 import { useState } from 'react';
 import { AlertCircle, Check, FilePlus2, LoaderCircle, PauseCircle, RefreshCw, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -11,7 +13,7 @@ const stageLabels: Record<ImportStage, string> = {
   extracting: 'Extracting the document', preparing: 'Preparing source passages', ready: 'Source ready to read',
   submitting: 'Submitting to Meta', queued: 'Queued by Meta', analyzing: 'Meta is planning figures',
   validating: 'Checking source links and figures', complete: 'Reading experience ready', cancelled: 'Analysis cancelled',
-  failed: 'Analysis needs attention', uncertain: 'Submission outcome unknown', expired: 'Analysis reference expired',
+  failed: 'Import or analysis needs attention', uncertain: 'Submission outcome unknown', expired: 'Analysis reference expired',
 };
 const steps = [
   { label: 'Extract source', stages: ['extracting'] },
@@ -59,7 +61,8 @@ export function ImportDialog({ open, onOpenChange, busy, ...actions }: Actions &
   </DialogContent></Dialog>;
 }
 
-export function ImportProgress({ stage, record, busy, error, warning, progress, cancel, resume, analyze }: {
+export function ImportProgress({ stage, record, busy, error, warning, progress, cancel, resume, analyze, failureExtraction }: {
+  failureExtraction?:{manifest:ExtractionEvidenceManifest;original:Blob;name:string};
   stage: ImportStage | null; record: ImportRecord | null; busy: boolean; error: string | null; warning: string | null; progress?: { page: number; total: number } | null;
   cancel: () => Promise<void>; resume: (id?: string) => Promise<void>; analyze: (id?: string) => Promise<void>;
 }) {
@@ -78,6 +81,7 @@ export function ImportProgress({ stage, record, busy, error, warning, progress, 
     {(stage === 'cancelled' || stage === 'expired') && <p>{busy ? 'Waiting for cancellation confirmation. ' : ''}{record ? 'The source remains available to read. ' : ''}No new analysis is started automatically.</p>}
     {error && <p role="alert" className="progress-error">{error}</p>}
     {warning && <p role="status" className="progress-warning">{warning}</p>}
+    {failureExtraction&&<section aria-label="Unparsed original retained"><p>No readable source was invented for {failureExtraction.name}. The original bytes and extraction-loss record remain available in this session.</p><div className="reader-choice"><Button variant="outline" onClick={()=>{const url=URL.createObjectURL(failureExtraction.original),link=document.createElement('a');link.href=url;link.download=failureExtraction.name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}>Download unparsed original</Button><Button variant="outline" onClick={()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(failureExtraction.manifest,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='paperplay-extraction-loss.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}}>Download extraction loss record</Button></div></section>}
     <div className="progress-actions">
       {busy && <Button variant="outline" size="sm" disabled={stage === 'cancelled'} onClick={() => void cancel().catch(() => {})}><X size={15}/>Cancel</Button>}
       {!busy && resumeAllowed && <Button variant="outline" size="sm" onClick={() => void resume(record?.id).catch(() => {})}><RefreshCw size={15}/>Resume existing analysis</Button>}

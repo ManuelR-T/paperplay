@@ -17,6 +17,7 @@ import { GeneratedFigureView } from './figures/generated-figure';
 export function ImportedPaperReader({ record, remove, busy, sources, openSource }: { record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [evidenceRecoveryError,setEvidenceRecoveryError]=useState('');
   useEffect(() => {
     if (!record.original) { setBlobUrl(null); return; }
     const url = URL.createObjectURL(record.original); setBlobUrl(url);
@@ -48,7 +49,8 @@ export function ImportedPaperReader({ record, remove, busy, sources, openSource 
       </div>;
     })}</div>
     {anchored.some(item => !item.anchor) && <p className="figure-error" role="alert">An addition has no valid source location. It has not been inserted into an unrelated passage.</p>}
-    <ResearchWorkbench source={source} original={record.original} originalName={record.originalName}/>
+    {record.extractionEvidenceRecovery&&<section aria-label="Incompatible extraction evidence retained"><p role="status">{record.extractionEvidenceRecovery.reason}</p><Button variant="outline" onClick={()=>{try{const url=URL.createObjectURL(new Blob([JSON.stringify(record.extractionEvidenceRecovery!.original,null,2)],{type:'application/json'})),link=document.createElement('a');link.href=url;link.download='paperplay-original-extraction-evidence.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch{setEvidenceRecoveryError('The original extraction evidence could not be serialized. Its local record remains unchanged.');}}}>Download original extraction evidence</Button>{evidenceRecoveryError&&<p role="alert">{evidenceRecoveryError}</p>}</section>}
+    <ResearchWorkbench source={source} original={record.original} originalName={record.originalName} originalUrl={record.originalUrl} extractionEvidence={record.extractionEvidence}/>
     <aside className="source-note attribution-note" id="source-attribution"><FileText size={20}/><div><p>{record.originalName ?? 'Paper saved in this browser'}</p><Button variant="outline" size="sm" disabled={busy} onClick={() => setDeleteOpen(value => !value)}><Trash2 size={15}/>Remove local paper</Button>{deleteOpen && <div className="delete-confirmation"><p>Remove this source, original file, analyses and cached widget settings from this browser? Personal notes remain as unresolved notebook records and can be removed separately.</p><Button variant="destructive" size="sm" disabled={busy} onClick={() => void remove(record.id).catch(() => {})}>Remove paper</Button><Button variant="ghost" size="sm" onClick={() => setDeleteOpen(false)}>Keep it</Button></div>}</div></aside>
     <footer className="article-footer"><span>Source first. Explore with context.</span><span>paperplay / research workspace</span></footer>
   </article>;

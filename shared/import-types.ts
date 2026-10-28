@@ -1,8 +1,9 @@
+import type { ExtractionEvidenceManifest } from './extraction-evidence';
 import type { FigureSpecification, SourceDocument } from './schema';
 
 export const ANALYSIS_PIPELINE_VERSION = 'm2-v1' as const;
 export type ImportStage = 'extracting' | 'preparing' | 'ready' | 'submitting' | 'queued' | 'analyzing' | 'validating' | 'complete' | 'cancelled' | 'failed' | 'uncertain' | 'expired';
-export type ImportedSource = { source: SourceDocument; original?: Blob; originalName?: string; originalUrl?: string };
+export type ImportedSource = { source: SourceDocument; original?: Blob; originalName?: string; originalUrl?: string; extractionEvidence?:ExtractionEvidenceManifest; extractionEvidenceRecovery?:{original:unknown;reason:string} };
 export type AnalysisJob = {
   token: string; model: string; sourceId: string; sourceVersion: string; createdAt: number;
 };

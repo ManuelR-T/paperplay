@@ -1,0 +1,116 @@
+{
+  "issue": "PP107",
+  "date": "2026-10-28",
+  "application": "http://localhost:3001",
+  "browser": "Native collaborative Chromium, own new tab, default profile",
+  "scope": "Prepared priority-search-trees normalized-source fallback; UI corrections, recovery, original source-block return and responsive layout. Actual PDF/HTML/supplement retrieval checked separately by parent/other agents.",
+  "sourceId": "priority-search-trees",
+  "inventory": {
+    "entries": 33,
+    "text": 24,
+    "equations": 8,
+    "figures": 1,
+    "tables": 0,
+    "supplements": 0,
+    "coverage": "partial",
+    "fallbackIdentity": "normalized SourceDocument JSON, explicitly not original PDF/HTML"
+  },
+  "checks": {
+    "save": {
+      "revision": 1,
+      "derivedVisible": true,
+      "retainedOriginal": "Abstract",
+      "paperBodyMutated": false
+    },
+    "annotationsExport": {
+      "bytes": 998,
+      "format": "paperplay-extraction-corrections",
+      "topLevelKeys": [
+        "format",
+        "schemaVersion",
+        "baseSource",
+        "baseManifestSha256",
+        "revision",
+        "parentRevision",
+        "corrections",
+        "overlaySha256"
+      ],
+      "rawPdfOrAttachmentsIncluded": false
+    },
+    "revert": {
+      "revision": 2,
+      "derivedResetToOriginal": true
+    },
+    "undoRevert": {
+      "revision": 3,
+      "previousDerivedRestored": true
+    },
+    "reload": {
+      "restoredRevision": 3,
+      "derivedRestored": true,
+      "apiRequests": [
+        "/api/health"
+      ]
+    },
+    "rejectedImport": {
+      "case": "Altered source fingerprint without valid overlay hash",
+      "keptRevision": 3,
+      "previousDerivedRetained": true,
+      "originalImportDownloadAvailable": true
+    },
+    "sourceReturn": {
+      "focusedElementId": "source-priority-search-trees-g-abstract",
+      "visibleAt320With32pxText": true
+    },
+    "keyboard": {
+      "TabFocused": "Tables (0)",
+      "focusVisible": true,
+      "outline": "solid",
+      "EnterActivatedFilter": true,
+      "emptyInventoryDoesNotClaimAbsentSourceMaterial": true
+    },
+    "desktop": {
+      "viewportWidth": 1280,
+      "pageScrollWidth": 1280
+    },
+    "mobile": {
+      "viewportWidth": 320,
+      "fontPx": 16,
+      "pageScrollWidth": 320,
+      "panelClientWidth": 250,
+      "panelScrollWidth": 250
+    },
+    "enlargedText": {
+      "viewportWidth": 320,
+      "computedPanelTextPx": 32,
+      "pageScrollWidth": 320,
+      "panelClientWidth": 250,
+      "panelScrollWidth": 250,
+      "minimumButtonHeightPx": 83.1953125,
+      "internallyClippedFileInputFilename": true
+    },
+    "network": {
+      "fetchCallsDuringSaveExportRevertUndoAndSourceReturn": 0,
+      "supplementRequestsBeforeExplicitRetrieval": 0,
+      "paidModelCalls": 0
+    },
+    "cleanup": {
+      "baselineCorrectionRecords": 0,
+      "removedOnlyCreatedOverlayByExactManifestAndCorrectionId": true,
+      "localPapersCreated": 0,
+      "reloadedOverlayRevision": 0,
+      "qaNotePresentAfterReload": false
+    }
+  },
+  "screenshots": [
+    {
+      "path": "data/extraction-browser-desktop.png",
+      "sha256": "33e2249f04fcc764c9c61fe9a5beecd178d60f2d323efbba47f4489334b919c3"
+    },
+    {
+      "path": "data/extraction-browser-mobile-enlarged.png",
+      "sha256": "d94fa0fe39f2fdf089b4e8c0ac2f98b89f38b6e18a1ca966a4e5078204ac7341"
+    }
+  ],
+  "codeFix": "Only requested wording changed from entry limit reached to retention limit reached; parent rebuild required for that label."
+}

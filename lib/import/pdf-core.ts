@@ -1,65 +1,42 @@
-import type { ImportedSource } from '../../shared/import-types';
-import type { SourceDocument } from '../../shared/schema';
-import { reconstructPdfText } from './reconstruct';
-import { abortIfNeeded, MAX_PDF_BYTES, MAX_PDF_PAGES, normalizeSource, pdfItemsToText, sha256, type PdfTextItem, type RawSourceBlock } from './normalize';
-
-type PdfLibrary = Pick<typeof import('pdfjs-dist'), 'getDocument'>;
-export type PdfImportOptions = { name?: string; signal?: AbortSignal; onProgress?: (page: number, total: number) => void; title?: string; authors?: string[]; sourceUrl?: string };
-
-export async function extractPdfWithLibrary(file: Blob, options: PdfImportOptions, library: PdfLibrary, resources: { cMapUrl?: string; standardFontDataUrl?: string; wasmUrl?: string } = {}): Promise<ImportedSource> {
-  abortIfNeeded(options.signal);
-  if (file.size > MAX_PDF_BYTES) throw new Error('This PDF is larger than the 10 MB import limit. Choose a smaller document.');
-  if (file.size < 8) throw new Error('The file is empty or is not a readable PDF.');
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  if (!new TextDecoder().decode(bytes.subarray(0, 1024)).includes('%PDF-')) throw new Error('The selected file is not a PDF. Choose a PDF document.');
-  const contentHash = await sha256(bytes); abortIfNeeded(options.signal);
-  const task = library.getDocument({ data: bytes, useSystemFonts: true, cMapPacked: true, ...resources });
-  const abort = () => { void task.destroy().catch(() => {}); };
-  options.signal?.addEventListener('abort', abort, { once: true });
-  try {
-    const pdf = await task.promise;
-    if (pdf.numPages > MAX_PDF_PAGES) throw new Error('This PDF has more than 50 pages. Import a shorter excerpt; pages were not silently omitted.');
-    const blocks: RawSourceBlock[] = [];
-    const warnings = ['PDF extraction preserves text and page references but may lose equation notation, figures, tables and exact reading order. Use the original PDF to verify them.'];
-    let weakPages = 0;
-    const reconstructed: NonNullable<SourceDocument['reconstruction']>['pages'] = [];
-    const pages: Array<{ text: string; page: number }> = [];
-    for (let pageIndex = 1; pageIndex <= pdf.numPages; pageIndex++) {
-      abortIfNeeded(options.signal);
-      const page = await pdf.getPage(pageIndex);
-      const content = await page.getTextContent(); abortIfNeeded(options.signal);
-      const items = content.items.filter((item): item is typeof item & PdfTextItem => 'str' in item);
-      const viewport = page.getViewport({ scale: 1 });
-      const extracted = pdfItemsToText(items, viewport.width);
-      if (extracted.columnsReordered) warnings.push('Strong two-column regions were reordered geometrically, keeping full-width separators and physical page references. The repair is heuristic; compare the original page for equations, captions and reading order.');
-      else if (extracted.possibleColumns) warnings.push('Possible multi-column text was detected, but layout confidence was insufficient for repair. Compare with the original page.');
-      if (extracted.text.trim().length < 30) weakPages++;
-      const regions = extracted.regions.slice(0, 500).map((line, index) => ({ id: `pdf-p${pageIndex}-r${index+1}`, text: line.text.slice(0,5000), x: line.x, y: line.y, width: Math.max(0,line.right-line.x), height: line.height }));
-      reconstructed.push({ page: pageIndex, width: viewport.width, ...(Number.isFinite(viewport.height)&&viewport.height>0?{height:viewport.height}:{}), regions, coordinatesComplete: extracted.regions.length <= 500 && extracted.regions.every(line=>line.text.length<=5000) });
-      pages.push({ text: extracted.text, page: pageIndex });
-      page.cleanup(); options.onProgress?.(pageIndex, pdf.numPages); abortIfNeeded(options.signal);
-    }
-    const witness = pages.map(page => page.text).join('\n');
-    for (const item of pages) blocks.push(...reconstructPdfText(item.text, item.page, reconstructed[item.page-1].regions, witness));
-    if (blocks.reduce((sum, block) => sum + ('text' in block ? block.text.length : 0), 0) < 200) throw new Error('This PDF has too little extractable text. It may be scanned or image-only; OCR is not supported. Import a text PDF.');
-    if (weakPages) warnings.push(`${weakPages} page(s) contained little or no text. Their images, equations or scans have not been reconstructed.`);
-    let metadata: Record<string, unknown> = {};
-    try { metadata = (await pdf.getMetadata()).info as Record<string, unknown>; } catch { /* Source text remains usable when metadata is unavailable. */ }
-    const fallbackName = options.name?.replace(/\.pdf$/i, '') || 'Imported research paper';
-    const title = options.title || (typeof metadata.Title === 'string' && metadata.Title.trim() ? metadata.Title : fallbackName);
-    const authors = options.authors || (typeof metadata.Author === 'string' && metadata.Author.trim() ? [metadata.Author] : undefined);
-    abortIfNeeded(options.signal);
-    warnings.push('Source-v3 paragraph/heading reconstruction is heuristic. Raw fragments, operations and page-region coordinates are retained for inspection; equations and images are not invented.');
-    const source = await normalizeSource({ kind: 'pdf', title, authors, url: options.sourceUrl, pageCount: pdf.numPages, blocks, warnings, identity: contentHash, reconstruction: { version: 'pdf-layout-v3', pages: reconstructed } });
-    abortIfNeeded(options.signal);
-    return { source, original: file, originalName: options.name || 'paper.pdf', ...(options.sourceUrl ? { originalUrl: options.sourceUrl } : {}) };
-  } catch (error) {
-    abortIfNeeded(options.signal);
-    if (error instanceof Error && error.name === 'PasswordException') throw new Error('This PDF is encrypted or password-protected. Import an unlocked copy.');
-    if (error instanceof Error && ['InvalidPDFException', 'MissingPDFException', 'UnknownErrorException'].includes(error.name)) throw new Error('The PDF could not be read. It may be corrupt or unsupported; try an unlocked text PDF.');
-    throw error;
-  } finally {
-    options.signal?.removeEventListener('abort', abort);
-    await task.destroy().catch(() => {});
+import type {ImportedSource} from '../../shared/import-types';
+import type {SourceDocument} from '../../shared/schema';
+import type {ExtractionEvidenceEntry,ExtractionOriginal,PdfCoordinateFrame} from '../../shared/extraction-evidence';
+import {createExtractionManifest,ExtractionEvidenceError} from '../extraction/model';
+import {optionalPdfInventory,readPdfCoordinateFrame,boundedPdfWork} from '../extraction/pdf';
+import {reconstructPdfText} from './reconstruct';
+import {abortIfNeeded,MAX_PDF_BYTES,MAX_PDF_PAGES,normalizeSource,pdfItemsToText,sha256,type PdfTextItem,type RawSourceBlock} from './normalize';
+type PdfLibrary=Pick<typeof import('pdfjs-dist'),'getDocument'>;
+export type PdfImportOptions={name?:string;signal?:AbortSignal;onProgress?:(page:number,total:number)=>void;title?:string;authors?:string[];sourceUrl?:string};
+export async function extractPdfWithLibrary(file:Blob,options:PdfImportOptions,library:PdfLibrary,resources:{cMapUrl?:string;standardFontDataUrl?:string;wasmUrl?:string}={}):Promise<ImportedSource>{
+ abortIfNeeded(options.signal);if(file.size>MAX_PDF_BYTES)throw Error('This PDF is larger than the 10 MB import limit. Choose a smaller document.');if(file.size<8)throw Error('The file is empty or is not a readable PDF.');const bytes=new Uint8Array(await file.arrayBuffer());if(!new TextDecoder().decode(bytes.subarray(0,1024)).includes('%PDF-'))throw Error('The selected file is not a PDF. Choose a PDF document.');const contentHash=await sha256(bytes);abortIfNeeded(options.signal);
+ const original:ExtractionOriginal={sha256:contentHash,byteLength:file.size,mediaType:'application/pdf',url:options.sourceUrl??null,name:options.name??'paper.pdf'},inventory:ExtractionEvidenceEntry[]=[],pageInfo=new Map<number,{frame:PdfCoordinateFrame|null;complete:boolean}>();let inventoryTruncated=false;
+ const task=library.getDocument({data:bytes,useSystemFonts:true,cMapPacked:true,...resources});const abort=()=>{void task.destroy().catch(()=>{});};options.signal?.addEventListener('abort',abort,{once:true});
+ const pdfLocator=(page:number,regions:NonNullable<SourceDocument['reconstruction']>['pages'][number]['regions']=[],complete=false):Extract<ExtractionEvidenceEntry['locator'],{kind:'pdf'}>=>({kind:'pdf',page,frame:pageInfo.get(page)?.frame??null,regionIds:regions.slice(0,64).map(r=>r.id),regions:regions.slice(0,64).map(r=>({x:r.x,y:r.y,width:r.width,height:r.height,basis:'text-baseline-heuristic'})),coordinateCompleteness:!pageInfo.get(page)?.frame?'unknown':complete&&regions.length>0&&regions.length<=64?'complete':'partial',originalPageAvailable:true});
+ try{
+  const deadline=Date.now()+30000,remaining=()=>Math.max(1,deadline-Date.now()),pdf=await boundedPdfWork(()=>task.promise,options.signal,remaining());if(pdf.numPages>MAX_PDF_PAGES)throw Error('This PDF has more than 50 pages. Import a shorter excerpt; pages were not silently omitted.');
+  const blocks:RawSourceBlock[]=[],warnings=['PDF extraction preserves text and page references but may lose equation notation, figures, tables and exact reading order. Use the original PDF to verify them.'];let weakPages=0,annotationCalls=0,supplementCount=0;
+  const reconstructed:NonNullable<SourceDocument['reconstruction']>['pages']=[],pages:{text:string;page:number}[]=[];
+  for(let pageIndex=1;pageIndex<=pdf.numPages;pageIndex++){
+   abortIfNeeded(options.signal);const page=await boundedPdfWork(()=>pdf.getPage(pageIndex),options.signal,remaining());try{
+    const content=await boundedPdfWork(()=>page.getTextContent(),options.signal,remaining());abortIfNeeded(options.signal);const items=content.items.filter((item):item is typeof item&PdfTextItem=>'str'in item),viewport=page.getViewport({scale:1}),extracted=pdfItemsToText(items,viewport.width),frame=readPdfCoordinateFrame(page,viewport);
+    if(extracted.columnsReordered)warnings.push('Strong two-column regions were reordered geometrically, keeping full-width separators and physical page references. The repair is heuristic; compare the original page.');else if(extracted.possibleColumns)warnings.push('Possible multi-column text was detected, but layout confidence was insufficient for repair. Compare with the original page.');if(extracted.text.trim().length<30)weakPages++;
+    const regions=extracted.regions.slice(0,500).map((line,index)=>({id:`pdf-p${pageIndex}-r${index+1}`,text:line.text.slice(0,5000),x:line.x,y:line.y,width:Math.max(0,line.right-line.x),height:line.height})),complete=extracted.regions.length<=500&&extracted.regions.every(line=>line.text.length<=5000);pageInfo.set(pageIndex,{frame,complete});
+    reconstructed.push({page:pageIndex,width:viewport.width,...(Number.isFinite(viewport.height)&&viewport.height>0?{height:viewport.height}:{}),regions,coordinatesComplete:complete});pages.push({text:extracted.text,page:pageIndex});
+    inventory.push({id:`pdf-page-${pageIndex}`,kind:'text',blockId:null,label:`Original physical PDF page ${pageIndex}`,state:extracted.text.trim()?'partial':'not-extracted',basis:'raw-pdf-text',locator:pdfLocator(pageIndex,regions,complete),losses:['Page text ordering and baseline regions are heuristic, not exact glyph/image bounds.',...(!frame?['Original PDF viewBox/rotation/userUnit are unavailable; frame is unknown.']:[])]});
+    for(const kind of ['equation','table'] as const)inventory.push({id:`pdf-${kind}-loss-${pageIndex}`,kind,blockId:null,label:`${kind==='table'?'Table':'Equation'} reconstruction availability on page ${pageIndex}`,state:'not-extracted',basis:'not-assessed',locator:pdfLocator(pageIndex),losses:[kind==='table'?'PDF table cells are not reconstructed; inspect the original page.':'PDF mathematical notation is not reconstructed; text/font geometry does not establish original TeX or semantic equivalence.']});
+    if(typeof page.getAnnotations==='function'&&annotationCalls<8&&supplementCount<32){annotationCalls++;const annotations=await optionalPdfInventory(()=>page.getAnnotations({intent:'display'}),options.signal,250);if(annotations.state==='available'&&Array.isArray(annotations.value)){if(annotations.value.length>64)inventoryTruncated=true;for(const raw of annotations.value.slice(0,64)){if(supplementCount>=32){inventoryTruncated=true;break;}const a=raw as {url?:unknown;unsafeUrl?:unknown;contentsObj?:{str?:unknown};subtype?:unknown;file?:unknown};if(typeof a.url!=='string'||a.url.length>2000||!/^https?:\/\//i.test(a.url))continue;let href:string;try{const u=new URL(a.url);if(!['https:','http:'].includes(u.protocol))continue;href=u.href;}catch{continue;}supplementCount++;inventory.push({id:`pdf-link-${pageIndex}-${supplementCount}`,kind:'supplement-reference',blockId:null,label:typeof a.contentsObj?.str==='string'?a.contentsObj.str.slice(0,2000):'Original PDF link annotation (relationship not inferred)',state:'partial',basis:'source-structural-markup',locator:pdfLocator(pageIndex),losses:['The link target was not fetched. A PDF link is not proof of supplementary content or redistribution rights.'],payload:{kind:'supplement-reference',url:href,attachmentName:null,mediaType:null,declaredBytes:null,retrievalState:'not-requested',reason:'Inert original annotation reference; content, availability and relation are unverified.',rights:'Unknown; the link does not grant reuse rights.'}});}}
+    }else if(typeof page.getAnnotations==='function')inventoryTruncated=true;
+   }finally{page.cleanup();}options.onProgress?.(pageIndex,pdf.numPages);abortIfNeeded(options.signal);
   }
+  // PDF.js 6 returns attachment metadata, not content. Never call getAttachmentContent or execute actions.
+  if(typeof pdf.getAttachments==='function'){const attachments=await optionalPdfInventory(()=>pdf.getAttachments(),options.signal,250);if(attachments.state==='available'&&attachments.value instanceof Map){if(attachments.value.size>16)inventoryTruncated=true;let i=0;for(const [name,raw]of attachments.value){if(i>=16)break;i++;const a=raw as unknown as {filename?:unknown;description?:unknown};inventory.push({id:`pdf-attachment-${i}`,kind:'supplement-reference',blockId:null,label:typeof a.description==='string'?a.description.slice(0,2000):String(name).slice(0,2000),state:'not-extracted',basis:'source-structural-markup',locator:{kind:'pdf-document',attachmentName:(typeof a.filename==='string'?a.filename:String(name)).slice(0,300)},losses:['Embedded attachment content was not opened, extracted or executed. The PDF catalog does not assign this attachment to a physical page.'],payload:{kind:'supplement-reference',url:null,attachmentName:(typeof a.filename==='string'?a.filename:String(name)).slice(0,300),mediaType:null,declaredBytes:null,retrievalState:'local-only',reason:'Attachment metadata only; content extraction/execution is unsupported.',rights:'Unknown attachment rights; parent document rights are not inherited.'}});}}}
+  const witness=pages.map(p=>p.text).join('\n');for(const page of pages)blocks.push(...reconstructPdfText(page.text,page.page,reconstructed[page.page-1].regions,witness));
+  if(blocks.reduce((sum,b)=>sum+('text'in b?b.text.length:0),0)<200){const manifest=await createExtractionManifest(null,original,inventory,{extractor:{id:'pdfjs-pdf-inventory',version:'6.4.299'},losses:['No usable readable SourceDocument was created. OCR, PDF equation/table reconstruction and image extraction are unsupported; return to original PDF pages.'],entriesTruncated:inventoryTruncated});throw new ExtractionEvidenceError('This PDF has too little extractable text. It may be scanned or image-only; OCR is not supported. The original PDF and loss inventory remain available.',manifest,file,options.name??'paper.pdf');}
+  if(weakPages)warnings.push(`${weakPages} page(s) contained little or no text. Their images, equations or scans have not been reconstructed.`);let metadata:Record<string,unknown>={};if(typeof pdf.getMetadata==='function'){const value=await optionalPdfInventory(()=>pdf.getMetadata(),options.signal,1000);if(value.state==='available')metadata=value.value.info as Record<string,unknown>;}
+  const fallbackName=options.name?.replace(/\.pdf$/i,'')||'Imported research paper',title=options.title||(typeof metadata.Title==='string'&&metadata.Title.trim()?metadata.Title:fallbackName),authors=options.authors||(typeof metadata.Author==='string'&&metadata.Author.trim()?[metadata.Author]:undefined);abortIfNeeded(options.signal);warnings.push('Source-v3 reconstruction and PDF text-baseline regions are heuristic; no original table cells, equation TeX or automatic figure crops are invented.');
+  const source=await normalizeSource({kind:'pdf',title,authors,url:options.sourceUrl,pageCount:pdf.numPages,blocks,warnings,identity:contentHash,reconstruction:{version:'pdf-layout-v3',pages:reconstructed}});
+  for(const block of source.blocks){const info=block.reconstruction,page=reconstructed.find(p=>p.page===block.page),regions=page?.regions.filter(r=>info?.regionIds.includes(r.id))??[];inventory.push({id:`source-${block.id}`.slice(0,100),kind:block.kind==='original-figure'?'figure':block.kind==='equation'?'equation':'text',blockId:block.id,label:block.kind==='original-figure'?block.caption.slice(0,2000):null,state:block.kind==='original-figure'?'partial':'retained',basis:'heuristic-layout',locator:pdfLocator(block.page,regions,!!info&&regions.length===info.regionIds.length),losses:['Reconstructed block/region association is heuristic; compare original page.',...(block.kind==='original-figure'?['Caption and original page are retained; no exact figure crop/pixels were segmented.']:[])],...(block.kind==='original-figure'?{payload:{kind:'figure' as const,imageUrls:[],pixels:'original-page' as const}}:{})});}
+  const extractionEvidence=await createExtractionManifest(source,original,inventory,{extractor:{id:'pdfjs-pdf-inventory',version:'6.4.299'},losses:['Inventory is bounded and partial. No OCR, PDF table-cell reconstruction, equation-TeX recovery, physical image calibration or attachment content extraction was performed.'],entriesTruncated:inventoryTruncated});abortIfNeeded(options.signal);return {source,original:file,originalName:options.name??'paper.pdf',...(options.sourceUrl?{originalUrl:options.sourceUrl}:{}),extractionEvidence};
+ }catch(error){abortIfNeeded(options.signal);if(error instanceof ExtractionEvidenceError)throw error;if(error instanceof Error&&error.name==='PasswordException')throw Error('This PDF is encrypted or password-protected. Import an unlocked copy.');if(error instanceof Error&&['InvalidPDFException','MissingPDFException','UnknownErrorException'].includes(error.name))throw Error('The PDF could not be read. It may be corrupt or unsupported; try an unlocked text PDF.');throw error;
+ }finally{options.signal?.removeEventListener('abort',abort);await task.destroy().catch(()=>{});}
 }

@@ -1,3 +1,4 @@
+import { validateExtractionEvidenceManifest } from './extraction/model';
 import { ANALYSIS_PIPELINE_VERSION, type ImportRecord, type ImportStage } from '../shared/import-types';
 import { validateDocument } from '../shared/schema';
 import { bundleAttributionSchema } from './snapshots';
@@ -33,7 +34,20 @@ export function validateImportRecord(value: unknown): ImportRecord {
   if (record.attribution) bundleAttributionSchema.parse(record.attribution);
   const analysis = record.analysis ? validateAnalysisResult(record.analysis, source) : undefined;
   if (record.stage === 'complete' && !record.analysis) throw new ImportStorageError('A completed import has no validated result.');
-  return { ...record, source, ...(analysis ? { analysis } : {}) };
+  const rawRecovery=record.extractionEvidenceRecovery as unknown;
+  const recovery=rawRecovery===undefined?undefined:rawRecovery&&typeof rawRecovery==='object'&&!Array.isArray(rawRecovery)&&'original'in rawRecovery&&'reason'in rawRecovery&&typeof rawRecovery.reason==='string'
+    ?{original:rawRecovery.original,reason:rawRecovery.reason.slice(0,1000)}
+    :{original:rawRecovery,reason:'The saved extraction recovery metadata is incompatible. Its original object remains available for explicit recovery.'};
+  return { ...record, source, ...(analysis ? { analysis } : {}),...(recovery?{extractionEvidenceRecovery:recovery}:{}) };
+}
+
+async function validateStoredImport(value:unknown):Promise<ImportRecord>{
+  const record=validateImportRecord(value);
+  if(record.extractionEvidence!==undefined){
+    try{return {...record,extractionEvidence:await validateExtractionEvidenceManifest(record.extractionEvidence,record.source)};}
+    catch{return {...record,extractionEvidence:undefined,extractionEvidenceRecovery:{original:record.extractionEvidence,reason:'The saved extraction evidence is invalid, incompatible or belongs to different source content. Its original record is retained separately; the source and PDF remain readable.'}};}
+  }
+  return record;
 }
 
 function storageError(error: unknown): ImportStorageError {
@@ -90,16 +104,16 @@ export function createImportStorage(options: { name?: string; indexedDB?: IDBFac
       const records: ImportRecord[] = [];
       let invalid = 0;
       for (const item of raw) {
-        try { records.push(validateImportRecord(item)); } catch { invalid++; }
+        try { records.push(await validateStoredImport(item)); } catch { invalid++; }
       }
       warning = invalid ? `${invalid} saved import${invalid === 1 ? ' was' : 's were'} invalid or incompatible and could not be opened. Other saved papers are available; no data was deleted.` : null;
       return records.sort((a, b) => b.updatedAt - a.updatedAt);
     },
     async get(id) {
       const raw = await transaction<unknown>('readonly', store => store.get(id));
-      return raw === undefined ? undefined : validateImportRecord(raw);
+      return raw === undefined ? undefined : validateStoredImport(raw);
     },
-    async put(record) { await transaction('readwrite', store => store.put(validateImportRecord(record))); },
+    async put(record) { const checked=await validateStoredImport(record);await transaction('readwrite', store => store.put(checked)); },
     async remove(id) { await transaction('readwrite', store => store.delete(id)); },
   };
 }

@@ -1,0 +1,94 @@
+{
+  "issue": "PP-107",
+  "date": "2026-10-28",
+  "browser": "Native collaborative Chromium, localhost:3001, default profile",
+  "paidInferenceCalls": 0,
+  "heldOutSourcesRead": 0,
+  "pdf": {
+    "source": "Bundled development paper priority-search-trees.pdf",
+    "bytes": 451355,
+    "sha256": "3ee26d48499f643e306a258b07494712c27e0cbf8a0d006cb01a21a2c44fe90e",
+    "pages": 18,
+    "entriesRetained": 307,
+    "inventory": "partial, retention cap explicit",
+    "firstPageFrame": {
+      "coordinateSpace": "pdf-user-space",
+      "viewBox": [
+        0,
+        0,
+        595.276,
+        841.89
+      ],
+      "rotation": 0,
+      "userUnit": 1,
+      "viewportTransform": [
+        1,
+        0,
+        0,
+        -1,
+        0,
+        841.89
+      ]
+    },
+    "explicitOriginalIdentityCheck": "size and SHA match",
+    "originalPagePreview": {
+      "physicalPage": 1,
+      "actualPageCount": 18,
+      "canvasPixels": [
+        476,
+        674
+      ],
+      "modelRequest": false,
+      "unrelatedCoordinateHighlight": false
+    }
+  },
+  "emptyPdf": {
+    "fixture": "Project-authored valid one-page PDF with empty content stream; not a scientific source",
+    "bytes": 431,
+    "sha256": "1b2e39f8b267edcd5892275046409fc5a9b36f9a7362e2c24ae4d8d62d654834",
+    "sourceCreated": false,
+    "originalDownloadedByteExact": true,
+    "lossReportDownloaded": true,
+    "priorReadablePaperRetained": true,
+    "finding": "PDF.js null attachments incorrectly marked a cap; fixed with independent empty-PDF regression before final build"
+  },
+  "html": {
+    "fixture": "Project-authored markup, explicitly not a published paper, generated through real parseArxivHtmlEvidenced and intercepted at local /api/arxiv for UI transport only",
+    "title": "Authored PP107 QA fixture — not a published paper",
+    "originalHtmlBytes": 2293,
+    "sha256": "58c1c51b4e8eb181c3afec159a8ddb3c7eb422f4ca4d64f25ef4f6a60538c182",
+    "entries": 13,
+    "table": {
+      "leadingZero": "001",
+      "blankCell": "",
+      "decimalString": "1.20",
+      "retainedRowSpan": 2,
+      "retainedColumnSpan": 2,
+      "inventedCells": false,
+      "numericAssetPromotion": false
+    },
+    "equationRawTex": "x^2+y^2=1",
+    "duplicateElementId": "ambiguous locator retained",
+    "unsafeSupplementUrl": "unavailable, inert",
+    "captionOnlyFigure": "no image supplied or fetched",
+    "physicalPdfCoordinatesInvented": false
+  },
+  "supplement": {
+    "registeredDescriptor": "chew-biomass-2212-v1",
+    "beforeInspectRequests": 0,
+    "afterLocalInspectRequests": 0,
+    "consentInitiallyChecked": false,
+    "initialActualRetrieval": "HTTP406 from MIME-specific Accept; corrected download negotiation to */*, all response checks retained",
+    "boundedTimeoutRecovery": "Actual service also encountered 12-second external transport timeout; original-record and local-file actions remained available",
+    "arbitraryUrlAllowed": false,
+    "privateSourceTextUploaded": false,
+    "workbookExecuted": false
+  },
+  "verification": "644 deterministic tests and typecheck passed, final production build passed; fixed header transport regression 7/7",
+  "limits": "Engineering browser checks, not human usability observations or universal extraction/scientific validity. Final corrected-service retrieval outcome recorded separately if available.",
+  "cleanup": {
+    "baselineLocalPapers": 0,
+    "removedOnlyCreatedQaPapers": 2,
+    "remainingLocalPapers": 0
+  }
+}

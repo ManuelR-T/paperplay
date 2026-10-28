@@ -19,8 +19,8 @@
     "M16": "Coverage, validation, performance and adoption"
   },
   "sizeLegend": {
-    "M": "roughly 3\u20135 focused solo days; re-estimate after design",
-    "L": "roughly 6\u201310 focused solo days; split into reviewable increments",
+    "M": "roughly 3–5 focused solo days; re-estimate after design",
+    "L": "roughly 6–10 focused solo days; split into reviewable increments",
     "discovery": "timebox a prototype/design before committing to implementation estimates",
     "external": "depends on participant/expert availability, not only engineering time"
   },
@@ -436,7 +436,7 @@
         "document": "docs/figure-artifacts.md",
         "checks": "npm run check: TypeScript, 295 tests and production build; shared declarative/generated build/run reference, dynamic sequence, exact source/SDK/data hashes, strict privileges and guest resource checks",
         "browser": "Native Chromium at 320 px: generated source stays inert, availability remains disabled, no interpreter/model loads, manifest download; wrong-source artifact rejected and declarative artifact opens the existing source guide",
-        "limitations": "Product generated execution remains disabled pending PP-094\u2013096. Internal restricted QuickJS/WASM reference is not a completed browser/process sandbox, isolated compiler or scientific verification. No paid generation."
+        "limitations": "Product generated execution remains disabled pending PP-094–096. Internal restricted QuickJS/WASM reference is not a completed browser/process sandbox, isolated compiler or scientific verification. No paid generation."
       }
     },
     {
@@ -628,7 +628,7 @@
       "evidence": {
         "document": "docs/artifact-experiments.md",
         "checks": "npm run check: TypeScript, 402 tests and production build; exact typed cache identities, deterministic seeded guest streams, scoped version/input/data invalidation, shared admission/reload, cancellation/open races, corrupt-original retention/quota, privacy-safe bundle/library and source cleanup",
-        "browser": "Actual Chromium154: seed42\u219243, current-settings Save, identical reload with zero compiler/runtime/provider requests; explicit local resume adds sample, import after derived cache removal replays four values without compile, protected original replay survives eviction, unknown schema99 downloads byte-identical, 320px/200% no overflow, bound-data omitted attachment replay5 readonly with exact binder. Reports: data/artifact-experiment-browser.json and 33-probe seeded runtime isolation rerun.",
+        "browser": "Actual Chromium154: seed42→43, current-settings Save, identical reload with zero compiler/runtime/provider requests; explicit local resume adds sample, import after derived cache removal replays four values without compile, protected original replay survives eviction, unknown schema99 downloads byte-identical, 320px/200% no overflow, bound-data omitted attachment replay5 readonly with exact binder. Reports: data/artifact-experiment-browser.json and 33-probe seeded runtime isolation rerun.",
         "limitations": "Generated SDK sessions only; inert records never restore compiler authority or scientific verification. Engineering seeded PRNG is not a research-quality Monte Carlo claim. Missing assets allow separate recorded-view evidence only, exact rebinding required. No paid inference, human review or release change."
       }
     },
@@ -889,10 +889,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 62,
         "url": "https://github.com/ManuelR-T/paperplay/issues/62"
+      },
+      "evidence": {
+        "document": "docs/extraction-evidence.md",
+        "checks": "TypeScript, 644 deterministic tests, production build; final supplement-header regression 7/7",
+        "browser": "Native Chromium: actual451355B PDF identity/geometry/original-page rendering; authored HTML raw table blanks/spans/leading zeros, inert supplement review; source-null431B emptyPDF exact original recovery; immutable derived revision/revert/undo/reload/export; 320px with32px text",
+        "limitations": "Partial bounded extraction, no OCR/PDF TeX/table reconstruction or supplement execution. One exact admitted passive workbook; no arbitrary URL downloader, paid inference, held-out corpus, human study or release work."
       }
     },
     {
