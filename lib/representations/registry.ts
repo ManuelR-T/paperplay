@@ -1,3 +1,4 @@
+import { validateComposedScene } from '../../shared/composed-scene';
 import { capabilityDescriptorSchema, capabilityNeedSchema, capabilityEnvironmentSchema, viewCapability, type CapabilityDescriptor, type CapabilityNeed, type CapabilityGap, type CapabilityEnvironment } from '../../shared/representation-capabilities';
 import { representationViewSchema, type RepresentationPlan } from '../../shared/representations';
 import { validateScientificQuantity } from '../../shared/scientific-quantities';
@@ -62,7 +63,8 @@ export function createCapabilityRegistry(input:readonly RepresentationAdapter[])
      const output=await adapter.execute(view,context);
      if(context.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
      if(output.id!==view.id||output.kind!==view.kind||new TextEncoder().encode(JSON.stringify(output)).length>adapter.descriptor.limits.maxOutputBytes)throw Error('The adapter returned an incompatible or oversized result.');
-     if(output.kind==='source-guide')representationViewSchema.parse(output);
+     if(output.kind==='source-guide'||output.kind==='composed-scene')representationViewSchema.parse(output);
+     if(output.kind==='composed-scene')validateComposedScene(output.scene,context.plan.anchors.map(anchor=>anchor.id));
      if(output.kind==='asset'&&(!hasCheckedAssetIntegrity(output.asset)||output.assetId!==(view as Extract<RepresentationView,{kind:'asset'}>).assetId||!context.assets.includes(output.asset)))throw Error('The adapter substituted an unbound asset.');
      if(output.kind==='quantity')validateScientificQuantity(output.quantity);
      if(output.kind==='widget'&&(JSON.stringify(output.widget)!==JSON.stringify((view as Extract<RepresentationView,{kind:'widget'}>).widget)||typeof output.result?.summary!=='string'||!Array.isArray(output.result?.metrics)))throw Error('The widget adapter returned incompatible inputs/results.');

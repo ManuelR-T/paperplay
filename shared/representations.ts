@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { composedSceneSchema, validateComposedScene } from './composed-scene';
 import { capabilityReferenceSchema, viewCapability } from './representation-capabilities';
 import { scientificQuantitySchema, quantityRequirementSchema, validateScientificQuantity } from './scientific-quantities';
 import { scientificAssetSchema } from './scientific-assets';
@@ -13,6 +14,7 @@ export const representationAnchorSchema = z.strictObject({ id: name, blockId: z.
 export const evidenceLevelSchema = z.enum(['illustrative-walkthrough','simplified-illustration','mechanism-reproduction','experiment-reproduction']);
 const ids = z.array(name).min(1).max(32);
 export const representationViewSchema = z.discriminatedUnion('kind', [
+  z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('composed-scene'),scene:composedSceneSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('quantity'),quantityId:name,requirement:quantityRequirementSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('asset'),assetId:name}),
   z.strictObject({ id: name, adapter:capabilityReferenceSchema.optional(), kind: z.literal('widget'), widget: widgetEnvelopeSchema }),
@@ -65,6 +67,9 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
       validateWidgetEnvelope(view.widget,source);
       if(!plan.anchors.some(anchor=>anchor.blockId===view.widget.source.blockId&&anchor.page===view.widget.source.page&&normalized(anchor.quote)===normalized(view.widget.source.quote))) throw Error('A widget must use an anchor declared in its representation.');
       if(plan.execution.kind!=='local-computation') throw Error('Widget views require local computation.');
+    } else if(view.kind==='composed-scene'){
+      validateComposedScene(view.scene,[...anchors.keys()]);
+      for(const node of view.scene.nodes)if(node.kind==='annotation'&&node.role==='source'&&!node.anchorIds.some(id=>normalized(anchors.get(id)!.quote).includes(normalized(node.text))))throw Error('A source annotation must quote its source; label interpretations as added assumptions.');
     } else if(view.kind==='quantity'){if(!plan.quantities.some(quantity=>quantity.id===view.quantityId))throw Error('A quantity view requires a declared quantity.');}
     else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
     else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
@@ -73,7 +78,7 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
   if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
   for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
   if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');
-  if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide')) throw Error('This representation has no source-guide steps.');
+  if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide'||view.kind==='composed-scene'&&view.scene.nodes.some(node=>node.kind==='scene'&&node.frames.length>0))) throw Error('This representation has no source-guide steps.');
   for(const quantity of plan.quantities)if(quantity.measurement){const measurement=validateScientificQuantity(quantity.measurement);if(measurement.id!==quantity.id||measurement.unit!==quantity.unit)throw Error('A quantity measurement must retain its declared identity and original unit.');}
   const evidence=new Map((plan.evidence??[]).map(item=>[item.id,item]));
   unique((plan.evidence??[]).map(item=>item.id),'evidence record');

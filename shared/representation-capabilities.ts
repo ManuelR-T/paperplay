@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import { name, text } from './widget-primitives';
 export const capabilityReferenceSchema=z.strictObject({id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/)});
-export const representationKindSchema=z.enum(['widget','source-guide','asset','quantity']);
+export const representationKindSchema=z.enum(['widget','source-guide','asset','quantity','composed-scene']);
 export type RepresentationKind=z.infer<typeof representationKindSchema>;
-export const defaultViewCapabilities={widget:{id:'widget-v2',version:'2.1.0'},'source-guide':{id:'source-guide',version:'1.0.0'},asset:{id:'asset-inspector',version:'1.0.0'},quantity:{id:'quantity-inspector',version:'1.0.0'}} as const;
+export const defaultViewCapabilities={widget:{id:'widget-v2',version:'2.1.0'},'source-guide':{id:'source-guide',version:'1.0.0'},asset:{id:'asset-inspector',version:'1.0.0'},quantity:{id:'quantity-inspector',version:'1.0.0'},'composed-scene':{id:'composed-scene',version:'1.0.0'}} as const;
 export function viewCapability(view:{kind:RepresentationKind;adapter?:z.infer<typeof capabilityReferenceSchema>}){return view.adapter??defaultViewCapabilities[view.kind];}
 export const facilitySchema=z.enum(['trusted-computation','asset-integrity','webgl','network']);
 export const capabilityDescriptorSchema=z.strictObject({
- id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/),label:text.max(160),viewKinds:z.array(representationKindSchema).min(1).max(4),
+ id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/),label:text.max(160),viewKinds:z.array(representationKindSchema).min(1).max(5),
  roles:z.array(z.enum(['view','data','execution'])).min(1).max(3),behaviors:z.array(name).min(1).max(32),
  assetKinds:z.array(z.enum(['table','tensor','image','sequence','graph','geometry'])).max(6),
  interactions:z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),
