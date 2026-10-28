@@ -1,0 +1,55 @@
+import {DYNAMICS_SOLVER_VERSION} from '../../shared/dynamics';
+import {DISCRETE_ENGINE_VERSION} from '../../shared/discrete-algorithms';
+import {STOCHASTIC_SOLVER_VERSION,STOCHASTIC_PRNG_VERSION,STOCHASTIC_UNIFORM_VERSION} from '../../shared/stochastic';
+import {FIGURE_RUNTIME_VERSION,FIGURE_RANDOM_POLICY} from '../../shared/figure-runtime';
+import {getExecutionScheduler} from './scheduler';
+import {executeInWorker} from './client';
+import {executeDynamics} from '../dynamics/client';
+import {executeDiscrete} from '../discrete/client';
+import {executeStochastic} from '../stochastic/client';
+import {createDynamicsExample} from '../representations/dynamics-examples';
+import {createDiscreteExample} from '../representations/discrete-examples';
+import {createStochasticExample} from '../representations/stochastic-examples';
+import {createDynamicSequenceArtifact} from '../artifacts/fixtures/dynamic-sequence';
+import {buildFigureArtifact,runFigureArtifact} from '../artifacts/lifecycle';
+import {compilerRequestFromBuild} from '../artifacts/compiler-request';
+import {compileFigureInWorker} from '../artifacts/compiler-client';
+import {createCompiledFigureAdapter} from '../artifacts/runtime-client';
+import {sha256} from '../assets/local';
+import {brokerCanonicalJson} from '../../shared/external-broker';
+export type ReplayClass='deterministic'|'seeded-stochastic'|'hardware-dependent';
+export type ExecutionStressTask={id:string;kind:string;status:'completed'|'failed'|'cancelled';elapsedMs:number;resultBytes:number;outputSha256:string|null;replay:{class:ReplayClass;engineVersion:string;seed:string|null;randomPolicy:string|null;scope:string};error?:string};
+export type ExecutionStressProgress={completed:number;total:number;task?:ExecutionStressTask};
+export type ExecutionStressReport={format:'paperplay-execution-stress';schemaVersion:1;environment:{userAgent:string;hardwareConcurrency:number|null;startedAt:string};elapsedMs:number;peak:{active:number;queued:number;reservedMemoryBytes:number;reservedResultBytes:number;queuedInputBytes:number};heartbeat:{samples:number;maximumGapMs:number;nominalPeriodMs:number};tasks:ExecutionStressTask[];replayComparisons:{kind:string;class:ReplayClass;seed:string|null;outputHashesMatch:boolean;scope:string}[];faults:{id:string;status:string;expected:string;observed:string}[];limitations:string[]};
+const semanticOutput=(value:unknown)=>{const v=value as {format?:unknown;stats?:{elapsedMs?:number}};return v?.format==='paperplay-discrete-result'?{...v,stats:{...v.stats,elapsedMs:undefined}}:value;};
+const bytes=(value:unknown)=>new TextEncoder().encode(JSON.stringify(value)).length;
+const message=(problem:unknown)=>problem instanceof Error?problem.message:'Local task unavailable.';
+/** Explicit engineering workload only: no model, paper download, credential or remote job. */
+export async function runExecutionStress(options:{signal?:AbortSignal;onProgress?:(value:ExecutionStressProgress)=>void}={}):Promise<ExecutionStressReport>{
+ if(typeof window==='undefined'||typeof Worker==='undefined')throw Error('This engineering workload needs actual browser workers; no main-thread fallback is available.');
+ const scheduler=getExecutionScheduler(),controller=new AbortController(),initialStopEpoch=scheduler.getSnapshot().stopEpoch,upstream=options.signal,stop=()=>controller.abort();upstream?.addEventListener('abort',stop,{once:true});if(upstream?.aborted)stop();options={...options,signal:controller.signal};
+ const started=performance.now(),startedAt=new Date().toISOString(),peak={active:0,queued:0,reservedMemoryBytes:0,reservedResultBytes:0,queuedInputBytes:0};
+ const sample=()=>{const s=scheduler.getSnapshot();peak.active=Math.max(peak.active,s.active);peak.queued=Math.max(peak.queued,s.queued);peak.reservedMemoryBytes=Math.max(peak.reservedMemoryBytes,s.reservedMemoryBytes);peak.reservedResultBytes=Math.max(peak.reservedResultBytes,s.reservedResultBytes);peak.queuedInputBytes=Math.max(peak.queuedInputBytes,s.queuedInputBytes);};
+ const unsubscribe=scheduler.subscribe(()=>{sample();if(scheduler.getSnapshot().stopEpoch!==initialStopEpoch)stop();});sample();let tick=performance.now(),maximumGapMs=0,samples=0;const heartbeat=setInterval(()=>{const now=performance.now();maximumGapMs=Math.max(maximumGapMs,now-tick);tick=now;samples++;},16);
+ const tasks:ExecutionStressTask[]=[],faults:ExecutionStressReport['faults']=[],total=9;
+ const replay=(kind:ReplayClass,version:string,seed:string|null=null,randomPolicy:string|null=null):ExecutionStressTask['replay']=>({class:kind,engineVersion:version,seed,randomPolicy,scope:kind==='deterministic'?'Same admitted implementation/input; no cross-browser bitwise theorem.':kind==='seeded-stochastic'?'Same seed, random-stream policy and recorded runtime; reused seeds are not independent replications.':'Floating-point/adaptive arithmetic is environment-dependent; compare scientifically with named tolerances, not a portability guarantee.'});
+ async function task(id:string,kind:string,policy:ExecutionStressTask['replay'],work:()=>Promise<unknown>){const at=performance.now();let result:ExecutionStressTask;try{const output=await work();result={id,kind,status:'completed',elapsedMs:performance.now()-at,resultBytes:bytes(output),outputSha256:await sha256(brokerCanonicalJson(semanticOutput(output))),replay:policy};}catch(problem){result={id,kind,status:options.signal?.aborted||problem instanceof DOMException&&problem.name==='AbortError'?'cancelled':'failed',elapsedMs:performance.now()-at,resultBytes:0,outputSha256:null,replay:policy,error:message(problem)};}tasks.push(result);try{options.onProgress?.({completed:tasks.length,total,task:result});}catch{/* A presentation observer cannot discard already bounded task results. */}return result;}
+ try{
+  const ode=createDynamicsExample('decay').plan.views[0],discrete=createDiscreteExample('dag').plan.views[0],stochastic=createStochasticExample('pure-death').plan.views[0];if(ode.kind!=='dynamics'||discrete.kind!=='discrete-trace'||stochastic.kind!=='stochastic')throw Error('Authored workload fixture changed.');
+  const input={kind:'array' as const,values:[9,2,2,7,1,5,3,8,4,6]},runs:Promise<ExecutionStressTask>[]=[];
+  for(let i=0;i<2;i++)runs.push(task(`sort-${i}`,'stable-sort',replay('deterministic','powersort@1.0.0','42'),async()=>{const r=await executeInWorker({kind:'run',engineId:'powersort',input,options:{seed:42,parameters:{operationLimit:10000}}},{signal:options.signal});return r.kind==='run'?r.run:r;}));
+  for(let i=0;i<2;i++)runs.push(task(`ode-${i}`,'decay',replay('hardware-dependent',DYNAMICS_SOLVER_VERSION),()=>executeDynamics(ode.dynamics.request,{signal:options.signal})));
+  for(let i=0;i<2;i++)runs.push(task(`discrete-${i}`,'topological-order',replay('deterministic',DISCRETE_ENGINE_VERSION),()=>executeDiscrete(discrete.discrete.request,{signal:options.signal})));
+  for(let i=0;i<2;i++)runs.push(task(`ssa-${i}`,'seeded-loss',replay('seeded-stochastic',STOCHASTIC_SOLVER_VERSION,stochastic.stochastic.request.random.seed,`${STOCHASTIC_PRNG_VERSION}; ${STOCHASTIC_UNIFORM_VERSION}; sequence ${stochastic.stochastic.request.random.sequence}`),()=>executeStochastic(stochastic.stochastic.request,{signal:options.signal})));
+  runs.push(task('sdk-0','isolated-sdk',replay('seeded-stochastic',FIGURE_RUNTIME_VERSION,'42',FIGURE_RANDOM_POLICY),async()=>{const fixture=await createDynamicSequenceArtifact(),built=await buildFigureArtifact(fixture.artifact,fixture.source,{signal:options.signal});if(built.status!=='ready')throw Error(built.reason);const compiled=await compileFigureInWorker(compilerRequestFromBuild(built.value),{signal:options.signal});if(compiled.status==='cancelled')throw new DOMException('Authored SDK compilation cancelled.','AbortError');if(compiled.status!=='ready')throw Error('Authored SDK compilation unavailable.');const adapter=createCompiledFigureAdapter(built.value,compiled.artifact,compiled.sha256,{seed:42}),result=await runFigureArtifact(built.value,fixture.source,{executionAdapter:adapter,event:{kind:'control',id:'append'},signal:options.signal});if(result.status==='cancelled')throw new DOMException('Authored SDK execution cancelled.','AbortError');if(result.status!=='ready')throw Error(result.reason);return result.value;}));
+  await Promise.all(runs);
+  if(!options.signal?.aborted&&!tasks.some(task=>task.status==='cancelled')){
+   const spec={kind:'engine' as const,resources:{inputBytes:0,maxResultBytes:1024,memoryReservationBytes:1024,maxExecutionMs:40,maxQueueMs:1000}};
+   try{await scheduler.run(spec,lease=>new Promise((_resolve,reject)=>{const stop=()=>reject(new DOMException('Injected timeout interrupted its cooperative task.','AbortError'));lease.signal.addEventListener('abort',stop,{once:true});if(lease.signal.aborted)stop();}),{signal:options.signal});faults.push({id:'timeout-simulation',status:'unexpected',expected:'bounded rejection',observed:'resolved'});}catch(problem){faults.push({id:'timeout-simulation',status:'rejected',expected:'bounded rejection',observed:message(problem)});}
+   try{await scheduler.run(spec,async()=>{throw Error('Simulated allocation failure; no browser heap was exhausted.');},{signal:options.signal});faults.push({id:'memory-failure-simulation',status:'unexpected',expected:'bounded rejection and resource release',observed:'resolved'});}catch(problem){faults.push({id:'memory-failure-simulation',status:'rejected',expected:'bounded rejection and resource release',observed:message(problem)});}
+  }
+ }finally{clearInterval(heartbeat);sample();unsubscribe();upstream?.removeEventListener('abort',stop);}
+ const replayComparisons=['sort','ode','discrete','ssa'].map(prefix=>{const a=tasks.find(t=>t.id===`${prefix}-0`)!,b=tasks.find(t=>t.id===`${prefix}-1`)!;return {kind:a?.kind??prefix,class:a?.replay.class??'hardware-dependent',seed:a?.replay.seed??null,outputHashesMatch:!!a?.outputSha256&&a.outputSha256===b?.outputSha256,scope:a?.replay.scope??'Unavailable replay comparison.'};});
+ return {format:'paperplay-execution-stress',schemaVersion:1,environment:{userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency??null,startedAt},elapsedMs:performance.now()-started,peak,heartbeat:{samples,maximumGapMs,nominalPeriodMs:16},tasks,replayComparisons,faults,limitations:['Authored engineering workloads, not scientific validity or human-reader evidence.','Reservations are logical admission budgets, not measured total browser heap or a general out-of-memory guarantee.','Heartbeat measures this observed run on this environment; it is not a responsiveness guarantee on other devices.','Output hashes use canonical semantic JSON; the discrete result wall-time measurement is excluded from replay comparison. Raw result byte counts retain that measurement.',
+'Seed/version/input identities retain their existing engine-specific returned requests; no cache, compiler or scientific authority is exported.','No provider call, remote job or paper download is started by this fixture.']};
+}

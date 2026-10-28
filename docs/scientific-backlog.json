@@ -956,10 +956,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 64,
         "url": "https://github.com/ManuelR-T/paperplay/issues/64"
+      },
+      "evidence": {
+        "document": "docs/execution-scheduling.md",
+        "checks": "TypeScript,672 deterministic tests,production build; focused tests preserve private compiler/scientific receipts and stop-during-preparation epoch",
+        "browser": "Native9-task mixed run through10realworkers: peak2active/7queued,486.8ms,largestheartbeat30.7ms; matching4replaypairs; labeled timeout/allocation/globalstop/visibility faults; noteseditable/previousreportkept;320px/32px and44px/5.70contrast",
+        "limitations": "Tab-local logical reservations, not browserheapcap or allretainedReactmemory. Actualvisibilityobserver plus optionalper-owner API; full offscreen ownership requireshostbinding. Broker has noautomaticpoll and remains separate/explicit. No paid/inference/human/heldout/release."
       }
     },
     {

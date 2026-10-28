@@ -1,0 +1,46 @@
+{
+  "issue":"PP-109",
+  "date":"2026-10-28",
+  "browser":"Native collaborative Chromium on localhost:3001/execution-lab",
+  "actualWorkload":{
+    "report":"data/execution-native-stress.json",
+    "completedTasks":9,
+    "actualWorkersCreated":10,
+    "actualWorkersTerminated":10,
+    "actualPeakWorkers":2,
+    "liveWorkersAfter":0,
+    "elapsedMs":486.80000001192093,
+    "schedulerPeakQueued":7,
+    "logicalPeakMemoryReservationBytes":138412032,
+    "activeResultReservationPeakBytes":16777216,
+    "heartbeatSamples":30,
+    "largestHeartbeatGapMs":30.69999998807907,
+    "sameInputReplayPairsMatched":["stable-sort","decay","topological-order","seeded-loss"],
+    "fetches":["/artifact-workers.json","pinned local artifact-compiler worker module","/artifact-workers.json","pinned local artifact-runtime worker module"],
+    "providerCalls":0,
+    "paperDownloads":0,
+    "instrumentation":"Native Worker subclass counts construction and actual terminate calls; original native Worker restored after checks. Not a worker substitute for this successful workload."
+  },
+  "globalStopFaultSimulation":{
+    "injection":"EventTarget Worker stand-ins deliberately never reply; engineering fault simulation, not real worker performance",
+    "beforeStop":{"created":2,"terminated":0,"queued":7,"posted":2},
+    "notesEditedWhileHeldWorkersActive":true,
+    "afterStop":{"created":2,"terminated":2,"active":0,"queued":0},
+    "queuedWorkerCreatedDuringStop":false,
+    "notesRetained":true,
+    "priorCompletedReportRetained":true,
+    "noRecoveryProbeStartedAfterStop":true
+  },
+  "visibilityFaultSimulation":{
+    "method":"Controlled visibilityState getter plus actual document visibilitychange event/listener in native browser; not an OS background measurement",
+    "hidden":{"created":2,"terminated":2,"active":0,"queued":7},
+    "notesEditableWhileHidden":true,
+    "returnVisible":{"created":4,"terminated":2,"active":2,"meaning":"Only previously requested queued local jobs admitted; aborted active jobs not recreated"},
+    "stopAfterReturn":{"created":4,"terminated":4,"active":0,"queued":0},
+    "nativeVisibilityGetterRestored":true,
+    "nativeWorkerRestored":true,
+    "acceptedRemoteJobsCancelledOrReplaced":false
+  },
+  "automatedVerification":"TypeScript,672 deterministic tests,production build; root adds no main-thread/browser fallback",
+  "limits":["Logical reservations are not measured browser heap or a hard browser memory cap.","Allocation-failure probe is simulated; no intentional real OOM.","Observed timing is specific to this engineering run/environment, not human-reader evidence or a cross-device guarantee.","Seeds/versions do not establish scientific validity or cross-platform bitwise portability."]
+}

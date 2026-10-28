@@ -1,0 +1,211 @@
+{
+  "format": "paperplay-execution-stress",
+  "schemaVersion": 1,
+  "environment": {
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+    "hardwareConcurrency": 16,
+    "startedAt": "2026-10-28T10:35:51.387Z"
+  },
+  "elapsedMs": 486.80000001192093,
+  "peak": {
+    "active": 2,
+    "queued": 7,
+    "reservedMemoryBytes": 138412032,
+    "reservedResultBytes": 16777216,
+    "queuedInputBytes": 5058
+  },
+  "heartbeat": {
+    "samples": 30,
+    "maximumGapMs": 30.69999998807907,
+    "nominalPeriodMs": 16
+  },
+  "tasks": [
+    {
+      "id": "sort-1",
+      "kind": "stable-sort",
+      "status": "completed",
+      "elapsedMs": 48.79999998211861,
+      "resultBytes": 3532,
+      "outputSha256": "df5a0a34234b2986ad0a5b9c0440055b32bf89d06111711d20faddfcaa6ec9e9",
+      "replay": {
+        "class": "deterministic",
+        "engineVersion": "powersort@1.0.0",
+        "seed": "42",
+        "randomPolicy": null,
+        "scope": "Same admitted implementation/input; no cross-browser bitwise theorem."
+      }
+    },
+    {
+      "id": "sort-0",
+      "kind": "stable-sort",
+      "status": "completed",
+      "elapsedMs": 52.29999998211861,
+      "resultBytes": 3532,
+      "outputSha256": "df5a0a34234b2986ad0a5b9c0440055b32bf89d06111711d20faddfcaa6ec9e9",
+      "replay": {
+        "class": "deterministic",
+        "engineVersion": "powersort@1.0.0",
+        "seed": "42",
+        "randomPolicy": null,
+        "scope": "Same admitted implementation/input; no cross-browser bitwise theorem."
+      }
+    },
+    {
+      "id": "ode-1",
+      "kind": "decay",
+      "status": "completed",
+      "elapsedMs": 93.09999999403954,
+      "resultBytes": 2368,
+      "outputSha256": "5a423972c686ffd796e2c28d0805e8544e20514caa067d9c3b11d7f9197b9eac",
+      "replay": {
+        "class": "hardware-dependent",
+        "engineVersion": "rk4-step-doubling@1.0.0",
+        "seed": null,
+        "randomPolicy": null,
+        "scope": "Floating-point/adaptive arithmetic is environment-dependent; compare scientifically with named tolerances, not a portability guarantee."
+      }
+    },
+    {
+      "id": "ode-0",
+      "kind": "decay",
+      "status": "completed",
+      "elapsedMs": 95.5,
+      "resultBytes": 2368,
+      "outputSha256": "5a423972c686ffd796e2c28d0805e8544e20514caa067d9c3b11d7f9197b9eac",
+      "replay": {
+        "class": "hardware-dependent",
+        "engineVersion": "rk4-step-doubling@1.0.0",
+        "seed": null,
+        "randomPolicy": null,
+        "scope": "Floating-point/adaptive arithmetic is environment-dependent; compare scientifically with named tolerances, not a portability guarantee."
+      }
+    },
+    {
+      "id": "discrete-1",
+      "kind": "topological-order",
+      "status": "completed",
+      "elapsedMs": 132.69999998807907,
+      "resultBytes": 17424,
+      "outputSha256": "325b6fb8d3ee27bac80a0f56ed89e43f795d22607a953d9ffb80441795b17dd0",
+      "replay": {
+        "class": "deterministic",
+        "engineVersion": "discrete-collections@1.0.0",
+        "seed": null,
+        "randomPolicy": null,
+        "scope": "Same admitted implementation/input; no cross-browser bitwise theorem."
+      }
+    },
+    {
+      "id": "discrete-0",
+      "kind": "topological-order",
+      "status": "completed",
+      "elapsedMs": 143.60000002384186,
+      "resultBytes": 17438,
+      "outputSha256": "325b6fb8d3ee27bac80a0f56ed89e43f795d22607a953d9ffb80441795b17dd0",
+      "replay": {
+        "class": "deterministic",
+        "engineVersion": "discrete-collections@1.0.0",
+        "seed": null,
+        "randomPolicy": null,
+        "scope": "Same admitted implementation/input; no cross-browser bitwise theorem."
+      }
+    },
+    {
+      "id": "ssa-1",
+      "kind": "seeded-loss",
+      "status": "completed",
+      "elapsedMs": 187.59999999403954,
+      "resultBytes": 117987,
+      "outputSha256": "294506ee8958b8fd3320989d4451c94b422614565dea179f0aefe4f2aa62f6c1",
+      "replay": {
+        "class": "seeded-stochastic",
+        "engineVersion": "ssa-direct@1.0.0",
+        "seed": "42",
+        "randomPolicy": "pcg32-xsh-rr-64-32@1.0.0; pcg32-u53-open-both@1.0.0; sequence 54",
+        "scope": "Same seed, random-stream policy and recorded runtime; reused seeds are not independent replications."
+      }
+    },
+    {
+      "id": "ssa-0",
+      "kind": "seeded-loss",
+      "status": "completed",
+      "elapsedMs": 193.69999998807907,
+      "resultBytes": 117987,
+      "outputSha256": "294506ee8958b8fd3320989d4451c94b422614565dea179f0aefe4f2aa62f6c1",
+      "replay": {
+        "class": "seeded-stochastic",
+        "engineVersion": "ssa-direct@1.0.0",
+        "seed": "42",
+        "randomPolicy": "pcg32-xsh-rr-64-32@1.0.0; pcg32-u53-open-both@1.0.0; sequence 54",
+        "scope": "Same seed, random-stream policy and recorded runtime; reused seeds are not independent replications."
+      }
+    },
+    {
+      "id": "sdk-0",
+      "kind": "isolated-sdk",
+      "status": "completed",
+      "elapsedMs": 434,
+      "resultBytes": 741,
+      "outputSha256": "f0a545066763025295a19ee05275fed09eef55670a48d46589412900d55e79ea",
+      "replay": {
+        "class": "seeded-stochastic",
+        "engineVersion": "quickjs-seeded-sdk@1.1.0",
+        "seed": "42",
+        "randomPolicy": "mulberry32-payload-fnv1a-v1",
+        "scope": "Same seed, random-stream policy and recorded runtime; reused seeds are not independent replications."
+      }
+    }
+  ],
+  "replayComparisons": [
+    {
+      "kind": "stable-sort",
+      "class": "deterministic",
+      "seed": "42",
+      "outputHashesMatch": true,
+      "scope": "Same admitted implementation/input; no cross-browser bitwise theorem."
+    },
+    {
+      "kind": "decay",
+      "class": "hardware-dependent",
+      "seed": null,
+      "outputHashesMatch": true,
+      "scope": "Floating-point/adaptive arithmetic is environment-dependent; compare scientifically with named tolerances, not a portability guarantee."
+    },
+    {
+      "kind": "topological-order",
+      "class": "deterministic",
+      "seed": null,
+      "outputHashesMatch": true,
+      "scope": "Same admitted implementation/input; no cross-browser bitwise theorem."
+    },
+    {
+      "kind": "seeded-loss",
+      "class": "seeded-stochastic",
+      "seed": "42",
+      "outputHashesMatch": true,
+      "scope": "Same seed, random-stream policy and recorded runtime; reused seeds are not independent replications."
+    }
+  ],
+  "faults": [
+    {
+      "id": "timeout-simulation",
+      "status": "rejected",
+      "expected": "bounded rejection",
+      "observed": "Background execution reached its active time limit (wall-clock limit); the prior result remains available."
+    },
+    {
+      "id": "memory-failure-simulation",
+      "status": "rejected",
+      "expected": "bounded rejection and resource release",
+      "observed": "Simulated allocation failure; no browser heap was exhausted."
+    }
+  ],
+  "limitations": [
+    "Authored engineering workloads, not scientific validity or human-reader evidence.",
+    "Reservations are logical admission budgets, not measured total browser heap or a general out-of-memory guarantee.",
+    "Heartbeat measures this observed run on this environment; it is not a responsiveness guarantee on other devices.",
+    "Output hashes use canonical semantic JSON; the discrete result wall-time measurement is excluded from replay comparison. Raw result byte counts retain that measurement.",
+    "Seed/version/input identities retain their existing engine-specific returned requests; no cache, compiler or scientific authority is exported.",
+    "No provider call, remote job or paper download is started by this fixture."
+  ]
+}

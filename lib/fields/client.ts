@@ -1,12 +1,13 @@
+import {runScheduledWorker,type ExecutionScheduleOptions} from '../execution/scheduler';
 import { FIELD_SOLVER_VERSION,type FieldRequest,type FieldResult } from '../../shared/physical-fields';
 import { normalizeFieldRequest,validateFieldResult } from './model';
 export const FIELD_WORKER_PROTOCOL=1;
 export type FieldWorker={postMessage(value:unknown):void;terminate():void;onmessage:((event:MessageEvent<unknown>)=>void)|null;onerror:((event:ErrorEvent)=>void)|null;onmessageerror?:((event:MessageEvent<unknown>)=>void)|null};
-export type FieldClientOptions={signal?:AbortSignal;timeoutMs?:number;onProgress?:(status:'starting'|'running')=>void;workerFactory?:()=>FieldWorker};
+export type FieldClientOptions={signal?:AbortSignal;timeoutMs?:number;onProgress?:(status:'starting'|'running')=>void;workerFactory?:()=>FieldWorker} & ExecutionScheduleOptions;
 const active=new Set<FieldWorker>();
 export function activeFieldExecutions(){return active.size;}
 /** Browser runs have disposable workers; server execution uses only trusted registered thermal-diffusion stencil. */
-export async function executeField(raw:FieldRequest,options:FieldClientOptions={}):Promise<FieldResult>{
+async function executeFieldUnscheduled(raw:FieldRequest,options:FieldClientOptions={}):Promise<FieldResult>{
  const request=normalizeFieldRequest(raw).request;
  if(options.signal?.aborted)throw new DOMException('Field computation cancelled.','AbortError');
  if(typeof window==='undefined'&&!options.workerFactory){const {solveField}=await import('./solver');return validateFieldResult(solveField(request,{signal:options.signal}),request);}
@@ -32,4 +33,10 @@ export async function executeField(raw:FieldRequest,options:FieldClientOptions={
   if(options.signal?.aborted){abort();return;}
   try{options.onProgress?.('starting');}catch{finish(Error('The field progress observer failed.'));return;}if(settled)return;try{worker.postMessage({protocol:FIELD_WORKER_PROTOCOL,id,request});}catch{finish(Error('The field input could not be transferred.'));}
  });
+}
+
+/** Global browser worker admission; existing explicit Node numerical execution stays unchanged. */
+export async function executeField(raw:FieldRequest,options:FieldClientOptions={}):Promise<FieldResult>{
+ const request=normalizeFieldRequest(raw).request,captured={...options};if(typeof window==='undefined'&&!captured.workerFactory)return executeFieldUnscheduled(request,captured);const timeout=Number.isFinite(captured.timeoutMs)?captured.timeoutMs!:request.solver.maxWallMs+1000;
+ return runScheduledWorker('field',request,{maxResultBytes:3*1024*1024,maxExecutionMs:timeout},signal=>executeFieldUnscheduled(request,{...captured,signal}),captured);
 }

@@ -1,7 +1,8 @@
+import {runScheduledWorker,type ExecutionScheduleOptions} from '../execution/scheduler';
 import { validateWidgetSpec, type WidgetSpec } from '../../shared/widgets';
 import type { WidgetResult } from './compute';
 export const WIDGET_WORKER_PROTOCOL=2;
-export function executeWidget(spec:WidgetSpec,seed:number,options:{signal?:AbortSignal;timeoutMs?:number}={}):Promise<WidgetResult>{
+function executeWidgetUnscheduled(spec:WidgetSpec,seed:number,options:{signal?:AbortSignal;timeoutMs?:number}={}):Promise<WidgetResult>{
  return new Promise((resolve,reject)=>{
   if(options.signal?.aborted){reject(new DOMException('Widget computation cancelled.','AbortError'));return;}
   let validated:WidgetSpec;try{validated=validateWidgetSpec(spec);if(new TextEncoder().encode(JSON.stringify(validated)).length>128*1024)throw Error('Widget input exceeds its transfer budget.');if(!Number.isInteger(seed)||seed<0||seed>4_294_967_295)throw Error('A widget needs a valid 32-bit seed.');}catch(e){reject(e);return;}
@@ -17,3 +18,5 @@ export function executeWidget(spec:WidgetSpec,seed:number,options:{signal?:Abort
   try{worker.postMessage({protocol:2,id,spec:validated,seed});}catch{finish(()=>reject(Error('The widget input could not be transferred. No computation was retained.')));}
  });
 }
+
+export async function executeWidget(spec:WidgetSpec,seed:number,options:{signal?:AbortSignal;timeoutMs?:number}&ExecutionScheduleOptions={}):Promise<WidgetResult>{const validated=validateWidgetSpec(spec),captured={...options};return runScheduledWorker('widget',{spec:validated,seed},{maxResultBytes:2*1024*1024,maxExecutionMs:Number.isFinite(captured.timeoutMs)?captured.timeoutMs!:15000},signal=>executeWidgetUnscheduled(validated,seed,{...captured,signal}),captured);}

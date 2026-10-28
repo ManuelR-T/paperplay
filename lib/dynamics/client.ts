@@ -1,12 +1,13 @@
+import {runScheduledWorker,type ExecutionScheduleOptions} from '../execution/scheduler';
 import { DYNAMICS_SOLVER_VERSION,type DynamicsRequest,type DynamicsResult } from '../../shared/dynamics';
 import { normalizeDynamicsRequest,validateDynamicsResult } from './model';
 export const DYNAMICS_WORKER_PROTOCOL=1;
 export type DynamicsWorker={postMessage(value:unknown):void;terminate():void;onmessage:((event:MessageEvent<unknown>)=>void)|null;onerror:((event:ErrorEvent)=>void)|null;onmessageerror?:((event:MessageEvent<unknown>)=>void)|null};
-export type DynamicsClientOptions={signal?:AbortSignal;timeoutMs?:number;onProgress?:(status:'starting'|'running')=>void;workerFactory?:()=>DynamicsWorker};
+export type DynamicsClientOptions={signal?:AbortSignal;timeoutMs?:number;onProgress?:(status:'starting'|'running')=>void;workerFactory?:()=>DynamicsWorker} & ExecutionScheduleOptions;
 const active=new Set<DynamicsWorker>();
 export function activeDynamicsExecutions(){return active.size;}
 /** Browser runs have disposable workers; server execution uses only trusted registered equations. */
-export async function executeDynamics(raw:DynamicsRequest,options:DynamicsClientOptions={}):Promise<DynamicsResult>{
+async function executeDynamicsUnscheduled(raw:DynamicsRequest,options:DynamicsClientOptions={}):Promise<DynamicsResult>{
  const request=normalizeDynamicsRequest(raw).request;
  if(options.signal?.aborted)throw new DOMException('Dynamics computation cancelled.','AbortError');
  if(typeof window==='undefined'&&!options.workerFactory){const {solveDynamics}=await import('./solver');return validateDynamicsResult(solveDynamics(request,{signal:options.signal}),request);}
@@ -32,4 +33,10 @@ export async function executeDynamics(raw:DynamicsRequest,options:DynamicsClient
   if(options.signal?.aborted){abort();return;}
   try{options.onProgress?.('starting');}catch{finish(Error('The dynamics progress observer failed.'));return;}if(settled)return;try{worker.postMessage({protocol:DYNAMICS_WORKER_PROTOCOL,id,request});}catch{finish(Error('The dynamics input could not be transferred.'));}
  });
+}
+
+/** Global browser worker admission; existing explicit Node numerical execution stays unchanged. */
+export async function executeDynamics(raw:DynamicsRequest,options:DynamicsClientOptions={}):Promise<DynamicsResult>{
+ const request=normalizeDynamicsRequest(raw).request,captured={...options};if(typeof window==='undefined'&&!captured.workerFactory)return executeDynamicsUnscheduled(request,captured);const timeout=Number.isFinite(captured.timeoutMs)?captured.timeoutMs!:request.solver.maxWallMs+1000;
+ return runScheduledWorker('dynamics',request,{maxResultBytes:3*1024*1024,maxExecutionMs:timeout},signal=>executeDynamicsUnscheduled(request,{...captured,signal}),captured);
 }

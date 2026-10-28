@@ -1,0 +1,113 @@
+{
+  "issue": "PP109",
+  "date": "2026-10-28",
+  "browser": "Native collaborative Chromium, new owned default-profile tab",
+  "application": "http://localhost:3001/execution-lab",
+  "scope": "UI/no-autorun, editable notes during a single stopped workload, responsive containment and controls. Parent separately covered full mixed execution and worker/visibility/fault matrix.",
+  "mount": {
+    "localTasksIdle": true,
+    "noReport": true,
+    "workerOrApiResourceRequests": 0
+  },
+  "runAndStop": {
+    "observedActive": 2,
+    "observedQueued": 7,
+    "notesEditableDuringRunning": true,
+    "sourceCardAvailableDuringRunning": true,
+    "notesPreservedAfterStop": true,
+    "monitorReturnedIdle": true,
+    "cancelledRowsInPartialReport": 1,
+    "noRecoveryProbeSuccessClaim": true
+  },
+  "desktop": {
+    "viewportWidth": 1280,
+    "pageClientWidth": 1280,
+    "pageScrollWidth": 1280,
+    "minimumButtonHeightPx": 44
+  },
+  "mobile": {
+    "page": {
+      "client": 320,
+      "scroll": 320
+    },
+    "panel": {
+      "client": 320,
+      "scroll": 320
+    },
+    "font": "16px",
+    "comparisonRegion": {
+      "client": 284,
+      "scroll": 580,
+      "overflow": "auto"
+    },
+    "minimumButtonHeight": 44,
+    "notesPreserved": true
+  },
+  "enlargedText": {
+    "viewportWidth": 320,
+    "computedTextPx": 32,
+    "pageClientWidth": 320,
+    "pageScrollWidth": 320,
+    "panelClientWidth": 320,
+    "panelScrollWidth": 320,
+    "tableClientWidth": 252,
+    "tableScrollWidth": 580,
+    "tableOverflow": "auto",
+    "outsideRegionOverflows": 0,
+    "minimumButtonHeightPx": 58.25
+  },
+  "contrast": {
+    "before": {
+      "foreground": "#252b27",
+      "background": "#536941",
+      "ratio": 2.3837193499819507
+    },
+    "ownedFix": ".root.root button[data-variant=default]{color:var(--primary-foreground)}",
+    "exactSelectorProbe": {
+      "foreground": "rgb(247, 249, 240)",
+      "background": "rgb(83, 105, 65)",
+      "contrast": 5.704104559148007
+    },
+    "productionConfirmation": "Final rebuild pending parent confirmation; probe screenshot uses exactly the scoped production CSS fix."
+  },
+  "network": {
+    "fetchedDuringExplicitRun": [
+      "http://localhost:3001/artifact-workers.json",
+      "http://localhost:3001/artifact-compiler.59d13ebab1ca130b9a73c2f000380ae8294423cd49c577c2a6ee1b56e6e3cce4.worker.mjs"
+    ],
+    "apiOrProviderCalls": 0
+  },
+  "limitations": [
+    "Only UI engineering behavior is assessed, not scientific validity or a human reader study.",
+    "One run was deliberately stopped; full nine-task results and fault/visibility/actual-Worker counts are in the separate parent report.",
+    "Recorded widths precede the parent's final route gutter adjustment; no overflow was observed at 320px.",
+    "Allocation failure is explicitly labeled simulated; no real browser heap exhaustion was attempted.",
+    "Only scoped button contrast was changed by this UI pass; typecheck passed."
+  ],
+  "cleanup": {
+    "persistentNotesOrStudiesCreated": 0,
+    "temporaryColorAndTextStylesRemoved": true,
+    "fetchInstrumentationRestored": true
+  },
+  "screenshots": [
+    {
+      "path": "data/execution-browser-ui-desktop.png",
+      "sha256": "787164ec028fc54dbec795a6b15cacf7a286c55e840e88ebba575f743ac192d3"
+    },
+    {
+      "path": "data/execution-browser-ui-mobile-enlarged.png",
+      "sha256": "df81a261aaf2bf8658c015bf32c6794a61360bc961949f124ca4f0c7cd7b20e4"
+    }
+  ],
+  "parentFinalProductionRecheck": {
+    "viewport": 320,
+    "pageWidth": 320,
+    "mainPadding": "24px 16px",
+    "buttonTextColor": "rgb(247, 249, 240)",
+    "buttonBackground": "rgb(83, 105, 65)",
+    "buttonContrast": 5.7,
+    "buttonHeight": 44,
+    "temporaryStyleElements": 0,
+    "localNotesClearedByReload": true
+  }
+}

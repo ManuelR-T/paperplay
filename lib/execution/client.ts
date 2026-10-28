@@ -1,3 +1,4 @@
+import {runScheduledWorker,type ExecutionScheduleOptions} from './scheduler';
 import { version as appVersion } from '../../package.json';
 import { EXECUTION_PROTOCOL_VERSION, validateExecutionRequest, validateExecutionResult, type ExecutionInput, type ExecutionResponse, type ExecutionResult } from './protocol';
 
@@ -7,7 +8,7 @@ export const createExecutionWorker: WorkerFactory = () => new Worker(`/engine.wo
 const cancelled = () => new DOMException('Computation cancelled.', 'AbortError');
 
 /** One disposable worker per run: termination interrupts CPU work, not just its UI. */
-export function executeInWorker(input: ExecutionInput, options: { signal?: AbortSignal; onProgress?: (status: 'starting' | 'running') => void; workerFactory?: WorkerFactory; timeoutMs?: number } = {}): Promise<ExecutionResult> {
+function executeInWorkerUnscheduled(input: ExecutionInput, options: { signal?: AbortSignal; onProgress?: (status: 'starting' | 'running') => void; workerFactory?: WorkerFactory; timeoutMs?: number } = {}): Promise<ExecutionResult> {
   return new Promise((resolve, reject) => {
     if (options.signal?.aborted) { reject(cancelled()); return; }
     const request = validateExecutionRequest({ ...input, version: EXECUTION_PROTOCOL_VERSION, id: crypto.randomUUID() });
@@ -28,7 +29,7 @@ export function executeInWorker(input: ExecutionInput, options: { signal?: Abort
       if (finished) return;
       const message = event.data;
       if (message?.version !== EXECUTION_PROTOCOL_VERSION || message.id !== request.id) { complete(new Error('The background computation returned an incompatible or stale response.')); return; }
-      if (message.status === 'started') { options.onProgress?.('running'); return; }
+      if (message.status === 'started') { try{options.onProgress?.('running');}catch{complete(new Error('The computation progress observer failed.'));} return; }
       if (message.status === 'failed') { complete(new Error(typeof message.error === 'string' ? message.error : 'Background computation failed.')); return; }
       try {
         // The application-owned worker has already validated every trace step.
@@ -41,7 +42,9 @@ export function executeInWorker(input: ExecutionInput, options: { signal?: Abort
     worker.onerror = () => complete(new Error('Background computation failed to load or execute. The source remains readable.'));
     worker.onmessageerror = () => complete(new Error('The background result could not be transferred.'));
     if (options.signal?.aborted) { stop(); return; }
-    options.onProgress?.('starting');
+    try{options.onProgress?.('starting');}catch{complete(new Error('The computation progress observer failed.'));return;}if(finished)return;
     try { worker.postMessage(request); } catch { complete(new Error('The input could not be transferred to the computation worker.')); }
   });
 }
+
+export async function executeInWorker(input:ExecutionInput,options:{signal?:AbortSignal;onProgress?:(status:'starting'|'running')=>void;workerFactory?:WorkerFactory;timeoutMs?:number}&ExecutionScheduleOptions={}):Promise<ExecutionResult>{const checked=validateExecutionRequest({...input,version:EXECUTION_PROTOCOL_VERSION,id:'scheduled-preflight'}),{id:_,version:__,...capturedInput}=checked,captured={...options};return runScheduledWorker('engine',capturedInput,{maxResultBytes:8*1024*1024,maxExecutionMs:Number.isFinite(captured.timeoutMs)?captured.timeoutMs!:30000},signal=>executeInWorkerUnscheduled(capturedInput,{...captured,signal}),captured);}

@@ -1,12 +1,13 @@
+import {runScheduledWorker,type ExecutionScheduleOptions} from '../execution/scheduler';
 import { STOCHASTIC_SOLVER_VERSION,type StochasticRequest,type StochasticResult } from '../../shared/stochastic';
 import { normalizeStochasticRequest,validateStochasticResult } from './model';
 export const STOCHASTIC_WORKER_PROTOCOL=1;
 export type StochasticWorker={postMessage(value:unknown):void;terminate():void;onmessage:((event:MessageEvent<unknown>)=>void)|null;onerror:((event:ErrorEvent)=>void)|null;onmessageerror?:((event:MessageEvent<unknown>)=>void)|null};
-export type StochasticClientOptions={signal?:AbortSignal;timeoutMs?:number;onProgress?:(status:'starting'|'running')=>void;workerFactory?:()=>StochasticWorker};
+export type StochasticClientOptions={signal?:AbortSignal;timeoutMs?:number;onProgress?:(status:'starting'|'running')=>void;workerFactory?:()=>StochasticWorker} & ExecutionScheduleOptions;
 const active=new Set<StochasticWorker>();
 export function activeStochasticExecutions(){return active.size;}
 /** Browser runs have disposable workers; server execution uses only trusted registered equations. */
-export async function executeStochastic(raw:StochasticRequest,options:StochasticClientOptions={}):Promise<StochasticResult>{
+async function executeStochasticUnscheduled(raw:StochasticRequest,options:StochasticClientOptions={}):Promise<StochasticResult>{
  const request=normalizeStochasticRequest(raw).request;
  if(options.signal?.aborted)throw new DOMException('Stochastic computation cancelled.','AbortError');
  if(typeof window==='undefined'&&!options.workerFactory){const {solveStochastic}=await import('./solver');return validateStochasticResult(solveStochastic(request,{signal:options.signal}),request);}
@@ -32,4 +33,10 @@ export async function executeStochastic(raw:StochasticRequest,options:Stochastic
   if(options.signal?.aborted){abort();return;}
   try{options.onProgress?.('starting');}catch{finish(Error('The stochastic progress observer failed.'));return;}if(settled)return;try{worker.postMessage({protocol:STOCHASTIC_WORKER_PROTOCOL,id,request});}catch{finish(Error('The stochastic input could not be transferred.'));}
  });
+}
+
+/** Global browser worker admission; existing explicit Node numerical execution stays unchanged. */
+export async function executeStochastic(raw:StochasticRequest,options:StochasticClientOptions={}):Promise<StochasticResult>{
+ const request=normalizeStochasticRequest(raw).request,captured={...options};if(typeof window==='undefined'&&!captured.workerFactory)return executeStochasticUnscheduled(request,captured);const timeout=Number.isFinite(captured.timeoutMs)?captured.timeoutMs!:request.solver.maxWallMs+1000;
+ return runScheduledWorker('stochastic',request,{maxResultBytes:3*1024*1024,maxExecutionMs:timeout},signal=>executeStochasticUnscheduled(request,{...captured,signal}),captured);
 }

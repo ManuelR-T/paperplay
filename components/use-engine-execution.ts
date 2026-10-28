@@ -10,6 +10,7 @@ const idle: ExecutionState = { status: 'idle', progress: null, result: null, err
 export function useEngineExecution(input: ExecutionInput | null) {
   const [state, setState] = useState<ExecutionState>(idle);
   const [revision, setRevision] = useState(0);
+  const lastComplete=useRef<{identity:string;result:ExecutionResult}|null>(null);
   const activeIdentity = useRef('');
   const sequence = useRef(0); const abort = useRef<AbortController | null>(null);
   const identity = input ? JSON.stringify(input) : '';
@@ -18,21 +19,23 @@ export function useEngineExecution(input: ExecutionInput | null) {
     abort.current?.abort();
     if (!input) { setState(idle); return; }
     const controller = new AbortController(); abort.current = controller;
-    setState({ status: 'running', progress: 'starting', result: null, error: null });
+    const retained=lastComplete.current?.identity===identity?lastComplete.current.result:null;
+    setState({ status: 'running', progress: 'starting', result: retained, error: null });
     void executeInWorker(input, { signal: controller.signal, onProgress: progress => {
       if (sequence.current === current) setState(value => ({ ...value, progress }));
     } }).then(result => {
-      if (sequence.current === current && !controller.signal.aborted) setState({ status: 'complete', progress: null, result, error: null });
+      if (sequence.current === current && !controller.signal.aborted){lastComplete.current={identity,result};setState({ status: 'complete', progress: null, result, error: null });}
     }).catch(error => {
       if (sequence.current !== current) return;
-      setState({ status: controller.signal.aborted ? 'cancelled' : 'failed', progress: null, result: null, error: controller.signal.aborted ? null : error instanceof Error ? error.message : 'Background computation failed.' });
+      const stopped=controller.signal.aborted||error instanceof DOMException&&error.name==='AbortError'||error&&typeof error==='object'&&'code'in error&&error.code==='backgrounded';
+      setState({ status: stopped ? 'cancelled' : 'failed', progress: null, result: retained, error: stopped ? null : error instanceof Error ? error.message : 'Background computation failed.' });
     });
     return () => { sequence.current++; controller.abort(); };
   // The versioned serializable input is the complete computation identity.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [identity, revision]);
   const visible = activeIdentity.current === identity ? state : input ? { ...idle, status: 'running' as const, progress: 'starting' as const } : idle;
-  return { ...visible, identity, cancel: () => { sequence.current++; abort.current?.abort(); setState({ status: 'cancelled', progress: null, result: null, error: null }); }, restart: () => setRevision(value => value + 1) };
+  return { ...visible, identity, cancel: () => { sequence.current++; abort.current?.abort(); setState(value=>({...value,status:'cancelled',progress:null,error:null})); }, restart: () => setRevision(value => value + 1) };
 }
 export function useEngineRun(input: Extract<ExecutionInput, { kind: 'run' }> | null) {
   const state = useEngineExecution(input);
