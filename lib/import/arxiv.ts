@@ -104,13 +104,13 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
         return;
       }
     }
-    node.find('math').each((__, math) => { const tex = texOf($, math); $(math).replaceWith($('<span>').text(tex || $(math).text())); });
+    node.find('math').each((__, math) => { const tex = texOf($, math).trim(); $(math).replaceWith($('<span>').text(tex ? `\\(${tex}\\)` : $(math).text())); });
     const text = cleanText(node.text());
     if (text) paragraphBlocks(text, 1, `html-${sequence}`).forEach(block => blocks.push(block));
   });
   if (blocks.filter(block => block.kind === 'paragraph').length < 2) throw new Error('The structured article did not contain enough readable source text.');
   return normalizeSource({ kind: 'arxiv', title, authors, url, pageCount: 1, blocks, identity: arxivId,
-    warnings: ['Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.', 'Available original image asset locations are retained; illustrations without usable image assets keep the original article reference. Inline mathematical notation may remain TeX text; check the original article for exact layout.'] });
+    warnings: ['Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.', 'Available original image asset locations are retained; illustrations without usable image assets keep the original article reference. Inline mathematical boundaries are retained for typesetting; unsupported notation remains visible as source text. Check the original article for exact layout.'] });
 }
 
 /** Original structural evidence remains separate from the legacy normalized source block union. */

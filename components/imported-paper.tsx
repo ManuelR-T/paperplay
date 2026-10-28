@@ -14,6 +14,7 @@ import { ResearchWorkbench } from './research-workbench';
 import { useReadingSession } from './reading-session';
 import {AutomaticPaperEnhancement} from './automatic-paper';
 import { GeneratedFigureView } from './figures/generated-figure';
+import {SourceMath} from './reading/source-math';
 
 export function ImportedPaperReader({ record, remove, busy, sources, openSource, automaticEnabled=true }: { automaticEnabled?:boolean; record: ImportRecord; remove: (id: string) => Promise<void>; busy: boolean; sources?: SourceDocument[]; openSource?: (id: string) => void }) {
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -64,7 +65,7 @@ function ImportedSourceBlock({ block, source, originalUrl, original, htmlSource 
   const link = originalUrl ? htmlSource ? originalUrl : `${originalUrl}#page=${block.page}` : undefined;
   const reference = link ? <a className="source-page" href={link} target="_blank" rel="noreferrer" onClick={event => { if (!event.metaKey && !event.ctrlKey) { event.preventDefault(); openOriginal(source, block.id); } }}>{location}</a> : <span className="source-page">{location}</span>;
   if (block.kind === 'heading') return <section className="original-heading source-block" id={id} tabIndex={-1}>{reference}<h2>{block.text}</h2></section>;
-  if (block.kind === 'paragraph') return <div className="source-block source-paragraph" id={id} tabIndex={-1}><p>{block.text}</p>{reference}</div>;
+  if (block.kind === 'paragraph') return <div className="source-block source-paragraph" id={id} tabIndex={-1}><p><SourceMath text={block.text}/></p>{reference}</div>;
   if (block.kind === 'equation') {
     const html = katex.renderToString(block.latex, { displayMode: true, throwOnError: false, trust: false, strict: 'ignore', maxExpand: 100, output: 'htmlAndMathml' });
     return <figure className="source-equation source-block" data-latex={block.latex} id={id} tabIndex={-1}><div className="equation-scroll" tabIndex={0} role="region" aria-label={`Original equation ${block.label ?? block.id}; scroll horizontally when needed`} dangerouslySetInnerHTML={{ __html: html }}/><figcaption>{block.label ? `${block.label} · ` : 'Source equation · '}{reference}</figcaption></figure>;
