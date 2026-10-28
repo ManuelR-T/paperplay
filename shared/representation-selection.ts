@@ -1,13 +1,19 @@
+import { pixelsFromRegion } from './spatial-coordinates';
 import type { RepresentationPlan } from './representations';
 import type { RepresentationNavigation, SemanticSelection } from './semantic-selections';
 import { quantityValues } from './scientific-quantities';
 /** Navigation freshness only. This non-cryptographic digest never grants scientific trust. */
 export function representationInputRevision(plan:RepresentationPlan){
- const input={...plan,navigation:undefined,reportedChecks:undefined,views:plan.views.map(view=>view.kind==='widget'?{...view,widget:{...view.widget,view:undefined}}:view)};
+ const input={...plan,navigation:undefined,reportedChecks:undefined,views:plan.views.map(view=>view.kind==='spatial-view'?{...view,spatial:{...view.spatial,viewport:undefined}}:view.kind==='widget'?{...view,widget:{...view.widget,view:undefined}}:view)};
  let hash=0xcbf29ce484222325n;for(const value of new TextEncoder().encode(JSON.stringify(input)))hash=BigInt.asUintN(64,(hash^BigInt(value))*0x100000001b3n);return hash.toString(16).padStart(16,'0');
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='spatial-view'){
+   if(selection.kind!=='region'||selection.scopeId!=='spatial'||selection.frame!==view.spatial.calibration.frame||selection.unit!==view.spatial.calibration.unit)return false;
+   const asset=plan.assetManifests?.find(asset=>asset.id===view.spatial.input.assetId);
+   if(asset&&asset.shape.length===2){try{pixelsFromRegion(selection,view.spatial.calibration,{width:asset.shape[1],height:asset.shape[0]});}catch{return false;}}return true;
+ }
  if(view.kind==='statistical-chart'){
    if(selection.kind!=='entity'||selection.scopeId!=='chart')return false;const [seriesId,rowId,...extra]=selection.entityId.split(':');if(extra.length||!rowId)return false;const series=view.chart.series.find(s=>s.id===seriesId);if(!series)return false;
    if(view.chart.kind==='distribution')return /^bin\d+$/.test(rowId)&&Number(rowId.slice(3))<(view.chart.bins??0);
@@ -35,7 +41,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='statistical-chart'&&selection.kind==='entity')view.chart.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='spatial-view'&&selection.kind==='region')view.spatial.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='statistical-chart'&&selection.kind==='entity')view.chart.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='composed-scene'&&selection.kind==='entity')view.scene.entities?.find(entity=>entity.id===selection.entityId)?.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='composed-scene'&&selection.kind==='time'){const node=view.scene.nodes.find(node=>node.id===selection.scopeId);if(node?.kind==='scene'||node?.kind==='process')(node.kind==='process'?node.steps:node.frames).find(frame=>frame.id===selection.frameId)?.anchorIds?.forEach(id=>ids.add(id));}
    else if(view.kind==='widget')plan.anchors.filter(anchor=>anchor.blockId===view.widget.source.blockId).forEach(anchor=>ids.add(anchor.id));

@@ -19,8 +19,8 @@
     "M16": "Coverage, validation, performance and adoption"
   },
   "sizeLegend": {
-    "M": "roughly 3–5 focused solo days; re-estimate after design",
-    "L": "roughly 6–10 focused solo days; split into reviewable increments",
+    "M": "roughly 3\u20135 focused solo days; re-estimate after design",
+    "L": "roughly 6\u201310 focused solo days; split into reviewable increments",
     "discovery": "timebox a prototype/design before committing to implementation estimates",
     "external": "depends on participant/expert availability, not only engineering time"
   },
@@ -361,10 +361,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 46,
         "url": "https://github.com/ManuelR-T/paperplay/issues/46"
+      },
+      "evidence": {
+        "document": "docs/spatial-views.md",
+        "checks": "npm run check: TypeScript, 283 tests and production build; pinned CDC byte digest, coordinate/ROI/mask and bounded fetch reference tests",
+        "browser": "Native Chromium at 320 px: actual 700x412 CDC raster, source-byte digest, original-coordinate selection across overlay and zoom, missing-field region, finite-field values, keyboard movement, portable v2 export/reopen and preserved viewport; no model calls",
+        "limitations": "Bounded 2D rasters only; strict JPEG/PNG subset, explicit loading and source fallback. Displayed sRGB is not raw instrument data. Authored scalar field is illustrative, physical microscopy calibration unknown, masks not verified segmentation."
       }
     },
     {

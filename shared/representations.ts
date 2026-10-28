@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { spatialViewSchema,validateSpatialView } from './spatial-views';
 import { statisticalChartSchema,validateStatisticalChart } from './statistical-charts';
 import { representationNavigationSchema, selectionChannel } from './semantic-selections';
 import { isRepresentationSelection, representationInputRevision } from './representation-selection';
@@ -17,6 +18,7 @@ export const representationAnchorSchema = z.strictObject({ id: name, blockId: z.
 export const evidenceLevelSchema = z.enum(['illustrative-walkthrough','simplified-illustration','mechanism-reproduction','experiment-reproduction']);
 const ids = z.array(name).min(1).max(32);
 export const representationViewSchema = z.discriminatedUnion('kind', [
+  z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('spatial-view'),spatial:spatialViewSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('statistical-chart'),chart:statisticalChartSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('composed-scene'),scene:composedSceneSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('quantity'),quantityId:name,requirement:quantityRequirementSchema}),
@@ -34,7 +36,7 @@ export const representationPlanSchema = z.strictObject({
   assets: z.array(z.strictObject({ id: name, kind: z.enum(['table','tensor','image','sequence','graph','geometry']), description: text.max(500), checksum:z.string().regex(/^[a-f0-9]{64}$/).optional() })).max(32),
   quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500), measurement:scientificQuantitySchema.optional() })).max(32),
   execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(capabilityReferenceSchema).min(1).max(16), assetIds: z.array(name).max(32) }),
-  interactions: z.array(representationInteractionSchema).max(5),
+  interactions: z.array(representationInteractionSchema).max(6),
   assetManifests:z.array(scientificAssetSchema).max(32).optional(),
   evidence: z.array(evidenceDeclarationSchema).max(128).optional(),
   reportedChecks: z.array(reportedScientificCheckSchema).max(64).optional(),
@@ -72,6 +74,11 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
       validateWidgetEnvelope(view.widget,source);
       if(!plan.anchors.some(anchor=>anchor.blockId===view.widget.source.blockId&&anchor.page===view.widget.source.page&&normalized(anchor.quote)===normalized(view.widget.source.quote))) throw Error('A widget must use an anchor declared in its representation.');
       if(plan.execution.kind!=='local-computation') throw Error('Widget views require local computation.');
+    } else if(view.kind==='spatial-view'){
+      validateSpatialView(view.spatial,[...anchors.keys()]);
+      const main=plan.assets.find(asset=>asset.id===view.spatial.input.assetId),kind=view.spatial.input.kind==='image'?'image':'tensor';
+      if(!main||main.kind!==kind||!plan.execution.assetIds.includes(main.id))throw Error('Spatial inputs require their declared original image or field tensor.');
+      for(const layer of view.spatial.overlays)if(layer.kind==='mask'&&(!plan.assets.some(asset=>asset.id===layer.assetId&&asset.kind==='tensor')||!plan.execution.assetIds.includes(layer.assetId)))throw Error('Spatial masks require declared bound tensor assets.');
     } else if(view.kind==='statistical-chart'){
       validateStatisticalChart(view.chart);checkAnchors(view.chart.anchorIds);
       if(plan.execution.kind!=='local-computation')throw Error('A statistical chart requires explicit local data processing.');
@@ -83,8 +90,9 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
     else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
     else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
   }
+  if(plan.interactions.includes('select-region')&&!plan.views.some(view=>view.kind==='spatial-view'))throw Error('This representation has no spatial region controls.');
   if(plan.interactions.includes('select-entity')&&!plan.views.some(view=>view.kind==='widget'||view.kind==='statistical-chart'||view.kind==='composed-scene'&&!!view.scene.entities?.length))throw Error('This representation has no semantic entity targets.');
-  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'||view.kind==='quantity'||view.kind==='statistical-chart'))throw Error('This representation has no data inspector.');
+  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'||view.kind==='quantity'||view.kind==='statistical-chart'||view.kind==='spatial-view'))throw Error('This representation has no data inspector.');
   if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
   for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
   if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');

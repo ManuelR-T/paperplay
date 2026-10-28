@@ -1,27 +1,20 @@
 'use client';
 import { useMemo, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 import type { SourceDocument } from '@/shared/schema';
-import { validateRepresentationPlan, MAX_REPRESENTATION_BYTES, type RepresentationPlan } from '@/shared/representations';
+import { validateRepresentationPlan, MAX_REPRESENTATION_BYTES } from '@/shared/representations';
 import { buildRepresentation } from '@/lib/representations/lifecycle';
 import { validateScientificAsset } from '@/lib/assets/local';
 import type { ScientificAsset } from '@/shared/scientific-assets';
 import { ScientificAssetImporter, ScientificAssetView } from './scientific-asset-importer';
-import { bindScientificQuantity } from '@/lib/quantities/convert';
-import { buildChartModel } from '@/lib/charts/model';
-import { StatisticalChartView } from './statistical-chart';
-import { ComposedSceneView } from './composed-scene';
-import { ScientificQuantityView } from './scientific-quantity-view';
 import { RepresentationEvidence } from './representation-evidence';
 import { Button } from './ui/button';
 import { useRepresentationSelections } from './use-representation-selections';
 import { selectionAnchorIds } from '@/shared/representation-selection';
-import { applyWidgetNavigation,captureWidgetNavigation } from '@/lib/interactions/widget-selection';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog';
-const WidgetView=dynamic(()=>import('./widgets/widget-view').then(module=>module.WidgetView),{ssr:false,loading:()=> <p role="status">Loading figure…</p>});
+import { RepresentationViews,type PlanUpdate } from './representation-views';
 
 export function RepresentationPreview({input,source,onClose,assets}:{input:unknown;source:SourceDocument;onClose:()=>void;assets?:readonly ScientificAsset[]}) {
-  const [working,setWorking]=useState(input);
+  const [working,setWorking]=useState(input);const workingRef=useRef(input);workingRef.current=working;
   const [available,setAvailable]=useState<ScientificAsset[]>([...(assets??[])]);
   const [embedded,setEmbedded]=useState<ScientificAsset[]>([]);const [dataError,setDataError]=useState('');
   const parsed=useMemo(()=>{try{return validateRepresentationPlan(working,source);}catch{return null;}},[working,source]);
@@ -30,6 +23,8 @@ export function RepresentationPreview({input,source,onClose,assets}:{input:unkno
   const built=useMemo(()=>buildRepresentation(working,source,{assets:available}),[working,source,available]);
   function bind(next:ScientificAsset[]){if(!parsed)return;const candidate={...parsed,navigation:undefined,assets:parsed.assets.map(ref=>{const asset=next.find(asset=>asset.id===ref.id);if(asset&&ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('These data differ from the representation checksum. Supply its matching dataset; the original representation is retained.');return asset?{...ref,checksum:asset.checksum.value}:ref;}),assetManifests:[...(parsed.assetManifests??[]).filter(item=>!next.some(asset=>asset.id===item.id)),...next]};if(new TextEncoder().encode(JSON.stringify(candidate)).length>MAX_REPRESENTATION_BYTES)delete (candidate as {assetManifests?:ScientificAsset[]}).assetManifests;const plan=validateRepresentationPlan(candidate,source);setAvailable(old=>[...old.filter(item=>!next.some(asset=>asset.id===item.id)),...next]);setWorking(plan);setEmbedded([]);}
 
+  const updatePlan:PlanUpdate=transform=>{const current=validateRepresentationPlan(workingRef.current,source),checked=buildRepresentation(transform(current),source,{assets:available});if(checked.status!=='ready')throw Error(checked.reason);workingRef.current=checked.value.plan;setWorking(checked.value.plan);};
+
   function download(){try{const exported=parsed&&built.status==='ready'?validateRepresentationPlan({...parsed,navigation:selectionStore.getSnapshot()},source):working;const value=JSON.stringify(exported,null,2);if(new TextEncoder().encode(value).length>MAX_REPRESENTATION_BYTES)throw Error('This representation exceeds 256 KiB for export. Keep the data files and reduce the selected dataset before exporting a combined representation.');const url=URL.createObjectURL(new Blob([value],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='paperplay-representation.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(error){setDataError(error instanceof Error?error.message:'Export failed.');}}
 
   return <Dialog open onOpenChange={open=>{if(!open)onClose();}}><DialogContent className="reader-dialog" onCloseAutoFocus={event=>{if(returnTarget.current){event.preventDefault();const target=returnTarget.current;requestAnimationFrame(()=>{target.scrollIntoView({block:"center"});target.focus();});}}}><DialogTitle>{built.status==='ready'?built.value.plan.title:'Representation unavailable'}</DialogTitle><DialogDescription>Preview a source-linked representation. This does not modify the paper or run a model request.</DialogDescription>
@@ -37,7 +32,7 @@ export function RepresentationPreview({input,source,onClose,assets}:{input:unkno
       {selectionWarning&&<p role="alert">{selectionWarning}</p>}
       <div className="reader-choice"><Button variant="outline" onClick={()=>selectionStore.undo()}>Undo selection</Button><Button variant="ghost" onClick={()=>selectionStore.clear()}>Clear selections</Button></div>
       <div aria-live="polite" aria-label="Linked source selection">{selectionAnchorIds(built.value.plan,navigation.selections).map(id=>{const anchor=built.value.plan.anchors.find(anchor=>anchor.id===id)!;return <blockquote key={id} className="passage-quotation">Selected source passage: {anchor.quote}</blockquote>;})}</div>
-      {built.value.plan.views.map(view=>view.kind==='statistical-chart'?<StatisticalChartView key={view.id} onConfigure={chart=>{const next={...built.value.plan,navigation:undefined,views:built.value.plan.views.map(item=>item.id===view.id?{...view,chart}:item)};const checked=buildRepresentation(next,source,{assets:available});if(checked.status!=='ready')throw Error(checked.reason);setWorking(checked.value.plan);}} model={buildChartModel(view.chart,available)} viewId={view.id} store={selectionStore} navigation={navigation} onReturn={anchorId=>{const anchor=built.value.plan.anchors.find(a=>a.id===anchorId)!;returnTarget.current=document.getElementById(`source-${source.id}-${anchor.blockId}`);onClose();}}/>:view.kind==='composed-scene'?<ComposedSceneView key={view.id} scene={view.scene} viewId={view.id} store={selectionStore} navigation={navigation} onReturn={anchorId=>{const anchor=built.value.plan.anchors.find(anchor=>anchor.id===anchorId)!;returnTarget.current=document.getElementById(`source-${source.id}-${anchor.blockId}`);onClose();}}/>:view.kind==='widget'?<WidgetView key={view.id} envelope={applyWidgetNavigation(view.id,view.widget,navigation)} source={source} onChange={widget=>{captureWidgetNavigation(view.id,widget,selectionStore);setWorking({...built.value.plan,navigation:undefined,views:built.value.plan.views.map(item=>item.id===view.id?{...view,widget}:item)});}}/>:view.kind==='quantity'?<ScientificQuantityView key={view.id} selectedUncertainty={navigation.selections.find(s=>s.kind==='uncertainty'&&s.viewId===view.id)?.kind==='uncertainty'?navigation.selections.find(s=>s.kind==='uncertainty'&&s.viewId===view.id):undefined} onSelectUncertainty={(index,mode)=>selectionStore.select({kind:'uncertainty',viewId:view.id,scopeId:'quantity',quantityId:view.quantityId,index,mode})} quantity={bindScientificQuantity(built.value.plan.quantities.find(quantity=>quantity.id===view.quantityId)!.measurement!,view.requirement)}/>:view.kind==='asset'?<ScientificAssetView key={view.id} asset={available.find(asset=>asset.id===view.assetId)!}/>:<SourceGuide key={view.id} plan={built.value.plan} view={view} source={source} onReturn={blockId=>{returnTarget.current=document.getElementById(`source-${source.id}-${blockId}`);onClose();}}/>)}
+      <RepresentationViews plan={built.value.plan} source={source} assets={available} store={selectionStore} navigation={navigation} onUpdate={updatePlan} onReturn={blockId=>{returnTarget.current=document.getElementById(`source-${source.id}-${blockId}`);onClose();}}/>
       <Button variant="ghost" onClick={()=>{returnTarget.current=document.getElementById(`source-${source.id}-${built.value.plan.anchors[0].blockId}`);onClose();}}>Return to cited passage</Button>
       {built.value.assets?.some(asset=>!built.value.plan.assetManifests?.some(item=>item.id===asset.id))&&<p className="reader-hint">Large datasets stay separate from this representation file. Download their data assets to retain unit conversions and reopen the exact checksum-bound data.</p>}
       <RepresentationEvidence plan={built.value.plan}/>
@@ -51,11 +46,4 @@ export function RepresentationPreview({input,source,onClose,assets}:{input:unkno
     {dataError&&<p role="alert">{dataError}</p>}
     <Button variant="outline" onClick={download}>Download representation file</Button>
   </DialogContent></Dialog>;
-}
-function SourceGuide({plan,view,source,onReturn}:{onReturn:(blockId:string)=>void;plan:RepresentationPlan;view:Extract<RepresentationPlan['views'][number],{kind:'source-guide'}>;source:SourceDocument}) {
-  const [index,setIndex]=useState(0);const step=view.steps[index];
-  return <section aria-label="Source reading guide"><div className="reader-choice" role="group" aria-label="Reading guide steps">{view.steps.map((item,i)=><Button key={item.id} aria-pressed={index===i} variant={index===i?'secondary':'outline'} onClick={()=>setIndex(i)}>{i+1}. {item.title}</Button>)}</div>
-    <div aria-live="polite"><h3>{step.title}</h3><p>{step.explanation}</p></div>
-    {step.anchorIds.map(id=>{const anchor=plan.anchors.find(anchor=>anchor.id===id)!;return <div key={id}><blockquote className="passage-quotation">{anchor.quote}</blockquote><a href={`#source-${source.id}-${anchor.blockId}`} onClick={event=>{event.preventDefault();onReturn(anchor.blockId);}}>Original source passage · page {anchor.page}</a></div>;})}
-  </section>;
 }
