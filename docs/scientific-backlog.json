@@ -457,10 +457,17 @@
       "priority": "P0",
       "size": "discovery",
       "verification": "Primary-source design review plus repeatable adversarial prototypes in isolated test origins/environments; never execute untrusted code in the existing app process.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 49,
         "url": "https://github.com/ManuelR-T/paperplay/issues/49"
+      },
+      "evidence": {
+        "document": "docs/artifact-isolation.md",
+        "checks": "npm run check: TypeScript, 298 tests and production build; actual supplied 64 MiB WASM maximum, bounded guest authority/serialization/import/allocation references",
+        "browser": "Captured Chromium154/Linux separate-origin harness: 33 expected outcomes, 140 ms watchdog kill, 150 ms cancellation, independent healthy/hostile instances, source/storage retained, no exfiltration request; trusted renderer draws SDK marks",
+        "comparison": "Pinned unprivileged no-network/read-only disposable Docker comparison: CPU supervisor kill and 64 MiB cgroup OOM kill; all containers removed",
+        "limitations": "Narrow synchronous QuickJS/WASM SDK architecture selected; no complete sandbox or total-browser-memory guarantee, no native iframe/server JS approval or cross-browser certification. Product generated execution remains disabled pending compiler/bridge gates."
       }
     },
     {

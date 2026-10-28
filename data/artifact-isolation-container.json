@@ -1,0 +1,32 @@
+{
+  "format": "paperplay-container-isolation-comparison",
+  "schemaVersion": 1,
+  "imageId": "sha256:bbc51c187ec813fd7c6a49afd22c15efdfe969b8c3a9a9cd49193c8a03908984",
+  "results": [
+    {
+      "mode": "capabilities",
+      "exit": 0,
+      "watchdogKilled": false,
+      "oomKilled": false,
+      "elapsedMs": 585,
+      "output": "{\"uid\":65534,\"hostProjectMounted\":false,\"hostSecretPresent\":false,\"network\":\"denied-or-unreachable\",\"rootWritable\":false,\"ownFilesystemReadable\":true}"
+    },
+    {
+      "mode": "cpu",
+      "exit": 137,
+      "watchdogKilled": true,
+      "oomKilled": false,
+      "elapsedMs": 2134,
+      "output": ""
+    },
+    {
+      "mode": "memory",
+      "exit": 137,
+      "watchdogKilled": false,
+      "oomKilled": true,
+      "elapsedMs": 398,
+      "output": ""
+    }
+  ],
+  "note": "Ordinary Docker shares a host kernel; this comparison is not approval for production native code execution."
+}

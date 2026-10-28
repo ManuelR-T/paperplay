@@ -11,7 +11,7 @@ export const sdkFrameSchema=z.strictObject({format:z.literal('paperplay-sdk-fram
  ])).max(512),controls:z.array(z.discriminatedUnion('kind',[
  z.strictObject({id:name,kind:z.literal('button'),label:text.max(100),disabled:z.boolean()}),
  z.strictObject({id:name,kind:z.literal('slider'),label:text.max(100),min:finite,max:finite,step:z.number().positive().max(1000000),value:finite}),
- ])).max(16),table:z.strictObject({caption:text.max(400),columns:z.array(text.max(100)).min(1).max(8),rows:z.array(z.array(z.union([finite,text.max(300),z.boolean(),z.null()])).max(8)).max(512)}),state:z.unknown()});
+ ])).max(16),table:z.strictObject({caption:text.max(400),columns:z.array(text.max(100)).min(1).max(8),rows:z.array(z.array(z.union([z.number().finite(),text.max(300),z.boolean(),z.null()])).max(8)).max(512)}),state:z.unknown()});
 export const sdkEventSchema=z.discriminatedUnion('kind',[
  z.strictObject({kind:z.literal('initialize')}),
  z.strictObject({kind:z.literal('control'),id:name,value:finite.optional()}),
