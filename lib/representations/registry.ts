@@ -1,3 +1,4 @@
+import { validateMoleculeView } from '../../shared/molecular-geometry';
 import { validateFieldResult } from '../../shared/physical-fields';
 import { validateStochasticResult } from '../../shared/stochastic';
 import { validateDynamicsResult } from '../../shared/dynamics';
@@ -71,6 +72,7 @@ export function createCapabilityRegistry(input:readonly RepresentationAdapter[])
      if(context.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
      if(output.id!==view.id||output.kind!==view.kind||new TextEncoder().encode(JSON.stringify(output)).length>adapter.descriptor.limits.maxOutputBytes)throw Error('The adapter returned an incompatible or oversized result.');
      if(output.kind==='source-guide'||output.kind==='composed-scene'||output.kind==='spatial-view'||output.kind==='reasoning-guide')representationViewSchema.parse(output);
+     if(output.kind==='molecular-view'){const original=view as Extract<RepresentationView,{kind:'molecular-view'}>,asset=context.assets.find(asset=>asset.id===output.molecule.assetId);if(JSON.stringify(output.molecule)!==JSON.stringify(original.molecule)||!hasCheckedAssetIntegrity(asset))throw Error('The molecular adapter substituted its structure/settings or unchecked geometry.');validateMoleculeView(output.molecule,asset);}
      if(output.kind==='physical-field'){const original=view as Extract<RepresentationView,{kind:'physical-field'}>;if(JSON.stringify(output.field)!==JSON.stringify(original.field))throw Error('The field adapter substituted its declared model/settings.');validateFieldResult(output.result,original.field.request);}
      if(output.kind==='stochastic'){const original=view as Extract<RepresentationView,{kind:'stochastic'}>;if(JSON.stringify(output.stochastic)!==JSON.stringify(original.stochastic))throw Error('The stochastic adapter substituted its declared model/settings.');validateStochasticResult(output.result,original.stochastic.request);}
      if(output.kind==='dynamics'){const original=view as Extract<RepresentationView,{kind:'dynamics'}>;if(JSON.stringify(output.dynamics)!==JSON.stringify(original.dynamics))throw Error('The dynamics adapter substituted its declared model/settings.');validateDynamicsResult(output.result,original.dynamics.request);}

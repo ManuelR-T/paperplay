@@ -1,0 +1,62 @@
+{
+  "issue": "PP-103",
+  "date": "2026-10-28",
+  "browser": "Native T3 Chromium, owned localhost:3001 tab",
+  "checks": {
+    "typecheck": "passed",
+    "tests": 531,
+    "molecularTests": 30,
+    "productionBuild": "passed"
+  },
+  "fixture": {
+    "name": "PDB 1CRN",
+    "bytes": 49491,
+    "sha256": "42199a30a0701864a2a5cc76cd7f35cc544cd0e65fbcf63e03c166543249b811",
+    "atoms": 327,
+    "residues": 46,
+    "models": 1,
+    "connections": 3
+  },
+  "observations": [
+    {
+      "check": "Actual browser parser worker",
+      "result": "327 sites; molecules.worker.mjs?v=1.0.0 loaded; no alerts"
+    },
+    {
+      "check": "Original-frame distance N/CA, serials 1/2",
+      "distanceAngstrom": 1.4979966622125693,
+      "distanceNm": 0.14979966622125693,
+      "result": "Unchanged by YZ camera rotation and table-only mode; independent squared-distance oracle is 2.243994 square angstroms."
+    },
+    {
+      "check": "Entity and source link",
+      "result": "CA serial 2 retained after camera rotation; raw source line 277 exposed; Read atom source focuses exact ATOM excerpt."
+    },
+    {
+      "check": "Portable study through central Files & source importer",
+      "bytes": 338816,
+      "result": "Reopened own source with CA l277 selection, rotation [-90,-90,0], exact coordinate file digest and no alerts."
+    },
+    {
+      "check": "Unsupported mmCIF",
+      "result": "Finite unsupported message; previous accepted crambin reopens; original attempted file downloadable byte-for-byte.",
+      "bytes": 69506,
+      "originalAndRecoveredSha256": "23787562c427d7c1abe5420e86d5f1d0a6c7007dec1e8ce85645a6d69c32e8ba"
+    },
+    {
+      "check": "Unavailable SVG recovery",
+      "method": "Temporarily removed SVGSVGElement feature before remount, then restored it.",
+      "result": "Explicit numeric fallback, no point SVG, 20 paginated rows and same source-frame distance."
+    },
+    {
+      "check": "Responsive layout",
+      "result": "1280 px desktop and 320 px mobile; mobile document width 320 and dialog scroll/client width both 286. Scoped text enlarged from 16 to 32 CSS px also stays within dialog. This is text-enlargement simulation, not OS zoom."
+    }
+  ],
+  "testCaveat": "First concurrent suite had an existing generated-polymer smoke quality assertion fail; isolated retry, complete retry (530) and final complete suite (531 after source-pin regression) pass. No runtime budgets were relaxed.",
+  "screenshots": [
+    "data/molecular-browser/crambin-desktop.png",
+    "data/molecular-browser/coordinates-mobile-200.png"
+  ],
+  "scope": "No paid inference, held-out corpus access, independent scientific validation, human study or release."
+}

@@ -753,10 +753,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 58,
         "url": "https://github.com/ManuelR-T/paperplay/issues/58"
+      },
+      "evidence": {
+        "document": "docs/molecular-geometry.md",
+        "checks": "TypeScript, 531 deterministic tests, 30 focused molecular tests, production build",
+        "browser": "Native Chromium: original 1CRN worker import, camera-independent distance and entity/source link, portable study roundtrip, mmCIF original-byte recovery, SVG fallback, desktop/mobile enlarged text",
+        "limitations": "Strict bounded PDB coordinate subset; no inferred bonds/assemblies/MD, mmCIF or general molecular renderer. No independent scientific reproduction or human evaluation."
       }
     },
     {

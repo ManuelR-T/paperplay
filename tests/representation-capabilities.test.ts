@@ -43,7 +43,7 @@ test('model manifests cannot install executable capabilities or self-promote sci
 test('capability discovery uses the existing widget catalog and filters without model calls or private input',async()=>{
  const metadata=getRepresentationCapabilities();assert.deepEqual(metadata.widgetCatalog,widgetCatalog.filter(entry=>entry.format==='paperplay-widget'));
  assert.equal(metadata.adapters.find(cap=>cap.id==='widget-v2')!.version,WIDGET_CATALOG_VERSION);
- const all=await GET(new Request('http://localhost/api/representation-capabilities')).json();assert.equal(all.adapters.length,12);assert.ok(all.adapters.every((entry:object)=>!Object.hasOwn(entry,'execute')));
+ const all=await GET(new Request('http://localhost/api/representation-capabilities')).json();assert.equal(all.adapters.length,13);assert.ok(all.adapters.every((entry:object)=>!Object.hasOwn(entry,'execute')));
  const response=await GET(new Request('http://localhost/api/representation-capabilities?behavior=source-annotation&interaction=select-step')).json();assert.equal(response.candidates[0].id,'source-guide');
  assert.equal(GET(new Request('http://localhost/api/representation-capabilities?source=private')).status,400);
  assert.equal(GET(new Request('http://localhost/api/representation-capabilities?bytes=0x10')).status,400);

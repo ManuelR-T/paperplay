@@ -1,3 +1,5 @@
+import { activeMolecularAtoms,validateMolecularGeometry } from './molecular-geometry';
+import type { ScientificAsset } from './scientific-assets';
 import { fieldGridGeometry } from './physical-fields';
 import { convertValue } from '../lib/quantities/convert';
 import { pixelsFromRegion } from './spatial-coordinates';
@@ -6,11 +8,17 @@ import type { RepresentationNavigation, SemanticSelection } from './semantic-sel
 import { quantityValues } from './scientific-quantities';
 /** Navigation freshness only. This non-cryptographic digest never grants scientific trust. */
 export function representationInputRevision(plan:RepresentationPlan){
- const input={...plan,navigation:undefined,reportedChecks:undefined,views:plan.views.map(view=>view.kind==='spatial-view'?{...view,spatial:{...view.spatial,viewport:undefined}}:view.kind==='widget'?{...view,widget:{...view.widget,view:undefined}}:view)};
+ const input={...plan,navigation:undefined,reportedChecks:undefined,views:plan.views.map(view=>view.kind==='molecular-view'?{...view,molecule:{...view.molecule,settings:undefined}}:view.kind==='spatial-view'?{...view,spatial:{...view.spatial,viewport:undefined}}:view.kind==='widget'?{...view,widget:{...view.widget,view:undefined}}:view)};
  let hash=0xcbf29ce484222325n;for(const value of new TextEncoder().encode(JSON.stringify(input)))hash=BigInt.asUintN(64,(hash^BigInt(value))*0x100000001b3n);return hash.toString(16).padStart(16,'0');
 }
-export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection):boolean{
+export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection,resolvedAssets?:readonly ScientificAsset[]):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='molecular-view'){
+   if(selection.kind!=='entity'||selection.scopeId!=='molecular')return false;
+   const asset=resolvedAssets?.find(asset=>asset.id===view.molecule.assetId)??plan.assetManifests?.find(asset=>asset.id===view.molecule.assetId);
+   if(!asset)return /^(atom|residue)-[a-f0-9]{64}-[A-Za-z0-9_-]{1,24}$/.test(selection.entityId);
+   try{const atoms=activeMolecularAtoms(validateMolecularGeometry(asset),view.molecule);return atoms.some(atom=>atom.id===selection.entityId||atom.residueId===selection.entityId);}catch{return false;}
+ }
  if(view.kind==='physical-field'){
    const interval=view.field.request.interval;
    if(selection.kind==='time')return selection.scopeId==='physical-field'&&selection.mode==='physical-time'&&selection.unit==='s'&&selection.frameId===null&&selection.value>=convertValue(interval.start,interval.unit,'s')&&selection.value<=convertValue(interval.end,interval.unit,'s');
@@ -53,7 +61,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='physical-field'&&(selection.kind==='time'||selection.kind==='region'))view.field.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='molecular-view'&&selection.kind==='entity')view.molecule.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='physical-field'&&(selection.kind==='time'||selection.kind==='region'))view.field.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='stochastic'&&selection.kind==='time')view.stochastic.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='dynamics'&&selection.kind==='time')view.dynamics.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='reasoning-guide'&&selection.kind==='time')view.guide.steps.find(step=>step.id===selection.frameId)?.anchorIds.forEach(id=>ids.add(id));

@@ -18,9 +18,9 @@ export function RepresentationPreview({input,source,onClose,assets}:{input:unkno
   const [available,setAvailable]=useState<ScientificAsset[]>([...(assets??[])]);
   const [embedded,setEmbedded]=useState<ScientificAsset[]>([]);const [dataError,setDataError]=useState('');
   const parsed=useMemo(()=>{try{return validateRepresentationPlan(working,source);}catch{return null;}},[working,source]);
-  const {store:selectionStore,navigation,selectionWarning}=useRepresentationSelections(parsed);
   const returnTarget=useRef<HTMLElement|null>(null);
   const built=useMemo(()=>buildRepresentation(working,source,{assets:available}),[working,source,available]);
+  const {store:selectionStore,navigation,selectionWarning}=useRepresentationSelections(built.status==='ready'?built.value.plan:null,built.status==='ready'?available:undefined);
   function bind(next:ScientificAsset[]){if(!parsed)return;const candidate={...parsed,navigation:undefined,assets:parsed.assets.map(ref=>{const asset=next.find(asset=>asset.id===ref.id);if(asset&&ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('These data differ from the representation checksum. Supply its matching dataset; the original representation is retained.');return asset?{...ref,checksum:asset.checksum.value}:ref;}),assetManifests:[...(parsed.assetManifests??[]).filter(item=>!next.some(asset=>asset.id===item.id)),...next]};if(new TextEncoder().encode(JSON.stringify(candidate)).length>MAX_REPRESENTATION_BYTES)delete (candidate as {assetManifests?:ScientificAsset[]}).assetManifests;const plan=validateRepresentationPlan(candidate,source);setAvailable(old=>[...old.filter(item=>!next.some(asset=>asset.id===item.id)),...next]);setWorking(plan);setEmbedded([]);}
 
   const updatePlan:PlanUpdate=transform=>{const current=validateRepresentationPlan(workingRef.current,source),checked=buildRepresentation(transform(current),source,{assets:available});if(checked.status!=='ready')throw Error(checked.reason);workingRef.current=checked.value.plan;setWorking(checked.value.plan);};

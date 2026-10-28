@@ -1,0 +1,2 @@
+# Archived fixed-column coordinates must remain byte-for-byte source material.
+public/structures/*.pdb -text whitespace=-blank-at-eol

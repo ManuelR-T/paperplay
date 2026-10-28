@@ -14,6 +14,7 @@ import { ScientificQuantityView } from './scientific-quantity-view';
 import { StatisticalChartView } from './statistical-chart';
 import { ComposedSceneView } from './composed-scene';
 import { ReasoningGuideView } from './reasoning-guide';
+import { MolecularView } from './molecular-view';
 import { PhysicalFieldView } from './physical-field-view';
 import { StochasticView } from './stochastic-view';
 import { DynamicsView } from './dynamics-view';
@@ -26,6 +27,7 @@ export function RepresentationViews({plan,source,assets,store,navigation,onUpdat
  const returnToAnchor=(id:string)=>onReturn(plan.anchors.find(anchor=>anchor.id===id)!.blockId);
  return <>{plan.views.map(view=>{
    switch(view.kind){
+     case 'molecular-view':return <MolecularView key={view.id} molecule={view.molecule} assets={assets} viewId={view.id} store={store} navigation={navigation} onReturn={returnToAnchor} onChange={patch=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='molecular-view'?{...item,molecule:{...item.molecule,...patch}}:item)}))}/>;
      case 'physical-field':return <PhysicalFieldView key={view.id} request={view.field.request} anchorId={view.field.anchorIds[0]} onSource={returnToAnchor} viewId={view.id} store={store} navigation={navigation} onConfigure={request=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='physical-field'?{...item,field:{...item.field,request}}:item)}))}/>;
      case 'stochastic':return <StochasticView key={view.id} request={view.stochastic.request} anchorId={view.stochastic.anchorIds[0]} onSource={returnToAnchor} viewId={view.id} store={store} navigation={navigation} onConfigure={request=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='stochastic'?{...item,stochastic:{...item.stochastic,request}}:item)}))}/>;
      case 'dynamics':return <DynamicsView key={view.id} request={view.dynamics.request} anchorId={view.dynamics.anchorIds[0]} onSource={returnToAnchor} viewId={view.id} store={store} navigation={navigation} onConfigure={request=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='dynamics'?{...item,dynamics:{...item.dynamics,request}}:item)}))}/>;

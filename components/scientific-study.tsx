@@ -16,7 +16,7 @@ export type ScientificStudy={source:SourceDocument;plan:RepresentationPlan;asset
 /** Local host for source-linked scientific views; source and data never enter an inference request. */
 export function ScientificStudyView({study}:{study:ScientificStudy}){
  const [plan,setPlan]=useState(study.plan),[error,setError]=useState('');const current=useRef(plan);current.current=plan;
- const {store,navigation,selectionWarning}=useRepresentationSelections(plan);
+ const {store,navigation,selectionWarning}=useRepresentationSelections(plan,study.assets);
  const update:PlanUpdate=transform=>{const checked=buildRepresentation(transform(current.current),study.source,{assets:study.assets});if(checked.status!=='ready')throw Error(checked.reason);current.current=checked.value.plan;setPlan(checked.value.plan);setError('');};
  const originalChart=study.plan.views.length===1&&study.plan.views[0].kind==='statistical-chart'?study.plan.views[0]:null,chart=plan.views.length===1&&plan.views[0].kind==='statistical-chart'?plan.views[0]:null;
  function changeForm(kind:StatisticalChart['kind']){try{update(()=>reformatChartRepresentation(study.plan,kind));}catch(problem){setError((problem instanceof Error?problem.message:'Chart form unavailable.')+' The last valid figure was kept.');}}

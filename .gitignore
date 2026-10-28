@@ -29,6 +29,7 @@ public/library.worker.mjs
 public/dynamics.worker.mjs
 public/stochastic.worker.mjs
 public/fields.worker.mjs
+public/molecules.worker.mjs
 # Rebuilt trusted interpreter/compiler infrastructure; no generated artifact code.
 public/artifact-compiler.worker.mjs
 public/artifact-runtime.worker.mjs
