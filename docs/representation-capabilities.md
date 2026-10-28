@@ -26,3 +26,7 @@ The existing Muse widget capability response advertises this endpoint while expl
 ## Verification
 
 On 28 October 2026, `npm run check` passed TypeScript, 249 tests and the production build. Deterministic tests exercise real registered execution, exact versions, missing workers, offline network requirements, input budgets, metadata-only rejection, malformed output, evidence gaps and catalog consistency. Native Chromium checks cover public discovery, source-guide selection, an unavailable ODE capability, reproduction evidence gaps and existing quantity/widget previews at 320 CSS pixels. No paid inference or scientific reproduction was performed.
+
+## PP-100 dynamics extension
+
+`ode-rk4@1.0.0` provides trusted, bounded registered differential models and a one-shot hybrid transition through the same lifecycle. Its `dynamics` view uses physical-time selection, explicit units/tolerances and a disposable worker. Behavior discovery advertises `ode-integration`, `hybrid-transition` and `linked-trajectories`; it does not advertise arbitrary ODE/PDE execution. See [the dynamics adapter](dynamics-adapter.md) for model, error and resource limits. Historical verification above records the earlier registry state; current integration adds independent numerical and cancellation checks.

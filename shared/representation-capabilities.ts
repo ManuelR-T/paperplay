@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { name, text } from './widget-primitives';
 export const capabilityReferenceSchema=z.strictObject({id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/)});
-export const representationKindSchema=z.enum(['widget','source-guide','asset','quantity','composed-scene','statistical-chart','spatial-view','reasoning-guide']);
+export const representationKindSchema=z.enum(['widget','source-guide','asset','quantity','composed-scene','statistical-chart','spatial-view','reasoning-guide','dynamics']);
 export type RepresentationKind=z.infer<typeof representationKindSchema>;
-export const defaultViewCapabilities={widget:{id:'widget-v2',version:'2.1.0'},'source-guide':{id:'source-guide',version:'1.0.0'},asset:{id:'asset-inspector',version:'1.0.0'},quantity:{id:'quantity-inspector',version:'1.0.0'},'composed-scene':{id:'composed-scene',version:'1.0.0'},'statistical-chart':{id:'statistical-chart',version:'1.0.0'},'reasoning-guide':{id:'reasoning-guide',version:'1.0.0'},'spatial-view':{id:'spatial-field',version:'1.0.0'}} as const;
+export const defaultViewCapabilities={dynamics:{id:'ode-rk4',version:'1.0.0'},widget:{id:'widget-v2',version:'2.1.0'},'source-guide':{id:'source-guide',version:'1.0.0'},asset:{id:'asset-inspector',version:'1.0.0'},quantity:{id:'quantity-inspector',version:'1.0.0'},'composed-scene':{id:'composed-scene',version:'1.0.0'},'statistical-chart':{id:'statistical-chart',version:'1.0.0'},'reasoning-guide':{id:'reasoning-guide',version:'1.0.0'},'spatial-view':{id:'spatial-field',version:'1.0.0'}} as const;
 export function viewCapability(view:{kind:RepresentationKind;adapter?:z.infer<typeof capabilityReferenceSchema>;spatial?:{input:{kind:string}}}){return view.adapter??(view.kind==='spatial-view'&&view.spatial?.input.kind==='image'?{id:'spatial-image',version:'1.0.0'}:defaultViewCapabilities[view.kind]);}
-export const representationInteractionSchema=z.enum(['widget-controls','select-step','return-source','inspect-data','select-entity','select-region']);
+export const representationInteractionSchema=z.enum(['widget-controls','select-step','return-source','inspect-data','select-entity','select-region','select-time']);
 export const facilitySchema=z.enum(['trusted-computation','asset-integrity','webgl','network']);
 export const capabilityDescriptorSchema=z.strictObject({
  id:name,version:z.string().regex(/^\d+\.\d+\.\d+$/),label:text.max(160),viewKinds:z.array(representationKindSchema).min(1).max(8),

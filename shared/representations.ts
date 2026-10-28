@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { dynamicsViewSchema,validateDynamicsRequest } from './dynamics';
 import { reasoningGuideSchema,validateReasoningGuide } from './reasoning-guides';
 import { spatialViewSchema,validateSpatialView } from './spatial-views';
 import { statisticalChartSchema,validateStatisticalChart } from './statistical-charts';
@@ -19,6 +20,7 @@ export const representationAnchorSchema = z.strictObject({ id: name, blockId: z.
 export const evidenceLevelSchema = z.enum(['illustrative-walkthrough','simplified-illustration','mechanism-reproduction','experiment-reproduction']);
 const ids = z.array(name).min(1).max(32);
 export const representationViewSchema = z.discriminatedUnion('kind', [
+  z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('dynamics'),dynamics:dynamicsViewSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('reasoning-guide'),guide:reasoningGuideSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('spatial-view'),spatial:spatialViewSchema}),
   z.strictObject({id:name,adapter:capabilityReferenceSchema.optional(),kind:z.literal('statistical-chart'),chart:statisticalChartSchema}),
@@ -76,6 +78,9 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
       validateWidgetEnvelope(view.widget,source);
       if(!plan.anchors.some(anchor=>anchor.blockId===view.widget.source.blockId&&anchor.page===view.widget.source.page&&normalized(anchor.quote)===normalized(view.widget.source.quote))) throw Error('A widget must use an anchor declared in its representation.');
       if(plan.execution.kind!=='local-computation') throw Error('Widget views require local computation.');
+    } else if(view.kind==='dynamics'){
+      validateDynamicsRequest(view.dynamics.request);checkAnchors(view.dynamics.anchorIds);
+      if(plan.execution.kind!=='local-computation')throw Error('Dynamics views require explicit local computation.');
     } else if(view.kind==='reasoning-guide'){
       validateReasoningGuide(view.guide,plan.anchors);
     } else if(view.kind==='spatial-view'){
@@ -94,12 +99,13 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
     else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
     else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
   }
+  if(plan.interactions.includes('select-time')&&!plan.views.some(view=>view.kind==='dynamics'))throw Error('This representation has no physical-time controls.');
   if(plan.interactions.includes('select-region')&&!plan.views.some(view=>view.kind==='spatial-view'))throw Error('This representation has no spatial region controls.');
   if(plan.interactions.includes('select-entity')&&!plan.views.some(view=>view.kind==='widget'||view.kind==='statistical-chart'||view.kind==='composed-scene'&&!!view.scene.entities?.length))throw Error('This representation has no semantic entity targets.');
-  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'||view.kind==='quantity'||view.kind==='statistical-chart'||view.kind==='spatial-view'))throw Error('This representation has no data inspector.');
+  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='dynamics'||view.kind==='asset'||view.kind==='quantity'||view.kind==='statistical-chart'||view.kind==='spatial-view'))throw Error('This representation has no data inspector.');
   if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
   for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
-  if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');
+  if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget'||view.kind==='dynamics')) throw Error('This representation has no computation controls.');
   if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide'||view.kind==='reasoning-guide'||view.kind==='composed-scene'&&view.scene.nodes.some(node=>node.kind==='scene'&&node.frames.length>0||node.kind==='process'&&node.steps.length>0))) throw Error('This representation has no source-guide steps.');
   for(const quantity of plan.quantities)if(quantity.measurement){const measurement=validateScientificQuantity(quantity.measurement);if(measurement.id!==quantity.id||measurement.unit!==quantity.unit)throw Error('A quantity measurement must retain its declared identity and original unit.');}
   const evidence=new Map((plan.evidence??[]).map(item=>[item.id,item]));

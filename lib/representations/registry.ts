@@ -1,3 +1,4 @@
+import { validateDynamicsResult } from '../../shared/dynamics';
 import { validateReasoningGuide } from '../../shared/reasoning-guides';
 import { preflightSpatialView,spatialAssets } from '../spatial/model';
 import { validateComposedScene } from '../../shared/composed-scene';
@@ -68,6 +69,7 @@ export function createCapabilityRegistry(input:readonly RepresentationAdapter[])
      if(context.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
      if(output.id!==view.id||output.kind!==view.kind||new TextEncoder().encode(JSON.stringify(output)).length>adapter.descriptor.limits.maxOutputBytes)throw Error('The adapter returned an incompatible or oversized result.');
      if(output.kind==='source-guide'||output.kind==='composed-scene'||output.kind==='spatial-view'||output.kind==='reasoning-guide')representationViewSchema.parse(output);
+     if(output.kind==='dynamics'){const original=view as Extract<RepresentationView,{kind:'dynamics'}>;if(JSON.stringify(output.dynamics)!==JSON.stringify(original.dynamics))throw Error('The dynamics adapter substituted its declared model/settings.');validateDynamicsResult(output.result,original.dynamics.request);}
      if(output.kind==='reasoning-guide')validateReasoningGuide(output.guide,context.plan.anchors);
      if(output.kind==='composed-scene')validateComposedScene(output.scene,context.plan.anchors.map(anchor=>anchor.id));
      if(output.kind==='asset'&&(!hasCheckedAssetIntegrity(output.asset)||output.assetId!==(view as Extract<RepresentationView,{kind:'asset'}>).assetId||!context.assets.includes(output.asset)))throw Error('The adapter substituted an unbound asset.');

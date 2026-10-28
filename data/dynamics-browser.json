@@ -1,0 +1,28 @@
+{
+  "format": "paperplay-dynamics-browser-evidence",
+  "version": 1,
+  "recordedAt": "2026-10-28T07:08:18Z",
+  "environment": "Native collaborative Chromium, local production build on port 3001",
+  "inferenceCalls": 0,
+  "cases": [
+    {"model":"decay","status":"completed","finalTime":2,"acceptedSteps":23,"rhsEvaluations":276},
+    {"model":"oscillator","status":"completed","finalTime":8,"acceptedSteps":83,"rhsEvaluations":996,"defaultAxes":["Position (m)","Velocity (m/s)"]},
+    {"model":"reaction-chain","status":"completed","finalTime":2,"acceptedSteps":27,"rhsEvaluations":324,"finalConcentrations":[0.13533529239748307,0.11701961224519139,0.7476450953573254],"unit":"mol/L"},
+    {"model":"threshold-decay","status":"completed","finalTime":2,"acceptedSteps":24,"rhsEvaluations":576,"event":{"time":0.6931472122669219,"bracketWidth":5.960464476151284e-9,"before":[0.5],"after":[1]},"separateModePaths":true,"finalState":[0.0732627327483502]}
+  ],
+  "interactions": {
+    "keyboardEndSelectsLastSampleAndPagesTable":true,
+    "oscillatorLastSample":{"time":8,"position":0.00028308176571659833,"velocity":-0.0006637841885781947},
+    "editedDamping":{"value":0.5,"positionAt8":-0.013685746377156981,"velocityAt8":0.025367288784904005,"providerRequests":0},
+    "invalidNegativeDamping":{"message":"Damping rate: Too small: expected number to be >=0","priorTrajectoryRetained":true,"workerNotStarted":true},
+    "acceptedStepLimitOne":{"status":"limit-reached","actualFinalTime":0.01,"priorCompletedTrajectoryRetainedAndLabeled":true,"incompletePrefixDownloadOffered":true},
+    "stopPendingDebounce":{"cancelled":true,"priorTrajectoryRetained":true,"replacementWorkerNotStarted":true},
+    "workerInstrumentation":{"created":7,"terminated":7,"active":0,"scope":"Transient subclass counted real application-created dynamics workers; removed by navigation"},
+    "downloadShownTrajectory":{"format":"paperplay-dynamics-result","model":"threshold-decay","status":"completed","matchesDisplayedEventAndFinalState":true}
+  },
+  "layout": {
+    "desktop":{"viewportWidth":1280,"dialogWidth":730,"plotClientWidth":672,"plotScrollWidth":672,"rightAxisTick":"2","modeLegend":true,"screenshot":"data/dynamics-browser/threshold-desktop.png"},
+    "mobile200PercentRootFont":{"viewportWidth":320,"documentWidth":320,"dialogWidth":288,"dialogClientWidth":286,"dialogScrollWidth":286,"plotClientWidth":231,"plotScrollWidth":640,"bodyFontPx":32,"svgTickFontPx":36,"svgScale":0.8888888888888888,"minimumVisibleInputHeight":44,"screenshot":"data/dynamics-browser/threshold-mobile-200.png"}
+  },
+  "limits":["Engineering walkthrough of four authored mathematical fixtures; no original paper experiment or human review.","Mobile plots and tables use contained horizontal scrolling, not a fit-all overview.","Native Stop was exercised during the debounce; active CPU termination, deadlines and stale responses are covered by disposable-worker client tests.","Root brackets and local truncation estimates are not certified event-time/global/model-error bounds.","No paid inference, held-out corpus evaluation, release change or cross-browser certification."]
+}

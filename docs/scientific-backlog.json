@@ -652,10 +652,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 55,
         "url": "https://github.com/ManuelR-T/paperplay/issues/55"
+      },
+      "evidence": {
+        "document": "docs/dynamics-adapter.md",
+        "checks": "TypeScript, 433 deterministic tests and production build; independent decay, oscillator, coupled reaction, hybrid reset, fourth-order refinement, unit/domain validation, bounded prefixes and worker lifecycle tests",
+        "browser": "Native Chromium: all four authored models complete, local parameter edits, keyboard-linked time/state/phase/table, invalid inputs, retained previous trajectory with incomplete-prefix export, pending cancellation and matching trajectory download; 1280px fit and 320px/200% contained reflow. data/dynamics-browser.json.",
+        "limitations": "Trusted finite registry of smooth non-stiff ODE models and one falling threshold transition, not arbitrary ODE/PDE or experimental reproduction. Local estimates/root brackets are not global/model-error certificates. No paid inference, held-out evaluation, human review or release change."
       }
     },
     {

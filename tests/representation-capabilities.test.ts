@@ -15,7 +15,7 @@ const need={behaviors:['source-annotation'],assetKinds:[],interactions:['select-
 test('capabilities select actual modalities by behavior and data without a discipline classifier',()=>{
  const guide=representationRegistry.select({...need,interactions:[...need.interactions]},local);assert.deepEqual(guide.candidates.map(c=>c.id),['source-guide']);
  const data=representationRegistry.select({behaviors:['inspect-data'],assetKinds:['graph'],interactions:['inspect-data'],inputBytes:100,requestedEvidence:'illustration'},local);assert.deepEqual(data.candidates.map(c=>c.id),['asset-inspector']);
- const unavailable=representationRegistry.select({behaviors:['ode-integration'],assetKinds:[],interactions:[],inputBytes:0,requestedEvidence:'illustration'},local);assert.equal(unavailable.candidates.length,0);assert.ok(unavailable.gaps.some(gap=>gap.kind==='capability'));
+ const unavailable=representationRegistry.select({behaviors:['arbitrary-pde-integration'],assetKinds:[],interactions:[],inputBytes:0,requestedEvidence:'illustration'},local);assert.equal(unavailable.candidates.length,0);assert.ok(unavailable.gaps.some(gap=>gap.kind==='capability'));
  assert.throws(()=>representationRegistry.select({...need,interactions:[],discipline:'biology'} as never,local));
 });
 test('missing worker, offline network and input limits are explicit gaps without unrelated engine fallback',()=>{
@@ -43,7 +43,7 @@ test('model manifests cannot install executable capabilities or self-promote sci
 test('capability discovery uses the existing widget catalog and filters without model calls or private input',async()=>{
  const metadata=getRepresentationCapabilities();assert.deepEqual(metadata.widgetCatalog,widgetCatalog.filter(entry=>entry.format==='paperplay-widget'));
  assert.equal(metadata.adapters.find(cap=>cap.id==='widget-v2')!.version,WIDGET_CATALOG_VERSION);
- const all=await GET(new Request('http://localhost/api/representation-capabilities')).json();assert.equal(all.adapters.length,9);assert.ok(all.adapters.every((entry:object)=>!Object.hasOwn(entry,'execute')));
+ const all=await GET(new Request('http://localhost/api/representation-capabilities')).json();assert.equal(all.adapters.length,10);assert.ok(all.adapters.every((entry:object)=>!Object.hasOwn(entry,'execute')));
  const response=await GET(new Request('http://localhost/api/representation-capabilities?behavior=source-annotation&interaction=select-step')).json();assert.equal(response.candidates[0].id,'source-guide');
  assert.equal(GET(new Request('http://localhost/api/representation-capabilities?source=private')).status,400);
  assert.equal(GET(new Request('http://localhost/api/representation-capabilities?bytes=0x10')).status,400);
