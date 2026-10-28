@@ -20,7 +20,7 @@ export async function scientificBinding(plan:RepresentationPlan,bindings:Scienti
 
 /** Application-owned checker seam. Imported JSON and model-written code cannot mint receipts. */
 export async function runScientificCheck(plan:RepresentationPlan,check:ScientificCheck,bindings:ScientificBindings={assetHashes:{},engineVersions:{}}):Promise<ScientificReceipt> {
-  const subjects=check.subject.kind==='claim'?plan.claims:check.subject.kind==='asset'?plan.assets:plan.views;
+  const subjects=check.subject.kind==='claim'?plan.claims:check.subject.kind==='asset'?plan.assets:check.subject.kind==='quantity'?plan.quantities:plan.views;
   if(!subjects.some(subject=>subject.id===check.subject.id))throw Error('Scientific check subject is unavailable.');
   if(!check.id.trim()||!check.reference.trim()||!check.scope.trim())throw Error('A scientific check requires identity, an independent reference and an explicit scope.');
   const binding=await scientificBinding(plan,bindings);
@@ -31,7 +31,7 @@ export async function runScientificCheck(plan:RepresentationPlan,check:Scientifi
 export type SubjectEvidence={subject:EvidenceDeclaration['subject'];origins:EvidenceDeclaration['origin'][];label:string;checks:ScientificReceipt[];staleChecks:number};
 export async function assessScientificEvidence(plan:RepresentationPlan,receipts:readonly unknown[]=[],bindings:ScientificBindings={assetHashes:{},engineVersions:{}}):Promise<SubjectEvidence[]> {
   const binding=await scientificBinding(plan,bindings);
-  const subjects:EvidenceDeclaration['subject'][]=[...plan.claims.map(claim=>({kind:'claim' as const,id:claim.id})),...plan.assets.map(asset=>({kind:'asset' as const,id:asset.id})),...plan.views.map(view=>({kind:'view' as const,id:view.id}))];
+  const subjects:EvidenceDeclaration['subject'][]=[...plan.claims.map(claim=>({kind:'claim' as const,id:claim.id})),...plan.assets.map(asset=>({kind:'asset' as const,id:asset.id})),...plan.quantities.map(quantity=>({kind:'quantity' as const,id:quantity.id})),...plan.views.map(view=>({kind:'view' as const,id:view.id}))];
   return subjects.map(subject=>{
     const declared=(plan.evidence??[]).filter(item=>item.subject.kind===subject.kind&&item.subject.id===subject.id);
     const origins=declared.map(item=>item.origin);
@@ -39,7 +39,7 @@ export async function assessScientificEvidence(plan:RepresentationPlan,receipts:
     const checks=owned.filter(receipt=>receipt.binding===binding),passed=checks.filter(receipt=>receipt.passed);
     const claim=plan.claims.find(claim=>subject.kind==='claim'&&claim.id===subject.id);
     const level=passed.some(check=>check.level==='experiment-reproduction')?'Experiment checked within recorded scope':passed.length?'Mechanism checked within recorded scope':null;
-    const label=level??(claim?.kind==='source'?'Source quotation · interpretation not verified':claim?'Added explanation · not verified':subject.kind==='asset'?'Declared data origin · not verified':'Teaching representation · not independently verified');
+    const label=level??(claim?.kind==='source'?'Source quotation · interpretation not verified':claim?'Added explanation · not verified':subject.kind==='asset'||subject.kind==='quantity'?'Declared data origin · not verified':'Teaching representation · not independently verified');
     return {subject,origins,label,checks,staleChecks:owned.length-checks.length};
   });
 }

@@ -13,7 +13,7 @@ const base={format:z.literal('paperplay-scientific-asset'),schemaVersion:z.liter
   checksum:z.strictObject({algorithm:z.literal('sha256'),scope:z.literal('manifest-and-data'),value:z.string().regex(/^[a-f0-9]{64}$/)}),
 };
 export const scientificAssetSchema=z.discriminatedUnion('kind',[
-  z.strictObject({...base,kind:z.literal('table'),data:z.strictObject({columns:z.array(z.strictObject({id:name,label:text.max(120),type:z.enum(['number','text']),unit:text.max(80)})).min(1).max(32),rows:z.array(z.strictObject({id:name,values:z.array(cell).max(32)})).max(1000)})}),
+  z.strictObject({...base,kind:z.literal('table'),data:z.strictObject({columns:z.array(z.strictObject({id:name,label:text.max(120),type:z.enum(['number','text']),unit:text.max(80),temperatureMode:z.enum(['absolute','difference']).optional()})).min(1).max(32),rows:z.array(z.strictObject({id:name,values:z.array(cell).max(32)})).max(1000)})}),
   z.strictObject({...base,kind:z.literal('tensor'),data:z.strictObject({values:z.array(z.union([finite,z.null()])).max(MAX_ASSET_VALUES)})}),
   z.strictObject({...base,kind:z.literal('image'),data:z.strictObject({blockId:z.string().min(1).max(100),url:z.string().max(2000).optional(),alt:text.max(1000)})}),
   z.strictObject({...base,kind:z.literal('sequence'),data:z.strictObject({alphabet:z.enum(['dna','rna','protein','custom']),symbols:z.string().regex(/^[A-Za-z*.-]*$/).max(MAX_ASSET_VALUES)})}),

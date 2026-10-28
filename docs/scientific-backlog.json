@@ -133,10 +133,17 @@
       "priority": "P0",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 39,
         "url": "https://github.com/ManuelR-T/paperplay/issues/39"
+      },
+      "evidence": {
+        "document": "docs/scientific-quantities.md",
+        "research": "docs/unit-dependency-evaluation.md",
+        "checks": "npm run check: TypeScript, 243 tests, production build",
+        "browser": "Native Chromium at 320 px: 20 Celsius to 293.15 kelvin with standard uncertainty; declare cm without changing data, convert to m, reject seconds, export/reimport converted asset with nulls and transformation history",
+        "limitations": "Finite SI catalog, IEEE-754 arithmetic; no arbitrary unit parser, frame rotation, field interpolation or covariance inference. Legacy AST semantics unchanged."
       }
     },
     {

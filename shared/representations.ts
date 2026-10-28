@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { scientificQuantitySchema, quantityRequirementSchema, validateScientificQuantity } from './scientific-quantities';
 import { scientificAssetSchema } from './scientific-assets';
 import { evidenceDeclarationSchema, reportedScientificCheckSchema } from './research-evidence';
 import { validateDocument, type SourceDocument } from './schema';
@@ -11,6 +12,7 @@ export const representationAnchorSchema = z.strictObject({ id: name, blockId: z.
 export const evidenceLevelSchema = z.enum(['illustrative-walkthrough','simplified-illustration','mechanism-reproduction','experiment-reproduction']);
 const ids = z.array(name).min(1).max(32);
 export const representationViewSchema = z.discriminatedUnion('kind', [
+  z.strictObject({id:name,kind:z.literal('quantity'),quantityId:name,requirement:quantityRequirementSchema}),
   z.strictObject({id:name,kind:z.literal('asset'),assetId:name}),
   z.strictObject({ id: name, kind: z.literal('widget'), widget: widgetEnvelopeSchema }),
   z.strictObject({ id: name, kind: z.literal('source-guide'), steps: z.array(z.strictObject({ id: name, title: text.max(160), explanation: text, anchorIds: ids })).min(1).max(32) }),
@@ -23,7 +25,7 @@ export const representationPlanSchema = z.strictObject({
   claims: z.array(z.strictObject({ id: name, kind: z.enum(['source','pedagogical-addition']), text, anchorIds: ids })).min(1).max(32),
   assumptions: z.array(text.max(500)).max(16), requestedEvidence: evidenceLevelSchema,
   assets: z.array(z.strictObject({ id: name, kind: z.enum(['table','tensor','image','sequence','graph','geometry']), description: text.max(500), checksum:z.string().regex(/^[a-f0-9]{64}$/).optional() })).max(32),
-  quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500) })).max(32),
+  quantities: z.array(z.strictObject({ id: name, symbol: text.max(80), unit: text.max(80), description: text.max(500), measurement:scientificQuantitySchema.optional() })).max(32),
   execution: z.strictObject({ kind: z.enum(['none','local-computation']), capabilities: z.array(z.strictObject({ id: name, version: z.string().regex(/^\d+\.\d+\.\d+$/) })).min(1).max(16), assetIds: z.array(name).max(32) }),
   interactions: z.array(z.enum(['widget-controls','select-step','return-source','inspect-data'])).max(4),
   assetManifests:z.array(scientificAssetSchema).max(32).optional(),
@@ -56,33 +58,35 @@ export function validateRepresentationPlan(input: unknown, originalSource: Sourc
   }
   if(plan.execution.assetIds.some(id=>!plan.assets.some(asset=>asset.id===id))) throw Error('Execution requires an undeclared asset.');
   for(const view of plan.views) {
-    const capability=view.kind==='widget'?'widget-v2':view.kind==='asset'?'asset-inspector':'source-guide';
+    const capability=view.kind==='widget'?'widget-v2':view.kind==='asset'?'asset-inspector':view.kind==='quantity'?'quantity-inspector':'source-guide';
     if(!plan.execution.capabilities.some(item=>item.id===capability)) throw Error('A view requires its declared execution capability.');
     if(view.kind==='widget') {
       validateWidgetEnvelope(view.widget,source);
       if(!plan.anchors.some(anchor=>anchor.blockId===view.widget.source.blockId&&anchor.page===view.widget.source.page&&normalized(anchor.quote)===normalized(view.widget.source.quote))) throw Error('A widget must use an anchor declared in its representation.');
       if(plan.execution.kind!=='local-computation') throw Error('Widget views require local computation.');
-    } else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
+    } else if(view.kind==='quantity'){if(!plan.quantities.some(quantity=>quantity.id===view.quantityId))throw Error('A quantity view requires a declared quantity.');}
+    else if(view.kind==='asset'){if(!plan.execution.assetIds.includes(view.assetId)||!plan.assets.some(asset=>asset.id===view.assetId))throw Error('An asset view needs a declared required asset.');}
     else { unique(view.steps.map(step=>step.id),'guide step'); view.steps.forEach(step=>checkAnchors(step.anchorIds)); }
   }
-  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'))throw Error('This representation has no data inspector.');
+  if(plan.interactions.includes('inspect-data')&&!plan.views.some(view=>view.kind==='asset'||view.kind==='quantity'))throw Error('This representation has no data inspector.');
   if(plan.assetManifests&&new Set(plan.assetManifests.map(asset=>asset.id)).size!==plan.assetManifests.length)throw Error('Duplicate embedded asset.');
   for(const asset of plan.assetManifests??[]){const ref=plan.assets.find(ref=>ref.id===asset.id&&ref.kind===asset.kind);if(!ref)throw Error('An embedded asset must match a declared reference.');if(ref.checksum&&ref.checksum!==asset.checksum.value)throw Error('Embedded data does not match the required checksum.');}
   if(plan.interactions.includes('widget-controls')&&!plan.views.some(view=>view.kind==='widget')) throw Error('This representation has no widget controls.');
   if(plan.interactions.includes('select-step')&&!plan.views.some(view=>view.kind==='source-guide')) throw Error('This representation has no source-guide steps.');
+  for(const quantity of plan.quantities)if(quantity.measurement){const measurement=validateScientificQuantity(quantity.measurement);if(measurement.id!==quantity.id||measurement.unit!==quantity.unit)throw Error('A quantity measurement must retain its declared identity and original unit.');}
   const evidence=new Map((plan.evidence??[]).map(item=>[item.id,item]));
   unique((plan.evidence??[]).map(item=>item.id),'evidence record');
   const visited=new Set<string>(),visiting=new Set<string>();
   function visitEvidence(id:string){if(visiting.has(id))throw Error('Evidence dependencies contain a cycle.');if(visited.has(id))return;const item=evidence.get(id);if(!item)throw Error('An evidence dependency is missing.');visiting.add(id);item.dependsOn.forEach(visitEvidence);visiting.delete(id);visited.add(id);}
   for(const item of plan.evidence??[]){
-    const subjects=item.subject.kind==='claim'?plan.claims:item.subject.kind==='asset'?plan.assets:plan.views;
+    const subjects=item.subject.kind==='claim'?plan.claims:item.subject.kind==='asset'?plan.assets:item.subject.kind==='quantity'?plan.quantities:plan.views;
     if(!subjects.some(subject=>subject.id===item.subject.id))throw Error('An evidence record refers to an unknown subject.');
     if(item.anchorIds.length)checkAnchors(item.anchorIds);
     if(item.origin==='source-quotation'&&(item.subject.kind!=='claim'||!plan.claims.some(claim=>claim.id===item.subject.id&&claim.kind==='source')))throw Error('Only a source quotation can declare source-quotation evidence.');
     if(['source-extracted','observed-data','independent-reference'].includes(item.origin)&&!item.anchorIds.length&&!item.references.length)throw Error('This evidence origin needs a source anchor or explicit reference.');
     unique(item.dependsOn,'evidence dependency');visitEvidence(item.id);
   }
-  for(const report of plan.reportedChecks??[]){const subjects=report.subject.kind==='claim'?plan.claims:report.subject.kind==='asset'?plan.assets:plan.views;if(!subjects.some(subject=>subject.id===report.subject.id))throw Error('A reported check refers to an unknown subject.');}
+  for(const report of plan.reportedChecks??[]){const subjects=report.subject.kind==='claim'?plan.claims:report.subject.kind==='asset'?plan.assets:report.subject.kind==='quantity'?plan.quantities:plan.views;if(!subjects.some(subject=>subject.id===report.subject.id))throw Error('A reported check refers to an unknown subject.');}
   return plan;
 }
 

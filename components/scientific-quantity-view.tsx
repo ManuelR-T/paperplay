@@ -1,0 +1,9 @@
+'use client';
+import { quantityValues, quantityShape, scientificUnits, type ScientificQuantity } from '@/shared/scientific-quantities';
+export function ScientificQuantityView({quantity}:{quantity:ScientificQuantity}) {
+ const values=quantityValues(quantity),symbol=scientificUnits[quantity.unit].symbol;
+ return <section aria-label="Scientific quantity" style={{minWidth:0,maxWidth:'100%'}}><h3>{quantity.label}</h3><p>{quantity.kind} · {quantityShape(quantity).join(' × ')||'scalar'} · {symbol}{quantity.temperatureMode?` · ${quantity.temperatureMode==='absolute'?'absolute temperature':'temperature difference'}`:''}</p>
+ <div className="widget-table-region" role="region" tabIndex={0} aria-label="Quantity values and uncertainty"><table><caption>First {Math.min(16,values.length)} of {values.length} values · {symbol}</caption><thead><tr><th scope="col">Index</th><th scope="col">Value ({symbol})</th><th scope="col">Declared uncertainty</th></tr></thead><tbody>{values.slice(0,16).map((value,index)=><tr key={index}><th scope="row">{index}</th><td>{Number(value.toPrecision(10))}</td><td>{quantity.uncertainty?.kind==='standard'?`Standard: ${quantity.uncertainty.values[index]} ${symbol}${quantity.temperatureMode?' (difference)':''}`:quantity.uncertainty?.kind==='interval'?`Interval: [${quantity.uncertainty.lower[index]}, ${quantity.uncertainty.upper[index]}] ${symbol}`:'Not supplied'}</td></tr>)}</tbody></table></div>
+ {quantity.kind==='field'&&<p>Frame {quantity.coordinates.frame} · {quantity.coordinates.system} · {quantity.coordinates.orientation}. {quantity.coordinates.axes.map(axis=>`${axis.label}: origin ${axis.origin}, spacing ${axis.spacing} ${scientificUnits[axis.unit].symbol}, ${axis.direction===1?'increasing':'decreasing'}`).join('; ')}</p>}
+ <p className="reader-hint">Conversions check dimensions and declared conventions. They do not verify the source interpretation or infer uncertainty/covariance.</p></section>;
+}

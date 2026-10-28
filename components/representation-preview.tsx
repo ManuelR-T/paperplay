@@ -7,6 +7,8 @@ import { buildRepresentation } from '@/lib/representations/lifecycle';
 import { validateScientificAsset } from '@/lib/assets/local';
 import type { ScientificAsset } from '@/shared/scientific-assets';
 import { ScientificAssetImporter, ScientificAssetView } from './scientific-asset-importer';
+import { bindScientificQuantity } from '@/lib/quantities/convert';
+import { ScientificQuantityView } from './scientific-quantity-view';
 import { RepresentationEvidence } from './representation-evidence';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from './ui/dialog';
@@ -25,13 +27,13 @@ export function RepresentationPreview({input,source,onClose,assets}:{input:unkno
 
   return <Dialog open onOpenChange={open=>{if(!open)onClose();}}><DialogContent className="reader-dialog" onCloseAutoFocus={event=>{if(returnTarget.current){event.preventDefault();const target=returnTarget.current;requestAnimationFrame(()=>{target.scrollIntoView({block:"center"});target.focus();});}}}><DialogTitle>{built.status==='ready'?built.value.plan.title:'Representation unavailable'}</DialogTitle><DialogDescription>Preview a source-linked representation. This does not modify the paper or run a model request.</DialogDescription>
     {built.status==='ready'?<><p>{built.value.plan.objective}</p><p className="reader-hint">{built.value.plan.authorship.label} · Requested evidence: {built.value.plan.requestedEvidence.replaceAll('-',' ')}. No scientific verification is granted by opening this file.</p>
-      {built.value.plan.views.map(view=>view.kind==='widget'?<WidgetView key={view.id} envelope={view.widget} source={source} onChange={widget=>setWorking({...built.value.plan,views:built.value.plan.views.map(item=>item.id===view.id?{...view,widget}:item)})}/>:view.kind==='asset'?<ScientificAssetView key={view.id} asset={available.find(asset=>asset.id===view.assetId)!}/>:<SourceGuide key={view.id} plan={built.value.plan} view={view} source={source} onReturn={blockId=>{returnTarget.current=document.getElementById(`source-${source.id}-${blockId}`);onClose();}}/>)}
+      {built.value.plan.views.map(view=>view.kind==='widget'?<WidgetView key={view.id} envelope={view.widget} source={source} onChange={widget=>setWorking({...built.value.plan,views:built.value.plan.views.map(item=>item.id===view.id?{...view,widget}:item)})}/>:view.kind==='quantity'?<ScientificQuantityView key={view.id} quantity={bindScientificQuantity(built.value.plan.quantities.find(quantity=>quantity.id===view.quantityId)!.measurement!,view.requirement)}/>:view.kind==='asset'?<ScientificAssetView key={view.id} asset={available.find(asset=>asset.id===view.assetId)!}/>:<SourceGuide key={view.id} plan={built.value.plan} view={view} source={source} onReturn={blockId=>{returnTarget.current=document.getElementById(`source-${source.id}-${blockId}`);onClose();}}/>)}
       <Button variant="ghost" onClick={()=>{returnTarget.current=document.getElementById(`source-${source.id}-${built.value.plan.anchors[0].blockId}`);onClose();}}>Return to cited passage</Button>
-      {built.value.assets?.some(asset=>!built.value.plan.assetManifests?.some(item=>item.id===asset.id))&&<p className="reader-hint">Large datasets stay separate from this representation file. Keep the original data files to reopen its checksum-bound data.</p>}
+      {built.value.assets?.some(asset=>!built.value.plan.assetManifests?.some(item=>item.id===asset.id))&&<p className="reader-hint">Large datasets stay separate from this representation file. Download their data assets to retain unit conversions and reopen the exact checksum-bound data.</p>}
       <RepresentationEvidence plan={built.value.plan}/>
       <details><summary>Claims and assumptions</summary>{built.value.plan.claims.map(claim=><p key={claim.id}><strong>{claim.kind==='source'?'Source quotation':'Added explanation'}:</strong> {claim.text}</p>)}{built.value.plan.assumptions.map((text,index)=><p key={index}>{text}</p>)}</details>
     </>:<div role="alert"><p>{built.reason}</p><p>{built.nextAction}</p>{built.gaps?.map(gap=><p key={gap}>{gap}</p>)}</div>}
-    {built.status==='missing-data'&&parsed&&<section aria-label="Bind scientific data">
+    {built.status==='missing-data'&&parsed&&parsed.assets.some(asset=>built.gaps?.includes(asset.id))&&<section aria-label="Bind scientific data">
       {!!parsed.assetManifests?.length&&<Button variant="outline" onClick={async()=>{setDataError('');try{setEmbedded(await Promise.all(parsed.assetManifests!.map(asset=>validateScientificAsset(asset,source))));}catch(error){setDataError(error instanceof Error?error.message:'Embedded data failed validation.');}}}>Check embedded data</Button>}
       {embedded.length>0&&<>{embedded.map(asset=><ScientificAssetView key={asset.id} asset={asset}/>)}<Button onClick={()=>{try{bind(embedded);}catch(error){setDataError(error instanceof Error?error.message:"Data binding failed.");}}}>Use checked embedded data</Button></>}
       <ScientificAssetImporter source={source} target={parsed.assets.find(asset=>built.gaps?.includes(asset.id))} onConfirm={asset=>bind([asset])}/>

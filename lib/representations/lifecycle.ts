@@ -1,3 +1,5 @@
+import { bindScientificQuantity } from '../quantities/convert';
+import type { ScientificQuantity } from '../../shared/scientific-quantities';
 import { hasCheckedAssetIntegrity } from '../assets/local';
 import type { ScientificAsset } from '../../shared/scientific-assets';
 import { validateRepresentationPlan, type RepresentationPlan } from '../../shared/representations';
@@ -9,7 +11,7 @@ export type RepresentationFailure = { status:'invalid'|'unsupported'|'missing-da
 export type RepresentationOutcome<T> = { status:'ready'; value:T } | RepresentationFailure;
 export type RepresentationArtifact = { format:'paperplay-representation-artifact'; schemaVersion:1; plan:RepresentationPlan; assets?:readonly ScientificAsset[] };
 export type RepresentationView = RepresentationPlan['views'][number];
-export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset};
+export type ExecutedRepresentationView = { kind:'widget'; id:string; widget:WidgetEnvelope; result:WidgetResult } | Extract<RepresentationView,{kind:'source-guide'}> | {kind:'asset';id:string;assetId:string;asset:ScientificAsset} | {kind:'quantity';id:string;quantity:ScientificQuantity};
 export type RepresentationRun = { artifact:RepresentationArtifact; views:ExecutedRepresentationView[]; evidence:{requested:RepresentationPlan['requestedEvidence']; verified:false} };
 
 /** The two actual adapters share planning/build/run contracts; neither knows a discipline. */
@@ -17,6 +19,7 @@ const adapters = {
   'widget-v2': { version:'2.1.0' },
   'source-guide': { version:'1.0.0' },
   'asset-inspector': { version:'1.0.0' },
+  'quantity-inspector': { version:'1.0.0' },
 } as const;
 export function representationCapabilities() { return Object.entries(adapters).map(([id,value])=>({id,...value})); }
 export function buildRepresentation(input:unknown,source:SourceDocument,options:{assets?:readonly ScientificAsset[]}={}):RepresentationOutcome<RepresentationArtifact> {
@@ -26,6 +29,7 @@ export function buildRepresentation(input:unknown,source:SourceDocument,options:
     const plan=validateRepresentationPlan(input,source);
     const gaps=plan.execution.capabilities.filter(cap=>!representationCapabilities().some(available=>available.id===cap.id&&available.version===cap.version)).map(cap=>`${cap.id}@${cap.version}`);
     if(gaps.length)return {status:'unsupported',reason:'Required representation capabilities are unavailable.',nextAction:'Use an available representation or retain this file for a compatible runtime.',original:input,gaps};
+    for(const view of plan.views)if(view.kind==='quantity'){const measurement=plan.quantities.find(quantity=>quantity.id===view.quantityId)!.measurement;if(!measurement)return {status:'missing-data',reason:'A declared scientific quantity has no measurement.',nextAction:'Supply a validated quantity with its units and shape in the representation file. No values were invented.',original:input,gaps:[`quantity:${view.quantityId}`]};bindScientificQuantity(measurement,view.requirement);}
     const supplied=options.assets??[];
     if(new Set(supplied.map(asset=>asset.id)).size!==supplied.length)throw Error('Duplicate supplied asset.');
     for(const asset of supplied)if(!hasCheckedAssetIntegrity(asset))throw Error('Verify asset integrity before binding data.');
@@ -49,6 +53,7 @@ export async function executeRepresentation(artifact:RepresentationArtifact,sour
     for(const view of built.value.plan.views){
       if(options.signal?.aborted)throw new DOMException('Representation cancelled.','AbortError');
       if(view.kind==='source-guide')views.push(view);
+      else if(view.kind==='quantity')views.push({kind:'quantity',id:view.id,quantity:bindScientificQuantity(built.value.plan.quantities.find(quantity=>quantity.id===view.quantityId)!.measurement!,view.requirement)});
       else if(view.kind==='asset')views.push({...view,asset:built.value.assets!.find(asset=>asset.id===view.assetId)!});
       else {const result=options.compute?await options.compute(view.widget,options.signal):computeWidget(view.widget.spec,view.widget.seed);views.push({...view,result});}
     }
