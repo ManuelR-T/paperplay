@@ -10,6 +10,7 @@ export function representationInputRevision(plan:RepresentationPlan){
 }
 export function isRepresentationSelection(plan:RepresentationPlan,selection:SemanticSelection):boolean{
  const view=plan.views.find(view=>view.id===selection.viewId);if(!view)return false;
+ if(view.kind==='stochastic'){const interval=view.stochastic.request.interval;return selection.kind==='time'&&selection.scopeId==='stochastic'&&selection.mode==='physical-time'&&selection.unit==='s'&&selection.frameId===null&&selection.value>=convertValue(interval.start,interval.unit,'s')&&selection.value<=convertValue(interval.end,interval.unit,'s');}
  if(view.kind==='dynamics'){const interval=view.dynamics.request.interval;return selection.kind==='time'&&selection.scopeId==='dynamics'&&selection.mode==='physical-time'&&selection.unit==='s'&&selection.frameId===null&&selection.value>=convertValue(interval.start,interval.unit,'s')&&selection.value<=convertValue(interval.end,interval.unit,'s');}
  if(view.kind==='reasoning-guide'){const index=view.guide.steps.findIndex(step=>step.id===(selection.kind==='time'?selection.frameId:null));return selection.kind==='time'&&selection.scopeId==='reasoning'&&selection.mode==='authored-step'&&selection.unit==='guide-step'&&index>=0&&selection.value===index;}
  if(view.kind==='spatial-view'){
@@ -44,7 +45,8 @@ export function isRepresentationSelection(plan:RepresentationPlan,selection:Sema
 }
 export function selectionAnchorIds(plan:RepresentationPlan,selections:readonly SemanticSelection[]){
  const ids=new Set<string>();for(const selection of selections){const view=plan.views.find(v=>v.id===selection.viewId);if(!view)continue;
-   if(view.kind==='dynamics'&&selection.kind==='time')view.dynamics.anchorIds.forEach(id=>ids.add(id));
+   if(view.kind==='stochastic'&&selection.kind==='time')view.stochastic.anchorIds.forEach(id=>ids.add(id));
+   else if(view.kind==='dynamics'&&selection.kind==='time')view.dynamics.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='reasoning-guide'&&selection.kind==='time')view.guide.steps.find(step=>step.id===selection.frameId)?.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='spatial-view'&&selection.kind==='region')view.spatial.anchorIds.forEach(id=>ids.add(id));
    else if(view.kind==='statistical-chart'&&selection.kind==='entity')view.chart.anchorIds.forEach(id=>ids.add(id));

@@ -11,6 +11,8 @@ await build({ entryPoints: [resolve('lib/reading/search-worker.ts')], outfile: r
 
 await build({ entryPoints: [resolve('lib/dynamics/worker.ts')], outfile: resolve('public/dynamics.worker.mjs'), bundle: true, format: 'esm', platform: 'browser', target: 'es2022', minify: true, legalComments: 'eof', tsconfig: resolve('tsconfig.json') });
 
+await build({ entryPoints: [resolve('lib/stochastic/worker.ts')], outfile: resolve('public/stochastic.worker.mjs'), bundle: true, format: 'esm', platform: 'browser', target: 'es2022', minify: true, legalComments: 'eof', tsconfig: resolve('tsconfig.json') });
+
 // Only trusted infrastructure is built; artifact source is never a build entry.
 const { buildArtifactInfrastructure } = await import('./artifact-infrastructure.mjs');
 await buildArtifactInfrastructure();

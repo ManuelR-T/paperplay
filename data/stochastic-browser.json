@@ -1,0 +1,28 @@
+{
+  "format":"paperplay-stochastic-browser-evidence",
+  "version":1,
+  "recordedAt":"2026-10-28T07:27:02Z",
+  "environment":"Native collaborative Chromium, local production build on port 3001",
+  "inferenceCalls":0,
+  "cases":[
+    {"model":"two-state-pool","status":"completed","population":64,"replicates":16,"observations":129,"seed":"42","firstSequence":"54","finalTimeSeconds":0.02,"events":2696,"proposals":2712,"drawWords":10880,"replicateOneFinalCounts":[42,22],"empiricalActiveMean":22.625,"activeSD":4.440345331915826,"activeMCSE":1.1100863329789565,"analyticActiveMean":21.28045328689778,"analyticActiveVariance":14.204551847900303},
+    {"model":"pure-death","status":"completed","initial":40,"replicates":16,"observations":129,"seed":"42","finalTimeSeconds":1.3862943611198906,"events":481,"proposals":497,"drawWords":2020,"replicateOneFinalCount":5,"empiricalMean":9.9375,"sampleSD":3.855191305240247,"mcse":0.9637978263100617,"analyticMean":10,"analyticVariance":7.5}
+  ],
+  "replay":{"sameSeedTwoRerunDownloadsByteIdentical":true,"sha256":"20664fcc0732d3a95586fda6cf757f06bc5cae176376be8df7f2377da851fc02","seed43ReplicateOneFinalCounts":[52,12],"seed43EmpiricalActiveMean":21,"sameSourceAndRates":true},
+  "interactions":{
+    "keyboardEndSelectsFinalObservationAndPagesTable":"Rows 121–129 of 129",
+    "singleReplicate":{"sd":"Unavailable","mcse":"Unavailable","explicitNotZeroExplanation":true},
+    "population5000":{"rejected":true,"priorValidEnsembleRetainedAndLabeled":true,"replacementWorkerNotStarted":true},
+    "totalEventLimitOne":{"status":"limit-reached","commonSupportedTime":0,"summaryRows":1,"replicates":1,"events":1,"drawWords":6,"actualReplicateFinalTime":0.00014131037431505672,"downloadedPrefixMatches":true,"priorCompletedEnsembleRetainedAndLabeled":true},
+    "stopDuringDebounce":{"cancelled":true,"replacementWorkerNotStarted":true},
+    "stopActiveSimulation":{"population":4096,"replicates":32,"horizonMs":1000,"workerStartedMessageObserved":true,"before":{"created":6,"terminated":5,"active":1},"after":{"created":6,"terminated":6,"active":0},"priorValidEnsembleRetained":true},
+    "instrumentedPhase":{"created":8,"terminated":8,"active":0,"scope":"Transient wrappers around real native workers; removed by navigation"},
+    "sourceReturnFocus":"study-stochastic-hh-gating-excerpt-reference",
+    "providerRouteRequests":0
+  },
+  "layout":{
+    "desktop":{"viewportWidth":1280,"documentWidth":1280,"plotClientWidth":672,"plotScrollWidth":672,"explicitSecondsAndCountAxisDescription":true,"screenshot":"data/stochastic-browser/pool-desktop.png"},
+    "mobile200PercentRootFont":{"viewportWidth":320,"documentWidth":320,"dialogWidth":288,"dialogClientWidth":286,"dialogScrollWidth":286,"plotClientWidth":230,"plotScrollWidth":640,"svgWidth":640,"bodyFontPx":32,"tickFontPx":36,"minimumVisibleInputHeight":44,"screenshot":"data/stochastic-browser/pool-mobile-200.png"}
+  },
+  "limits":["Two registered independent-entity teaching models, not arbitrary reactions or organism/clinical prediction.","Step display holds fixed-grid samples; actual between-grid event times are not localized in the figure.","Finite PRNG/replay and statistical engineering checks are not a statistical battery or independence proof.","Sample SD and Monte Carlo SE are distinct from analytic process variance, measurement uncertainty, parameter uncertainty and confidence intervals.","Mobile plots/tables use contained horizontal scrolling. No cross-browser, human-review, held-out-evaluation or release claim."]
+}

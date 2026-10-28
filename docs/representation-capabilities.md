@@ -30,3 +30,7 @@ On 28 October 2026, `npm run check` passed TypeScript, 249 tests and the product
 ## PP-100 dynamics extension
 
 `ode-rk4@1.0.0` provides trusted, bounded registered differential models and a one-shot hybrid transition through the same lifecycle. Its `dynamics` view uses physical-time selection, explicit units/tolerances and a disposable worker. Behavior discovery advertises `ode-integration`, `hybrid-transition` and `linked-trajectories`; it does not advertise arbitrary ODE/PDE execution. See [the dynamics adapter](dynamics-adapter.md) for model, error and resource limits. Historical verification above records the earlier registry state; current integration adds independent numerical and cancellation checks.
+
+## PP-101 stochastic extension
+
+`stochastic-ssa@1.0.0` selects bounded registered integer-count population/reaction models by behavior (`stochastic-events`, `population-replicates`, `reaction-network`). Its local worker uses versioned PCG32 streams, explicit count/hazard semantics and complete requested-replicate accounting. Physical-time selection links observations, process counts and summary inspection. See [seeded experiments](stochastic-adapter.md) for analytic versus empirical spread, source mapping and support limits.

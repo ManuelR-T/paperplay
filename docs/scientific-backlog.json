@@ -685,10 +685,16 @@
       "priority": "P1",
       "size": "L",
       "verification": "Deterministic integration/reference tests and a native-browser walkthrough; no paid inference in routine CI.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 56,
         "url": "https://github.com/ManuelR-T/paperplay/issues/56"
+      },
+      "evidence": {
+        "document": "docs/stochastic-adapter.md",
+        "checks": "npm run check: TypeScript, 466 tests and production build; upstream PCG32 vectors, independently derived binomial moments/histograms, deterministic SSA mechanics, streams/grid/replicate invariance, exact source/settings/count/domain/work/result binding and disposable worker failures. Final axis-label text passes typecheck/build.",
+        "browser": "Native Chromium: death and development HH gate-pool fixtures, byte-identical seed42 rerun exports, seed43 changes, keyboard process/time/statistics linkage, R1 SD/SE unavailable, oversized population rejected, common-prefix incomplete export, pending and active CPU worker cancellation, source focus and no provider requests. Desktop fit +320px/200% contained reflow; data/stochastic-browser.json.",
+        "limitations": "Trusted finite independent count models, versioned finite PRNG, no arbitrary reaction or organism/clinical prediction. Empirical spread/MCSE are not measured/parameter uncertainty or a confidence interval; incomplete replicates never silently removed. Source mapping is an authored addition to development HH Eq7 p518; frozen heldout corpus untouched. No paid inference, statistical battery, human review or release change."
       }
     },
     {

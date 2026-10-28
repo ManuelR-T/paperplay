@@ -1,0 +1,19 @@
+PCG-XSH-RR 64/32 implementation used by Paperplay's registered stochastic adapter
+
+Copyright 2014 Melissa O'Neill <oneill@pcg-random.org>
+Licensed under the Apache License, Version 2.0.
+The complete license is provided in pcg-c-basic-LICENSE.txt in this directory.
+
+Source: https://github.com/imneme/pcg-c-basic
+Pinned commit: bc39cd76ac3d541e618606bcc6e1e5ba5e5e6aa3
+Reference file: pcg_basic.c
+Reference SHA-256: b6582a071a8a090a293621523c063d125a532d772a2a1eb7d60b3e695fe47746
+Algorithm information: https://www.pcg-random.org/
+
+Modified for Paperplay in 2026: TypeScript port of the reentrant state/sequence
+initialization and XSH-RR output functions using exact BigInt uint64 wrapping;
+canonical decimal seed/sequence validation and a host-owned per-word budget hook.
+The 53-bit conversion and registered stochastic simulation are Paperplay code,
+not features claimed to be supplied or reviewed by upstream PCG.
+This generator is not intended for cryptographic use. Known-answer vectors do
+not constitute a statistical audit or evidence for a biological model.

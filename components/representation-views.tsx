@@ -14,6 +14,7 @@ import { ScientificQuantityView } from './scientific-quantity-view';
 import { StatisticalChartView } from './statistical-chart';
 import { ComposedSceneView } from './composed-scene';
 import { ReasoningGuideView } from './reasoning-guide';
+import { StochasticView } from './stochastic-view';
 import { DynamicsView } from './dynamics-view';
 import { SpatialViewRenderer } from './spatial-view';
 import { Button } from './ui/button';
@@ -24,6 +25,7 @@ export function RepresentationViews({plan,source,assets,store,navigation,onUpdat
  const returnToAnchor=(id:string)=>onReturn(plan.anchors.find(anchor=>anchor.id===id)!.blockId);
  return <>{plan.views.map(view=>{
    switch(view.kind){
+     case 'stochastic':return <StochasticView key={view.id} request={view.stochastic.request} anchorId={view.stochastic.anchorIds[0]} onSource={returnToAnchor} viewId={view.id} store={store} navigation={navigation} onConfigure={request=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='stochastic'?{...item,stochastic:{...item.stochastic,request}}:item)}))}/>;
      case 'dynamics':return <DynamicsView key={view.id} request={view.dynamics.request} anchorId={view.dynamics.anchorIds[0]} onSource={returnToAnchor} viewId={view.id} store={store} navigation={navigation} onConfigure={request=>onUpdate(current=>({...current,navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='dynamics'?{...item,dynamics:{...item.dynamics,request}}:item)}))}/>;
      case 'reasoning-guide':return <ReasoningGuideView key={view.id} viewId={view.id} guide={view.guide} sourceUrl={source.source.url} store={store} navigation={navigation} onReturn={returnToAnchor}/>;
      case 'spatial-view':return <SpatialViewRenderer key={view.id} viewId={view.id} spatial={view.spatial} assets={assets} store={store} navigation={navigation} onReturn={returnToAnchor} onChange={patch=>onUpdate(current=>({...current,navigation:Object.keys(patch).every(key=>key==='viewport')?current.navigation:undefined,views:current.views.map(item=>item.id===view.id&&item.kind==='spatial-view'?{...item,spatial:{...item.spatial,...patch}}:item)}))}/>;

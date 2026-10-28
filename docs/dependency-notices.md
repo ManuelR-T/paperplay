@@ -1,6 +1,6 @@
 # Dependency notice inventory
 
-Generated from the installed, locked dependency tree. Package license files remain authoritative; this inventory does not relicense dependencies or bundled papers. Only packages installed on this platform appear below.
+Generated from the installed, locked dependency tree and explicitly admitted source ports. Package license files remain authoritative; this inventory does not relicense dependencies or bundled papers. Only packages installed on this platform and admitted source ports appear below.
 
 | Package | Version | Declared license |
 | --- | --- | --- |
@@ -140,6 +140,7 @@ Generated from the installed, locked dependency tree. Package license files rema
 | parse5 | 7.3.0 | MIT |
 | parse5-htmlparser2-tree-adapter | 7.1.0 | MIT |
 | parse5-parser-stream | 7.1.2 | MIT |
+| pcg-c-basic (TypeScript port) | bc39cd76ac3d541e618606bcc6e1e5ba5e5e6aa3 | Apache-2.0 |
 | pdfjs-dist | 6.4.299 | Apache-2.0 |
 | picocolors | 1.1.1 | ISC |
 | postcss | 8.5.23 | MIT |
