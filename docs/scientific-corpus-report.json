@@ -1,0 +1,379 @@
+{
+  "format": "paperplay-scientific-corpus-intake-report",
+  "schemaVersion": 1,
+  "corpusId": "scientific-intake-2026-10-28",
+  "splitSha256": "e026de172c7d72f9d755d7994b723b05a4ffed7050b9f921c3e75df934ad3db0",
+  "scope": "Twelve-case intake and adapter metadata conformance; not universal scientific coverage or scientific validation.",
+  "counts": {
+    "papers": 12,
+    "byDomain": {
+      "biology": 4,
+      "computer-science": 4,
+      "physics": 4
+    },
+    "bySplit": {
+      "development": 8,
+      "held-out": 4
+    },
+    "byExpectedRepresentation": {
+      "algorithm-trace": 2,
+      "annotated-figure": 1,
+      "argument": 1,
+      "data-exploration": 1,
+      "derivation": 1,
+      "pipeline": 1,
+      "process-map": 1,
+      "spatial-field": 1,
+      "state-machine": 1,
+      "tensor-exploration": 1,
+      "trajectory": 1
+    },
+    "byRequestedEvidence": {
+      "illustration": 12
+    },
+    "bySourceAdmission": {
+      "abstract-inspected": 4,
+      "body-locator-inspected": 6,
+      "institutional-locator-only": 1,
+      "metadata-only": 1
+    },
+    "incompleteScenarios": 4,
+    "executedPapers": 0,
+    "independentlyVerifiedPapers": 0,
+    "expertReviewedPapers": 0,
+    "modelRuns": 0,
+    "humanSessions": 0
+  },
+  "warning": "A generic catalog match is not a source-specific recipe, a completed representation, or evidence of reproduction.",
+  "cases": [
+    {
+      "id": "B1",
+      "domain": "biology",
+      "split": "development",
+      "representation": "process-map",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "body-locator-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "process-network, ode-integration",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "B2",
+      "domain": "biology",
+      "split": "development",
+      "representation": "spatial-field",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "body-locator-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "reaction-diffusion",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "B3",
+      "domain": "biology",
+      "split": "held-out",
+      "representation": "data-exploration",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "metadata-only",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "single-cell-ordering",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Source passage admission required before any source-linked representation.",
+      "incompleteScenarios": [
+        "S2"
+      ]
+    },
+    {
+      "id": "B4",
+      "domain": "biology",
+      "split": "development",
+      "representation": "pipeline",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "body-locator-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "protein-structure-inference",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": [
+        "S1"
+      ]
+    },
+    {
+      "id": "P1",
+      "domain": "physics",
+      "split": "development",
+      "representation": "trajectory",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "abstract-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "ode-integration",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "P2",
+      "domain": "physics",
+      "split": "development",
+      "representation": "argument",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "body-locator-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "argument-map",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "P3",
+      "domain": "physics",
+      "split": "held-out",
+      "representation": "annotated-figure",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "institutional-locator-only",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "image-region-exploration",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Source passage admission required before any source-linked representation.",
+      "incompleteScenarios": [
+        "S3"
+      ]
+    },
+    {
+      "id": "P4",
+      "domain": "physics",
+      "split": "held-out",
+      "representation": "derivation",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "abstract-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "equation-derivation",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "C1",
+      "domain": "computer-science",
+      "split": "development",
+      "representation": "algorithm-trace",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "abstract-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [
+        "widget-v2@2.1.0"
+      ],
+      "capabilityGaps": [],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "C2",
+      "domain": "computer-science",
+      "split": "development",
+      "representation": "algorithm-trace",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "abstract-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [
+        "widget-v2@2.1.0"
+      ],
+      "capabilityGaps": [],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    },
+    {
+      "id": "C3",
+      "domain": "computer-science",
+      "split": "development",
+      "representation": "tensor-exploration",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "body-locator-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [
+        "widget-v2@2.1.0"
+      ],
+      "capabilityGaps": [],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": [
+        "S4"
+      ]
+    },
+    {
+      "id": "C4",
+      "domain": "computer-science",
+      "split": "held-out",
+      "representation": "state-machine",
+      "requestedEvidence": "illustration",
+      "sourceAdmission": "body-locator-inspected",
+      "sourceTextStored": false,
+      "expertReview": "pending",
+      "scientificVerification": "not-evaluated",
+      "executed": false,
+      "genericCapabilityCandidates": [],
+      "capabilityGaps": [
+        {
+          "kind": "capability",
+          "requirement": "distributed-state-machine",
+          "reason": "No approved adapter supports this exact combination of behavior, data and interaction.",
+          "nextAction": "Use a source-linked conceptual alternative or record the missing capability; do not invent an engine."
+        }
+      ],
+      "sourceLinkedFallback": "Requires import of the exact inspected source passage before a reading guide can be built.",
+      "incompleteScenarios": []
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S1",
+      "paperId": "B4",
+      "intentionallyOmitted": [
+        "trained parameters",
+        "sequence databases/MSA",
+        "accelerator"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Source-linked inference pipeline with named input/compute gaps.",
+      "forbiddenClaims": [
+        "predicted protein structure",
+        "CASP benchmark success"
+      ]
+    },
+    {
+      "id": "S2",
+      "paperId": "B3",
+      "intentionallyOmitted": [
+        "expression matrix",
+        "cell/sample metadata"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Conceptual pseudotime after source admission; any toy cells labeled synthetic.",
+      "forbiddenClaims": [
+        "recovered original trajectory",
+        "observed clock time"
+      ]
+    },
+    {
+      "id": "S3",
+      "paperId": "P3",
+      "intentionallyOmitted": [
+        "calibrated absorption measurements",
+        "analysis protocol"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Link reported observation and original figure; require full-text/figure admission before annotation.",
+      "forbiddenClaims": [
+        "laboratory reproduction",
+        "fabricated raw measurements"
+      ]
+    },
+    {
+      "id": "S4",
+      "paperId": "C3",
+      "intentionallyOmitted": [
+        "training corpus",
+        "trained parameters",
+        "training hardware"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Tiny synthetic attention only, no trained translation claims.",
+      "forbiddenClaims": [
+        "BLEU reproduction",
+        "trained semantic interpretation"
+      ]
+    }
+  ]
+}

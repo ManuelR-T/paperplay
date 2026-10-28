@@ -198,10 +198,16 @@
       "priority": "P0",
       "size": "L",
       "verification": "Review source permissions and the case manifest; evaluate deterministic fixtures without claiming model runs or human reviews that did not occur.",
-      "status": "planned",
+      "status": "implemented",
       "github": {
         "number": 41,
         "url": "https://github.com/ManuelR-T/paperplay/issues/41"
+      },
+      "evidence": {
+        "document": "docs/scientific-corpus.md",
+        "checks": "npm run check: TypeScript, 253 tests, production build; deterministic intake report",
+        "corpus": "12 real attributed papers; 4 per domain; frozen 8 development/4 held-out; 4 incomplete-input scenarios; metadata/links only",
+        "limitations": "Source admission remains partial for two cases. Zero paper executions, independent scientific checks, expert reviews, model evaluations or human sessions in this intake."
       }
     },
     {

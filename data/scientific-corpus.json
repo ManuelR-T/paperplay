@@ -1,0 +1,823 @@
+{
+  "format": "paperplay-scientific-corpus",
+  "schemaVersion": 1,
+  "id": "scientific-intake-2026-10-28",
+  "frozenAt": "2026-10-28",
+  "sourceBrief": "docs/scientific-corpus-sources.md",
+  "splitSha256": "e026de172c7d72f9d755d7994b723b05a4ffed7050b9f921c3e75df934ad3db0",
+  "heldOutPolicy": "Excluded from Paperplay recipes, prompts and development examples; not a claim about model pretraining. Intake metadata is not an evaluation.",
+  "papers": [
+    {
+      "id": "B1",
+      "domain": "biology",
+      "split": "development",
+      "title": "A quantitative description of membrane current and its application to conduction and excitation in nerve",
+      "authors": [
+        "A. L. Hodgkin",
+        "A. F. Huxley"
+      ],
+      "year": 1952,
+      "identifiers": {
+        "doi": "10.1113/jphysiol.1952.sp004764",
+        "arxiv": null,
+        "canonicalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1392413/"
+      },
+      "source": {
+        "edition": "1952 published article; excludes 2019 supplement",
+        "locator": "Figure 1, printed p. 501; NJIT original scan PDF page 4",
+        "admission": "body-locator-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://web.njit.edu/~matveev/Courses/M430_635_F15/HodgkinHuxley_JPhysiol-1952.pdf"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Capacitive and ionic contributions to membrane current.",
+      "expected": {
+        "representation": "process-map",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "voltage convention",
+          "conductance/rate equations",
+          "temperature",
+          "initial state",
+          "stimulus",
+          "ODE integration policy"
+        ],
+        "assumptions": [
+          "Original voltage sign convention must be declared."
+        ],
+        "omissions": [
+          "No squid preparation or voltage-clamp experiment reproduced."
+        ],
+        "behavior": [
+          "process-network",
+          "ode-integration"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": true,
+      "researchKinds": [
+        "empirical",
+        "mathematical"
+      ]
+    },
+    {
+      "id": "B2",
+      "domain": "biology",
+      "split": "development",
+      "title": "The Chemical Basis of Morphogenesis",
+      "authors": [
+        "A. M. Turing"
+      ],
+      "year": 1952,
+      "identifiers": {
+        "doi": "10.1098/rstb.1952.0012",
+        "arxiv": null,
+        "canonicalUrl": "https://royalsocietypublishing.org/doi/10.1098/rstb.1952.0012"
+      },
+      "source": {
+        "edition": "1952 published article, volume 237, pp. 37–72",
+        "locator": "Opening model discussion, printed pp. 37–38; Cambridge original scan",
+        "admission": "body-locator-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://www.damtp.cam.ac.uk/user/gold/pdfs/teaching/turing1952.pdf"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Reaction and diffusion can destabilize a spatially uniform chemical state.",
+      "expected": {
+        "representation": "spatial-field",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "reaction functions",
+          "diffusivities",
+          "geometry",
+          "boundary conditions",
+          "perturbation seed",
+          "bounded integrator"
+        ],
+        "assumptions": [
+          "An illustrative field is not organism-specific validation."
+        ],
+        "omissions": [
+          "Growing tissue mechanics and biological experiment validation."
+        ],
+        "behavior": [
+          "reaction-diffusion"
+        ]
+      },
+      "crossDomains": [
+        "physics"
+      ],
+      "imageHeavy": false,
+      "researchKinds": [
+        "theoretical"
+      ]
+    },
+    {
+      "id": "B3",
+      "domain": "biology",
+      "split": "held-out",
+      "title": "The dynamics and regulators of cell fate decisions are revealed by pseudotemporal ordering of single cells",
+      "authors": [
+        "Cole Trapnell",
+        "Davide Cacchiarelli",
+        "Jonna Grimsby",
+        "Prapti Pokharel",
+        "Shuqiang Li",
+        "Michael Morse",
+        "Niall J. Lennon",
+        "Kenneth J. Livak",
+        "Tarjei S. Mikkelsen",
+        "John L. Rinn"
+      ],
+      "year": 2014,
+      "identifiers": {
+        "doi": "10.1038/nbt.2859",
+        "arxiv": null,
+        "canonicalUrl": "https://www.nature.com/articles/nbt.2859"
+      },
+      "source": {
+        "edition": "2014 published article",
+        "locator": "Proposed Abstract; direct passage admission still required",
+        "admission": "metadata-only",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://pubmed.ncbi.nlm.nih.gov/24658644/"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Pseudotemporal ordering is inferred rather than an observed clock or lineage proof.",
+      "expected": {
+        "representation": "data-exploration",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "expression matrix",
+          "cell/sample metadata",
+          "filtering",
+          "normalization",
+          "ordering procedure"
+        ],
+        "assumptions": [
+          "Pseudotime is not clock time or a causal lineage proof."
+        ],
+        "omissions": [
+          "No original cell trajectory without source inputs."
+        ],
+        "behavior": [
+          "single-cell-ordering"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "empirical",
+        "computational"
+      ]
+    },
+    {
+      "id": "B4",
+      "domain": "biology",
+      "split": "development",
+      "title": "Highly accurate protein structure prediction with AlphaFold",
+      "authors": [
+        "John Jumper",
+        "Richard Evans",
+        "Alexander Pritzel",
+        "Tim Green",
+        "Michael Figurnov",
+        "Olaf Ronneberger",
+        "Kathryn Tunyasuvunakool",
+        "Russ Bates",
+        "Augustin Žídek",
+        "Anna Potapenko",
+        "Alex Bridgland",
+        "Clemens Meyer",
+        "Simon A. A. Kohl",
+        "Andrew J. Ballard",
+        "Andrew Cowie",
+        "Bernardino Romera-Paredes",
+        "Stanislav Nikolov",
+        "Rishub Jain",
+        "Jonas Adler",
+        "Trevor Back",
+        "Stig Petersen",
+        "David Reiman",
+        "Ellen Clancy",
+        "Michal Zielinski",
+        "Michalina Pacholska",
+        "Tamas Berghammer",
+        "Sebastian Bodenstein",
+        "Martin Steinegger",
+        "David Silver",
+        "Oriol Vinyals",
+        "Andrew W. Senior",
+        "Koray Kavukcuoglu",
+        "Pushmeet Kohli",
+        "Demis Hassabis"
+      ],
+      "year": 2021,
+      "identifiers": {
+        "doi": "10.1038/s41586-021-03819-2",
+        "arxiv": null,
+        "canonicalUrl": "https://www.nature.com/articles/s41586-021-03819-2"
+      },
+      "source": {
+        "edition": "Version of record, 18 August 2021",
+        "locator": "Methods: Inference regimen; publisher-indexed excerpt",
+        "admission": "body-locator-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://www.nature.com/articles/s41586-021-03819-2"
+      },
+      "rights": {
+        "license": "CC-BY-4.0",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Separate structural inference, confidence, database search and relaxation.",
+      "expected": {
+        "representation": "pipeline",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "sequence",
+          "sequence databases/MSA",
+          "trained parameters",
+          "code/configuration",
+          "accelerator"
+        ],
+        "assumptions": [
+          "Article license does not license every external database or model artifact."
+        ],
+        "omissions": [
+          "No local structure prediction or CASP rerun."
+        ],
+        "behavior": [
+          "protein-structure-inference"
+        ]
+      },
+      "crossDomains": [
+        "computer-science"
+      ],
+      "imageHeavy": false,
+      "researchKinds": [
+        "computational",
+        "empirical"
+      ]
+    },
+    {
+      "id": "P1",
+      "domain": "physics",
+      "split": "development",
+      "title": "Deterministic Nonperiodic Flow",
+      "authors": [
+        "Edward N. Lorenz"
+      ],
+      "year": 1963,
+      "identifiers": {
+        "doi": "10.1175/1520-0469(1963)020<0130:DNF>2.0.CO;2",
+        "arxiv": null,
+        "canonicalUrl": "https://journals.ametsoc.org/doi/abs/10.1175/1520-0469%281963%29020%3C0130%3Adnf%3E2.0.CO%3B2"
+      },
+      "source": {
+        "edition": "March 1963 article, pp. 130–141",
+        "locator": "Abstract; body equations require admission",
+        "admission": "abstract-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://journals.ametsoc.org/doi/abs/10.1175/1520-0469%281963%29020%3C0130%3Adnf%3E2.0.CO%3B2"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Nearby initial states can diverge in a deterministic dissipative model.",
+      "expected": {
+        "representation": "trajectory",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "equations",
+          "parameters",
+          "initial states",
+          "timestep/integrator",
+          "finite duration",
+          "convergence checks"
+        ],
+        "assumptions": [
+          "A bounded trajectory does not reproduce the atmosphere."
+        ],
+        "omissions": [
+          "No weather predictability or original calculation reproduction."
+        ],
+        "behavior": [
+          "ode-integration"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "mathematical",
+        "computational"
+      ]
+    },
+    {
+      "id": "P2",
+      "domain": "physics",
+      "split": "development",
+      "title": "On the Einstein Podolsky Rosen paradox",
+      "authors": [
+        "J. S. Bell"
+      ],
+      "year": 1964,
+      "identifiers": {
+        "doi": "10.1103/PhysicsPhysiqueFizika.1.195",
+        "arxiv": null,
+        "canonicalUrl": "https://journals.aps.org/ppf/abstract/10.1103/PhysicsPhysiqueFizika.1.195"
+      },
+      "source": {
+        "edition": "1964 published article, pp. 195–200",
+        "locator": "Section II, Formulation, equations (1)–(3); original scan",
+        "admission": "body-locator-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://csiflabs.cs.ucdavis.edu/~gusfield/Bell-paper.pdf"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Locality assumptions constrain hidden-variable correlations.",
+      "expected": {
+        "representation": "argument",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "measurement directions",
+          "singlet correlation formula",
+          "hidden-variable assumptions"
+        ],
+        "assumptions": [
+          "Name assumptions before any correlation or inequality interpretation."
+        ],
+        "omissions": [
+          "No experimental Bell test, detector calibration or loophole closure."
+        ],
+        "behavior": [
+          "argument-map"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "theoretical"
+      ]
+    },
+    {
+      "id": "P3",
+      "domain": "physics",
+      "split": "held-out",
+      "title": "Observation of Bose-Einstein Condensation in a Dilute Atomic Vapor",
+      "authors": [
+        "M. H. Anderson",
+        "J. R. Ensher",
+        "M. R. Matthews",
+        "C. E. Wieman",
+        "E. A. Cornell"
+      ],
+      "year": 1995,
+      "identifiers": {
+        "doi": "10.1126/science.269.5221.198",
+        "arxiv": null,
+        "canonicalUrl": "https://www.science.org/doi/10.1126/science.269.5221.198"
+      },
+      "source": {
+        "edition": "1995 Science article, volume 269, issue 5221, p. 198",
+        "locator": "Figure 2 identified by NIST bibliography note 10; original image/caption not inspected",
+        "admission": "institutional-locator-only",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://nvlpubs.nist.gov/nistpubs/sp958-lide/html/375-378.html"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Distinguish a narrow condensate contribution from the thermal distribution.",
+      "expected": {
+        "representation": "annotated-figure",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "calibrated absorption measurements",
+          "trap/expansion conditions",
+          "temperature estimation",
+          "analysis protocol"
+        ],
+        "assumptions": [
+          "Institutional figure attribution is not quantitative admission of original pixels."
+        ],
+        "omissions": [
+          "No laboratory reproduction or fabricated source measurements."
+        ],
+        "behavior": [
+          "image-region-exploration"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": true,
+      "researchKinds": [
+        "empirical"
+      ]
+    },
+    {
+      "id": "P4",
+      "domain": "physics",
+      "split": "held-out",
+      "title": "Entanglement Entropy and Quantum Field Theory",
+      "authors": [
+        "Pasquale Calabrese",
+        "John Cardy"
+      ],
+      "year": 2004,
+      "identifiers": {
+        "doi": "10.1088/1742-5468/2004/06/P06002",
+        "arxiv": "hep-th/0405152v3",
+        "canonicalUrl": "https://arxiv.org/abs/hep-th/0405152v3"
+      },
+      "source": {
+        "edition": "arXiv hep-th/0405152v3, revised 2 October 2008",
+        "locator": "Abstract and v3 correction comments; body derivation requires admission",
+        "admission": "abstract-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://arxiv.org/abs/hep-th/0405152v3"
+      },
+      "rights": {
+        "license": "arxiv-nonexclusive",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Single-interval entropy has logarithmic length dependence in the stated critical 1+1-dimensional setting.",
+      "expected": {
+        "representation": "derivation",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "central charge",
+          "interval length",
+          "cutoff convention",
+          "additive constant"
+        ],
+        "assumptions": [
+          "Only the stated single-interval setting; v3 says multi-interval results are generally incorrect."
+        ],
+        "omissions": [
+          "Exclude multi-interval claims and full field-theory proof replay."
+        ],
+        "behavior": [
+          "equation-derivation"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "theoretical"
+      ]
+    },
+    {
+      "id": "C1",
+      "domain": "computer-science",
+      "split": "development",
+      "title": "Proof Pearl: Purely Functional, Simple and Efficient Priority Search Trees and Applications to Prim and Dijkstra",
+      "authors": [
+        "Peter Lammich",
+        "Tobias Nipkow"
+      ],
+      "year": 2019,
+      "identifiers": {
+        "doi": "10.4230/LIPIcs.ITP.2019.23",
+        "arxiv": null,
+        "canonicalUrl": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITP.2019.23"
+      },
+      "source": {
+        "edition": "Publisher article, 5 September 2019",
+        "locator": "Publisher Abstract: decrease-key, Prim and Dijkstra",
+        "admission": "abstract-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ITP.2019.23"
+      },
+      "rights": {
+        "license": "CC-BY-3.0",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Distinguish executing graph/queue traces from formal verification.",
+      "expected": {
+        "representation": "algorithm-trace",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "small graph",
+          "edge weights",
+          "tie policy",
+          "bounded queue operations"
+        ],
+        "assumptions": [
+          "Synthetic graph traces are not Isabelle proof replay."
+        ],
+        "omissions": [
+          "No original formal proof or timing benchmark replay."
+        ],
+        "behavior": [
+          "catalog-widgets"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "formal",
+        "algorithmic"
+      ]
+    },
+    {
+      "id": "C2",
+      "domain": "computer-science",
+      "split": "development",
+      "title": "Nearly-Optimal Mergesorts: Fast, Practical Sorting Methods That Optimally Adapt to Existing Runs",
+      "authors": [
+        "J. Ian Munro",
+        "Sebastian Wild"
+      ],
+      "year": 2018,
+      "identifiers": {
+        "doi": "10.4230/LIPIcs.ESA.2018.63",
+        "arxiv": "1805.04154v1",
+        "canonicalUrl": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2018.63"
+      },
+      "source": {
+        "edition": "2018 conference edition; arXiv v1 is a separate extended source",
+        "locator": "Publisher Abstract: peeksort/powersort and existing runs",
+        "admission": "abstract-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2018.63"
+      },
+      "rights": {
+        "license": "CC-BY-3.0",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Existing runs affect merge order and operation cost.",
+      "expected": {
+        "representation": "algorithm-trace",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "input array",
+          "run boundaries",
+          "stable comparisons",
+          "operation-count definition"
+        ],
+        "assumptions": [
+          "Keep conference locators separate from arXiv extended article."
+        ],
+        "omissions": [
+          "No universal timing superiority or original benchmark replay."
+        ],
+        "behavior": [
+          "catalog-widgets"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "theoretical",
+        "computational"
+      ]
+    },
+    {
+      "id": "C3",
+      "domain": "computer-science",
+      "split": "development",
+      "title": "Attention Is All You Need",
+      "authors": [
+        "Ashish Vaswani",
+        "Noam Shazeer",
+        "Niki Parmar",
+        "Jakob Uszkoreit",
+        "Llion Jones",
+        "Aidan N. Gomez",
+        "Łukasz Kaiser",
+        "Illia Polosukhin"
+      ],
+      "year": 2017,
+      "identifiers": {
+        "doi": "10.48550/arXiv.1706.03762",
+        "arxiv": "1706.03762v7",
+        "canonicalUrl": "https://arxiv.org/abs/1706.03762v7"
+      },
+      "source": {
+        "edition": "arXiv 1706.03762v7, revised 2 August 2023",
+        "locator": "Section 3.2.1, equation (1), Figure 2, pinned HTML v7",
+        "admission": "body-locator-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://arxiv.org/html/1706.03762v7"
+      },
+      "rights": {
+        "license": "arxiv-nonexclusive",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Scaled dot-product attention with explicit tensor shapes and normalization.",
+      "expected": {
+        "representation": "tensor-exploration",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "Q/K/V tensors",
+          "tensor shapes",
+          "softmax axis",
+          "finite inputs"
+        ],
+        "assumptions": [
+          "Tiny synthetic Q/K/V data are illustrative."
+        ],
+        "omissions": [
+          "No trained semantics, translation quality or BLEU reproduction."
+        ],
+        "behavior": [
+          "catalog-widgets"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "computational",
+        "empirical"
+      ]
+    },
+    {
+      "id": "C4",
+      "domain": "computer-science",
+      "split": "held-out",
+      "title": "In Search of an Understandable Consensus Algorithm",
+      "authors": [
+        "Diego Ongaro",
+        "John Ousterhout"
+      ],
+      "year": 2014,
+      "identifiers": {
+        "doi": null,
+        "arxiv": null,
+        "canonicalUrl": "https://www.usenix.org/conference/atc14/technical-sessions/presentation/ongaro"
+      },
+      "source": {
+        "edition": "USENIX ATC 2014 conference edition, pp. 305–319; ISBN 978-1-931971-10-2",
+        "locator": "Section 5/5.1, Raft algorithm; Figure 2 summary; conference PDF",
+        "admission": "body-locator-inspected",
+        "checkedAt": "2026-10-28",
+        "storedContentSha256": null,
+        "contentStored": false,
+        "inspectedUrl": "https://www.usenix.org/system/files/conference/atc14/atc14-paper-ongaro.pdf"
+      },
+      "rights": {
+        "license": "unknown",
+        "storagePolicy": "metadata-and-links-only",
+        "thirdPartyAssetsRequireReview": true
+      },
+      "concept": "Separate election, replication and safety in a bounded message/crash trace.",
+      "expected": {
+        "representation": "state-machine",
+        "evidence": "illustration",
+        "scientificVerification": "not-evaluated",
+        "expertReview": "pending",
+        "requiredInputs": [
+          "finite nodes",
+          "message schedule",
+          "terms/logs",
+          "timeout seed",
+          "crash/recovery assumptions",
+          "safety checks"
+        ],
+        "assumptions": [
+          "Conference edition differs from extended author report."
+        ],
+        "omissions": [
+          "No production network, formal proof replay or original user study."
+        ],
+        "behavior": [
+          "distributed-state-machine"
+        ]
+      },
+      "crossDomains": [],
+      "imageHeavy": false,
+      "researchKinds": [
+        "algorithmic",
+        "empirical"
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "S1",
+      "paperId": "B4",
+      "intentionallyOmitted": [
+        "trained parameters",
+        "sequence databases/MSA",
+        "accelerator"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Source-linked inference pipeline with named input/compute gaps.",
+      "forbiddenClaims": [
+        "predicted protein structure",
+        "CASP benchmark success"
+      ]
+    },
+    {
+      "id": "S2",
+      "paperId": "B3",
+      "intentionallyOmitted": [
+        "expression matrix",
+        "cell/sample metadata"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Conceptual pseudotime after source admission; any toy cells labeled synthetic.",
+      "forbiddenClaims": [
+        "recovered original trajectory",
+        "observed clock time"
+      ]
+    },
+    {
+      "id": "S3",
+      "paperId": "P3",
+      "intentionallyOmitted": [
+        "calibrated absorption measurements",
+        "analysis protocol"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Link reported observation and original figure; require full-text/figure admission before annotation.",
+      "forbiddenClaims": [
+        "laboratory reproduction",
+        "fabricated raw measurements"
+      ]
+    },
+    {
+      "id": "S4",
+      "paperId": "C3",
+      "intentionallyOmitted": [
+        "training corpus",
+        "trained parameters",
+        "training hardware"
+      ],
+      "reason": "Chosen evaluation input restriction, not a claim that authors did not release resources.",
+      "expectedFallback": "Tiny synthetic attention only, no trained translation claims.",
+      "forbiddenClaims": [
+        "BLEU reproduction",
+        "trained semantic interpretation"
+      ]
+    }
+  ]
+}
