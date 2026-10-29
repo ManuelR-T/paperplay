@@ -196,3 +196,31 @@
 .explore-pagination{padding-block:12px}
 .explore-footer{margin-top:30px}
 @media(max-width:700px){.explore-card{padding:18px}.explore-card h3{font-size:23px}.explore-header{padding:12px 16px;gap:12px}.explore-header nav{gap:8px}.explore-header nav a{font-size:14px;gap:6px}.explore-more-topics .explore-topics{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px}.explore-topics button{flex-shrink:0}.explore-topics>span{display:none}}
+
+/* Subjects sit alongside the results, leaving the first papers in view. */
+@media(min-width:1000px){
+  .explore-content{display:grid;grid-template-columns:190px minmax(0,1fr);column-gap:28px;grid-template-areas:'intro intro' 'tabs tabs' 'notice notice' 'search search' 'subjects results' 'topics topics' 'footer footer'}
+  .explore-intro{grid-area:intro}
+  .explore-tabs{grid-area:tabs}
+  .explore-notice{grid-area:notice}
+  .explore-search{grid-area:search;margin-bottom:24px}
+  .explore-subjects{grid-area:subjects;align-self:start;margin:0;padding:4px 16px 16px 0;border:0;border-right:1px solid var(--line)}
+  .explore-subjects-heading h2{font:600 13px/1.6 var(--sans);color:var(--soft);letter-spacing:.04em;margin-bottom:8px}
+  .explore-subject-groups{flex-direction:column;align-items:stretch;gap:4px}
+  .explore-subject-groups button{justify-content:flex-start;text-align:left;white-space:normal;border:0;border-radius:7px;background:transparent;padding:10px 12px;min-height:44px}
+  .explore-subject-groups button[aria-pressed=true]{background:var(--secondary);box-shadow:inset 3px 0 var(--olive)}
+  .explore-archives{display:flex;flex-direction:column;max-height:360px;overflow:auto}
+  .explore-content>section[aria-labelledby=explore-results-heading]{grid-area:results;min-width:0}
+  .explore-results-header{margin-top:0;padding-bottom:12px;min-height:42px}
+  .explore-results-header h2{font-size:25px}
+  .explore-results-header>span{font-size:13px}
+  .explore-card{padding:20px}
+  .explore-card h3{font-size:23px}
+  .explore-card-actions{align-items:center}
+  .explore-more-topics{grid-area:topics}
+  .explore-footer{grid-area:footer}
+  .explore-content:has(.explore-saved-search){grid-template-columns:1fr;grid-template-areas:'intro' 'tabs' 'notice' 'results' 'topics' 'footer'}
+}
+.explore-card-actions .explore-open:focus-visible{outline:3px solid var(--olive);outline-offset:3px}
+.explore-query label{color:var(--ink);font-size:14px;font-weight:600}
+@media(max-width:700px){.explore-card-actions{gap:10px}.explore-card-actions .explore-open{justify-content:center;min-height:44px}.explore-subjects-heading h2{font-size:16px}.explore-results-header{gap:6px}.explore-results-header>span{font-size:13px}}
