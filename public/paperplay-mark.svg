@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <title>Paperplay — research in motion</title>
+  <rect x="2" y="2" width="60" height="60" rx="17" fill="#155D52"/>
+  <path d="M18 12h15l12 12v24a4 4 0 0 1-4 4H18a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4Z" fill="#FFFDF8"/>
+  <path d="M33 12v9a3 3 0 0 0 3 3h9L33 12Z" fill="#B9D4C5"/>
+  <path d="M21 23h5M21 30h12" stroke="#155D52" stroke-width="3" stroke-linecap="round"/>
+  <path d="M30 33a3 3 0 0 1 4.5-2.6l18 10.4a3 3 0 0 1 0 5.2l-18 10.4A3 3 0 0 1 30 53.8V33Z" fill="#D7EDB2" stroke="#155D52" stroke-width="3.5" stroke-linejoin="round"/>
+</svg>
