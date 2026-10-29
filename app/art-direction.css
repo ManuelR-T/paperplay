@@ -45,3 +45,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .widget-header-actions button{border-radius:6px}
 .widget-card .widget-footer{gap:8px;padding-top:14px}
 .passage-tools>.passage-note-button:focus-visible{background:var(--accent)}
+
+/* Shared reading UI scale; source typography continues to follow reader settings. */
+:root{--ui-space-sm:8px;--ui-space-md:16px;--ui-space-lg:24px;--ui-radius:8px}
+.reader-dialog:not(.passage-dialog)[data-slot=dialog-content]{padding:var(--ui-space-lg);border-radius:12px}
+.reader-dialog .reader-fieldset{padding:var(--ui-space-md);border-radius:var(--ui-radius)}
+.reader-dialog .reader-choice{gap:var(--ui-space-sm)}
+.reader-dialog .reader-field{gap:var(--ui-space-sm);margin-block:12px}
+.reader-dialog .reader-choice button{min-height:44px;border-radius:6px}
+.reader-dialog .reader-hint{font-size:14px;line-height:1.65}
+@media(max-width:620px){.reader-dialog:not(.passage-dialog)[data-slot=dialog-content]{padding:var(--ui-space-md)}.research-article .original-heading{margin-top:1.5em}}
