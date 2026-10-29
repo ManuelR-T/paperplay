@@ -162,3 +162,10 @@
 .explore-results-header{margin-top:16px}
 .explore-more-topics{margin-top:28px}
 @media(max-width:700px){.explore-content{padding-top:12px}.explore-intro h1{font-size:29px;line-height:1.2}.explore-tabs{margin-bottom:12px}.explore-search{padding:12px}.explore-subject-groups{flex-wrap:nowrap;overflow-x:auto;padding:3px 2px 8px}.explore-subject-groups button{flex-shrink:0;white-space:nowrap;max-width:85vw}.explore-filter-toggle>span{font-size:13px}.explore-archives{max-height:145px;overflow:auto}.explore-results-header h2{font-size:24px}}
+
+/* arXiv titles and abstracts contain TeX; keep typeset expressions within the card. */
+.explore-card .katex,.explore-preview .katex{font-size:1.05em;color:inherit}
+.explore-card h3 .katex,.explore-preview [data-slot=dialog-title] .katex{font-size:1em}
+.explore-grid{align-items:start}
+.explore-card-actions{margin-top:12px}
+.explore-abstract-link{margin-bottom:4px}

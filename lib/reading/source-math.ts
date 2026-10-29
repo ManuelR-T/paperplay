@@ -46,7 +46,7 @@ export function splitSourceMath(text:string):SourceMathPart[]{
    while(end>=0&&escaped(text,end))end=text.indexOf(delimiter,end+delimiter.length);
    const candidate=end>=0?text.slice(from,end):'';
    // Avoid turning currency such as "$5 and $10" into a formula.
-   if(candidate&&candidate===candidate.trim()&&!candidate.includes('\n')&&candidate.length<=MAX_INLINE_MATH&&!/\d/u.test(text[end+delimiter.length]??'')&&!(/\b[A-Za-z]{2,}\b/u.test(candidate)&&!/[\\=+*/_^<>-]/u.test(candidate))){append(index,end+delimiter.length,candidate);continue;}
+   if(candidate&&candidate===candidate.trim()&&!candidate.includes('\n')&&candidate.length<=MAX_INLINE_MATH&&!/\d/u.test(text[end+delimiter.length]??'')&&!(/\b[A-Za-z]{2,}\b/u.test(candidate)&&/\s/u.test(candidate)&&!/[\\=+*/_^<>-]/u.test(candidate))){append(index,end+delimiter.length,candidate);continue;}
   }
   if(text[index]==='\\'&&!escaped(text,index)&&/[A-Za-z]/u.test(text[index+1]??'')){
    let from=index;while(from>start&&/[A-Za-z0-9_=^():,+*/<>[\]|-]/u.test(text[from-1]))from--;

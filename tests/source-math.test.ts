@@ -56,3 +56,11 @@ test('algorithm labels in the reported shortest-path passages render without exp
  assert.match(html,/Pred/);assert.match(html,/BMSSP/);assert.equal(html.includes('katex-error'),false);
  assert.equal((html.match(/data-source-math=/g)??[]).length,6);
 });
+
+test('arXiv discovery titles and abstracts typeset inline subscripts, symbols and text without exposing delimiters',()=>{
+ const title=String.raw`The 't Hooft model on (A)dS$_2$`,abstract=String.raw`We solve large-$N$ QCD---the model---on $AdS_2$ and $dS_2$. Preserve $A_-=0$ and $AdS$.`;
+ const html=renderToStaticMarkup(createElement(SourceMath,{text:title,texTypography:true}));assert.match(html,/data-source-math="_2"/);assert.match(html,/<msub>/);assert.equal(html.includes('$_2$'),false);
+ const output=renderToStaticMarkup(createElement(SourceMath,{text:abstract,texTypography:true}));assert.equal((output.match(/data-source-math=/g)??[]).length,5);assert.match(output,/QCD—the model—on/);assert.equal(output.includes('$N$'),false);assert.equal(output.includes('katex-error'),false);
+ assert.equal(splitSourceMath(abstract).map(p=>p.raw).join(''),abstract);
+ const ordinary=String.raw`Costs $5 and $10; a $normal phrase$ stays prose.`;assert.equal(splitSourceMath(ordinary).filter(p=>p.kind==='math').length,0);
+});
