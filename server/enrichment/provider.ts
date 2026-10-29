@@ -15,7 +15,7 @@ import {paperPlanSchema,paperReadingGuideSchema,type PaperFigureBrief,type Exist
 export const ENRICHMENT_MAX_OUTPUT_TOKENS = 6000;
 
 export type EnrichmentInput = { action: EnrichmentAction; context: string; feedback: string; target?: WidgetEnvelope; retrieval?:CapabilitySelection;scope?:'paper-outline'|'paper-figure';figureBrief?:PaperFigureBrief;existingFigures?:ExistingPaperFigure[] };
-export type EnrichmentProvider = { start(input: EnrichmentInput): Promise<ProviderResponse>; retrieve(id: string): Promise<ProviderResponse>; cancel(id: string): Promise<ProviderResponse> };
+export type EnrichmentProvider = { executionMode?:'host'; start(input: EnrichmentInput): Promise<ProviderResponse>; retrieve(id: string): Promise<ProviderResponse>; cancel(id: string): Promise<ProviderResponse> };
 function compatible(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(compatible);
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).filter(([key]) => key !== '$schema' && key !== 'default').map(([key,v]) => key === 'const' ? ['enum',[v]] : [key,compatible(v)]));
@@ -57,15 +57,16 @@ export function providerInput(input: EnrichmentInput) {
 }
 export function enrichmentProviderRequest(input:EnrichmentInput,model='configured-model'){
  const outline=input.scope==='paper-outline';
- return {model,background:true as const,max_output_tokens:ENRICHMENT_MAX_OUTPUT_TOKENS,reasoning:{effort:'low' as const},instructions:outline?WHOLE_PAPER_OUTLINE_INSTRUCTIONS:input.scope==='paper-figure'?ENRICHMENT_INSTRUCTIONS+'\n'+WHOLE_PAPER_FIGURE_INSTRUCTIONS:ENRICHMENT_INSTRUCTIONS,input:providerInput(input),text:{format:{type:'json_schema' as const,name:outline?'paperplay_reading_plan':input.scope==='paper-figure'?'paperplay_figure_implementation':'paperplay_catalog_plan',strict:true as const,schema:outline?paperPlanJsonSchema:input.scope==='paper-figure'?paperFigureJsonSchema:enrichmentJsonSchema}}};
+ return {model,background:false as const,max_output_tokens:ENRICHMENT_MAX_OUTPUT_TOKENS,reasoning:{effort:'low' as const},instructions:outline?WHOLE_PAPER_OUTLINE_INSTRUCTIONS:input.scope==='paper-figure'?ENRICHMENT_INSTRUCTIONS+'\n'+WHOLE_PAPER_FIGURE_INSTRUCTIONS:ENRICHMENT_INSTRUCTIONS,input:providerInput(input),text:{format:{type:'json_schema' as const,name:outline?'paperplay_reading_plan':input.scope==='paper-figure'?'paperplay_figure_implementation':'paperplay_catalog_plan',strict:true as const,schema:outline?paperPlanJsonSchema:input.scope==='paper-figure'?paperFigureJsonSchema:enrichmentJsonSchema}}};
 }
 export function enrichmentPromptMetrics(input:EnrichmentInput,model='configured-model'){
  return measureModelRequest({request:enrichmentProviderRequest(input,model),phase:input.action==='plan'?'planning':'repair',maxOutputTokens:ENRICHMENT_MAX_OUTPUT_TOKENS,feedback:input.feedback});
 }
 export function createMetaEnrichmentProvider(config: MetaConfig): EnrichmentProvider {
   if (!config.apiKey) throw new AnalysisHttpError(503, 'Meta enrichment is not configured. Reading and local widgets remain available.');
-  const client = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL, maxRetries: 0, timeout: 25_000 });
+  const client = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL, maxRetries: 0, timeout: 180_000 });
   return {
+    executionMode:'host',
     async start(input) {
       if (!input.retrieval) throw new AnalysisHttpError(400,'Prepare the bounded capability selection before generation.');
       if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');

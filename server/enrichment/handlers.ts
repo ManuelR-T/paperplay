@@ -39,6 +39,14 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
   const usage = () => dependencies.usage ?? getUsageStore(); const store = () => dependencies.store ?? getEnrichmentStore();
   const provider = dependencies.provider ?? createMetaEnrichmentProvider;
   const running = new Map<string, Promise<EnrichmentReply>>();
+  const hostWork = new Map<string,{reply?:EnrichmentReply;error?:AnalysisHttpError}>();
+  function finishHost(id:string,result:{reply?:EnrichmentReply;error?:AnalysisHttpError}){
+    hostWork.set(id,result);
+    // Completed content can be recovered from its durable real provider reference.
+    // Keep pending work intact; cap only the convenience cache of terminal replies.
+    const terminal=[...hostWork.entries()].filter(([,entry])=>entry.reply||entry.error);
+    for(const [oldId] of terminal.slice(0,Math.max(0,terminal.length-32)))hostWork.delete(oldId);
+  }
   const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) } });
   const fail = (error: unknown, cookie?: string) => { const e = error instanceof AnalysisHttpError ? error : new AnalysisHttpError(400, 'The source, section or widget configuration could not be validated. The previous valid work is retained.');const quota=usageQuotaResponse(e);return Response.json({error:e.message,uncertain:e.uncertain,...(quota?{quota:quota.quota}:{})},{status:e.status,headers:{'Cache-Control':'no-store',...(cookie?{'Set-Cookie':cookie}:{}),...quota?.headers}}); };
   async function prepare(input: z.infer<typeof statusSchema> | z.infer<typeof startSchema>, config: MetaConfig,frozen?:EnrichmentRecord) {
@@ -73,10 +81,15 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
   function measured(response?:ProviderResponse){const u=response?.usage;if(!u||![u.input_tokens,u.output_tokens,u.total_tokens].every(n=>Number.isSafeInteger(n)&&n>=0)||u.total_tokens!==u.input_tokens+u.output_tokens)return undefined;return {inputTokens:u.input_tokens,outputTokens:u.output_tokens,totalTokens:u.total_tokens};}
   function accounting(metrics?:ModelRequestMetrics,response?:ProviderResponse,record?:EnrichmentRecord):ModelRequestAccounting|undefined{if(!metrics)return undefined;const value=measured(response),actualUsage=record?.actualUsage&&(record.actualUsage.totalTokens>=(value?.totalTokens??-1))?record.actualUsage:value??null;return {request:metrics,actualUsage,estimatePurpose:'conservative-quota-reservation-not-financial-quote',localTests:'provider-free'};}
 
-  function jobFor(record: EnrichmentRecord, responseId: string, model: string, key: string): EnrichmentJob {
+  function jobFor(record: EnrichmentRecord, responseId: string, model: string, key: string, host=false): EnrichmentJob {
     if (record.action === 'artifact') throw new AnalysisHttpError(403, 'Generated artifact jobs use their own bounded retrieval route.');
     return { action: record.action, sectionId: record.sectionId, createdAt: record.createdAt, model,
-      token: signToken({ kind: 'enrichment-job', owner: record.owner, id: record.id, documentHash: record.documentHash, contextHash: record.contextHash, responseId, model, action: record.action, sectionId: record.sectionId, createdAt: record.createdAt, exp: record.createdAt + 86_400_000 }, key) };
+      token: signToken({ kind: 'enrichment-job', owner: record.owner, id: record.id, documentHash: record.documentHash, contextHash: record.contextHash, responseId, ...(host?{host:true}:{}), model, action: record.action, sectionId: record.sectionId, createdAt: record.createdAt, exp: record.createdAt + 86_400_000 }, key) };
+  }
+  function hostReply(record:EnrichmentRecord,model:string,key:string):EnrichmentReply|undefined {
+    const work=hostWork.get(record.id);if(!work)return undefined;
+    if(work.error)throw work.error;
+    return work.reply??{status:'queued',job:jobFor(record,'resp_paperplay_host',model,key,true),budget:readBudget(record.owner,record.documentHash),retrieval:record.retrieval,accounting:accounting(record.requestMetrics,undefined,record)};
   }
   async function mapResponse(response: ProviderResponse, input: Awaited<ReturnType<typeof prepare>>, model: string,record?:EnrichmentRecord): Promise<EnrichmentReply> {
     if (response.status === 'completed') {
@@ -131,13 +144,13 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         const id=usageIdFor(session.sid,`enrichment-${input.requestId}`),existing=store().record(id,session.sid);
         if(input.verifyOnly&&(!existing||existing.status==='rejected'&&!existing.providerId))throw new AnalysisHttpError(409,'No accepted request is available for this saved reference. No new request was started.');
         const prepared=await prepare(input,config,existing);
-        if(existing&&!(existing.status==='rejected'&&existing.actualTokens===0&&!existing.providerId)){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
+        if(existing&&!(existing.status==='rejected'&&existing.actualTokens===0&&!existing.providerId)){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const hosted=hostReply(existing,config.model,key);if(hosted)return json(hosted,200,cookie);const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
         if(input.verifyOnly)throw new AnalysisHttpError(409,'The saved request cannot be retrieved yet. No new request was started.',true);
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: ENRICHMENT_MAX_OUTPUT_TOKENS, inputCharacters: prepared.metrics!.characters, model: config.model, fingerprint: prepared.contextHash };
         const reserved = store().reserve({ id, owner: session.sid, documentHash: prepared.documentHash, contextHash: prepared.contextHash, action: input.action, sectionId: input.sectionId, reservedTokens: reservedTokensFor(reservationInput),retrieval:prepared.retrieval,requestMetrics:prepared.metrics,requestSha256:prepared.requestSha256 });
         if (!reserved.created) {
-          const inProgress = running.get(id); if (inProgress) return json(await inProgress, 200, cookie);
+          const hosted=hostReply(reserved.record,config.model,key);if(hosted)return json(hosted,200,cookie);const inProgress = running.get(id); if (inProgress) return json(await inProgress, 200, cookie);
           if (reserved.record.providerId) return json({ status: reserved.record.status === 'cancelled' ? 'cancelled' : 'queued', job: jobFor(reserved.record, reserved.record.providerId, config.model, key), budget:readBudget(session.sid,prepared.documentHash),retrieval:reserved.record.retrieval,accounting:accounting(reserved.record.requestMetrics,undefined,reserved.record)},200,cookie);
           throw new AnalysisHttpError(409, 'An earlier submission with this identifier is unresolved. No replacement paid request was sent.', true);
         }
@@ -145,20 +158,30 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
           const globalReservation = await usage().reserve(reservationInput);
           if (!globalReservation.created) throw new AnalysisHttpError(409, 'The shared request reference already exists. No replacement request was sent.', true);
         } catch (error) { store().settle(id, { status: 'rejected', actualTokens: 0 }); throw error; }
+        const adapter=provider(config);
+        if(adapter.executionMode==='host')hostWork.set(id,{});
         const work = (async (): Promise<EnrichmentReply> => {
           let response: ProviderResponse;
-          try { const current=dependencies.getConfig();if(!current.inferenceEnabled)throw new AnalysisHttpError(503,current.disabledReason??'New Meta requests are disabled.');response = await provider(config).start(prepared.request); }
+          try { const current=dependencies.getConfig();if(!current.inferenceEnabled)throw new AnalysisHttpError(503,current.disabledReason??'New Meta requests are disabled.');response = await adapter.start(prepared.request); }
           catch (error) {
             const e = safeProviderError(error, true); const status = e.uncertain ? 'uncertain' : 'rejected';
             try { store().settle(id, { status, ...(e.uncertain ? {} : { actualTokens: 0 }) }); } catch { /* reservation retained */ }
             try { await usage().settle(id, { status }); } catch { /* reservation retained */ } throw e;
           }
           if (!/^resp_[a-zA-Z0-9_-]{1,250}$/.test(response.id)) { try { store().settle(id, { status: 'uncertain' }); } catch {} throw new AnalysisHttpError(504, 'Meta may have accepted the request, but returned no valid recoverable reference. Do not resubmit automatically.', true); }
+          // Persist the real upstream reference before validating a potentially complex result.
+          try { store().settle(id,{status:'accepted',providerId:response.id}); } catch { /* The in-memory reply remains available. */ }
           const job = jobFor(reserved.record, response.id, config.model, key);
           const reply = await mapResponse(response, prepared, config.model,reserved.record); await settle(id, response, reply);
           return {...reply,job,budget:readBudget(session.sid,prepared.documentHash),retrieval:prepared.retrieval,accounting:accounting(prepared.metrics,response,reserved.record)};
         })();
         running.set(id, work);
+        if(adapter.executionMode==='host'){
+          // The server owns synchronous inference; HTTP only exchanges signed polling handles.
+          // No synthetic provider ID is written to durable accounting.
+          void work.then(reply=>{finishHost(id,{reply});},error=>{finishHost(id,{error:error instanceof AnalysisHttpError?error:safeProviderError(error,true)});}).finally(()=>running.delete(id));
+          return json(hostReply(reserved.record,config.model,key),200,cookie);
+        }
         try { return json(await work, 200, cookie); } finally { running.delete(id); }
       } catch (error) { return fail(error, cookie); }
     },
@@ -172,14 +195,22 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         const compatibleDocument = token.documentHash === prepared.documentHash || token.documentHash === digest(prepared.source);
         if (token.kind !== 'enrichment-job' || token.owner !== session.sid || !compatibleDocument || token.contextHash !== prepared.contextHash || token.action !== input.action || token.sectionId !== input.sectionId || token.model !== input.job.model || typeof token.id !== 'string' || typeof token.responseId !== 'string' || !/^resp_[a-zA-Z0-9_-]{1,250}$/.test(token.responseId)) throw new AnalysisHttpError(403, 'This saved enrichment job does not belong to this browser/source/configuration.');
         if (typeof token.exp !== 'number' || token.exp <= now()) return json({ status: 'expired', error: 'The saved enrichment access expired; no replacement request was created.' });
+        let responseId=token.responseId;
+        if(token.host===true){
+          if(token.responseId!=='resp_paperplay_host'||!stored)throw new AnalysisHttpError(403,'This host request does not match its saved record.');
+          if(cancel&&running.has(token.id))throw new AnalysisHttpError(409,'This request is already running at Meta. Keep its saved reference until a response is available.');
+          const hosted=hostReply(stored,input.job.model,key);if(hosted)return json(hosted);
+          if(!stored.providerId)throw new AnalysisHttpError(409,'The server restarted before this request returned a recoverable response. Its saved reference is retained.',true);
+          responseId=stored.providerId;
+        }
         let response: ProviderResponse;
         try {
-          const adapter = provider({ ...config, model: input.job.model }); response = cancel ? await adapter.cancel(token.responseId) : await adapter.retrieve(token.responseId);
-          if (cancel && response.status === 'completed') response = await adapter.retrieve(token.responseId);
+          const adapter = provider({ ...config, model: input.job.model }); response = cancel ? await adapter.cancel(responseId) : await adapter.retrieve(responseId);
+          if (cancel && response.status === 'completed') response = await adapter.retrieve(responseId);
         } catch (error) { const e = safeProviderError(error, false); if (e.status === 410) return json({ status: 'expired', error: e.message }); throw e; }
-        if (response.id !== token.responseId) throw new AnalysisHttpError(502, 'The provider returned a different job reference. The saved capability was retained.');
+        if (response.id !== responseId) throw new AnalysisHttpError(502, 'The provider returned a different job reference. The saved capability was retained.');
         const reply = await mapResponse(response, prepared, input.job.model,stored); await settle(token.id, response, reply);
-        return json({ ...reply, job: input.job, budget:readBudget(session.sid,token.documentHash as string),retrieval:stored?.retrieval??prepared.retrieval,accounting:accounting(stored?.requestMetrics??prepared.metrics,response,stored)});
+        return json({ ...reply, job: token.host===true&&stored?jobFor(stored,responseId,input.job.model,key):input.job, budget:readBudget(session.sid,token.documentHash as string),retrieval:stored?.retrieval??prepared.retrieval,accounting:accounting(stored?.requestMetrics??prepared.metrics,response,stored)});
       } catch (error) { return fail(error); }
     },
   };

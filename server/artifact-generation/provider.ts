@@ -13,7 +13,7 @@ import type { ProviderResponse } from '../analysis/provider';
 const field = z.strictObject({ id: z.string().regex(/^[A-Za-z][A-Za-z0-9_-]{0,39}$/), kind: z.enum(['number','string','boolean','array','object']), description: z.string().min(1).max(400), maxItems: z.number().int().min(1).max(512).nullable() });
 export const generationModelOutputSchema = z.strictObject({ plan: generationPlanSchema, title: z.string().min(1).max(200), anchor: z.strictObject({ blockId: z.string().min(1).max(100), page: z.number().int().min(1).max(500), quote: z.string().min(12).max(1000) }), sourceCode: z.string().min(1).max(16*1024), inputFields: z.array(field).max(8), stateFields: z.array(field).max(8), initialInputJson: z.string().min(2).max(8000), checks: z.array(z.string().min(1).max(400)).min(1).max(4) });
 export type GenerationProviderInput = { scope?:'paper'; anchor?:{blockId:string;page:number;quote:string}; context: string; brief: string; attempt: number; previous?: GenerationCandidate; feedback?: GenerationFeedback; retrieval?:CapabilitySelection };
-export type ArtifactGenerationProvider = { start(input: GenerationProviderInput): Promise<ProviderResponse>; retrieve(id: string): Promise<ProviderResponse>; cancel(id: string): Promise<ProviderResponse> };
+export type ArtifactGenerationProvider = { executionMode?: 'host'; start(input: GenerationProviderInput): Promise<ProviderResponse>; retrieve(id: string): Promise<ProviderResponse>; cancel(id: string): Promise<ProviderResponse> };
 function compatible(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(compatible);
   if (!value || typeof value !== 'object') return value;
@@ -40,7 +40,7 @@ function selectedAnchorSchema(context:string,anchor?:GenerationProviderInput['an
  return schema;
 }
 export function generationProviderRequest(input:GenerationProviderInput,model='configured-model'){
- return {model,background:true as const,max_output_tokens:GENERATION_POLICY.maxOutputTokens,reasoning:{effort:'low' as const},instructions:generationInstructions(input),input:generationProviderText(input),text:{format:{type:'json_schema' as const,name:'paperplay_generated_figure',strict:true as const,schema:selectedAnchorSchema(input.context,input.anchor)}}};
+ return {model,background:false as const,max_output_tokens:GENERATION_POLICY.maxOutputTokens,reasoning:{effort:'low' as const},instructions:generationInstructions(input),input:generationProviderText(input),text:{format:{type:'json_schema' as const,name:'paperplay_generated_figure',strict:true as const,schema:selectedAnchorSchema(input.context,input.anchor)}}};
 }
 export function generationPromptMetrics(input:GenerationProviderInput,model='configured-model'){
  return measureModelRequest({request:generationProviderRequest(input,model),phase:input.attempt===1?'generation':'repair',maxOutputTokens:GENERATION_POLICY.maxOutputTokens,feedback:input.feedback});
@@ -48,8 +48,9 @@ export function generationPromptMetrics(input:GenerationProviderInput,model='con
 export function generationPromptCharacters(input:GenerationProviderInput,model='configured-model') {return generationPromptMetrics(input,model).characters;}
 export function createArtifactGenerationProvider(config: MetaConfig): ArtifactGenerationProvider {
   if (!config.apiKey) throw Error('Meta is not configured.');
-  const client = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL, maxRetries: 0, timeout: 25_000 });
+  const client = new OpenAI({ apiKey: config.apiKey, baseURL: config.baseURL, maxRetries: 0, timeout: 180_000 });
   return {
+    executionMode: 'host',
     async start(input) {
       if (!input.retrieval?.selected.some(item=>item.kind==='generated-sdk')) throw Error('The exact generated SDK selection is required.');
       if (!config.inferenceEnabled) throw Error('New Meta generation is disabled.');

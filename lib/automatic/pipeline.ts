@@ -24,7 +24,9 @@ const outlinePending=z.strictObject({kind:z.literal('outline'),...requestFields,
 const figurePending=z.strictObject({kind:z.literal('figure'),...requestFields,figureBrief:paperFigureBriefSchema});
 const customPending=oldPending.options[1].extend({scope:z.literal('paper').optional(),figureId:z.string().max(40).optional(),anchor:z.strictObject({blockId:z.string().max(100),page:z.number().int().min(1),quote:z.string().max(1000)}).optional()});
 const generatedSchema=legacySchema.shape.generated;
+const abandonedRequestSchema=z.strictObject({requestId:z.string().uuid(),kind:z.enum(['outline','figure']),savedAt:z.number().finite(),reason:z.string().max(1000)});
 export const automaticPaperStateSchema=legacySchema.extend({
+ previousRequests:z.array(abandonedRequestSchema).max(1000).default([]),
  version:z.literal(3),editorialRevision:z.literal(1).optional(),paperPlan:paperPlanSchema.optional(),
  figureTasksDone:z.array(z.string().max(40)).max(12).default([]),
  figureBindings:z.array(z.strictObject({figureId:z.string().max(40),widgetId:z.string().max(100).optional(),generatedSha:z.string().regex(/^[a-f0-9]{64}$/).optional(),readingGuide:paperReadingGuideSchema.optional()})).max(12).default([]),
@@ -188,7 +190,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  async function recoverLegacy(signal:AbortSignal){
   const pending=state.pending;if(pending?.kind!=='plan'&&!(pending?.kind==='custom'&&!pending.scope))return;
   // Already accepted section-era work is resolved with its original frozen request before any new whole-paper call.
-  const {paperPlan:_,figureBindings:__,figureTasksDone:___,archivedWidgets:____,archivedGenerated:_____,editorialRevision:______,...base}=state;
+  const {paperPlan:_,figureBindings:__,figureTasksDone:___,archivedWidgets:____,archivedGenerated:_____,editorialRevision:______,previousRequests:_______,...base}=state;
   let legacyRaw=JSON.stringify({...base,version:2});
   const bridge={getItem:(name:string)=>name===key?legacyRaw:storage?.getItem(name)??null,setItem:(name:string,value:string)=>{if(!storage)throw Error('Accepted recovery needs browser storage.');storage.setItem(name,value);if(name===key)legacyRaw=value;}};
   const recovery=await createLegacyPipeline(source,{...options,storage:bridge,transport:options.transport,recoveryOnly:true,lock:async(_key,run)=>run()});
@@ -219,6 +221,16 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  function stopped(error:unknown,signal:AbortSignal,persist:boolean){if(disposed)return;const next={...state,status:signal.aborted?(state.status==='waiting'?'waiting' as const:'paused' as const):'blocked' as const,message:signal.aborted?'Preparation paused. Saved figures and accepted requests are retained.':error instanceof Error?error.message.slice(0,1000):'Preparation stopped. The source remains readable.'};if(persist){try{save(next);return;}catch{}}emit(next);}
  return Object.freeze({getSnapshot:()=>state,subscribe(listener:()=>void){listeners.add(listener);return()=>{listeners.delete(listener);};},
   start(){if(disposed||invalidCache)return Promise.resolve();if(running)return running;controller=new AbortController();const signal=controller.signal;running=lock(key,async()=>{try{await execute(signal);}catch(error){stopped(error,signal,true);}},signal).catch(error=>stopped(error,signal,false)).finally(()=>{running=undefined;controller=undefined;});return running;},
+  retryPreparation(){
+   if(disposed||invalidCache||running)return running??Promise.resolve();
+   controller=new AbortController();const signal=controller.signal;
+   running=lock(key,async()=>{try{
+    await load(false);const pending=state.pending;
+    if(state.status!=='blocked'||(pending?.kind!=='outline'&&pending?.kind!=='figure')||pending.job)throw Error('Check the accepted request before starting another preparation.');
+    patch({previousRequests:[...state.previousRequests,{requestId:pending.requestId,kind:pending.kind,savedAt:now(),reason:state.message}].slice(-1000),pending:{...pending,requestId:crypto.randomUUID()},status:'idle',message:'Restarting preparation with the updated Meta connection.'});
+    await execute(signal);
+   }catch(error){stopped(error,signal,true);}},signal).catch(error=>stopped(error,signal,false)).finally(()=>{running=undefined;controller=undefined;});return running;
+  },
   checkSavedRequest(){
    if(disposed||invalidCache)return Promise.resolve();if(running)return running;
    controller=new AbortController();const signal=controller.signal;

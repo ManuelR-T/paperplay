@@ -37,6 +37,11 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   const usage = () => dependencies.usage ?? getUsageStore();
   const provider = dependencies.provider ?? createArtifactGenerationProvider;
   const running = new Map<string, Promise<GenerationReply>>();
+  // Foreground Meta calls run on this host while the browser polls its durable run/attempt.
+  // Store only real provider IDs in the ledger; an interrupted host call stays unresolved.
+  const finished = new Map<string, {value?:GenerationReply;error?:unknown}>();
+  function remember(id:string,value:{value?:GenerationReply;error?:unknown}){finished.set(id,value);if(finished.size>32)finished.delete(finished.keys().next().value!);}
+
   const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) } });
   const fail = (error: unknown) => { const safe = error instanceof AnalysisHttpError ? error : error instanceof Error&&error.message==='Model request body exceeds its measurement ceiling.' ? new AnalysisHttpError(413,'The complete paper and generation instructions exceed the supported request size. No source text was removed and no model request was sent.') : new AnalysisHttpError(400, 'The generation request or result failed bounded validation. Previous figures are retained.'); const quota=usageQuotaResponse(safe);return Response.json({error:safe.message,uncertain:safe.uncertain,...(quota?{quota:quota.quota}:{})},{status:safe.status,headers:{'Cache-Control':'no-store',...quota?.headers}}); };
   function configFor(request: Request, createSession = false) {
@@ -117,6 +122,10 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   }
   async function retrieve(run: GenerationRunRecord, attempt: number, checked: Awaited<ReturnType<typeof context>>, config: MetaConfig, key: string, cancel = false) {
     const record = store().generationAttempt(run.runId, run.owner, attempt);
+    if(!cancel){
+      const completed=finished.get(record.id);if(completed){if(completed.error)throw completed.error;return completed.value!;}
+      if(running.has(record.id))return reply(run,key,{status:'analyzing',attempt});
+    }
     if (!record.providerId) return reply(run, key, { status: record.status === 'rejected' ? 'failed' : 'uncertain', attempt, error: 'No recoverable provider reference is available. No replacement request was sent.', uncertain: record.status !== 'rejected' });
     let response: ProviderResponse;
     try { const adapter = provider({ ...config, model: run.model }); response = cancel ? await adapter.cancel(record.providerId) : await adapter.retrieve(record.providerId); if (cancel && response.status === 'completed') response = await adapter.retrieve(record.providerId); }
@@ -152,7 +161,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
         }
         const id=usageIdFor(session.sid,`artifact-${run.runId}-${input.attempt}`);
         const fingerprint=hash({frozen:run.contextHash,context:checked.selected.text,brief:input.brief,attempt:input.attempt,previous:input.previous??null,feedback:input.feedback??null,retrieval:run.retrieval?.receiptSha256??null,model:run.model});
-        const acceptedAttempt=run.attempts[input.attempt-1],priorAttempt=acceptedAttempt?store().generationAttempt(run.runId,session.sid,input.attempt):undefined;if(acceptedAttempt&&!(priorAttempt?.status==='rejected'&&priorAttempt.actualTokens===0&&!priorAttempt.providerId)){if(run.retrieval&&acceptedAttempt.fingerprint!==fingerprint)throw new AnalysisHttpError(409,'This attempt already belongs to different frozen input.');const pending=running.get(id);if(pending)return json(await pending);return json(await retrieve(run,input.attempt,checked,config,key));}
+        const acceptedAttempt=run.attempts[input.attempt-1],priorAttempt=acceptedAttempt?store().generationAttempt(run.runId,session.sid,input.attempt):undefined;if(acceptedAttempt&&!(priorAttempt?.status==='rejected'&&priorAttempt.actualTokens===0&&!priorAttempt.providerId)){if(run.retrieval&&acceptedAttempt.fingerprint!==fingerprint)throw new AnalysisHttpError(409,'This attempt already belongs to different frozen input.');const pending=running.get(id);if(pending)return json(provider(config).executionMode==='host'?reply(run,key,{status:'analyzing',attempt:input.attempt}):await pending);return json(await retrieve(run,input.attempt,checked,config,key));}
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         if(!readAdoptionPolicy(process.env).generatedExecution)throw new AnalysisHttpError(503,'New generated artifacts are disabled by the operator. Accepted jobs and recorded replay remain available.');
         if(!run.retrieval)throw new AnalysisHttpError(409,'This run predates frozen capability retrieval. Retrieve accepted work; explicitly prepare a new run for new creation.');
@@ -163,7 +172,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
         const metrics=generationPromptMetrics(providerInput,run.model),characters=metrics.characters;if(characters>generationInputCharacterLimit(input.scope))throw new AnalysisHttpError(400,'The complete generation prompt (paper/instructions/schema/feedback) exceeds its transport limit. No source text was removed.');
         const reservation = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: 6000, inputCharacters: characters, model: run.model, fingerprint };
         const claimed = store().claimGenerationAttempt(run.runId, session.sid, input.attempt, { id, owner: session.sid, documentHash: run.documentHash, contextHash: fingerprint, action: 'artifact', sectionId: run.sectionId, reservedTokens: reservedTokensFor(reservation),retrieval:run.retrieval,requestMetrics:metrics,requestSha256:textHash(JSON.stringify(generationProviderRequest(providerInput,run.model))) });
-        if (!claimed.created) { const pending = running.get(id); if (pending) return json(await pending); return json(await retrieve(run, input.attempt, checked, config, key)); }
+        if (!claimed.created) { const pending = running.get(id); if (pending) return json(provider(config).executionMode==='host'?reply(run,key,{status:'analyzing',attempt:input.attempt}):await pending); return json(await retrieve(run, input.attempt, checked, config, key)); }
         try { const global = await usage().reserve(reservation); if (!global.created) { store().settle(id, { status: 'uncertain' }); throw new AnalysisHttpError(409, 'The shared request identifier is already unresolved.', true); } }
         catch (error) { if (!(error instanceof AnalysisHttpError && error.uncertain)) store().settle(id, { status: 'rejected', actualTokens: 0 }); throw error; }
         const work = (async () => {
@@ -175,6 +184,10 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
           store().settle(id, { status: 'accepted', providerId: response.id });
           return map(response, checked, run, input.attempt, { ...claimed.record, providerId: response.id }, key);
         })(); running.set(id, work);
+        if(provider(config).executionMode==='host'){
+          void work.then(value=>{if(value.status!=='queued'&&value.status!=='analyzing')remember(id,{value});},error=>remember(id,{error})).finally(()=>running.delete(id));
+          return json(reply(run,key,{status:'queued',attempt:input.attempt}));
+        }
         try { return json(await work); } finally { running.delete(id); }
       } catch (error) { return fail(error); }
     },

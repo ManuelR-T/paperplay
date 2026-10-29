@@ -22,7 +22,7 @@ import { FigureRuntimeError } from '../shared/figure-runtime';
 
 const origin = 'http://localhost:3000';
 function req(body: unknown, cookie?: string) { return new Request(`${origin}/api/artifact-generation/start`, { method: 'POST', headers: { origin, 'content-type': 'application/json', ...(cookie ? { cookie } : {}) }, body: JSON.stringify(body) }); }
-async function fixture(t: { after(fn: () => void): void }, options: { maxAttempts?: number; persistent?: boolean } = {}) {
+async function fixture(t: { after(fn: () => void): void }, options: { maxAttempts?: number; persistent?: boolean; host?:boolean } = {}) {
   let clock = 10_000, enabled = true, starts = 0, retrieves = 0, cancels = 0;
   const fixture = await createDynamicSequenceArtifact();
   const source = fixture.source;
@@ -30,12 +30,13 @@ async function fixture(t: { after(fn: () => void): void }, options: { maxAttempt
   const output = { plan, title: fixture.artifact.title, anchor: { blockId: 'passage', page: 1, quote: source.blocks[0].kind === 'paragraph' ? source.blocks[0].text : '' }, sourceCode: fixture.artifact.entry.source, inputFields: [], stateFields: fixture.artifact.interfaces.state.map(field => ({ ...field, maxItems: field.maxItems ?? null })), initialInputJson: '{}', checks: ['Appending then removing retains the surviving item identity.'] };
   let startResponse: Partial<ProviderResponse> = { status: 'queued' }, retrieved: Partial<ProviderResponse> = { status: 'completed', output_text: JSON.stringify(output), usage: { input_tokens: 40, output_tokens: 60, total_tokens: 100 } };
   let startError: unknown;
+  let startBarrier:Promise<void>|undefined;
   const directory = options.persistent ? mkdtempSync(join(tmpdir(), 'paperplay-generation-')) : undefined;
   const path = directory ? join(directory, 'paper.sqlite') : ':memory:';
   const store = createEnrichmentStore({ path, now: () => clock });
   const usage = createSqliteUsageStore({ path: ':memory:', now: () => clock });
   t.after(() => { store.close(); usage.close?.(); if (directory) rmSync(directory, { recursive: true, force: true }); });
-  const provider: ArtifactGenerationProvider = { async start() { starts++; if (startError) throw startError; return { id: `resp_generation_${starts}`, ...startResponse }; }, async retrieve(id) { retrieves++; return { id, ...retrieved }; }, async cancel(id) { cancels++; return { id, status: 'cancelled' }; } };
+  const provider: ArtifactGenerationProvider = { ...(options.host?{executionMode:'host' as const}:{}), async start() { starts++; if(startBarrier)await startBarrier; if (startError) throw startError; return { id: `resp_generation_${starts}`, ...startResponse }; }, async retrieve(id) { retrieves++; return { id, ...retrieved }; }, async cancel(id) { cancels++; return { id, status: 'cancelled' }; } };
   const dependencies = { getConfig: () => readMetaConfig({ MODEL_API_KEY: 'fake-generation-fixture', META_ANALYSIS_ENABLED: enabled ? 'true' : 'false' }), store, usage, provider: () => provider, signingSecret: 'generation-fixture-signing', now: () => clock };
   const handlers = createArtifactGenerationHandlers(dependencies);
   const prepareBody = { source, runId: randomUUID(), sectionId: buildSourceSections(source)[0].id, brief: 'Show this conceptual mechanism using a bounded sequence.', maxAttempts: options.maxAttempts ?? 3 };
@@ -43,7 +44,7 @@ async function fixture(t: { after(fn: () => void): void }, options: { maxAttempt
   const initial = generationReplySchema.parse(await prepared.json());
   const cookie = prepared.headers.get('set-cookie')!.split(';')[0];
   const context = { source, sectionId: prepareBody.sectionId, brief: prepareBody.brief, run: initial.run };
-  return { source, output, plan, path, store, usage, handlers, dependencies, cookie, initial, prepareBody, context, counts: () => ({ starts, retrieves, cancels }), advance: (ms: number) => { clock += ms; }, disable: () => { enabled = false; }, startResult: (value: Partial<ProviderResponse>) => { startResponse = value; }, retrievalResult: (value: Partial<ProviderResponse>) => { retrieved = value; }, failStart: (error: unknown) => { startError = error; } };
+  return { source, output, plan, path, store, usage, handlers, dependencies, cookie, initial, prepareBody, context, counts: () => ({ starts, retrieves, cancels }), advance: (ms: number) => { clock += ms; }, disable: () => { enabled = false; }, startResult: (value: Partial<ProviderResponse>) => { startResponse = value; }, retrievalResult: (value: Partial<ProviderResponse>) => { retrieved = value; }, failStart: (error: unknown) => { startError = error; }, holdStart: (barrier:Promise<void>)=>{startBarrier=barrier;} };
 }
 
 test('prepare is inference-free; accepted work deduplicates and recovers across handlers and creation cutoff', async t => {
@@ -231,4 +232,48 @@ test('pre-provider quota rejection reclaims the same custom run and attempt with
  const body={...f.context,attempt:1},denied=await handlers.start(req(body,f.cookie));assert.equal(denied.status,429);assert.equal((await denied.json()).quota.reason,'session-rate');assert.equal(f.counts().starts,0);
  const accepted=await handlers.start(req(body,f.cookie));assert.equal(accepted.status,200);const reply=await accepted.json();assert.equal(reply.status,'queued');assert.equal(reply.budget.attemptsClaimed,1);assert.equal(f.counts().starts,1);
  assert.equal((await handlers.start(req(body,f.cookie))).status,200);assert.equal(f.counts().starts,1);
+});
+
+
+test('host foreground generation returns immediately and polls the same attempt until its real response arrives',async t=>{
+  const f=await fixture(t,{host:true});let release!:()=>void;f.holdStart(new Promise<void>(resolve=>{release=resolve;}));
+  f.startResult({status:'completed',output_text:JSON.stringify(f.output)});
+  const body={...f.context,attempt:1};
+  const started=generationReplySchema.parse(await(await f.handlers.start(req(body,f.cookie))).json());
+  assert.equal(started.status,'queued');assert.equal(f.counts().starts,1);
+  const pending=generationReplySchema.parse(await(await f.handlers.status(req(body,f.cookie))).json());
+  assert.equal(pending.status,'analyzing');assert.equal(f.counts().retrieves,0);
+  const duplicate=generationReplySchema.parse(await(await f.handlers.start(req(body,f.cookie))).json());
+  assert.equal(duplicate.status,'analyzing');assert.equal(f.counts().starts,1);
+  // Another host cannot invent an accepted provider ID while the original request is running.
+  const other=createArtifactGenerationHandlers(f.dependencies);
+  const interrupted=generationReplySchema.parse(await(await other.status(req(body,f.cookie))).json());
+  assert.equal(interrupted.status,'uncertain');assert.equal(f.counts().starts,1);
+  release();await new Promise(resolve=>setImmediate(resolve));
+  const complete=generationReplySchema.parse(await(await f.handlers.status(req(body,f.cookie))).json());
+  assert.equal(complete.status,'complete');assert.ok(complete.candidate);assert.equal(f.counts().starts,1);assert.equal(f.counts().retrieves,0);
+  const reopened=generationReplySchema.parse(await(await other.status(req(body,f.cookie))).json());
+  assert.equal(reopened.status,'complete');assert.equal(f.counts().starts,1);assert.equal(f.counts().retrieves,1);
+});
+
+test('host foreground generation exposes a submission failure through polling without creating another attempt',async t=>{
+  const f=await fixture(t,{host:true});let release!:()=>void;f.holdStart(new Promise<void>(resolve=>{release=resolve;}));f.failStart(new Error('Simulated network loss after submission'));
+  const body={...f.context,attempt:1};
+  const started=generationReplySchema.parse(await(await f.handlers.start(req(body,f.cookie))).json());assert.equal(started.status,'queued');
+  release();await new Promise(resolve=>setImmediate(resolve));
+  const result=await f.handlers.status(req(body,f.cookie));assert.equal(result.status,504);assert.equal((await result.json()).uncertain,true);
+  const duplicate=await f.handlers.start(req(body,f.cookie));assert.equal(duplicate.status,504);assert.equal(f.counts().starts,1);
+});
+
+test('the production generation request uses foreground Meta execution rather than the unsupported provider background mode',()=>{
+  const request=generationProviderRequest({context:JSON.stringify({selectedPassages:[{blockId:'p',page:1,text:'A source passage for a learning interaction.'}]}),brief:'Explain the relationship.',attempt:1});
+  assert.equal(request.background,false);
+});
+
+test('an unexpected queued foreground response is polled through its real provider ID rather than cached as terminal',async t=>{
+  const f=await fixture(t,{host:true}),body={...f.context,attempt:1};
+  const started=generationReplySchema.parse(await(await f.handlers.start(req(body,f.cookie))).json());assert.equal(started.status,'queued');
+  await new Promise(resolve=>setImmediate(resolve));
+  const complete=generationReplySchema.parse(await(await f.handlers.status(req(body,f.cookie))).json());
+  assert.equal(complete.status,'complete');assert.equal(f.counts().retrieves,1);assert.equal(f.counts().starts,1);
 });

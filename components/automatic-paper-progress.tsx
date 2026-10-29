@@ -7,12 +7,12 @@ import styles from './automatic-paper.module.css';
 import {Button} from './ui/button';
 
 export type IllustrationPhase='opening'|'planning'|'generating'|'checking'|'waiting'|'ready'|'limited'|'blocked';
-type Props={phase:IllustrationPhase;message:string;figureCount:number;figuresDone:number;plannedFigures?:number;retryAt?:number;issues?:readonly string[];technicalDetails?:string;onCheckSaved?:()=>void;onContinue?:()=>void;recoveryNote?:string;recoveryFeedback?:string};
+type Props={phase:IllustrationPhase;message:string;figureCount:number;figuresDone:number;plannedFigures?:number;retryAt?:number;issues?:readonly string[];technicalDetails?:string;onCheckSaved?:()=>void;onRetry?:()=>void;onContinue?:()=>void;recoveryNote?:string;recoveryFeedback?:string};
 const headings:Record<IllustrationPhase,string>={opening:'Preparing your paper',planning:'Meta is choosing illustrations',generating:'Meta is creating the selected illustrations',checking:'Checking layout and interactions',waiting:'Illustrations are waiting for capacity',ready:'Your illustrations are ready',limited:'Some illustrations need attention',blocked:'Illustrations need attention'};
 function countdown(milliseconds:number){const seconds=Math.max(0,Math.ceil(milliseconds/1000));return seconds>=3600?`${Math.floor(seconds/3600)}h ${Math.floor(seconds%3600/60)}m`:seconds>=60?`${Math.floor(seconds/60)}m ${seconds%60}s`:`${seconds}s`;}
 
 /** Shows actual workflow state, including waiting; never animates a failed or completed job. */
-export function AutomaticPaperProgress({phase,message,figureCount,figuresDone,plannedFigures,retryAt,issues=[],technicalDetails,onCheckSaved,onContinue,recoveryNote,recoveryFeedback}:Props){
+export function AutomaticPaperProgress({phase,message,figureCount,figuresDone,plannedFigures,retryAt,issues=[],technicalDetails,onCheckSaved,onRetry,onContinue,recoveryNote,recoveryFeedback}:Props){
  const active=['opening','planning','generating','checking'].includes(phase),waiting=phase==='waiting';
  const [now,setNow]=useState(Date.now),[visible,setVisible]=useState(true);const card=useRef<HTMLElement>(null);
  useEffect(()=>{if(!waiting||!retryAt)return;setNow(Date.now());const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[waiting,retryAt]);
@@ -30,7 +30,8 @@ export function AutomaticPaperProgress({phase,message,figureCount,figuresDone,pl
     {waiting?<p className={styles.waitNotice}>{remaining?<><span aria-hidden="true">Resumes automatically in {remaining}.</span><span className="sr-only">Next automatic attempt at {new Date(retryAt!).toLocaleTimeString()}.</span></>:'Preparation will resume automatically when capacity is available.'} Keep reading; your place and figures are saved.</p>:<div className={styles.preparationPlaceholder} aria-hidden="true"><span/><span/><span/></div>}
    </>}
    {!(active||waiting)&&issues.length>0&&<ul className={styles.issues}>{issues.slice(0,2).map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
-   {(onCheckSaved||onContinue)&&<div className={styles.recoveryActions}>{onCheckSaved&&<><Button variant="outline" onClick={onCheckSaved}>Check saved request</Button><span>This checks existing work without starting a new generation.</span></>}{onContinue&&<Button onClick={onContinue}>Continue preparation</Button>}</div>}
+   {(onCheckSaved||onContinue||onRetry)&&<div className={styles.recoveryActions}>{onCheckSaved&&<><Button variant="outline" onClick={onCheckSaved}>Check saved request</Button><span>This checks existing work without starting a new generation.</span></>}{onRetry&&<Button onClick={onRetry}>Retry preparation</Button>}{onContinue&&<Button onClick={onContinue}>Continue preparation</Button>}</div>}
+   {onRetry&&<p className={styles.progressHint}>Starts a new attempt with the updated connection. The earlier request stays saved and may still complete.</p>}
    {recoveryFeedback&&<p role="status" className={styles.progressHint}>{recoveryFeedback}</p>}
    {recoveryNote&&<p className={styles.progressHint}>{recoveryNote}</p>}
    {technicalDetails&&<details className={styles.technicalDetails}><summary>Technical details</summary><p>{technicalDetails}</p></details>}

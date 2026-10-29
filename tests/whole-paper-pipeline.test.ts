@@ -163,3 +163,10 @@ test('checking a saved custom request only retrieves its accepted attempt and ne
  assert.equal(checkCalls[0].payload.run.runId,pending?.kind==='custom'?pending.run?.runId:undefined);
  assert.equal(c.getSnapshot().generated.length,1);assert.equal(c.getSnapshot().status,'paused');
 });
+
+test('explicit retry replaces only an unreferenced blocked attempt and archives its identity',async()=>{
+ const f=await fixture(),disk=storage(),p=fake(f),calls:any[]=[];let fail=true;
+ const transport:AutomaticPaperTransport=async(endpoint,payload,signal)=>{calls.push({endpoint,payload});if(fail)throw new AutomaticPaperHttpError(504,'The submission outcome is uncertain.',true);return p.transport(endpoint,payload,signal);};
+ const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport,lock});await c.start();const original=c.getSnapshot().pending;assert.equal(original?.kind,'outline');
+ fail=false;await c.retryPreparation();assert.equal(c.getSnapshot().status,'complete');assert.equal(c.getSnapshot().previousRequests.length,1);assert.equal(c.getSnapshot().previousRequests[0].requestId,original?.kind==='outline'?original.requestId:'');assert.notEqual(calls[0].payload.requestId,calls[1].payload.requestId);assert.equal(c.getSnapshot().widgets.length,1);
+});

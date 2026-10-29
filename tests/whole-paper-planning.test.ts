@@ -120,3 +120,42 @@ test('checking an unknown saved request cannot reserve tokens or start Meta, whi
  const done=await(await f.handlers.status(request({...context,job:saved.job},f.cookie))).json();
  assert.equal(done.status,'complete');assert.equal(f.inputs.length,1);
 });
+
+test('host-owned synchronous Meta inference returns a polling handle before completion and never submits twice',async t=>{
+ const store=createEnrichmentStore({path:':memory:',enforceLimits:false}),usage=createSqliteUsageStore({path:':memory:',enforceLimits:false});
+ t.after(()=>{store.close();usage.close?.();});
+ let finish!:(value:any)=>void,starts=0,retrieves=0;
+ const response=new Promise<any>(resolve=>{finish=resolve;});
+ const provider:EnrichmentProvider={executionMode:'host',async start(){starts++;return response;},async retrieve(id){retrieves++;return {id,status:'completed',output_text:JSON.stringify({summary:'Original source is sufficient.',figures:[]})};},async cancel(id){return {id,status:'cancelled'};}};
+ const config=readMetaConfig({MODEL_API_KEY:'host-test-key'}),secret='host-test-secret';
+ const handlers=createEnrichmentHandlers({getConfig:()=>config,store,usage,provider:()=>provider,signingSecret:secret});
+ const cookie=(await handlers.session(request({}))).headers.get('set-cookie')!.split(';')[0];
+ const body={source,sectionId:WHOLE_PAPER_SECTION_ID,action:'plan',scope:'paper-outline',feedback:'',existingFigures:[],requestId:randomUUID()};
+ const started=await handlers.start(request(body,cookie)),first=await started.json();assert.equal(first.status,'queued');assert.ok(first.job);assert.equal(starts,1);
+ const {requestId:_,...context}=body;
+ const pending=await(await handlers.status(request({...context,job:first.job},cookie))).json();assert.equal(pending.status,'queued');assert.equal(retrieves,0);
+ const duplicate=await(await handlers.start(request({...body,verifyOnly:true},cookie))).json();assert.equal(duplicate.status,'queued');assert.equal(starts,1);
+ finish({id:'resp_real_sync_response',status:'completed',output_text:JSON.stringify({summary:'Original source is sufficient.',figures:[]}),usage:null});
+ await new Promise(resolve=>setTimeout(resolve,0));
+ const done=await(await handlers.status(request({...context,job:first.job},cookie))).json();assert.equal(done.status,'complete');assert.deepEqual(done.paperPlan.figures,[]);assert.equal(starts,1);assert.equal(retrieves,0);
+ // A new handler instance has no in-memory task but can recover the actual provider ID.
+ const restarted=createEnrichmentHandlers({getConfig:()=>config,store,usage,provider:()=>provider,signingSecret:secret});
+ const recovered=await(await restarted.status(request({...context,job:first.job},cookie))).json();assert.equal(recovered.status,'complete');assert.equal(starts,1);assert.equal(retrieves,1);
+});
+
+test('host-owned pending work survives duplicate checks but an interrupted server never replaces the original request',async t=>{
+ const store=createEnrichmentStore({path:':memory:',enforceLimits:false}),usage=createSqliteUsageStore({path:':memory:',enforceLimits:false});t.after(()=>{store.close();usage.close?.();});
+ let starts=0,finish!:(value:any)=>void;const work=new Promise<any>(resolve=>{finish=resolve;});
+ const provider:EnrichmentProvider={executionMode:'host',async start(){starts++;return work;},async retrieve(){throw Error('No provider ID yet');},async cancel(){throw Error('No provider ID yet');}};
+ const config=readMetaConfig({MODEL_API_KEY:'host-test-key'}),dependencies={getConfig:()=>config,store,usage,provider:()=>provider,signingSecret:'host-test-secret'},handlers=createEnrichmentHandlers(dependencies);
+ const cookie=(await handlers.session(request({}))).headers.get('set-cookie')!.split(';')[0],body={source,sectionId:WHOLE_PAPER_SECTION_ID,action:'plan',scope:'paper-outline',feedback:'',existingFigures:[],requestId:randomUUID()};
+ const first=await(await handlers.start(request(body,cookie))).json(),{requestId:_,...context}=body;
+ const restarted=createEnrichmentHandlers(dependencies),lost=await restarted.status(request({...context,job:first.job},cookie));assert.equal(lost.status,409);assert.equal((await lost.json()).uncertain,true);assert.equal(starts,1);
+ const cancelled=await handlers.status(request({...context,job:first.job},cookie),true);assert.equal(cancelled.status,409);assert.equal(starts,1);
+ finish({id:'resp_finished_after_check',status:'completed',output_text:JSON.stringify({summary:'Original source is sufficient.',figures:[]}),usage:null});await new Promise(resolve=>setTimeout(resolve,0));
+});
+
+test('Meta enrichment uses synchronous provider execution instead of the failing upstream background mode',async()=>{
+ const retrieval=await retrieveCapabilities(await enrichmentRetrievalQuery({source,sectionId:WHOLE_PAPER_SECTION_ID,action:'plan',scope:'paper-outline',feedback:''}));
+ const body=enrichmentProviderRequest({action:'plan',scope:'paper-outline',context:wholePaperContext(source).text,feedback:'',retrieval,existingFigures:[]});assert.equal(body.background,false);
+});
