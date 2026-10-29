@@ -5,7 +5,7 @@
 .passage-note-header [data-slot=dialog-description]{margin:0}
 .passage-note-header>.passage-quotation{max-height:78px;margin:12px 0;font-size:15px;line-height:1.6;padding:8px 12px}
 .passage-note-body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 5px 8px 0}
-.passage-note-body>.passage-note-editor{border:0;padding:0;margin:0}
+.passage-note-body .passage-note-editor{border:0;padding:0;margin:0}
 .passage-note-editor .reader-field{margin:8px 0 12px}
 .passage-note-editor textarea{min-height:136px;max-height:35dvh;resize:vertical}
 .passage-note-options{padding:0 0 10px;font-size:14px}
@@ -18,3 +18,16 @@
 .passage-note-footer p{margin:4px 0 0;overflow-wrap:anywhere;color:var(--ink)}
 .passage-note-footer>button{flex-shrink:0;min-height:44px}
 @media(max-width:620px){.reader-dialog.passage-dialog[data-slot=dialog-content]{padding:16px;max-height:calc(100dvh - 24px);width:calc(100% - 24px)}.passage-note-header [data-slot=dialog-title]{font-size:25px}.passage-note-header [data-slot=dialog-description]{font-size:14px}.passage-note-header>.passage-quotation{max-height:66px;font-size:14px}.passage-note-editor textarea{min-height:120px}.passage-note-footer{gap:8px;padding-top:10px}}
+
+/* Notes and study aids are two distinct tasks; switching keeps the local draft. */
+.passage-mode-switch{display:flex;gap:6px;border-bottom:1px solid var(--line);padding:0 0 12px;margin-bottom:10px}
+.passage-mode-switch button{min-height:44px;flex:1;font-size:14px;padding:8px 10px}
+.passage-mode-switch button[aria-pressed=true]{box-shadow:inset 0 -2px var(--olive)}
+.passage-note-body [hidden]{display:none!important}
+.passage-study-tools>.reader-explanation:first-of-type{padding-top:8px}
+.passage-study-tools>button{justify-content:flex-start;margin-bottom:4px}
+.passage-study-tools>.contextual-question{margin-top:14px}
+@media(max-width:620px){.passage-mode-switch{padding-bottom:8px;margin-bottom:6px}.passage-mode-switch button{font-size:14px}.passage-note-footer>div{font-size:12px}}
+
+.passage-study-heading{font:600 17px/1.5 var(--sans);margin:0 0 8px;color:var(--ink)}
+.passage-study-heading:focus-visible{outline:2px solid var(--olive);outline-offset:3px}
