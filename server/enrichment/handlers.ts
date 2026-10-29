@@ -19,7 +19,7 @@ import {WHOLE_PAPER_SECTION_ID,paperFigureBriefSchema,existingPaperFigureSchema,
 
 const actionSchema = z.enum(['plan','repair','edit']);
 const contextFields = { retrievalSelectionSha256:z.string().regex(/^[a-f0-9]{64}$/).optional(),source: sourceDocumentSchema, sectionId: z.string().min(1).max(100), action: actionSchema, feedback: z.string().max(1200).default(''), target: widgetEnvelopeSchema.optional(),scope:z.enum(['paper-outline','paper-figure']).optional(),figureBrief:paperFigureBriefSchema.optional(),existingFigures:z.array(existingPaperFigureSchema).max(3000).optional() };
-const startSchema = z.strictObject({ ...contextFields, requestId: z.string().regex(/^[a-zA-Z0-9-]{16,100}$/) });
+const startSchema = z.strictObject({ ...contextFields, requestId: z.string().regex(/^[a-zA-Z0-9-]{16,100}$/), verifyOnly:z.literal(true).optional() });
 const jobSchema = z.strictObject({ token: z.string().max(5000), createdAt: z.number().finite(), action: actionSchema, sectionId: z.string().min(1).max(100), model: z.string().max(120) });
 const statusSchema = z.strictObject({ ...contextFields, job: jobSchema });
 const digest = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -129,8 +129,10 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         const key=signingKey(config.apiKey,dependencies.signingSecret);
         sessionFor(request,key,now(),false);const session=sessionFor(request,key,now(),true);cookie=session.cookie;
         const id=usageIdFor(session.sid,`enrichment-${input.requestId}`),existing=store().record(id,session.sid);
+        if(input.verifyOnly&&(!existing||existing.status==='rejected'&&!existing.providerId))throw new AnalysisHttpError(409,'No accepted request is available for this saved reference. No new request was started.');
         const prepared=await prepare(input,config,existing);
         if(existing&&!(existing.status==='rejected'&&existing.actualTokens===0&&!existing.providerId)){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
+        if(input.verifyOnly)throw new AnalysisHttpError(409,'The saved request cannot be retrieved yet. No new request was started.',true);
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
         const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: ENRICHMENT_MAX_OUTPUT_TOKENS, inputCharacters: prepared.metrics!.characters, model: config.model, fingerprint: prepared.contextHash };
         const reserved = store().reserve({ id, owner: session.sid, documentHash: prepared.documentHash, contextHash: prepared.contextHash, action: input.action, sectionId: input.sectionId, reservedTokens: reservedTokensFor(reservationInput),retrieval:prepared.retrieval,requestMetrics:prepared.metrics,requestSha256:prepared.requestSha256 });

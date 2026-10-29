@@ -43,7 +43,7 @@ function abort(signal:AbortSignal){if(signal.aborted)throw new DOMException('Pre
 export async function createAutomaticPaperPipeline(input:SourceDocument,options:AutomaticPaperOptions={}){
  const source=freeze(validateDocument(clone(input))),fingerprint=await enrichmentFingerprint(source),key=automaticPaperStorageKey(source,fingerprint),sections=buildSourceSections(source);
  const storage=options.storage??(typeof localStorage==='undefined'?undefined:localStorage),now=options.now??Date.now;
- const listeners=new Set<()=>void>();let running:Promise<void>|undefined,controller:AbortController|undefined,disposed=false,invalidCache=false,sessionReady=false;
+ const listeners=new Set<()=>void>();let running:Promise<void>|undefined,controller:AbortController|undefined,disposed=false,invalidCache=false,sessionReady=false,verifyingSaved=false;
  let state:AutomaticPaperState=freeze(automaticPaperStateSchema.parse({format:'paperplay-automatic-paper',version:3,editorialRevision:1,fingerprint,status:'idle',message:'Meta will read the complete paper and choose a few useful illustrations.',sectionsTotal:sections.length,sectionIds:sections.map(s=>s.id),sectionsDone:0,widgets:[],generated:[],customRequests:[],customDone:[],issues:[],customAttempted:false}));
  function emit(next:AutomaticPaperState){state=freeze(automaticPaperStateSchema.parse(next));listeners.forEach(fn=>fn());}
  function save(next:AutomaticPaperState){if(!storage)throw Error('Browser storage is needed to retain accepted Meta requests.');const checked=automaticPaperStateSchema.parse(next),raw=JSON.stringify(checked);if(new TextEncoder().encode(raw).length>AUTOMATIC_PAPER_POLICY.maxCacheBytes)throw Error('The saved illustrations exceed browser storage capacity. No new request was started.');storage.setItem(key,raw);emit(checked);}
@@ -77,7 +77,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
   if(publish)emit(saved);else state=freeze(saved);
  }
  const transport=options.transport??(async(endpoint:string,payload:unknown,signal:AbortSignal)=>{
-  if(endpoint.endsWith('/start')){const {refreshAdoptionPolicy}=await import('../adoption/policy');const policy=await refreshAdoptionPolicy();if(policy.state!=='ready'||!policy.policy?.newModelCreation||endpoint.includes('artifact-generation')&&!policy.policy.generatedExecution)throw Error('Automatic illustrations are unavailable here. Saved results remain readable.');}
+  if(endpoint.endsWith('/start')&&!(payload as {verifyOnly?:boolean})?.verifyOnly){const {refreshAdoptionPolicy}=await import('../adoption/policy');const policy=await refreshAdoptionPolicy();if(policy.state!=='ready'||!policy.policy?.newModelCreation||endpoint.includes('artifact-generation')&&!policy.policy.generatedExecution)throw Error('Automatic illustrations are unavailable here. Saved results remain readable.');}
   const response=await fetch(endpoint,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.any([signal,AbortSignal.timeout(30000)])});
   const text=await response.text();if(new TextEncoder().encode(text).length>2_500_000)throw Error('The response was too large. Its accepted reference is retained.');let reply;try{reply=JSON.parse(text);}catch{throw Error('Meta’s response could not be read. Its request reference is retained.');}
   if(!response.ok){const quota=z.object({reason:z.enum(['session-rate','global-rate','daily-requests','daily-tokens']),retryAt:z.number().int().nonnegative()}).safeParse(reply.quota);throw new AutomaticPaperHttpError(response.status,typeof reply.error==='string'?reply.error:'Meta could not prepare this paper.',reply.uncertain===true,quota.success?quota.data.retryAt:undefined,quota.success?quota.data.reason:undefined);}return reply;
@@ -94,10 +94,10 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  function modelContext(pending:ModelPending){return {source,sectionId:WHOLE_PAPER_SECTION_ID,action:'plan',scope:pending.kind==='outline'?'paper-outline':'paper-figure',feedback:pending.feedback,...(pending.kind==='outline'?{existingFigures:pending.existingFigures}:{figureBrief:pending.figureBrief})};}
  async function requestModel(initial:ModelPending,signal:AbortSignal){
   let pending=initial;const context=modelContext(pending);let raw;
-  try{raw=await transport(`/api/enrichment/${pending.job?'status':'start'}`,{...context,...(pending.job?{job:pending.job}:{requestId:pending.requestId})},signal);}
+  try{raw=await transport(`/api/enrichment/${pending.job?'status':'start'}`,{...context,...(pending.job?{job:pending.job}:{requestId:pending.requestId,...(verifyingSaved?{verifyOnly:true}:{})})},signal);}
   catch(error){
    const unsubmitted=error instanceof AutomaticPaperHttpError&&error.status===409&&!error.uncertain&&!pending.job&&['The frozen capability selection changed before this unsubmitted request could resume.','The frozen prompt changed before this unsubmitted request could resume.'].includes(error.message);
-   if(!unsubmitted)throw error;abort(signal);pending={...pending,requestId:crypto.randomUUID()};patch({pending});raw=await transport('/api/enrichment/start',{...context,requestId:pending.requestId},signal);
+   if(!unsubmitted||verifyingSaved)throw error;abort(signal);pending={...pending,requestId:crypto.randomUUID()};patch({pending});raw=await transport('/api/enrichment/start',{...context,requestId:pending.requestId},signal);
   }
   let reply=replySchema.parse(raw);
   while(true){
@@ -110,7 +110,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
   if(reply.uncertain)throw Error(reply.error??'The accepted request is uncertain. Its reference is retained.');
   return reply;
  }
- function correct(pending:ModelPending,diagnostic:string){patch({pending:{...pending,requestId:crypto.randomUUID(),job:undefined,feedback:('Correct the known terminal response failure: '+diagnostic+'. Keep the complete-paper editorial objective: a few distinct, useful illustrations, exact source anchors, and no renamed repeats.').slice(0,1200)},message:pending.kind==='outline'?'Meta is refining its illustration plan for the complete paper.':'Meta is correcting the selected illustration.'});}
+ function correct(pending:ModelPending,diagnostic:string){if(verifyingSaved)throw Error('The saved response needs correction before preparation can continue. No new request was started.');patch({pending:{...pending,requestId:crypto.randomUUID(),job:undefined,feedback:('Correct the known terminal response failure: '+diagnostic+'. Keep the complete-paper editorial objective: a few distinct, useful illustrations, exact source anchors, and no renamed repeats.').slice(0,1200)},message:pending.kind==='outline'?'Meta is refining its illustration plan for the complete paper.':'Meta is correcting the selected illustration.'});}
  async function outline(signal:AbortSignal){
   let pending=state.pending?.kind==='outline'?state.pending:undefined;
   if(!pending){await prepareSession(signal);pending={kind:'outline',requestId:crypto.randomUUID(),feedback:'Choose a concise set of complementary interactions for the complete paper. Prefer a few high-value figures over exhaustive coverage. Reuse only saved figures that actually explain their chosen passage; omit redundant or misleading examples.',existingFigures:existingFigures()};patch({pending,status:'planning',message:'Meta is reading the complete paper and choosing the most useful places for an interaction.'});}
@@ -164,23 +164,24 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
   let pending=state.pending as CustomPending;
   while(true){
    abort(signal);const attempt=pending.attempt??1,context={source,sectionId:WHOLE_PAPER_SECTION_ID,scope:'paper',anchor:pending.anchor,brief:pending.brief};
-   patch({status:'generating',message:pending.previous?'Meta is improving the interaction using its layout and execution checks.':'Meta is creating the selected interaction.'});
-   if(!pending.run){const prepared=generationReplySchema.parse(await transport('/api/artifact-generation/prepare',{...context,runId:pending.runId,maxAttempts:3},signal));abort(signal);if(prepared.status!=='prepared'||prepared.run.runId!==pending.runId)throw Error('The illustration session could not be prepared.');pending={...pending,run:prepared.run,sessionMaxAttempts:prepared.budget.maxAttempts};patch({pending});}
+   patch({status:'generating',message:verifyingSaved?'Checking the saved interaction request. No new generation is being started.':pending.previous?'Meta is improving the interaction using its layout and execution checks.':'Meta is creating the selected interaction.'});
+   if(!pending.run){if(verifyingSaved)throw Error('The saved interaction has no accepted session to retrieve. No new request was started.');const prepared=generationReplySchema.parse(await transport('/api/artifact-generation/prepare',{...context,runId:pending.runId,maxAttempts:3},signal));abort(signal);if(prepared.status!=='prepared'||prepared.run.runId!==pending.runId)throw Error('The illustration session could not be prepared.');pending={...pending,run:prepared.run,sessionMaxAttempts:prepared.budget.maxAttempts};patch({pending});}
    if(!pending.candidate){
-    const submitted=state.customAttempted;patch({customAttempted:true});const statusPayload={...context,run:pending.run,attempt},payload={...statusPayload,...(attempt>1&&pending.previous?{previous:pending.previous,feedback:pending.feedback}:{})};let raw;
-    try{raw=await transport(`/api/artifact-generation/${submitted?'status':'start'}`,submitted?statusPayload:payload,signal);}catch(error){abort(signal);if(!submitted||!(error instanceof AutomaticPaperHttpError)||error.status!==409||error.uncertain||error.message!=='This generation attempt has not been claimed.')throw error;raw=await transport('/api/artifact-generation/start',payload,signal);}
+    const submitted=verifyingSaved||state.customAttempted;patch({customAttempted:true});const statusPayload={...context,run:pending.run,attempt},payload={...statusPayload,...(attempt>1&&pending.previous?{previous:pending.previous,feedback:pending.feedback}:{})};let raw;
+    try{raw=await transport(`/api/artifact-generation/${submitted?'status':'start'}`,submitted?statusPayload:payload,signal);}catch(error){abort(signal);if(verifyingSaved||!submitted||!(error instanceof AutomaticPaperHttpError)||error.status!==409||error.uncertain||error.message!=='This generation attempt has not been claimed.')throw error;raw=await transport('/api/artifact-generation/start',payload,signal);}
     let reply=generationReplySchema.parse(raw);
     while(['queued','analyzing'].includes(reply.status)){abort(signal);await sleep(signal);reply=generationReplySchema.parse(await transport('/api/artifact-generation/status',statusPayload,signal));}
     abort(signal);if(reply.run.runId!==pending.run!.runId)throw Error('The custom response belongs to another run.');if(reply.uncertain||reply.status==='uncertain')throw Error(reply.error??'The accepted custom request is uncertain. Its reference is retained.');
     if(reply.status==='cancelled'){finishFigure(pending.figureId!,undefined,'The selected interaction was cancelled.');return;}
     if(reply.status==='complete'&&reply.candidate){validateFigureArtifact(reply.candidate.artifact,source);if(!reply.candidate.artifact.anchors.some(a=>a.blockId===pending.anchor!.blockId&&a.page===pending.anchor!.page&&a.quote===pending.anchor!.quote))throw Error('The generated interaction changed its approved source placement.');pending={...pending,candidate:reply.candidate};patch({pending});}
-    else{pending=nextCustom(pending,undefined,undefined,reply.error??'Return a complete useful interaction.');patch({pending,customAttempted:false});continue;}
+    else{if(verifyingSaved)throw Error(reply.error??'The saved interaction needs another preparation attempt. No new generation was started.');pending=nextCustom(pending,undefined,undefined,reply.error??'Return a complete useful interaction.');patch({pending,customAttempted:false});continue;}
    }
    patch({status:'checking',message:'Checking the interaction’s layout, labels and controls.'});const result=await check(pending.candidate!,source,{signal});abort(signal);
    if(result.feedback.compiler.status==='ready'&&result.feedback.runtime.status==='ready'&&result.feedback.quality?.status==='passed'){
     finishFigure(pending.figureId!,{figureId:pending.figureId!,generatedSha:pending.candidate!.sha256},undefined,{generated:[...state.generated.filter(g=>g.candidate.sha256!==pending.candidate!.sha256),{candidate:pending.candidate!,blockId:pending.anchor!.blockId,requestKey:pending.figureId}]});return;
    }
    if(!result.repairable){finishFigure(pending.figureId!,undefined,'A selected interaction could not be opened locally.');return;}
+   if(verifyingSaved)throw Error('The saved interaction needs a layout repair before it can be displayed. No new generation was started.');
    pending=nextCustom(pending,pending.candidate,result.feedback,JSON.stringify(result.feedback).slice(0,600));patch({pending,customAttempted:false});
   }
  }
@@ -218,6 +219,18 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  function stopped(error:unknown,signal:AbortSignal,persist:boolean){if(disposed)return;const next={...state,status:signal.aborted?(state.status==='waiting'?'waiting' as const:'paused' as const):'blocked' as const,message:signal.aborted?'Preparation paused. Saved figures and accepted requests are retained.':error instanceof Error?error.message.slice(0,1000):'Preparation stopped. The source remains readable.'};if(persist){try{save(next);return;}catch{}}emit(next);}
  return Object.freeze({getSnapshot:()=>state,subscribe(listener:()=>void){listeners.add(listener);return()=>{listeners.delete(listener);};},
   start(){if(disposed||invalidCache)return Promise.resolve();if(running)return running;controller=new AbortController();const signal=controller.signal;running=lock(key,async()=>{try{await execute(signal);}catch(error){stopped(error,signal,true);}},signal).catch(error=>stopped(error,signal,false)).finally(()=>{running=undefined;controller=undefined;});return running;},
+  checkSavedRequest(){
+   if(disposed||invalidCache)return Promise.resolve();if(running)return running;
+   controller=new AbortController();const signal=controller.signal;
+   running=lock(key,async()=>{try{
+    await load();const pending=state.pending;
+    if(pending?.kind!=='outline'&&pending?.kind!=='figure'&&!(pending?.kind==='custom'&&pending.scope==='paper'&&(pending.run||pending.candidate)))throw Error('This saved reference cannot be checked from the reader. Keep this paper saved and include its technical details when reporting the problem.');
+    verifyingSaved=true;
+    if(pending.kind==='outline')await outline(signal);else if(pending.kind==='figure')await buildSelectedFigure(pending.figureBrief,signal);else await generate(signal);
+    abort(signal);
+    patch({status:'paused',message:'Your saved result was recovered. Continue preparation to build the remaining selected illustrations.'});
+   }catch(error){stopped(error,signal,true);}finally{verifyingSaved=false;}},signal).catch(error=>stopped(error,signal,false)).finally(()=>{running=undefined;controller=undefined;});return running;
+  },
   pause(){if(controller){controller.abort();return running??Promise.resolve();}if(disposed||invalidCache||state.status==='complete'||state.status==='partial')return Promise.resolve();const signal=new AbortController().signal;return lock(key,async()=>{if(disposed)return;await load(false);if(state.status==='complete'||state.status==='partial'){emit(state);return;}patch({status:'paused',message:'Preparation paused. Saved requests are retained.'});},signal).catch(error=>stopped(error,signal,false));},
   dispose(){disposed=true;controller?.abort();listeners.clear();},
  });

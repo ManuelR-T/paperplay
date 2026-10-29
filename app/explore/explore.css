@@ -138,3 +138,27 @@
 .explore-abstract{line-height:1.75}
 @media(max-width:900px){.explore-subject-groups{grid-template-columns:repeat(3,minmax(0,1fr))}.explore-intro h1 br{display:block}}
 @media(max-width:700px){.explore-intro{padding:12px 0 20px}.explore-intro h1{letter-spacing:-1.2px;font-size:40px}.explore-intro>p{font-size:16px}.explore-subject-groups{grid-template-columns:repeat(2,minmax(0,1fr))}.explore-subject-groups button{padding:10px;min-height:64px}.explore-search{padding:15px}.explore-card{padding:20px}.explore-card h3{font-size:24px}}
+
+/* Keep the search and real papers within reach on the first screen. */
+.explore-intro{padding:0 0 14px;margin-bottom:14px}
+.explore-intro .explore-eyebrow,.explore-intro>p{display:none}
+.explore-intro h1{font-size:clamp(28px,3vw,38px);margin:8px 0}
+.explore-intro[data-has-search=true]{display:none}
+.explore-content{padding-top:20px}
+.explore-search{padding:16px;margin-bottom:14px}
+.explore-search-actions:empty{display:none}
+.explore-filter-toggle{margin-top:8px}
+.explore-search-error{padding:12px 14px;margin-top:12px;border:1px solid var(--destructive);border-radius:8px;background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6}
+.explore-search-error p{margin:0 0 8px}
+.explore-search-error:focus{outline:2px solid var(--destructive);outline-offset:3px}
+.explore-draft-notice{font-weight:500;color:var(--ink)!important}
+.explore-subjects{margin-top:12px;margin-bottom:12px;padding:0 0 12px}
+.explore-subjects-heading{margin-bottom:8px}
+.explore-subjects-heading h2{font-size:18px}
+.explore-subjects-heading>span{display:none}
+.explore-subject-groups{display:flex;flex-wrap:wrap;gap:6px}
+.explore-subject-groups button{min-height:44px;padding:8px 10px;font-size:14px}
+.explore-subject-groups button svg{width:17px;height:17px}
+.explore-results-header{margin-top:16px}
+.explore-more-topics{margin-top:28px}
+@media(max-width:700px){.explore-content{padding-top:12px}.explore-intro h1{font-size:29px;line-height:1.2}.explore-tabs{margin-bottom:12px}.explore-search{padding:12px}.explore-subject-groups{flex-wrap:nowrap;overflow-x:auto;padding:3px 2px 8px}.explore-subject-groups button{flex-shrink:0;white-space:nowrap;max-width:85vw}.explore-filter-toggle>span{font-size:13px}.explore-archives{max-height:145px;overflow:auto}.explore-results-header h2{font-size:24px}}

@@ -125,3 +125,41 @@ test('earlier completed global plans are reviewed once to align saved figures an
  assert.equal(reopened.getSnapshot().status,'idle');await reopened.start();assert.equal(reopened.getSnapshot().status,'complete');assert.equal(p.calls.length,1);assert.equal(reopened.getSnapshot().paperPlan?.figures[0].interaction,revised.interaction);assert.equal(reopened.getSnapshot().widgets[0].id,snapshot.widgets[0].id);
  const again=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,lock});await again.start();assert.equal(p.calls.length,1);
 });
+
+test('checking an uncertain outline uses its frozen identity and stops before implementing any new selected figure',async()=>{
+ const f=await fixture(),p=fake(f),disk=storage(),calls:any[]=[];let recover=false;
+ const transport:AutomaticPaperTransport=async(endpoint,payload:any,signal)=>{
+  calls.push({endpoint,payload});
+  if(!recover)throw new AutomaticPaperHttpError(504,'The submission outcome is uncertain.',true);
+  assert.equal(payload.verifyOnly,true);
+  return p.transport(endpoint,payload,signal);
+ };
+ const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport,lock});await c.start();
+ const pending=c.getSnapshot().pending;assert.equal(pending?.kind,'outline');assert.equal(c.getSnapshot().status,'blocked');
+ recover=true;await c.checkSavedRequest();
+ assert.equal(calls.length,2);assert.equal(calls[0].payload.requestId,calls[1].payload.requestId);
+ assert.equal(c.getSnapshot().status,'paused');assert.equal(c.getSnapshot().paperPlan?.figures.length,1);assert.equal(c.getSnapshot().widgets.length,0);
+ assert.equal(c.getSnapshot().pending,undefined);
+});
+
+test('a failed saved-request check preserves its identity and never silently retries under a new reference',async()=>{
+ const f=await fixture(),disk=storage(),calls:any[]=[];
+ const transport:AutomaticPaperTransport=async(endpoint,payload)=>{calls.push({endpoint,payload});throw new AutomaticPaperHttpError(409,'An earlier submission is unresolved.',true);};
+ const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport,lock});await c.start();const pending=c.getSnapshot().pending;
+ await c.checkSavedRequest();assert.equal(calls.length,2);assert.deepEqual(c.getSnapshot().pending,pending);assert.equal(calls[1].payload.verifyOnly,true);assert.equal(c.getSnapshot().status,'blocked');
+});
+
+test('checking a saved custom request only retrieves its accepted attempt and never prepares, starts or repairs another',async()=>{
+ const f=await fixture(),p=fake(f,[{...f.brief,kind:'generated'}]),disk=storage(),calls:any[]=[];let recover=false;
+ const transport:AutomaticPaperTransport=async(endpoint,payload,signal)=>{
+  calls.push({endpoint,payload});
+  if(endpoint==='/api/artifact-generation/start'&&!recover)throw new AutomaticPaperHttpError(504,'The accepted interaction is uncertain.',true);
+  return p.transport(endpoint,payload,signal);
+ };
+ const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport,lock,check:passing});await c.start();
+ assert.equal(c.getSnapshot().status,'blocked');const pending=c.getSnapshot().pending;assert.equal(pending?.kind,'custom');
+ const before=calls.length;recover=true;await c.checkSavedRequest();
+ const checkCalls=calls.slice(before);assert.deepEqual(checkCalls.map(c=>c.endpoint),['/api/artifact-generation/status']);
+ assert.equal(checkCalls[0].payload.run.runId,pending?.kind==='custom'?pending.run?.runId:undefined);
+ assert.equal(c.getSnapshot().generated.length,1);assert.equal(c.getSnapshot().status,'paused');
+});

@@ -108,3 +108,15 @@ test('oversized complete input is rejected explicitly before provider submission
  const large=validateDocument({...source,blocks:Array.from({length:70},(_,index)=>({id:`large-${index}`,kind:'paragraph',page:1,text:'Whole input remains intact. '.repeat(650)}))}),f=await fixture(t,{summary:'Unused',figures:[]},large);
  const response=await f.handlers.start(request(f.body,f.cookie)),body=await response.json();assert.equal(response.status,413);assert.match(body.error,/complete paper|complete source/);assert.equal(f.inputs.length,0);assert.equal((await f.usage.summary()).requests,0);
 });
+
+test('checking an unknown saved request cannot reserve tokens or start Meta, while an accepted request remains retrievable',async t=>{
+ const f=await fixture(t,{summary:'Only useful illustrations.',figures:[]});
+ const absent=await f.handlers.start(request({...f.body,verifyOnly:true},f.cookie));
+ assert.equal(absent.status,409);assert.equal(f.inputs.length,0);assert.equal((await f.usage.summary()).requests,0);
+ const started=await f.handlers.start(request(f.body,f.cookie));assert.equal(started.status,200);assert.equal(f.inputs.length,1);
+ const checked=await f.handlers.start(request({...f.body,verifyOnly:true},f.cookie)),saved=await checked.json();
+ assert.equal(checked.status,200);assert.ok(saved.job);assert.equal(f.inputs.length,1);assert.equal((await f.usage.summary()).requests,1);
+ const {requestId:_,...context}=f.body;
+ const done=await(await f.handlers.status(request({...context,job:saved.job},f.cookie))).json();
+ assert.equal(done.status,'complete');assert.equal(f.inputs.length,1);
+});

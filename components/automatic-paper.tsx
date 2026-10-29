@@ -25,9 +25,9 @@ export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDo
  const identity=enrichmentSourceIdentity(source);
  const stableSource=useMemo(()=>source,[identity]);
  const policy=useAdoptionPolicy();
- const [pipeline,setPipeline]=useState<Pipeline|null>(null),[snapshot,setSnapshot]=useState<Snapshot|null>(null),[error,setError]=useState('');
+ const [pipeline,setPipeline]=useState<Pipeline|null>(null),[snapshot,setSnapshot]=useState<Snapshot|null>(null),[error,setError]=useState(''),[recoveryFeedback,setRecoveryFeedback]=useState('');
  const controller=useRef<Pipeline|null>(null),autoStarted=useRef(false);
- useEffect(()=>{if(!enabled)return;let alive=true,unsubscribe:(()=>void)|undefined,owned:Pipeline|undefined;autoStarted.current=false;setPipeline(null);setSnapshot(null);setError('');
+ useEffect(()=>{if(!enabled)return;let alive=true,unsubscribe:(()=>void)|undefined,owned:Pipeline|undefined;autoStarted.current=false;setPipeline(null);setSnapshot(null);setError('');setRecoveryFeedback('');
   void createAutomaticPaperPipeline(stableSource).then(next=>{if(!alive){next.dispose();return;}owned=next;controller.current=next;setPipeline(next);setSnapshot(next.getSnapshot());unsubscribe=next.subscribe(()=>{if(alive)setSnapshot(next.getSnapshot());});}).catch(()=>{if(alive)setError('Automatic figures could not open safely. The original paper remains readable.');});
   return()=>{alive=false;unsubscribe?.();if(controller.current===owned)controller.current=null;owned?.dispose();};
  },[stableSource,enabled]);
@@ -45,16 +45,20 @@ export function AutomaticPaperEnhancement({source,enabled=true}:{source:SourceDo
  const timing=snapshot;
  const state=String(snapshot?.status??'idle');
  const available=policy.newModelAllowed&&policy.generatedAllowed;
- const phase:IllustrationPhase=error||policy.state==='unavailable'||policy.state==='ready'&&!available?'blocked':state==='waiting'?'waiting':state==='complete'?'ready':state==='partial'?'limited':state==='blocked'?'blocked':state==='planning'||state==='generating'||state==='checking'?state:'opening';
+ const phase:IllustrationPhase=error||policy.state==='unavailable'||policy.state==='ready'&&!available?'blocked':state==='waiting'?'waiting':state==='complete'?'ready':state==='partial'||state==='paused'?'limited':state==='blocked'?'blocked':state==='planning'||state==='generating'||state==='checking'?state:'opening';
  const waitingMessage=state==='waiting'?({
   'session-rate':'Several papers were opened in quick succession. This paper is queued and will resume automatically.',
   'global-rate':'The illustration service is busy. Your paper is queued and will resume automatically.',
   'daily-requests':"Today’s configured processing allowance has been reached. Preparation is scheduled to resume automatically.",
   'daily-tokens':"Today’s configured processing budget has been reached. Preparation is scheduled to resume automatically."
  }[snapshot?.quotaReason??'session-rate']):undefined;
- const message=error||waitingMessage||(policy.state==='unavailable'?'The service is temporarily unavailable. Your paper remains readable.':policy.state==='ready'&&!available?!policy.newModelAllowed?policy.modelMessage:policy.generatedMessage:snapshot?.message)||'Opening the paper and checking its saved illustrations…';
+ const technicalMessage=error||waitingMessage||(policy.state==='unavailable'?'The service is temporarily unavailable. Your paper remains readable.':policy.state==='ready'&&!available?!policy.newModelAllowed?policy.modelMessage:policy.generatedMessage:snapshot?.message)||'Opening the paper and checking its saved illustrations…';
+ const canCheck=snapshot?.pending?.kind==='outline'||snapshot?.pending?.kind==='figure'||snapshot?.pending?.kind==='custom'&&snapshot.pending.scope==='paper'&&!!(snapshot.pending.run||snapshot.pending.candidate);
+ async function checkSaved(){if(!pipeline)return;setRecoveryFeedback('Checking the saved request…');await pipeline.checkSavedRequest();setRecoveryFeedback(pipeline.getSnapshot().status==='blocked'?`Checked at ${new Date().toLocaleTimeString()}. No recoverable result is available yet. Your saved request is retained.`:'The saved result was recovered.');}
+ const stalled=phase==='blocked';
+ const message=stalled?canCheck?'Meta’s reply has not reached this page yet. Check the saved request to recover any available result. You can keep reading.':'Illustrations are paused. Your paper and saved figures remain available. See the details below for the next step.':technicalMessage;
  return <>
-  <AutomaticPaperProgress phase={phase} message={message} figureCount={widgets.length+generated.length} figuresDone={snapshot?.figureTasksDone.length??0} plannedFigures={snapshot?.paperPlan?.figures.length} retryAt={timing?.retryAt} issues={snapshot?.issues}/>
+  <AutomaticPaperProgress phase={phase} message={message} figureCount={widgets.length+generated.length} figuresDone={snapshot?.figureTasksDone.length??0} plannedFigures={snapshot?.paperPlan?.figures.length} retryAt={timing?.retryAt} issues={snapshot?.issues} technicalDetails={stalled?technicalMessage:undefined} recoveryFeedback={recoveryFeedback} onCheckSaved={stalled&&canCheck&&pipeline?()=>void checkSaved():undefined} onContinue={state==='paused'&&pipeline&&available?()=>void pipeline.start():undefined} recoveryNote={stalled&&!canCheck?snapshot?.pending?'This saved request uses an older or incomplete reference that cannot be checked from this page. Keep this paper saved and include the technical details when reporting the problem.':'Keep this paper saved. If the service remains unavailable, include the technical details when reporting the problem.':undefined}/>
   {widgets.map(widget=><AutomaticStockFigure key={widget.id} envelope={widget} source={stableSource} readingGuide={guide(widget.id)}/>)}
   {generated.map(entry=><AutomaticGeneratedFigure key={entry.candidate.sha256} candidate={entry.candidate} blockId={entry.blockId} source={stableSource} readingGuide={guide(undefined,entry.candidate.sha256)}/>)}
  </>;

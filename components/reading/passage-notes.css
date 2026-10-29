@@ -1,0 +1,20 @@
+/* A note has one primary action; the editor scrolls while saving stays visible. */
+.reader-dialog.passage-dialog[data-slot=dialog-content]{display:flex;flex-direction:column;gap:0;overflow:hidden;max-height:min(88dvh,820px);padding:22px}
+.passage-note-header{flex-shrink:0;min-width:0}
+.passage-note-header [data-slot=dialog-title]{margin:0 0 6px}
+.passage-note-header [data-slot=dialog-description]{margin:0}
+.passage-note-header>.passage-quotation{max-height:78px;margin:12px 0;font-size:15px;line-height:1.6;padding:8px 12px}
+.passage-note-body{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 5px 8px 0}
+.passage-note-body>.passage-note-editor{border:0;padding:0;margin:0}
+.passage-note-editor .reader-field{margin:8px 0 12px}
+.passage-note-editor textarea{min-height:136px;max-height:35dvh;resize:vertical}
+.passage-note-options{padding:0 0 10px;font-size:14px}
+.passage-note-options summary{cursor:pointer;min-height:44px;display:flex;align-items:center;gap:12px;color:var(--ink)}
+.passage-note-options summary::before{content:'+';font-size:20px;color:var(--olive)}
+.passage-note-options[open] summary::before{content:'−'}
+.passage-note-options summary span{margin-left:auto;color:var(--soft);font-size:14px;text-align:right}
+.passage-note-footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--line);background:var(--paper);min-height:62px}
+.passage-note-footer>div{min-width:0;font-size:13px;line-height:1.5;color:var(--soft)}
+.passage-note-footer p{margin:4px 0 0;overflow-wrap:anywhere;color:var(--ink)}
+.passage-note-footer>button{flex-shrink:0;min-height:44px}
+@media(max-width:620px){.reader-dialog.passage-dialog[data-slot=dialog-content]{padding:16px;max-height:calc(100dvh - 24px);width:calc(100% - 24px)}.passage-note-header [data-slot=dialog-title]{font-size:25px}.passage-note-header [data-slot=dialog-description]{font-size:14px}.passage-note-header>.passage-quotation{max-height:66px;font-size:14px}.passage-note-editor textarea{min-height:120px}.passage-note-footer{gap:8px;padding-top:10px}}
