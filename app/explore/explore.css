@@ -169,3 +169,30 @@
 .explore-grid{align-items:start}
 .explore-card-actions{margin-top:12px}
 .explore-abstract-link{margin-bottom:4px}
+
+/* Refinement: quiet chrome, purposeful controls, and a consistent card rhythm. */
+.explore-header{min-height:76px;padding-block:12px}
+.explore-header nav a{border-radius:6px;padding-inline:6px}
+.explore-header nav a:hover{background:var(--accent)}
+.explore-query{display:flex;flex-direction:column;gap:8px}
+.explore-query>div{padding-right:4px}
+.explore-query input{height:50px}
+.explore-query input::-webkit-search-cancel-button{-webkit-appearance:none}
+.explore-clear-query{display:grid;place-items:center;flex-shrink:0;min-width:44px;height:44px;background:transparent;color:var(--soft);border-radius:6px;padding:0}
+.explore-clear-query:hover{background:var(--secondary);color:var(--ink)}
+.explore-tabs .count-pill{margin-left:0;min-width:22px;text-align:center;background:color-mix(in srgb,currentColor 9%,transparent);color:inherit;font-size:13px}
+.explore-subject-groups button{border-radius:24px;padding-inline:12px}
+.explore-subject-groups button[aria-pressed=true]{font-weight:600}
+.explore-grid{gap:20px}
+.explore-card{padding:22px}
+.explore-card-meta>span{background:transparent;padding:0;color:var(--soft);font-size:13px;line-height:1.6}
+.explore-card h3{margin:10px 0 12px;line-height:1.35;font-size:25px}
+.explore-authors{margin-bottom:12px}
+.explore-category-tags{gap:6px;margin-bottom:14px}
+.explore-card .explore-category-tags button{font-size:13px;min-height:32px;border-radius:5px;padding:5px 8px}
+.explore-card-actions{padding-top:14px;margin-top:12px;gap:8px}
+.explore-card-actions>a:last-child{color:var(--soft)}
+.explore-abstract-link{font-size:14px;margin-bottom:0;text-decoration-thickness:1px}
+.explore-pagination{padding-block:12px}
+.explore-footer{margin-top:30px}
+@media(max-width:700px){.explore-card{padding:18px}.explore-card h3{font-size:23px}.explore-header{padding:12px 16px;gap:12px}.explore-header nav{gap:8px}.explore-header nav a{font-size:14px;gap:6px}.explore-more-topics .explore-topics{flex-wrap:nowrap;overflow-x:auto;padding-bottom:8px}.explore-topics button{flex-shrink:0}.explore-topics>span{display:none}}

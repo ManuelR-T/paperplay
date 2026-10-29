@@ -6,3 +6,11 @@
 .prompts dt{font-weight:600;font-size:15px}
 .prompts dd{margin:0;min-width:0}
 @media(max-width:500px){.guide{font-size:15px;line-height:1.7}.prompts{padding-left:10px}.prompts>div{grid-template-columns:48px minmax(0,1fr);column-gap:8px}}
+
+/* Make the purpose readable before the two actions, with a quieter secondary explanation. */
+.guide .context{line-height:1.75;margin-bottom:14px}
+.context strong{display:block;font-size:16px;line-height:1.55;margin-bottom:6px;color:var(--ink)}
+.prompts{padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--olive);border-radius:0 8px 8px 0;background:var(--reader-surface,var(--chrome));gap:10px}
+.prompts dt{color:var(--olive)}
+.prompts dd{font-size:15px;line-height:1.7}
+@media(max-width:500px){.prompts{padding:10px 12px}.context strong{font-size:15px}.prompts>div{grid-template-columns:50px minmax(0,1fr)}}

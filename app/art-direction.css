@@ -34,3 +34,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 /* The mark is a self-contained SVG, shared with the browser icon. */
 .brand-icon{background:transparent;box-shadow:none;border-radius:0}
 .brand-icon img{display:block;width:100%;height:100%}
+
+/* Reader details keep the document visually separate from its tools. */
+.reader-navigation{min-height:54px;gap:12px}
+.reader-navigation summary{border-radius:6px;padding:4px 0}
+.reader-quick-actions{gap:4px}
+.reader-quick-actions button{border-radius:7px}
+.source-authors{line-height:1.7}
+.reading-figure{margin-block:24px}
+.widget-header-actions button{border-radius:6px}
+.widget-card .widget-footer{gap:8px;padding-top:14px}
+.passage-tools>.passage-note-button:focus-visible{background:var(--accent)}
