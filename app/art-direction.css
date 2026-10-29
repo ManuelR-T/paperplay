@@ -27,9 +27,6 @@
 .widget-card,.paperplay-figure{border-radius:14px;box-shadow:0 4px 18px #172f2d06}
 .widget-header{padding-bottom:12px;border-bottom:1px solid var(--line)}
 .widget-kind{font-weight:600;letter-spacing:.03em;color:var(--olive)}
-.widget-tabs{padding:4px;background:var(--chrome);border-radius:9px}
-.widget-tabs button{border-radius:6px}
-.widget-tabs button[aria-selected=true]{background:var(--paper);box-shadow:0 1px 4px #172f2d15;color:var(--olive)}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline-color:var(--olive)}
 @media(max-width:620px){.wordmark{font-size:23px}.brand-icon{width:32px;height:32px}.original-heading h2{padding-bottom:9px}}
 @media print{.brand-icon,.widget-card,.paperplay-figure{box-shadow:none}}

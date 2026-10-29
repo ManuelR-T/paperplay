@@ -18,3 +18,10 @@
 @media(max-width:700px){.widget-header>div:first-child{flex-basis:100%}.widget-header-actions{margin-left:auto}.widget-header h3{font-size:22px}.widget-card .widget-context{font-size:15px}.widget-card .widget-tabs button{padding-inline:6px}.widget-diagram-scroll{padding:8px 4px}}
 .widget-diagram{height:auto;min-width:520px;aspect-ratio:2/1}.widget-diagram[data-expanded-labels=true]{min-width:640px;aspect-ratio:710/390}.widget-node:focus-visible circle{stroke:var(--ink);stroke-width:4}.widget-node-label{pointer-events:none}
 .widget-diagram[data-concept-layout=true]{margin-inline:auto;aspect-ratio:auto}.widget-node:focus-visible rect{stroke:var(--ink);stroke-width:4}.widget-diagram[data-concept-layout=true] .widget-node{touch-action:pan-x pan-y}
+
+/* One spacing rule for the segmented tabs, including asynchronously loaded figures. */
+.widget-card .widget-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:4px;padding:4px;margin:0 0 16px;border:1px solid var(--line);border-radius:10px;background:var(--chrome)}
+.widget-card .widget-tabs button{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;height:auto;padding:8px 12px;margin:0;border:0;border-radius:6px;line-height:1.4;font-size:15px;white-space:nowrap}
+.widget-card .widget-tabs button[aria-selected=true]{background:var(--paper);box-shadow:0 1px 4px #172f2d15;color:var(--olive)}
+.widget-card [role=tabpanel]>:first-child{margin-top:0}
+@media(max-width:700px){.widget-card .widget-tabs{margin-bottom:12px}.widget-card .widget-tabs button{padding-inline:8px}}
