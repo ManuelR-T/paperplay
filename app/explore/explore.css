@@ -101,3 +101,40 @@
 .explore-subject-groups button[aria-pressed=true]{box-shadow:inset 0 0 0 1px var(--olive)}
 .explore-topics{margin:12px 0 20px;gap:8px}
 @media(max-width:700px){.explore-filter-toggle>span{flex-basis:100%}.explore-subject-groups button{padding:10px;gap:8px;font-size:14px}.explore-subjects-heading span{display:none}.explore-topics>span{flex-basis:100%}.explore-search-actions>span{font-size:14px}}
+
+/* Editorial discovery: warm paper, deep green ink, and clear visual landmarks. */
+.explore-header{background:var(--paper);padding-block:16px}
+.explore-intro{position:relative;padding:12px 0 22px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.explore-intro .explore-eyebrow{display:block;color:var(--olive);font-size:12px;letter-spacing:.14em;font-weight:700}
+.explore-intro h1{font-size:clamp(36px,4vw,50px);line-height:1.12;letter-spacing:-1.6px;margin:14px 0;max-width:none}
+.explore-intro h1 br{display:none}
+.explore-intro h1 em{color:var(--olive);font-weight:400}
+.explore-intro>p{max-width:680px;font-size:18px;line-height:1.65;margin:14px 0 0}
+.explore-tabs{border:0;padding-bottom:0;gap:8px}
+.explore-tabs button{border-radius:8px}
+.explore-tabs button[aria-pressed=true]{background:var(--primary);color:var(--primary-foreground)}
+.explore-search{background:var(--paper);border:1px solid var(--input);border-top:3px solid var(--olive);border-radius:12px;box-shadow:0 5px 22px #172f2d08;padding:20px}
+.explore-query>div{background:var(--chrome);border-color:transparent;border-radius:8px}
+.explore-query>div:focus-within{border-color:var(--olive);box-shadow:0 0 0 3px color-mix(in srgb,var(--olive) 12%,transparent)}
+.explore-query input:focus-visible{outline:none}
+.explore-search-row>button{border-radius:8px;padding-inline:22px}
+.explore-subjects{background:transparent;border:0;padding:6px 0 14px;margin-top:24px;border-bottom:1px solid var(--line);border-radius:0}
+.explore-subjects-heading h2{font-size:22px}
+.explore-subject-groups{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.explore-subject-groups button{justify-content:flex-start;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:9px;box-shadow:none;padding:12px;font-size:14px;line-height:1.4;min-height:62px;transition:border-color .15s,background .15s}
+.explore-subject-groups button svg{width:21px;height:21px;margin-right:2px}
+.explore-subject-groups button:hover{background:var(--accent);border-color:var(--olive)}
+.explore-subject-groups button[aria-pressed=true]{background:var(--secondary);border-color:var(--olive);box-shadow:none}
+.explore-topics button{border:0;background:var(--chrome);border-radius:24px;padding-inline:14px}
+.explore-results-header{border-bottom:1px solid var(--line);padding-bottom:15px;margin-top:30px}
+.explore-card{border-radius:12px;border:1px solid var(--line);padding:24px;background:var(--paper);box-shadow:0 3px 12px #172f2d04;transition:border-color .15s,box-shadow .15s}
+.explore-card:hover,.explore-card:focus-within{border-color:var(--olive);box-shadow:0 6px 20px #172f2d0a}
+.explore-card h3{font-size:26px;line-height:1.3;letter-spacing:-.5px}
+.explore-card-meta{font-size:13px;letter-spacing:.02em}
+.explore-card-meta>span{padding:4px 8px;background:var(--chrome);border-radius:5px}
+.explore-category-tags button{background:transparent;border-color:var(--line);min-height:34px;padding:5px 9px;font-size:13px}
+.explore-card-actions .explore-open{background:var(--primary);color:var(--primary-foreground);border-radius:7px;padding:9px 13px;font-size:15px;text-decoration:none}
+.explore-card-actions .explore-open:hover{background:var(--olive);text-decoration:none}
+.explore-abstract{line-height:1.75}
+@media(max-width:900px){.explore-subject-groups{grid-template-columns:repeat(3,minmax(0,1fr))}.explore-intro h1 br{display:block}}
+@media(max-width:700px){.explore-intro{padding:12px 0 20px}.explore-intro h1{letter-spacing:-1.2px;font-size:40px}.explore-intro>p{font-size:16px}.explore-subject-groups{grid-template-columns:repeat(2,minmax(0,1fr))}.explore-subject-groups button{padding:10px;min-height:64px}.explore-search{padding:15px}.explore-card{padding:20px}.explore-card h3{font-size:24px}}

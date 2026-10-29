@@ -1,0 +1,35 @@
+/* Paperplay: an editorial reading room with a precise, instrument-like UI. */
+:root:not([data-reading-theme=sepia]):not([data-reading-theme=contrast]) {
+  --paper:#fffdf8; --chrome:#f2f1ea; --ink:#172f2d; --soft:#52635e;
+  --line:#d9e0d8; --olive:#17685b; --lime:#d7edb2;
+  --background:#fffdf8; --foreground:#172f2d; --card:#fffdf8; --card-foreground:#172f2d;
+  --popover:#fffdf8; --popover-foreground:#172f2d;
+  --primary:#155d52; --primary-foreground:#fffdf8;
+  --secondary:#e4eee6; --secondary-foreground:#174d43; --accent:#eaf1e8; --accent-foreground:#174d43;
+  --muted:#e7ece5; --border:#d9e0d8; --input:#b9c9bf; --ring:#17685b;
+  --reader-surface:#f3f5ee; --reader-line:#ccd8ce; --reader-ink:#172f2d; --reader-muted:#52635e;
+}
+.wordmark{letter-spacing:-1.4px;font-size:27px}
+.brand-icon{width:36px;height:36px;border-radius:11px;background:var(--primary);color:var(--primary-foreground);transform:none;box-shadow:3px 3px 0 var(--lime)}
+.brand-icon svg{transform:none}
+.wordmark-period{color:var(--olive)}
+.app-header{box-shadow:0 2px 12px #172f2d05}
+.sidebar{background:var(--chrome)}
+.sidebar-heading,.sidebar-section{letter-spacing:.1em;font-size:12px;font-weight:700}
+.example-button.active{background:var(--secondary);color:var(--ink);box-shadow:inset 3px 0 var(--olive)}
+.example-button:hover{background:var(--accent)}
+.reader-navigation{background:var(--paper);font-size:14px}
+.research-article h1{letter-spacing:-1.2px;line-height:1.16}
+.research-article .original-heading{margin-top:2em}
+.original-heading h2{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.source-block .source-page{font-family:var(--sans);font-size:13px;letter-spacing:.02em}
+.passage-tools>.passage-note-button{color:var(--olive)}
+.widget-card,.paperplay-figure{border-radius:14px;box-shadow:0 4px 18px #172f2d06}
+.widget-header{padding-bottom:12px;border-bottom:1px solid var(--line)}
+.widget-kind{font-weight:600;letter-spacing:.03em;color:var(--olive)}
+.widget-tabs{padding:4px;background:var(--chrome);border-radius:9px}
+.widget-tabs button{border-radius:6px}
+.widget-tabs button[aria-selected=true]{background:var(--paper);box-shadow:0 1px 4px #172f2d15;color:var(--olive)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline-color:var(--olive)}
+@media(max-width:620px){.wordmark{font-size:23px}.brand-icon{width:32px;height:32px}.original-heading h2{padding-bottom:9px}}
+@media print{.brand-icon,.widget-card,.paperplay-figure{box-shadow:none}}

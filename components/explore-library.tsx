@@ -91,7 +91,7 @@ export function ExploreLibrary() {
     <a className="skip-link" href="#explore-content">Skip to paper discovery</a>
     <header className="explore-header"><Link className="wordmark" href="/" aria-label="Paperplay home"><span className="brand-icon"><BookOpen size={19}/></span>paperplay<span className="wordmark-period">.</span></Link><nav aria-label="Main navigation"><Link href="/explore" aria-current="page"><Compass size={18}/>Explore</Link><Link href="/"><BookOpen size={18}/>Reader</Link></nav></header>
     <main id="explore-content" className="explore-content">
-      <div className="explore-intro"><span className="explore-eyebrow">A PLACE FOR YOUR NEXT QUESTION</span><h1>Find your next paper.</h1><p>Browse every arXiv subject, save a paper, and open it with source-linked figures chosen by Meta.</p></div>
+      <div className="explore-intro"><span className="explore-eyebrow">THE INTERACTIVE RESEARCH LIBRARY</span><h1>Great papers. <em>Deeper understanding.</em></h1><p>Find a paper worth your time. Read it with interactive figures that make the ideas click.</p></div>
       <div className="explore-tabs" role="group" aria-label="Library view"><Button variant={view === 'explore' ? 'secondary' : 'ghost'} aria-pressed={view === 'explore'} onClick={() => void search(query, { history: true })}><Compass size={18}/>Discover papers</Button><Button variant={view === 'saved' ? 'secondary' : 'ghost'} aria-pressed={view === 'saved'} onClick={showSaved}><Bookmark size={18}/>Saved papers <span className="count-pill">{saved.length}</span></Button></div>
       {notice&&<p className="explore-notice" role="status">{notice}</p>}
       {view === 'explore' && <>

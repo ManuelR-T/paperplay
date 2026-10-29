@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import './globals.css';
+import './art-direction.css';
 import {AdoptionPolicyProvider} from '@/components/adoption-policy-provider';
 export const metadata: Metadata = {
   title: 'Paperplay — Make research tangible',
