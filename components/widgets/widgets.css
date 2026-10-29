@@ -25,3 +25,20 @@
 .widget-card .widget-tabs button[aria-selected=true]{background:var(--paper);box-shadow:0 1px 4px #172f2d15;color:var(--olive)}
 .widget-card [role=tabpanel]>:first-child{margin-top:0}
 @media(max-width:700px){.widget-card .widget-tabs{margin-bottom:12px}.widget-card .widget-tabs button{padding-inline:8px}}
+
+/* The scene and its main control lead; configuration remains in Inputs. */
+.widget-card .widget-header-actions{align-items:center;gap:2px}
+.widget-card .widget-header-actions button{font-size:14px;padding-inline:10px}
+.widget-card .widget-more-actions,.widget-card .widget-playback-options{position:relative;font:14px/1.6 var(--sans)}
+.widget-card .widget-more-actions>summary,.widget-card .widget-playback-options>summary{display:flex;align-items:center;gap:8px;min-height:44px;padding:8px 10px;cursor:pointer;list-style:none;border-radius:6px;color:var(--soft)}
+.widget-card .widget-more-actions>summary::-webkit-details-marker,.widget-card .widget-playback-options>summary::-webkit-details-marker{display:none}
+.widget-card .widget-more-actions>summary::after,.widget-card .widget-playback-options>summary::after{content:'⌄';font-size:16px}
+.widget-card .widget-more-actions[open]>summary,.widget-card .widget-playback-options[open]>summary{background:var(--accent);color:var(--ink)}
+.widget-card .widget-more-actions>div,.widget-card .widget-playback-options>div{position:absolute;z-index:4;min-width:190px;padding:8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);box-shadow:0 6px 18px #172f2d18;display:flex;flex-direction:column;align-items:stretch;gap:4px}
+.widget-card .widget-more-actions>div{bottom:calc(100% + 6px);left:0}
+.widget-card .widget-playback-options{margin-left:auto}
+.widget-card .widget-playback-options>div{top:calc(100% + 6px);right:0}
+.widget-card .widget-playback-options>div label{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 8px}
+.widget-card .widget-more-actions summary:focus-visible,.widget-card .widget-playback-options summary:focus-visible{outline:3px solid var(--olive);outline-offset:2px}
+.widget-card .widget-footer{font-size:14px}
+@media(max-width:500px){.widget-card .widget-playback-options{margin-left:0;flex-basis:100%}.widget-card .widget-playback-options>div{left:0;right:auto}.widget-card .widget-timeline-buttons{gap:6px}.widget-card .widget-timeline-buttons>button{padding:8px 10px}}
