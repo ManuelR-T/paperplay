@@ -1,0 +1,26 @@
+/* The mobile desk opens over the reader; it never occupies a full-width row. */
+.mobile-desk-toggle{display:none}
+.mobile-desk-dialog[data-slot=dialog-content]{width:min(350px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:22px;background:var(--paper);color:var(--ink)}
+.mobile-desk-dialog .sidebar{display:flex!important;position:static;width:100%;height:auto;padding:18px 0 0;border:0;background:transparent;overflow:visible}
+.mobile-desk-dialog .example-list,.mobile-desk-dialog .imported-paper-list{display:flex;flex-direction:column;overflow:visible;gap:6px}
+.mobile-desk-dialog .example-button,.mobile-desk-dialog .imported-paper-button,.mobile-desk-dialog .sidebar-import-button{flex:auto;width:100%;max-width:100%;min-height:44px}
+.mobile-desk-dialog .sidebar-heading{display:none}
+.mobile-desk-dialog .contents{display:flex}
+.mobile-desk-dialog .sidebar-bottom{display:none}
+:root[data-focus-reading=true] .workspace-body>.sidebar{display:none}
+@media(max-width:760px){
+ .workspace-body>.sidebar{display:none!important}
+ .workspace-body{display:block}
+ .main-workspace{width:100%}
+ .app-header{min-height:64px;flex-wrap:nowrap;padding:10px 12px;gap:8px}
+ .app-header .mobile-desk-toggle{display:inline-flex;flex:0 0 40px;width:40px;height:40px;padding:8px}
+ .app-header .wordmark{font-size:21px;gap:7px;white-space:nowrap}
+ .app-header .brand-icon{width:29px;height:29px}
+ .app-header .header-divider,.app-header .header-caption{display:none}
+ .app-header .header-actions{flex-wrap:nowrap;gap:4px;margin-left:auto}
+ .header-actions .import-paper-button,.header-actions .quiet-button,.header-actions .version-tag{display:none}
+ .header-actions button,.header-actions .open-bundle-button{width:36px;min-width:36px;height:40px;padding:7px}
+ .header-actions button span,.header-actions .open-bundle-button span{display:none}
+ .reader-navigation{padding:8px 12px;min-height:50px}
+}
+@media print{.mobile-desk-toggle{display:none!important}}
