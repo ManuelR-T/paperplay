@@ -6,9 +6,9 @@ import {CheckCircle2,Clock3,LoaderCircle,TriangleAlert} from 'lucide-react';
 import styles from './automatic-paper.module.css';
 import {Button} from './ui/button';
 
-export type IllustrationPhase='opening'|'planning'|'generating'|'checking'|'waiting'|'ready'|'limited'|'blocked';
+export type IllustrationPhase='opening'|'planning'|'generating'|'checking'|'waiting'|'ready'|'limited'|'blocked'|'paused';
 type Props={phase:IllustrationPhase;message:string;figureCount:number;figuresDone:number;plannedFigures?:number;retryAt?:number;issues?:readonly string[];technicalDetails?:string;onCheckSaved?:()=>void;onRetry?:()=>void;onContinue?:()=>void;recoveryNote?:string;recoveryFeedback?:string};
-const headings:Record<IllustrationPhase,string>={opening:'Preparing your paper',planning:'Meta is choosing illustrations',generating:'Meta is creating the selected illustrations',checking:'Checking layout and interactions',waiting:'Illustrations are waiting for capacity',ready:'Your illustrations are ready',limited:'Some illustrations need attention',blocked:'Illustrations need attention'};
+const headings:Record<IllustrationPhase,string>={opening:'Preparing your paper',planning:'Meta is choosing illustrations',generating:'Meta is creating the selected illustrations',checking:'Checking layout and interactions',waiting:'Illustrations are waiting for capacity',ready:'Your illustrations are ready',limited:'Some illustrations need attention',blocked:'Illustrations need attention',paused:'Preparation paused'};
 function countdown(milliseconds:number){const seconds=Math.max(0,Math.ceil(milliseconds/1000));return seconds>=3600?`${Math.floor(seconds/3600)}h ${Math.floor(seconds%3600/60)}m`:seconds>=60?`${Math.floor(seconds/60)}m ${seconds%60}s`:`${seconds}s`;}
 
 /** Shows actual workflow state, including waiting; never animates a failed or completed job. */
@@ -17,7 +17,7 @@ export function AutomaticPaperProgress({phase,message,figureCount,figuresDone,pl
  const [now,setNow]=useState(Date.now),[visible,setVisible]=useState(true);const card=useRef<HTMLElement>(null);
  useEffect(()=>{if(!waiting||!retryAt)return;setNow(Date.now());const timer=setInterval(()=>setNow(Date.now()),1000);return()=>clearInterval(timer);},[waiting,retryAt]);
  useEffect(()=>{if(!card.current||typeof IntersectionObserver==='undefined')return;const observer=new IntersectionObserver(([entry])=>setVisible(entry.isIntersecting));observer.observe(card.current);return()=>observer.disconnect();},[]);
- const Icon=active?LoaderCircle:waiting?Clock3:phase==='ready'?CheckCircle2:TriangleAlert;
+ const Icon=active?LoaderCircle:waiting||phase==='paused'?Clock3:phase==='ready'?CheckCircle2:TriangleAlert;
  const title=figureCount>0&&['ready','limited'].includes(phase)?`${figureCount} illustration${figureCount===1?'':'s'} ready`:headings[phase];
  const stage=phase==='opening'||phase==='planning'?0:phase==='generating'?1:phase==='checking'?2:3;
  const remaining=retryAt?countdown(retryAt-now):null;
@@ -27,11 +27,11 @@ export function AutomaticPaperProgress({phase,message,figureCount,figuresDone,pl
    {(active||waiting)&&<>
     <ol className={styles.stages} aria-label="Illustration preparation steps">{['Meta reads & chooses','Build if needed','Check & display'].map((label,index)=><li key={label} data-step={waiting?'waiting':index<stage?'done':index===stage?'active':'pending'} aria-current={active&&index===stage?'step':undefined}><span aria-hidden="true">{index<stage&&!waiting?'✓':index+1}</span>{label}</li>)}</ol>
     {plannedFigures!==undefined&&plannedFigures>0?<><progress className={styles.sectionProgress} value={Math.min(figuresDone,plannedFigures)} max={plannedFigures} aria-label={`Illustrations prepared: ${figuresDone} of ${plannedFigures}`}/><p className={styles.progressHint}>{figuresDone} of {plannedFigures} selected illustrations ready</p></>:active?<div className={styles.indeterminate} role="progressbar" aria-label={title}/>:null}
-    {waiting?<p className={styles.waitNotice}>{remaining?<><span aria-hidden="true">Resumes automatically in {remaining}.</span><span className="sr-only">Next automatic attempt at {new Date(retryAt!).toLocaleTimeString()}.</span></>:'Preparation will resume automatically when capacity is available.'} Keep reading; your place and figures are saved.</p>:<div className={styles.preparationPlaceholder} aria-hidden="true"><span/><span/><span/></div>}
+    {waiting?<p className={styles.waitNotice}>{remaining?<><span aria-hidden="true">Resumes automatically in {remaining}.</span><span className="sr-only">Next automatic attempt at {new Date(retryAt!).toLocaleTimeString()}.</span></>:'Preparation will resume automatically when capacity is available.'} Keep reading; your place and figures are saved.</p>:null}
    </>}
    {!(active||waiting)&&issues.length>0&&<ul className={styles.issues}>{issues.slice(0,2).map((issue,index)=><li key={index}>{issue}</li>)}</ul>}
-   {(onCheckSaved||onContinue||onRetry)&&<div className={styles.recoveryActions}>{onCheckSaved&&<><Button variant="outline" onClick={onCheckSaved}>Check saved request</Button><span>This checks existing work without starting a new generation.</span></>}{onRetry&&<Button onClick={onRetry}>Retry preparation</Button>}{onContinue&&<Button onClick={onContinue}>Continue preparation</Button>}</div>}
-   {onRetry&&<p className={styles.progressHint}>Starts a new attempt with the updated connection. The earlier request stays saved and may still complete.</p>}
+   {(onCheckSaved||onContinue||onRetry)&&<div className={styles.recoveryActions}>{onCheckSaved&&<><Button onClick={onCheckSaved}>Check progress</Button><span>This checks existing work without starting a new generation.</span></>}{onRetry&&<details className={styles.recoveryOptions}><summary>Try a new attempt</summary><p>The earlier request stays saved and may still complete.</p><Button variant="outline" onClick={onRetry}>Restart illustrations</Button></details>}{onContinue&&<Button onClick={onContinue}>Resume illustrations</Button>}</div>}
+
    {recoveryFeedback&&<p role="status" className={styles.progressHint}>{recoveryFeedback}</p>}
    {recoveryNote&&<p className={styles.progressHint}>{recoveryNote}</p>}
    {technicalDetails&&<details className={styles.technicalDetails}><summary>Technical details</summary><p>{technicalDetails}</p></details>}

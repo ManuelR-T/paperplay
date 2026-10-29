@@ -15,3 +15,10 @@
 @media(prefers-reduced-motion:reduce){.spinner,.indeterminate:before,.preparationPlaceholder span{animation:none}}
 
 .recoveryActions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0}.recoveryActions button{min-height:44px;height:auto;white-space:normal}.recoveryActions span{font:14px/1.6 var(--sans);color:var(--soft)}.technicalDetails{font:14px/1.7 var(--sans);margin:12px 0}.technicalDetails summary{cursor:pointer;color:var(--soft)}.technicalDetails p{font:14px/1.7 var(--sans);padding:10px;border:1px solid var(--line);border-radius:6px}
+
+.recoveryOptions{width:100%;font-size:14px;line-height:1.6;color:var(--soft)}
+.recoveryOptions summary{cursor:pointer;min-height:40px;display:flex;align-items:center;text-decoration:underline;text-underline-offset:3px}
+.recoveryOptions p{font-size:14px!important;margin:4px 0 10px!important}
+.progressCard[data-illustration-phase=ready]{border-color:var(--reader-line);box-shadow:none;padding-block:14px}
+.progressCard[data-illustration-phase=ready] .progressHeading p{margin-bottom:6px}
+@media(max-width:620px){.stages{display:none}.progressHeading h2{font-size:17px}.progressHeading p{font-size:15px}.panel small{font-size:13px}}
