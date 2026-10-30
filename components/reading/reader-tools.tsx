@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { CSSProperties } from 'react';
-import { BookOpen, NotebookPen, MessageSquarePlus, ChevronDown, Columns2, Focus, Search, Settings2, X, Download } from 'lucide-react';
+import { NotebookPen, MessageSquarePlus, Columns2, Focus, Search, Settings2, X, Download } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog';
 import { ContextualQuestion } from '../contextual-question';
@@ -55,17 +55,7 @@ export function ReadingPreferences() {
     </DialogContent></Dialog></>;
 }
 
-export function ReadingNavigator({ source }: { source: SourceDocument }) {
-  const headings = source.blocks.filter(block => block.kind === 'heading'); const [active, setActive] = useState(headings[0]?.id ?? source.blocks[0].id);
-  useEffect(() => {
-    let frame = 0; const update = () => { frame = 0; const ids = headings.map(block => ({ block, top: document.getElementById(`source-${source.id}-${block.id}`)?.getBoundingClientRect().top ?? Infinity })); const current = ids.filter(item => item.top <= 180).at(-1)?.block.id ?? headings[0]?.id ?? source.blocks[0].id; setActive(current);
-      for (const link of document.querySelectorAll<HTMLAnchorElement>('.contents a')) { const selected = link.hash === `#source-${source.id}-${current}`; if (selected) link.setAttribute('aria-current','location'); else link.removeAttribute('aria-current'); }
-    };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); }; update(); window.addEventListener('scroll', onScroll, { passive: true }); return () => { window.removeEventListener('scroll', onScroll); cancelAnimationFrame(frame); };
-  }, [source.id, source.sourceVersion]);
-  const index = Math.max(0, headings.findIndex(block => block.id === active)); const current = headings[index];
-  return <nav className="reader-navigation" aria-label="Reading position"><details><summary><BookOpen size={16}/><span>{current?.kind === 'heading' ? current.text : 'Source passages'}</span><ChevronDown size={15}/></summary><ol>{headings.map((block, i) => <li key={block.id}><a aria-current={active === block.id ? 'location' : undefined} href={`#source-${source.id}-${block.id}`} onClick={event => { event.currentTarget.closest('details')?.removeAttribute('open'); requestAnimationFrame(() => document.getElementById(`source-${source.id}-${block.id}`)?.focus()); }}><span>{i + 1}</span>{block.kind === 'heading' ? block.text : ''}</a></li>)}</ol></details><div className="reader-quick-actions"><Button variant="ghost" aria-label="Open notes" title="Notes" onClick={()=>window.dispatchEvent(new CustomEvent('paperplay:open-desk',{detail:{documentId:source.id,tab:'notes'}}))}><NotebookPen size={17}/><span>Notes</span></Button><Button variant="ghost" aria-label="Search in your library" title="Search library" onClick={()=>window.dispatchEvent(new CustomEvent('paperplay:open-desk',{detail:{documentId:source.id,tab:'search'}}))}><Search size={17}/><span>Library search</span></Button></div><span className="reader-progress">{headings.length ? `Section ${index + 1} / ${headings.length}` : `${source.blocks.length} source passages`}</span></nav>;
-}
+export {ReadingNavigator} from './reading-navigator';
 
 function selectedQuote(source: SourceDocument, blockId: string) {
   const selected = window.getSelection(); const element = document.getElementById(`source-${source.id}-${blockId}`); const quote = selected?.toString().trim();

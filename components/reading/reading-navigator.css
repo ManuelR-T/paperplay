@@ -1,0 +1,27 @@
+.reader-navigation .reader-outline{flex:1;min-width:0;max-width:none}
+.reader-section-actions{display:flex;gap:2px;flex-shrink:0}
+.reader-section-actions button{width:34px;min-width:34px;height:38px;min-height:38px}
+.reader-outline-actions{display:none}
+.reader-quick-actions{display:flex;align-items:center;flex-shrink:0}
+.reader-navigation .reader-figure-menu{position:relative;min-width:0;max-width:none;flex-shrink:0}
+.reader-figure-menu>summary{min-height:40px;padding:8px 10px;display:flex;align-items:center;gap:5px;border-radius:7px;list-style:none;cursor:pointer}
+.reader-figure-menu>summary::-webkit-details-marker{display:none}
+.reader-figure-menu>summary:hover,.reader-figure-menu[open]>summary{background:var(--accent);color:var(--olive)}
+.reader-figure-count{font-size:12px;min-width:14px;text-align:center;font-variant-numeric:tabular-nums}
+.reader-figure-popover{position:absolute;right:0;top:calc(100% + 8px);width:min(360px,calc(100vw - 32px));max-height:60dvh;overflow:auto;padding:16px;border:1px solid var(--reader-line);border-radius:10px;background:var(--paper);box-shadow:0 8px 24px #0002;color:var(--ink);font:15px/1.6 var(--sans);z-index:8}
+.reader-figure-popover>strong{display:block;font-size:15px;margin-bottom:8px}
+.reader-figure-popover>p{font-size:14px;color:var(--soft);margin:8px 0}
+.reader-navigation .reader-figure-popover ol{position:static;min-width:0;max-height:none;overflow:visible;margin:0;padding:0;border:0;border-radius:0;box-shadow:none;list-style:none}
+.reader-figure-popover li{margin:0!important}
+.reader-figure-popover button{display:flex;align-items:baseline;gap:12px;width:100%;text-align:left;padding:10px 6px;border-radius:6px;background:transparent;font-size:15px;min-height:44px;white-space:normal;line-height:1.6;overflow-wrap:anywhere}
+.reader-figure-popover button:hover{background:var(--accent)}
+.reader-figure-popover button>span{font-size:12px;color:var(--soft);font-variant-numeric:tabular-nums}
+@media(max-width:1050px){.reader-quick-actions>button>span{display:none}.reader-quick-actions>button{width:40px;padding:8px}.reader-navigation{gap:8px}}
+@media(max-width:760px){
+ .reader-section-actions{display:none}
+ .reader-navigation .reader-outline{max-width:none}
+ .reader-navigation .reader-progress{display:none}
+ .reader-figure-popover{position:fixed;right:12px;top:calc(var(--app-header-height,64px) + 55px);width:calc(100vw - 24px)}
+ .reader-navigation .reader-outline-actions{display:flex;gap:8px;justify-content:space-between;padding:8px 0 0;margin-top:12px;border-top:1px solid var(--line)}
+ .reader-outline-actions button{font-size:13px;min-height:44px;padding:8px;white-space:normal}
+}
