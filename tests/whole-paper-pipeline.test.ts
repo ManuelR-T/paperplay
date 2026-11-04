@@ -170,3 +170,52 @@ test('explicit retry replaces only an unreferenced blocked attempt and archives 
  const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport,lock});await c.start();const original=c.getSnapshot().pending;assert.equal(original?.kind,'outline');
  fail=false;await c.retryPreparation();assert.equal(c.getSnapshot().status,'complete');assert.equal(c.getSnapshot().previousRequests.length,1);assert.equal(c.getSnapshot().previousRequests[0].requestId,original?.kind==='outline'?original.requestId:'');assert.notEqual(calls[0].payload.requestId,calls[1].payload.requestId);assert.equal(c.getSnapshot().widgets.length,1);
 });
+
+test('a resumed request whose browser session cookie is gone renews the session once and resubmits',async()=>{
+ const f=await fixture(),p=fake(f),disk=storage(),message='The browser session for this analysis is missing or expired.';
+ const seed=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,lock});const s=seed.getSnapshot();seed.dispose();
+ const stale=crypto.randomUUID();
+ disk.setItem(automaticPaperStorageKey(f.source,s.fingerprint),JSON.stringify({...s,pending:{kind:'outline',requestId:stale,feedback:'Choose a concise set of interactions.',existingFigures:[]}}));
+ let cookie=false;const calls:string[]=[];
+ const transport:AutomaticPaperTransport=async(endpoint,payload:any,signal)=>{
+  calls.push(endpoint);
+  if(endpoint.endsWith('/enrichment/session')){cookie=true;return {ready:true};}
+  if(endpoint.endsWith('/enrichment/start')&&!cookie){assert.equal(payload.requestId,stale);throw new AutomaticPaperHttpError(403,message);}
+  return p.transport(endpoint,payload,signal);
+ };
+ const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport,lock});await c.start();
+ assert.equal(c.getSnapshot().status,'complete',c.getSnapshot().message);
+ assert.deepEqual(calls.slice(0,3),['/api/enrichment/start','/api/enrichment/session','/api/enrichment/start'],'one renewal, then one resubmission');
+ assert.equal(calls.filter(endpoint=>endpoint.endsWith('/session')).length,1);
+});
+
+test('a missing session for an accepted job is not silently replaced',async()=>{
+ const f=await fixture(),p=fake(f),disk=storage(),message='The browser session for this analysis is missing or expired.';
+ const seed=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,lock});const s=seed.getSnapshot();seed.dispose();
+ disk.setItem(automaticPaperStorageKey(f.source,s.fingerprint),JSON.stringify({...s,pending:{kind:'outline',requestId:crypto.randomUUID(),feedback:'Choose a concise set of interactions.',existingFigures:[],job:{token:'accepted-token',sectionId:'whole-paper',status:'queued'}}}));
+ const calls:string[]=[];
+ const c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:async endpoint=>{calls.push(endpoint);throw new AutomaticPaperHttpError(403,message);},lock});await c.start();
+ assert.equal(c.getSnapshot().status,'blocked');assert.ok(!calls.some(endpoint=>endpoint.endsWith('/start')||endpoint.endsWith('/session')),'no new paid request or session renewal');
+});
+
+test('a long-paper plan can implement and restore more than twelve Meta-selected figures',async()=>{
+ const f=await fixture();f.source.pageCount=153;
+ const figures=Array.from({length:16},(_,i)=>({...f.brief,id:`interaction-${i}`}));
+ const p=fake(f,figures),disk=storage(),c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,check:passing,lock});
+ await c.start();assert.equal(c.getSnapshot().status,'complete',c.getSnapshot().message);
+ assert.equal(c.getSnapshot().figureTasksDone.length,16);assert.equal(c.getSnapshot().figureBindings.length,16);
+ const reopened=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,check:passing,lock});
+ await reopened.start();assert.equal(reopened.getSnapshot().figureTasksDone.length,16);
+});
+
+test('old long-paper plans are reviewed once with length-aware guidance while retaining reusable figures',async()=>{
+ const f=await fixture();f.source.pageCount=153;
+ const p=fake(f),disk=storage(),c=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,check:passing,lock});
+ await c.start();const state=c.getSnapshot();
+ disk.setItem(automaticPaperStorageKey(f.source,state.fingerprint),JSON.stringify({...state,editorialRevision:1}));
+ const before=p.calls.length,reopened=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,check:passing,lock});
+ assert.equal(reopened.getSnapshot().status,'idle');await reopened.start();
+ assert.equal(reopened.getSnapshot().editorialRevision,2);
+ assert.ok(p.calls.slice(before).some(call=>call.payload.scope==='paper-outline'&&call.payload.existingFigures.length===1));
+ const after=p.calls.length,again=await createAutomaticPaperPipeline(f.source,{storage:disk,transport:p.transport,check:passing,lock});await again.start();assert.equal(p.calls.length,after);
+});

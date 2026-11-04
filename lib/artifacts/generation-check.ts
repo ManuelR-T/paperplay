@@ -56,10 +56,18 @@ export async function checkGeneratedCandidate(candidate:GenerationCandidate,sour
  const failed=()=>result(feedback.runtime.status==='failed'&&['invalid-input','invalid-output','execution'].includes(feedback.runtime.code??''));
  if(!initial)return failed();
  const scenarios:{id:string;event:SdkEvent}[]=[];
- const slider=initial.controls.find(c=>c.kind==='slider');if(slider?.kind==='slider'){scenarios.push({id:'slider-min',event:{kind:'control',id:slider.id,value:slider.min}},{id:'slider-max',event:{kind:'control',id:slider.id,value:slider.max}});}
+ const slider=initial.controls.find(c=>c.kind==='slider');if(slider?.kind==='slider'){scenarios.push({id:'slider-min',event:{kind:'control',id:slider.id,value:slider.min}},{id:'slider-mid',event:{kind:'control',id:slider.id,value:Math.min(slider.max,slider.min+Math.round((slider.max-slider.min)/2/slider.step)*slider.step)}},{id:'slider-max',event:{kind:'control',id:slider.id,value:slider.max}});}
  const button=initial.controls.find(c=>c.kind==='button'&&!c.disabled);if(button)scenarios.push({id:'button',event:{kind:'control',id:button.id}});
  const entity=initial.marks.find(mark=>mark.entityId);if(entity?.entityId)scenarios.push({id:'entity',event:{kind:'entity',id:entity.entityId}});
- for(const {id,event} of scenarios){validateFigureEvent(initial,event);if(!await scenario(id,event,initial.state))return failed();}
+ const sliderFrames:SdkFrame[]=[];
+ for(const {id,event} of scenarios){validateFigureEvent(initial,event);const tested=await scenario(id,event,initial.state);if(!tested)return failed();if(id==='slider-min'||id==='slider-mid'||id==='slider-max')sliderFrames.push(tested);}
+ if(sliderFrames.length===3){
+  const meaningful=(frame:SdkFrame)=>canonicalArtifactJson({marks:frame.marks,table:frame.table,state:frame.state});
+  if(sliderFrames.every(frame=>meaningful(frame)===meaningful(sliderFrames[0]))){
+   feedback.runtime={status:'failed',code:'invalid-output'};checks.push({id:'slider-response',status:'failed',message:'Changing the sampled slider values did not change the figure output or state. Handle the absolute control event value.'});return failed();
+  }
+  checks.push({id:'slider-response',status:'passed',message:'Sampled slider values produce distinct figure output or state.'});
+ }
  if(!scenarios.length)checks.push({id:'interactions',status:'skipped',message:'The initial frame declares no enabled interaction. Only initialization was checked.'});
  feedback.runtime={status:'ready'};
  let measurer:ReturnType<typeof createSdkTextMeasurer>|undefined;

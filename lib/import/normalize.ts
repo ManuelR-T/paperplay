@@ -22,7 +22,7 @@ export async function normalizeSource(input: {
   pageCount: number; blocks: RawSourceBlock[]; warnings?: string[]; identity?: string; reconstruction?: SourceDocument['reconstruction'];
 }): Promise<SourceDocument> {
   if (!input.blocks.length) throw new Error('No readable source content was found. Import a text PDF rather than a scanned image.');
-  const count = input.blocks.reduce((sum, block) => sum + (block.kind === 'equation' ? block.latex.length : block.kind === 'original-figure' ? block.caption.length : block.text.length), 0);
+  const count = input.blocks.reduce((sum, block) => sum + (block.kind === 'equation' ? block.latex.length : block.kind === 'original-figure' ? block.caption.length + (block.table?.rows.reduce((sum,row)=>sum+row.cells.reduce((n,cell)=>n+cell.text.length,0),0)??0) : block.text.length), 0);
   if (count > MAX_SOURCE_CHARACTERS) throw new Error('This source exceeds the 200,000-character import limit. Import a shorter excerpt; content was not silently truncated.');
   const normalized = input.blocks.map(block => {
     if (block.kind === 'equation') return { ...block, latex: block.latex.trim() };

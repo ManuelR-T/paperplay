@@ -4,7 +4,7 @@ import { useEffect, useId, useState } from 'react';
 import type { WidgetEnvelope, WidgetSpec } from '@/shared/widgets';
 import { graphData, type WidgetResult } from '@/lib/widgets/compute';
 import { svgPointer } from '@/lib/widgets/interaction';
-import {conceptConnection,layoutConceptNodes} from './concept-layout';
+import {conceptCanvas,conceptConnection,conceptRoutePath,layoutConceptNodes,placeEdgeLabels} from './concept-layout';
 
 function readableLabel(label:string){
   const words=label.trim().split(/\s+/).flatMap(word=>word.match(/.{1,20}/gu)??[]),lines:string[]=[];
@@ -21,8 +21,11 @@ export function GraphVisual({ envelope, result, step, setSpec, setView }: { enve
   const graph = { ...original, nodes: original.nodes.map(node => drag?.id === node.id ? { ...node, x: drag.x, y: drag.y } : node) };
   const sharedEdgeLabel=spec.kind==='diagram'&&graph.edges.length>1&&graph.edges.every(edge=>edge.label===graph.edges[0].label)?graph.edges[0].label:undefined;
   const expandedLabels=graph.nodes.some(node=>node.label.length>4);
-  const concept=spec.kind==='diagram'?layoutConceptNodes(graph.nodes):undefined;
+  const concept=spec.kind==='diagram'?layoutConceptNodes(graph.nodes,graph.edges):undefined;
   const conceptBoxes=new Map(concept?.nodes.map(node=>[node.id,node]));
+  const conceptLabels=concept?placeEdgeLabels(concept.nodes,graph.edges,concept.routes):undefined;
+  const canvas=concept&&conceptLabels?conceptCanvas(concept,graph.edges,conceptLabels):undefined;
+  const edgeLines=graph.edges.map(edge=>{const a=graph.nodes.find(node=>node.id===edge.source)!,b=graph.nodes.find(node=>node.id===edge.target)!;return {edge,line:concept?conceptConnection(conceptBoxes.get(a.id)!,conceptBoxes.get(b.id)!):{x1:a.x*5.4+30,y1:a.y*2.3+30,x2:b.x*5.4+30,y2:b.y*2.3+30}};});
   const active = new Set(result.states?.[step]?.activeIds ?? []);
   const selected = graph.nodes.find(node => envelope.view.selection === `node:${node.id}`);
   const connections = selected ? graph.edges.filter(edge => edge.source === selected.id || edge.target === selected.id).map(edge => {
@@ -31,10 +34,10 @@ export function GraphVisual({ envelope, result, step, setSpec, setView }: { enve
   }) : [];
   return <div>
     <div className="widget-diagram-scroll" role="region" tabIndex={0} aria-label="Interactive diagram; scroll horizontally on small screens">
-      <svg role="group" aria-label={`${spec.kind === 'diagram' ? 'Concept diagram' : 'Computed graph'} with ${graph.nodes.length} nodes`} viewBox={concept?`0 0 ${concept.width} ${concept.height}`:expandedLabels?'-55 -25 710 390':'0 0 600 300'} style={concept?{width:concept.width*envelope.view.zoom,height:concept.height*envelope.view.zoom,minWidth:concept.width*envelope.view.zoom,maxWidth:'none'}:undefined} data-concept-layout={!!concept} data-expanded-labels={expandedLabels} className="widget-diagram">
+      <svg role="group" aria-label={`${spec.kind === 'diagram' ? 'Concept diagram' : 'Computed graph'} with ${graph.nodes.length} nodes`} viewBox={canvas?`${canvas.x} ${canvas.y} ${canvas.width} ${canvas.height}`:expandedLabels?'-55 -25 710 390':'0 0 600 300'} style={concept?{width:canvas!.width*envelope.view.zoom,height:'auto',minWidth:envelope.view.zoom>1?canvas!.width*envelope.view.zoom:Math.min(canvas!.width,520),maxWidth:envelope.view.zoom>1?'none':'100%'}:undefined} data-concept-layout={!!concept} data-expanded-labels={expandedLabels} className="widget-diagram">
         <defs><marker id={`arrow-${marker}`} markerWidth="7" markerHeight="7" refX={concept?7:16} refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7" fill="var(--soft)"/></marker></defs>
         <g>
-          {graph.edges.map(edge => { const a = graph.nodes.find(node => node.id === edge.source)!, b = graph.nodes.find(node => node.id === edge.target)!;const line=concept?conceptConnection(conceptBoxes.get(a.id)!,conceptBoxes.get(b.id)!):{x1:a.x*5.4+30,y1:a.y*2.3+30,x2:b.x*5.4+30,y2:b.y*2.3+30};return <g key={edge.id}><line {...line} stroke="var(--soft)" strokeWidth={2} markerEnd={concept||spec.kind==='graph'&&spec.directed?`url(#arrow-${marker})`:undefined}/>{!sharedEdgeLabel&&<text className="widget-edge-label" x={(line.x1+line.x2)/2} y={(line.y1+line.y2)/2-9} textAnchor="middle" fill="var(--ink)" fontSize={16}>{spec.kind === 'graph' ? edge.weight : edge.label}</text>}</g>; })}
+          {edgeLines.map(({edge,line},index) => concept?.routes?.has(index) ? <path key={edge.id} d={conceptRoutePath(concept.routes.get(index)!)} fill="none" stroke="var(--soft)" strokeWidth={2} markerEnd={`url(#arrow-${marker})`}/> : <line key={edge.id} {...line} stroke="var(--soft)" strokeWidth={2} markerEnd={concept||spec.kind==='graph'&&spec.directed?`url(#arrow-${marker})`:undefined}/>)}
           {graph.nodes.map((node,index) => {const box=conceptBoxes.get(node.id);return <g key={node.id} role="button" tabIndex={0} aria-label={`${node.label}${active.has(node.id) ? ', active in this step' : ''}`} aria-pressed={selected?.id === node.id}
             onClick={event => { if (event.currentTarget.dataset.dragged === 'true') { delete event.currentTarget.dataset.dragged; return; } setView({ selection: `node:${node.id}` }); }}
             onKeyDown={event => {
@@ -49,6 +52,8 @@ export function GraphVisual({ envelope, result, step, setSpec, setView }: { enve
             <text x={node.x * 5.4 + 30} y={node.y * 2.3 + 35} textAnchor="middle" fontSize={16} fontWeight={500} fill="var(--ink)">{node.label.length<=4?node.label:String(index+1)}</text>
             {node.label.length>4&&<text className="widget-node-label" x={node.x * 5.4 + 30} y={node.y * 2.3 + 72} textAnchor="middle" fontSize={16} fill="var(--ink)">{readableLabel(node.label).map((line,lineIndex)=><tspan key={lineIndex} x={node.x * 5.4 + 30} dy={lineIndex?19:0}>{line}</tspan>)}</text>}</>}
           </g>;})}
+          {/* Labels render above the nodes so a box never hides what a connection means. */}
+          {!sharedEdgeLabel&&edgeLines.map(({edge,line})=>{const at=conceptLabels?conceptLabels.get(edge.id):{x:(line.x1+line.x2)/2,y:(line.y1+line.y2)/2-14};return at?<text key={edge.id} className="widget-edge-label" x={at.x} y={at.y+5} textAnchor="middle" fill="var(--ink)" fontSize={concept?14:16}>{spec.kind === 'graph' ? edge.weight : edge.label}</text>:null;})}
         </g>
       </svg>
     </div>

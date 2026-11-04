@@ -20,11 +20,33 @@ export function inspectFigureFrame(frame:SdkFrame,options:{step:number;promisedI
  if(!content&&(options.expectNonempty||!useful))add('blank-scene');
  if(options.promisedInteractions&&!useful&&!entity)add('unreachable-control','artifact',frame.controls.length?{controlIndex:0}:{});
  if(options.textBounds!==undefined){
+  const measured:FigureTextBounds[]=[];
   frame.marks.forEach((mark,markIndex)=>{if(mark.kind!=='text')return;const matches=options.textBounds!.filter(b=>b.markIndex===markIndex);const b=matches[0];
    if(matches.length!==1||!b||![b.x,b.y,b.width,b.height].every(Number.isFinite)||b.width<0||b.height<0){add('missing-text-measurement','host',{markIndex});return;}
+   measured.push(b);
    const p=FIGURE_QUALITY_POLICY.viewBoxPadding;
    if(b.x< -p-.5||b.y< -p-.5||b.x+b.width>frame.coordinateSpace.width+p+.5||b.y+b.height>frame.coordinateSpace.height+p+.5)add('text-clipped','artifact',{markIndex});
   });
+  // Use host-measured ink, not label strings or guessed font metrics. Mere touching
+  // is allowed; a shared strip of ink in both dimensions is not readable.
+  const flagged=new Set<string>();
+  const overlap=(code:'text-overlap'|'legend-overlap',markIndex:number)=>{const key=`${code}:${markIndex}`;if(!flagged.has(key)){flagged.add(key);add(code,'artifact',{markIndex});}};
+  for(let i=0;i<measured.length;i++)for(let j=i+1;j<measured.length;j++){
+   const a=measured[i],b=measured[j];
+   const width=Math.min(a.x+a.width,b.x+b.width)-Math.max(a.x,b.x);
+   const height=Math.min(a.y+a.height,b.y+b.height)-Math.max(a.y,b.y);
+   if(width>Math.min(8,Math.min(a.width,b.width)*.15)&&height>Math.min(3,Math.min(a.height,b.height)*.15)){overlap('text-overlap',a.markIndex);overlap('text-overlap',b.markIndex);}
+  }
+  const lines=frame.marks.filter((mark):mark is Extract<SdkFrame['marks'][number],{kind:'line'}>=>mark.kind==='line');
+  const close=(a:readonly number[],b:readonly number[])=>Math.hypot(a[0]-b[0],a[1]-b[1])<=3;
+  // Only isolated short horizontal segments are legend-swatch candidates. Long
+  // axes, attached ticks and joined plot segments remain ordinary drawing marks.
+  const swatches=lines.filter(line=>Math.abs(line.to[1]-line.from[1])<=1&&Math.abs(line.to[0]-line.from[0])>=8&&Math.abs(line.to[0]-line.from[0])<=64&&!lines.some(other=>other!==line&&(close(line.from,other.from)||close(line.from,other.to)||close(line.to,other.from)||close(line.to,other.to))));
+  for(const b of measured)for(const line of swatches){
+   const y=(line.from[1]+line.to[1])/2;
+   const width=Math.min(b.x+b.width,Math.max(line.from[0],line.to[0]))-Math.max(b.x,Math.min(line.from[0],line.to[0]));
+   if(y>b.y+b.height*.2&&y<b.y+b.height*.8&&width>Math.min(8,b.width*.2))overlap('legend-overlap',b.markIndex);
+  }
  }
  return diagnostics.slice(0,FIGURE_QUALITY_POLICY.maxDiagnostics);
 }
@@ -37,7 +59,7 @@ export async function runFigureQuality(built:BuiltFigureArtifact,source:SourceDo
  const timer=setTimeout(()=>{expired=true;controller.abort();},bounded(options.maxDurationMs,FIGURE_QUALITY_POLICY.maxDurationMs));
  const diagnostics:FigureQualityDiagnostic[]=[],steps:FigureQualityResult['steps']=[];let framesChecked=0,measured=false,unmeasured=false;
  const push=(d:FigureQualityDiagnostic)=>{if(diagnostics.length>=32)return;const parsed=figureQualityDiagnosticSchema.safeParse(d);if(parsed.success)diagnostics.push(parsed.data);};
- const finish=(status:FigureQualityResult['status']):FigureQualityResult=>({status,diagnostics,framesChecked,textMeasurements:measured&&!unmeasured?'provided':'not-run',repairable:status==='failed'&&diagnostics.length>0&&diagnostics.every(d=>d.scope==='artifact'&&['blank-scene','text-clipped','unreachable-control','invalid-input','invalid-output','execution'].includes(d.code)),steps});
+ const finish=(status:FigureQualityResult['status']):FigureQualityResult=>({status,diagnostics,framesChecked,textMeasurements:measured&&!unmeasured?'provided':'not-run',repairable:status==='failed'&&diagnostics.length>0&&diagnostics.every(d=>d.scope==='artifact'&&['blank-scene','text-clipped','text-overlap','legend-overlap','unreachable-control','invalid-input','invalid-output','execution'].includes(d.code)),steps});
  const fail=(code:FigureQualityDiagnostic['code'],scope:'host'|'artifact',step=0)=>{push({code,scope,step,...(options.viewport?{viewport:options.viewport}:{})});return finish(scope==='host'?'unavailable':'failed');};
  try{
   if(signal.aborted)throw Error();

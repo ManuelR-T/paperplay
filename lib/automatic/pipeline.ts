@@ -4,7 +4,7 @@ import {validateWidgetEnvelope,type WidgetEnvelope} from '../../shared/widgets';
 import {validateFigureArtifact} from '../../shared/figure-artifacts';
 import {generationReplySchema,type GenerationCandidate} from '../../shared/artifact-generation';
 import {enrichmentResultSchema} from '../enrichment/contracts';
-import {paperPlanSchema,paperFigureBriefSchema,paperReadingGuideSchema,existingPaperFigureSchema,validatePaperPlan,WHOLE_PAPER_SECTION_ID,type PaperFigureBrief,type ExistingPaperFigure} from '../enrichment/whole-paper';
+import {paperIllustrationScale,MAX_PAPER_FIGURES,paperPlanSchema,paperFigureBriefSchema,paperReadingGuideSchema,existingPaperFigureSchema,validatePaperPlan,WHOLE_PAPER_SECTION_ID,type PaperFigureBrief,type ExistingPaperFigure} from '../enrichment/whole-paper';
 import {buildSourceSections} from '../enrichment/sections';
 import {enrichmentFingerprint} from '../enrichment/state';
 import {canonicalArtifactJson} from '../../shared/figure-compilation';
@@ -13,6 +13,7 @@ import {
  automaticPaperStateSchema as legacySchema,createAutomaticPaperPipeline as createLegacyPipeline,
  automaticPaperStorageKey,AutomaticPaperHttpError,type AutomaticPaperOptions as LegacyOptions,
 } from './legacy-pipeline';
+const MISSING_SESSION='The browser session for this analysis is missing or expired.';
 export {automaticPaperStorageKey,AutomaticPaperHttpError};
 export type {AutomaticPaperTransport} from './legacy-pipeline';
 export type AutomaticPaperOptions=Omit<LegacyOptions,'recoveryOnly'>;
@@ -27,9 +28,9 @@ const generatedSchema=legacySchema.shape.generated;
 const abandonedRequestSchema=z.strictObject({requestId:z.string().uuid(),kind:z.enum(['outline','figure']),savedAt:z.number().finite(),reason:z.string().max(1000)});
 export const automaticPaperStateSchema=legacySchema.extend({
  previousRequests:z.array(abandonedRequestSchema).max(1000).default([]),
- version:z.literal(3),editorialRevision:z.literal(1).optional(),paperPlan:paperPlanSchema.optional(),
- figureTasksDone:z.array(z.string().max(40)).max(12).default([]),
- figureBindings:z.array(z.strictObject({figureId:z.string().max(40),widgetId:z.string().max(100).optional(),generatedSha:z.string().regex(/^[a-f0-9]{64}$/).optional(),readingGuide:paperReadingGuideSchema.optional()})).max(12).default([]),
+ version:z.literal(3),editorialRevision:z.union([z.literal(1),z.literal(2)]).optional(),paperPlan:paperPlanSchema.optional(),
+ figureTasksDone:z.array(z.string().max(40)).max(MAX_PAPER_FIGURES).default([]),
+ figureBindings:z.array(z.strictObject({figureId:z.string().max(40),widgetId:z.string().max(100).optional(),generatedSha:z.string().regex(/^[a-f0-9]{64}$/).optional(),readingGuide:paperReadingGuideSchema.optional()})).max(MAX_PAPER_FIGURES).default([]),
  archivedWidgets:legacySchema.shape.widgets.default([]),archivedGenerated:generatedSchema.default([]),
  pending:z.discriminatedUnion('kind',[oldPending.options[0],outlinePending,figurePending,customPending]).optional(),
 });
@@ -46,7 +47,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  const source=freeze(validateDocument(clone(input))),fingerprint=await enrichmentFingerprint(source),key=automaticPaperStorageKey(source,fingerprint),sections=buildSourceSections(source);
  const storage=options.storage??(typeof localStorage==='undefined'?undefined:localStorage),now=options.now??Date.now;
  const listeners=new Set<()=>void>();let running:Promise<void>|undefined,controller:AbortController|undefined,disposed=false,invalidCache=false,sessionReady=false,verifyingSaved=false;
- let state:AutomaticPaperState=freeze(automaticPaperStateSchema.parse({format:'paperplay-automatic-paper',version:3,editorialRevision:1,fingerprint,status:'idle',message:'Meta will read the complete paper and choose a few useful illustrations.',sectionsTotal:sections.length,sectionIds:sections.map(s=>s.id),sectionsDone:0,widgets:[],generated:[],customRequests:[],customDone:[],issues:[],customAttempted:false}));
+ let state:AutomaticPaperState=freeze(automaticPaperStateSchema.parse({format:'paperplay-automatic-paper',version:3,editorialRevision:2,fingerprint,status:'idle',message:'Meta will read the complete paper and choose useful illustrations suited to its length and complexity.',sectionsTotal:sections.length,sectionIds:sections.map(s=>s.id),sectionsDone:0,widgets:[],generated:[],customRequests:[],customDone:[],issues:[],customAttempted:false}));
  function emit(next:AutomaticPaperState){state=freeze(automaticPaperStateSchema.parse(next));listeners.forEach(fn=>fn());}
  function save(next:AutomaticPaperState){if(!storage)throw Error('Browser storage is needed to retain accepted Meta requests.');const checked=automaticPaperStateSchema.parse(next),raw=JSON.stringify(checked);if(new TextEncoder().encode(raw).length>AUTOMATIC_PAPER_POLICY.maxCacheBytes)throw Error('The saved illustrations exceed browser storage capacity. No new request was started.');storage.setItem(key,raw);emit(checked);}
  function patch(next:Partial<AutomaticPaperState>){save({...state,...next});}
@@ -64,7 +65,10 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
     else saved.pending={...saved.pending,sessionMaxAttempts:1};
    }
   }else saved=automaticPaperStateSchema.parse(value);
-  if(!saved.editorialRevision&&!saved.pending)saved={...saved,editorialRevision:1,paperPlan:undefined,figureTasksDone:[],figureBindings:[],status:'idle',issues:[],message:'Meta is reviewing the saved figures and matching each guide to its actual controls.'};
+  if(saved.editorialRevision===1&&!saved.pending&&paperIllustrationScale(source).pages>=24){
+   saved={...saved,editorialRevision:2,paperPlan:undefined,figureTasksDone:[],figureBindings:[],status:'idle',issues:[],message:'Meta is reviewing the complete long paper to adapt illustration coverage to its length. Saved figures remain available for reuse.'};
+  }
+  if(!saved.editorialRevision&&!saved.pending)saved={...saved,editorialRevision:2,paperPlan:undefined,figureTasksDone:[],figureBindings:[],status:'idle',issues:[],message:'Meta is reviewing the saved figures and matching each guide to its actual controls.'};
   if(saved.fingerprint!==fingerprint||saved.sectionsTotal!==sections.length||JSON.stringify(saved.sectionIds)!==JSON.stringify(sections.map(s=>s.id)))throw Error('The saved plan belongs to different source content.');
   for(const widget of [...saved.widgets,...saved.archivedWidgets])validateWidgetEnvelope(widget,source);
   for(const entry of [...saved.generated,...saved.archivedGenerated]){
@@ -87,6 +91,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
  const sleep=options.sleep??(async(signal:AbortSignal)=>{abort(signal);await new Promise<void>((resolve,reject)=>{const stop=()=>{clearTimeout(timer);signal.removeEventListener('abort',stop);reject(new DOMException('Paused','AbortError'));},timer=setTimeout(()=>{signal.removeEventListener('abort',stop);resolve();},AUTOMATIC_PAPER_POLICY.pollMs);signal.addEventListener('abort',stop,{once:true});});});
  const lock=options.lock??(async<T>(name:string,run:()=>Promise<T>,signal:AbortSignal)=>{if(typeof navigator==='undefined'||!navigator.locks)throw Error('This browser cannot coordinate saved Meta requests across tabs.');return navigator.locks.request(name,{signal},run);});
  const check=options.check??(async(candidate,document,opts)=>(await import('../artifacts/generation-check')).checkGeneratedCandidate(candidate,document,opts));
+ async function renewSession(signal:AbortSignal){const result=await transport('/api/enrichment/session',{},signal);abort(signal);if(!z.strictObject({ready:z.literal(true)}).safeParse(result).success)throw Error('The browser session could not be prepared.');sessionReady=true;}
  async function prepareSession(signal:AbortSignal){if(sessionReady||options.transport)return;const result=await transport('/api/enrichment/session',{},signal);abort(signal);if(!z.strictObject({ready:z.literal(true)}).safeParse(result).success)throw Error('The browser session could not be prepared.');sessionReady=true;}
  function existingFigures(s=state):ExistingPaperFigure[]{
   const widgets=new Map([...s.archivedWidgets,...s.widgets].filter(w=>w.authorship.kind==='meta').map(w=>[w.id,w]));
@@ -99,7 +104,12 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
   try{raw=await transport(`/api/enrichment/${pending.job?'status':'start'}`,{...context,...(pending.job?{job:pending.job}:{requestId:pending.requestId,...(verifyingSaved?{verifyOnly:true}:{})})},signal);}
   catch(error){
    const unsubmitted=error instanceof AutomaticPaperHttpError&&error.status===409&&!error.uncertain&&!pending.job&&['The frozen capability selection changed before this unsubmitted request could resume.','The frozen prompt changed before this unsubmitted request could resume.'].includes(error.message);
-   if(!unsubmitted||verifyingSaved)throw error;abort(signal);pending={...pending,requestId:crypto.randomUUID()};patch({pending});raw=await transport('/api/enrichment/start',{...context,requestId:pending.requestId},signal);
+   // A resumed request whose browser cookie is gone is rejected before any reservation. Its earlier
+   // owner is unreachable without that cookie, so renew the session once and submit a fresh request.
+   const sessionMissing=error instanceof AutomaticPaperHttpError&&error.status===403&&!error.uncertain&&!pending.job&&error.message===MISSING_SESSION;
+   if(!(unsubmitted||sessionMissing)||verifyingSaved)throw error;abort(signal);
+   if(sessionMissing)await renewSession(signal);
+   pending={...pending,requestId:crypto.randomUUID()};patch({pending});raw=await transport('/api/enrichment/start',{...context,requestId:pending.requestId},signal);
   }
   let reply=replySchema.parse(raw);
   while(true){
@@ -112,10 +122,10 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
   if(reply.uncertain)throw Error(reply.error??'The accepted request is uncertain. Its reference is retained.');
   return reply;
  }
- function correct(pending:ModelPending,diagnostic:string){if(verifyingSaved)throw Error('The saved response needs correction before preparation can continue. No new request was started.');patch({pending:{...pending,requestId:crypto.randomUUID(),job:undefined,feedback:('Correct the known terminal response failure: '+diagnostic+'. Keep the complete-paper editorial objective: a few distinct, useful illustrations, exact source anchors, and no renamed repeats.').slice(0,1200)},message:pending.kind==='outline'?'Meta is refining its illustration plan for the complete paper.':'Meta is correcting the selected illustration.'});}
+ function correct(pending:ModelPending,diagnostic:string){if(verifyingSaved)throw Error('The saved response needs correction before preparation can continue. No new request was started.');patch({pending:{...pending,requestId:crypto.randomUUID(),job:undefined,feedback:('Correct the known terminal response failure: '+diagnostic+'. Keep the complete-paper editorial objective: distinct, useful illustrations proportional to the paper’s length and complexity, exact source anchors, and no renamed repeats.').slice(0,1200)},message:pending.kind==='outline'?'Meta is refining its illustration plan for the complete paper.':'Meta is correcting the selected illustration.'});}
  async function outline(signal:AbortSignal){
   let pending=state.pending?.kind==='outline'?state.pending:undefined;
-  if(!pending){await prepareSession(signal);pending={kind:'outline',requestId:crypto.randomUUID(),feedback:'Choose a concise set of complementary interactions for the complete paper. Prefer a few high-value figures over exhaustive coverage. Reuse only saved figures that actually explain their chosen passage; omit redundant or misleading examples.',existingFigures:existingFigures()};patch({pending,status:'planning',message:'Meta is reading the complete paper and choosing the most useful places for an interaction.'});}
+  if(!pending){await prepareSession(signal);pending={kind:'outline',requestId:crypto.randomUUID(),feedback:'Choose complementary interactions across the complete paper, scaled to its length and complexity. Use illustrationScale as a flexible reference, never a quota. A long paper may need many distinct figures; do not force it into a short-paper count. Reuse only saved figures that actually explain their chosen passage; omit redundant or misleading examples.',existingFigures:existingFigures()};patch({pending,status:'planning',message:'Meta is reading the complete paper and choosing the most useful places for an interaction.'});}
   else patch({status:'planning',message:'Retrieving Meta’s illustration plan for the complete paper.'});
   const reply=await requestModel(pending,signal);abort(signal);
   if(reply.status==='failed'||reply.status==='incomplete'){correct(pending,reply.error??reply.status);return;}
@@ -205,7 +215,7 @@ export async function createAutomaticPaperPipeline(input:SourceDocument,options:
    abort(signal);if(state.pending?.kind==='custom')await generate(signal);
    else{const figure=state.paperPlan.figures.find(f=>!state.figureTasksDone.includes(f.id))!;await buildSelectedFigure(figure,signal);}
   }
-  if(!state.editorialRevision){patch({editorialRevision:1,paperPlan:undefined,figureBindings:[],figureTasksDone:[],pending:undefined,status:'planning',issues:[]});return executeOnce(signal);}
+  if(!state.editorialRevision){patch({editorialRevision:2,paperPlan:undefined,figureBindings:[],figureTasksDone:[],pending:undefined,status:'planning',issues:[]});return executeOnce(signal);}
   patch({pending:undefined,status:state.issues.length?'partial':'complete',message:state.widgets.length+state.generated.length?'Meta selected complementary illustrations for the complete paper. Each one explains a specific passage.':'Meta reviewed the complete paper and selected no additional interaction that would improve its explanation.'});
  }
  const waitUntil=options.waitUntil??(async(retryAt:number,signal:AbortSignal)=>{while(now()<retryAt){abort(signal);await sleep(signal);}});

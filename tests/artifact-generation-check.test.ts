@@ -38,10 +38,17 @@ test('runtime failures remain inspectable repair hints without raw guest errors 
  assert.equal(checked.feedback.compiler.status,'ready');assert.equal(checked.feedback.runtime.status,'failed');assert.equal(checked.repairable,true);assert.equal(JSON.stringify(checked).includes('privateScientificContent'),false);assert.equal(checked.checks.find(c=>c.id==='initialize')?.status,'failed');
 });
 test('bounded slider endpoints and entity events branch from the initial frame',async()=>{
- const code=`function update(input,state,event){const x=event.kind==='control'?event.value:5;return sdk.frame({title:'Slider',description:'Authored structural fixture',coordinateSpace:{width:100,height:80},marks:[sdk.circle({id:'node',entityId:'item',anchorId:'passage',center:[50,40],radius:10,label:'Selected node'})],controls:[sdk.slider({id:'level',label:'Level',min:0,max:10,step:1,value:x})],state:{items:[],nextId:1}});}`;
- const {candidate,source}=await fixture(code);const checked=await checkGeneratedCandidate(candidate,source,local);assert.equal(checked.feedback.runtime.status,'ready');assert.deepEqual(checked.checks.filter(c=>c.status==='passed').map(c=>c.id),['manifest','compiler','initialize','slider-min','slider-max','entity','quality']);
+ const code=`function update(input,state,event){const x=event.kind==='control'?event.value:5;return sdk.frame({title:'Slider',description:'Authored structural fixture',coordinateSpace:{width:100,height:80},marks:[sdk.circle({id:'node',entityId:'item',anchorId:'passage',center:[45+x,40],radius:10,label:'Selected node'})],controls:[sdk.slider({id:'level',label:'Level',min:0,max:10,step:1,value:x})],state:{items:[],nextId:1}});}`;
+ const {candidate,source}=await fixture(code);const checked=await checkGeneratedCandidate(candidate,source,local);assert.equal(checked.feedback.runtime.status,'ready');assert.deepEqual(checked.checks.filter(c=>c.status==='passed').map(c=>c.id),['manifest','compiler','initialize','slider-min','slider-mid','slider-max','entity','slider-response','quality']);
 });
 
 test('unknown platform failures never authorize a paid repair',async()=>{
  const {candidate,source}=await fixture();const checked=await checkGeneratedCandidate(candidate,source,{...local,adapter:()=>({id:'platform-denied',async execute(){throw new DOMException('Worker denied by host policy','SecurityError');}})});assert.equal(checked.feedback.runtime.code,'unavailable');assert.equal(checked.repairable,false);assert.equal(JSON.stringify(checked).includes('host policy'),false);
+});
+
+
+test('inert generated sliders are rejected with actionable repair feedback',async()=>{
+ const code=`function update(input,state,event){return sdk.frame({title:'Inert slider',description:'Authored inert-control regression',coordinateSpace:{width:100,height:80},marks:[sdk.circle({id:'node',center:[50,40],radius:10,label:'Static node'})],controls:[sdk.slider({id:'level',label:'Level',min:0,max:10,step:1,value:5})],state:{items:[],nextId:1}});}`;
+ const {candidate,source}=await fixture(code);const checked=await checkGeneratedCandidate(candidate,source,local);
+ assert.equal(checked.feedback.runtime.status,'failed');assert.equal(checked.feedback.runtime.code,'invalid-output');assert.equal(checked.repairable,true);assert.equal(checked.checks.find(c=>c.id==='slider-response')?.status,'failed');
 });

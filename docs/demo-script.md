@@ -1,46 +1,41 @@
 # Paperplay — English demo script
 
-Editorial target: about 2–3 minutes. This is a presentation choice, **not a verified portal video limit**. Check [current event requirements](hackathon-requirements.md) in the accepted participant's account before recording the final submission. This file is a rehearsal script; it does not claim a video has already been recorded.
+Editorial target: about 2 minutes. This is a presentation choice, **not a verified portal video limit**. Check [current event requirements](hackathon-requirements.md) in the accepted participant's account before recording the final submission. This file is a rehearsal script; it does not claim a video has already been recorded.
+
+**The one idea the video must land:** a paper nobody has illustrated becomes something you can play with, automatically, and Meta decided what to build.
 
 ## Before recording
 
-Use a clean browser at the verified demo URL or the local production build. Keep the same prepared input seed for the graph and comparison. Start on **Priority & shortest paths**, with its default edge weight and the source attribution available. Prepare the **Curvature & momentum** example in the sidebar.
-
-For the import segment, use a source that has actually passed the current release's live smoke test. Keep its original, versioned source link visible. If inference is slow, shorten the wait in editing and mark the cut; do not fabricate progress. If using a completed local result, leave **Saved analysis** visible and describe it as a saved result. Do not present cache reuse as a new live model call.
+- **Use one browser profile for every take.** Figures are saved in that browser. A fresh profile or a new address (another port, another host) has none and starts new paid Meta requests. Check spend with `npm run usage:summary`.
+- **Pre-generate and review the hero paper** (*Curvature & momentum*) in that profile. Read every figure against its passage: labels, equations, which way the parameters push things. If one is wrong or ugly, use **Restart illustrations** and review again. Record only figures you have checked.
+- **Pick the fresh arXiv paper on the day** (published in the last 24–48 h, so no one could have prepared it). The arrival animation only plays for a first generation, so record that segment on a paper you have *not* opened in the recording profile. Do the dry run on a different, similar paper (about 5 Meta requests each).
+- Hard-refresh the app before recording. Hide the browser bookmarks bar; use 1440×900 or larger; zoom 110% if text is small on video.
+- Turn on focus mode for the reading shots (header **Focus**): it hides the contents rail and the reader bar.
 
 ## Script and actions
 
-| Approximate time | Screen action | Spoken text |
+| Time | Screen action | Spoken text |
 | --- | --- | --- |
-| 0:00–0:15 | Open the prepared graph paper. Point to original text and a shaded added figure. | “I built Paperplay to make research papers easier to explore. You keep reading the paper, and interactive figures sit beside the passages they explain. The original source and the added material stay clearly separate.” |
-| 0:15–0:45 | Follow the passage link to the graph. Select edge S→A. Change its weight from 4 to 1, then inspect the final state. | “Here, the figure runs a supported Dijkstra implementation on a small synthetic graph. Changing this weight changes the shortest distance to T from four to two. These are actual computed states. They are not the paper's original dataset or a reproduction of its verified data structure.” |
-| 0:45–1:05 | Show the compatible heap/scan comparison and **Return to source**. | “The comparison gives both methods the same input and reports their own counted operations. I can step through the computation, reset it, and return to the exact source passage. A faster animation is not presented as a hardware speedup.” |
-| 1:05–1:40 | Show a genuine Meta import or an honestly labeled saved live result. Open its quoted source passage and analysis note. | “For an imported PDF or arXiv article, the official Meta API proposes figures and their locations. Paperplay checks the schema, source quotations and engine compatibility before displaying them. Unsupported methods get a labeled explanation. A proposal with the wrong source reference is rejected rather than quietly moved to another passage.” |
-| 1:40–2:00 | Open **Curvature & momentum**. Inspect matrix cells and the residual plot; change a stable step size. | “The same source and figure contracts also work for numerical optimization. This matrix and residual plot come from a bounded computation. Changing the step size changes the observed trajectory. That does not prove momentum is always faster or reproduce the source article's experiments.” |
-| 2:00–2:20 | Show **Share snapshot**, then **Export experiment** with inclusion choices. | “A public snapshot restores compatible input and controls in another browser. For a local paper, export explicitly chooses whether to include the text or PDF. Opening the file does not start a new model request.” |
-| 2:20–2:45 | Show the prepared example with new Meta work disabled, or a real handled provider error. | “The prepared papers and saved results remain useful when inference is unavailable. New analyses and questions have shared usage limits. Paperplay helps readers inspect an idea while keeping the scientific claim tied to the evidence actually available.” |
+| 0:00–0:10 | *Hook.* Hero paper, momentum passage: a dense recurrence equation in plain text. Hold two seconds. Then cut to the same passage with its figure open. | "This is how research papers explain momentum. And this is the same passage in Paperplay." |
+| 0:10–0:35 | Drag the **β** slider on *Momentum as accumulated velocity*: 0 → 0.5 → 0.9. The faint full path reshapes live; press **Play** once at β = 0.5. | "β is the momentum. At zero, the ball crawls along the flat valley. Around 0.5 it shoots straight to the minimum. Push it to 0.9 and it overshoots and spirals. That's the whole paper, in one slider." |
+| 0:35–1:05 | Find a paper → paste the fresh arXiv link → the reader opens. Speed the wait up in editing **and label it** ("×8"). Show the progress pill in the reader bar, then figures arriving beside their passages (green ring, passage glow, "New figure" pill). | "Now a paper that came out yesterday. Nobody has prepared it. Meta reads the whole paper, picks the few passages that need an interaction, and builds them. Watch them land next to the text they explain." |
+| 1:05–1:30 | Open one new figure. Change one input; click **Source passage ↑** to jump back to the quote. | "Every figure is anchored to an exact quotation. One click takes you back to the source, so the explanation never drifts from what the authors actually wrote." |
+| 1:30–1:50 | *Under the hood.* Show a custom figure's label ("Custom teaching model") and its **Figure options → details**. | "Meta chooses between configuring a figure from our bank and writing a brand-new interactive model. That model runs sandboxed, and is checked against the source before you ever see it. Added figures are labelled as teaching models, not results." |
+| 1:50–2:00 | Back to the hero figure, β slider mid-drag. Logo. | "Paperplay turns the hardest part of a research paper into an experiment you can play with." |
 
-The times are approximate. Keep the meaningful weight change, source return and Meta-validation boundary if shortening the recording. Do not claim students learned from a study: current understanding evidence is developer self-review only.
+If shortening, keep the slider moment (0:10–0:35) and the live arrival (0:35–1:05); they carry the impact, Meta-tooling and demo criteria.
+
+## Honesty rules for the edit
+
+- Any sped-up wait is labelled on screen. Real timing for the hero paper on 2026-11-03 was about 2 min 50 s for 3 figures.
+- A figure reused from a saved run is not presented as freshly generated.
+- Do not claim measured learning gains; there is no reader study.
+- Say "teaching model" for custom figures; they are not verified reproductions of the paper's experiments.
 
 ## Rehearsal checklist
 
-- Open in a clean browser; confirm initial reading and worker computation need no API request.
-- Confirm the default graph really gives distance four before changing the edge, and distance two afterward. If a different seed/input is displayed, reset first.
-- Verify comparison methods share input, seed and compatible metric units.
-- Use the current release's actual Meta result. Identify rejected figures, conceptual figures and cached results accurately.
-- Demonstrate matrix/plot labels, including synthetic inputs and observed residual samples.
-- Open a public snapshot in a separate browser profile, or show the recorded verification honestly.
-- Rehearse missing configuration/provider failure. Source reading and the prepared figures should remain available.
-- Check the final recording against the authenticated portal's actual field and video requirements.
-
-## Recording assets
-
-Actual screenshots and video are to be attached by the release integrator after final UI verification. Do not treat the following as existing files:
-
-| Asset | State |
-| --- | --- |
-| Prepared paper and changed graph | Pending final capture |
-| Matrix / computed residual plot | Pending final capture |
-| Genuine Meta result with source citation | Pending final capture |
-| English demo recording | Pending recording and portal-format check |
-| Hosted demo URL and access behavior | Pending published deployment verification |
+- [ ] Hero paper's three figures reviewed in the recording profile; the β slider behaves as narrated (0 slow, ~0.5 fastest, 0.9 overshoots).
+- [ ] Fresh arXiv paper dry run completed and its figures reviewed.
+- [ ] "New figure" pill and arrival animation visible in the recorded run (they only play for figures delivered while the page is open, not restored ones).
+- [ ] Recording profile is the only one used; `npm run usage:summary` checked before and after.
+- [ ] Hosted URL and jury access verified; final video checked against the authenticated portal's actual requirements.

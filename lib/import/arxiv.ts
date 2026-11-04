@@ -1,6 +1,8 @@
 import * as cheerio from 'cheerio';
+import {originalSvgImage} from './svg-image';
 import { cleanText, normalizeSource, paragraphBlocks, type RawSourceBlock } from './normalize';
-import type { SourceDocument } from '../../shared/schema';
+import { texOf, textWithTex } from './html-math';
+import { sourceBlockSchema, type SourceDocument } from '../../shared/schema';
 import type {ExtractionEvidenceManifest} from '../../shared/extraction-evidence';
 import {extractHtmlEvidence} from '../extraction/html';
 
@@ -48,13 +50,18 @@ export async function fetchArxivResource(url: string, limit: number, fetcher: ty
   throw new Error('arXiv returned too many redirects.');
 }
 
-function texOf($: cheerio.CheerioAPI, element: Parameters<cheerio.CheerioAPI>[0]) {
-  const node = $(element);
-  return node.attr('alttext') || node.find('annotation[encoding="application/x-tex"]').first().text();
-}
-export async function parseArxivHtml(html: string, arxivId: string, url: string): Promise<SourceDocument> {
+function arxivHtmlContent(html: string, arxivId: string, url: string, figuresOnly=false) {
   const $ = cheerio.load(html);
   const imageBase = $('base[href]').first().attr('href');
+  // LaTeXML uses SVG <object data=...> for some original charts. Retain only
+  // the resource reference before removing active embeds; the asset allowlist
+  // below still applies, and the reader displays these through inert <img>.
+  $('object[type="image/svg+xml"][data]').each((_, element) => {
+    const object=$(element);
+    object.replaceWith($('<img>').attr('src',object.attr('data')!).attr('alt',object.attr('aria-label')??''));
+  });
+  const inlineSvgs=new Map<object,string>();
+  $('figure,.ltx_figure').each((_,element)=>{const node=$(element),svg=node.find('svg').first();if(svg.length){const image=originalSvgImage($.html(svg));if(image)inlineSvgs.set(element,image);}});
   $('script,style,nav,header,footer,form,iframe,object,svg,canvas,.ltx_page_header,.ltx_page_footer').remove();
   const article = $('article.ltx_document').first().length ? $('article.ltx_document').first() : $('article').first();
   if (!article.length) throw new Error('No structured arXiv article was available.');
@@ -62,9 +69,10 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
   const authors = $('meta[name="citation_author"]').map((_, element) => $(element).attr('content') || '').get().map(cleanText).filter(Boolean);
   if (!authors.length) article.find('.ltx_personname').each((_, element) => { const name = cleanText($(element).text()); if (name) authors.push(name); });
   const blocks: RawSourceBlock[] = []; let sequence = 0;
-  const selector = 'h1,h2,h3,h4,h5,h6,p,.ltx_equation,.ltx_equationgroup,figure,.ltx_figure';
+  const selector = 'h1,h2,h3,h4,h5,h6,p,.ltx_equation,.ltx_equationgroup,figure,.ltx_figure,table,.ltx_table';
   article.find(selector).each((_, element) => {
     const node = $(element);
+    if (figuresOnly && !node.is('figure,.ltx_figure,table,.ltx_table')) return;
     if (node.parents(selector).filter((__, ancestor) => ancestor !== article[0]).length) return;
     const tag = element.tagName?.toLowerCase(); const id = `html-b${++sequence}`;
     if (/^h[1-6]$/.test(tag || '')) {
@@ -72,17 +80,45 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
       if (text.length > 500) throw new Error('An HTML heading exceeds the supported source length.');
       if (text) blocks.push({ id, kind: 'heading', page: 1, level: Number(tag![1]), text }); return;
     }
-    if (tag === 'figure' || node.hasClass('ltx_figure')) {
-      const caption = cleanText(node.find('figcaption,.ltx_caption').first().text());
+    if (tag === 'figure' || tag === 'table' || node.hasClass('ltx_figure') || node.hasClass('ltx_table')) {
+      const inlineSvg=inlineSvgs.get(element);
+      const caption = textWithTex($, node.find('figcaption,.ltx_caption,caption').first());
       if (caption.length > 5_000) throw new Error('An HTML figure caption exceeds the supported source length.');
+      const tableNode = tag === 'table' ? node : node.find('table').first();
+      let table: Extract<SourceDocument['blocks'][number], {kind:'original-figure'}>['table'];
+      if (tableNode.length && !tableNode.find('table').length) {
+        try {
+        const rowNodes = tableNode.find('tr').toArray();
+        if(rowNodes.length > 256) throw new Error('Source table exceeds the supported row limit.');
+        const rows = rowNodes.map(row => {
+          const cells = $(row).children('th,td').toArray();
+          if(cells.length > 32) throw new Error('Source table exceeds the supported column limit.');
+          return {cells: cells.map(cell => {
+            const current=$(cell), text=textWithTex($,current);
+            const span=(name:string,max:number)=>{const raw=current.attr(name)??'1';if(!/^[1-9]\d*$/.test(raw)||Number(raw)>max)throw new Error('Unsupported source table span.');return Number(raw);};
+            if(text.length>500) throw new Error('Source table cell exceeds the supported length.');
+            return {text,header:cell.tagName==='th',rowSpan:span('rowspan',100),colSpan:span('colspan',32)};
+          })};
+        }).filter(row=>row.cells.length);
+        if(rows.length) table={rows};
+        } catch {
+          // Keep the caption/source link; the evidence inventory reports unsupported structure.
+          // Never render a partial grid as though it were the authors' complete table.
+          table=undefined;
+        }
+      }
       const images = node.find('img').toArray().map(image => {
         const src = $(image).attr('src'); if (!src) return undefined;
-        try { const asset = new URL(src, imageBase ? new URL(imageBase,url) : url); const paper = new URL(url);
+        try { const paper = new URL(url);
+          // arXiv emits both sibling-style and article-prefixed asset paths.
+          const articleBase = new URL(paper.href); articleBase.pathname = articleBase.pathname.replace(/\/$/, '') + '/';
+          const prefixed = src.startsWith(paper.pathname.split('/').filter(Boolean).at(-1)! + '/');
+          const asset = new URL(src, imageBase ? new URL(imageBase,url) : prefixed ? paper : articleBase);
           return asset.protocol === 'https:' && asset.origin === paper.origin && !asset.username && !asset.password && asset.pathname.startsWith(paper.pathname.replace(/\/$/, '') + '/') ? asset.href : undefined;
         } catch { return undefined; }
       }).filter((asset): asset is string => !!asset);
       if (images.length > 8) throw Error('This source figure exceeds the eight-image display limit.');
-      if (caption) blocks.push({ id, kind: 'original-figure', page: 1, caption, alt: cleanText(node.find('img').first().attr('alt') || caption).slice(0,1000), sourceUrl: url, ...(images.length ? { imageUrls: [...new Set(images)] } : {}) });
+      if (caption) blocks.push({ id, kind: 'original-figure', page: 1, caption, alt: cleanText(node.find('img').first().attr('alt') || caption).slice(0,1000), sourceUrl: url, ...(images.length ? { imageUrls: [...new Set(images)] } : {}), ...(table ? {table} : {}), ...(inlineSvg?{inlineSvg}:{}) });
       return;
     }
     if (node.hasClass('ltx_equation') || node.hasClass('ltx_equationgroup')) {
@@ -96,6 +132,15 @@ export async function parseArxivHtml(html: string, arxivId: string, url: string)
     const text = cleanText(node.text());
     if (text) paragraphBlocks(text, 1, `html-${sequence}`).forEach(block => blocks.push(block));
   });
+  return {title,authors,blocks};
+}
+
+export function parseArxivOriginalFigures(html:string,arxivId:string,url:string){
+  return arxivHtmlContent(html,arxivId,url,true).blocks.filter(block=>block.kind==='original-figure').map(block=>sourceBlockSchema.parse(block));
+}
+
+export async function parseArxivHtml(html: string, arxivId: string, url: string): Promise<SourceDocument> {
+  const {title,authors,blocks}=arxivHtmlContent(html,arxivId,url);
   if (blocks.filter(block => block.kind === 'paragraph').length < 2) throw new Error('The structured article did not contain enough readable source text.');
   return normalizeSource({ kind: 'arxiv', title, authors, url, pageCount: 1, blocks, identity: arxivId,
     warnings: ['Structured arXiv HTML was imported as one logical document. Source page 1 is an HTML reference, not a physical PDF page number.', 'Available original image asset locations are retained; illustrations without usable image assets keep the original article reference. Inline mathematical boundaries are retained for typesetting; unsupported notation remains visible as source text. Check the original article for exact layout.'] });

@@ -13,7 +13,7 @@ import { usageIdFor, reservedTokensFor, usageQuotaResponse, type UsageStore } fr
 import { AnalysisHttpError, requireSameOrigin, sessionFor, signingKey, signToken, verifyToken } from '../analysis/security';
 import { safeProviderError, type ProviderResponse } from '../analysis/provider';
 import type { MetaConfig } from '../meta/config';
-import { createMetaEnrichmentProvider, providerInput, enrichmentProviderRequest,enrichmentPromptMetrics,paperFigureModelOutputSchema, ENRICHMENT_MAX_OUTPUT_TOKENS, type EnrichmentInput, type EnrichmentProvider } from './provider';
+import { createMetaEnrichmentProvider, providerInput, enrichmentProviderRequest,enrichmentPromptMetrics,paperFigureModelOutputSchema, type EnrichmentInput, type EnrichmentProvider } from './provider';
 import { getEnrichmentStore, type EnrichmentStore, type EnrichmentRecord } from './store';
 import {WHOLE_PAPER_SECTION_ID,paperFigureBriefSchema,existingPaperFigureSchema,wholePaperContext,validatePaperFigureBrief,validateExistingPaperFigures,validatePaperPlan} from '../../lib/enrichment/whole-paper';
 
@@ -147,7 +147,7 @@ export function createEnrichmentHandlers(dependencies: Dependencies) {
         if(existing&&!(existing.status==='rejected'&&existing.actualTokens===0&&!existing.providerId)){if(existing.contextHash!==prepared.contextHash||existing.documentHash!==prepared.documentHash||existing.sectionId!==input.sectionId||existing.action!==input.action)throw new AnalysisHttpError(409,'This request reference belongs to different frozen context.');const hosted=hostReply(existing,config.model,key);if(hosted)return json(hosted,200,cookie);const pending=running.get(id);if(pending)return json(await pending,200,cookie);if(existing.providerId)return json({status:existing.status==='cancelled'?'cancelled':'queued',job:jobFor(existing,existing.providerId,config.model,key),budget:readBudget(session.sid,prepared.documentHash),retrieval:existing.retrieval,accounting:accounting(existing.requestMetrics,undefined,existing)},200,cookie);throw new AnalysisHttpError(409,'An earlier submission is unresolved. No replacement paid request was sent.',true);}
         if(input.verifyOnly)throw new AnalysisHttpError(409,'The saved request cannot be retrieved yet. No new request was started.',true);
         if (!config.inferenceEnabled) throw new AnalysisHttpError(503, config.disabledReason ?? 'New Meta requests are disabled.');
-        const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: ENRICHMENT_MAX_OUTPUT_TOKENS, inputCharacters: prepared.metrics!.characters, model: config.model, fingerprint: prepared.contextHash };
+        const reservationInput = { id, sessionId: session.sid, kind: 'analysis' as const, maxOutputTokens: prepared.metrics!.maxOutputTokens, inputCharacters: prepared.metrics!.characters, model: config.model, fingerprint: prepared.contextHash };
         const reserved = store().reserve({ id, owner: session.sid, documentHash: prepared.documentHash, contextHash: prepared.contextHash, action: input.action, sectionId: input.sectionId, reservedTokens: reservedTokensFor(reservationInput),retrieval:prepared.retrieval,requestMetrics:prepared.metrics,requestSha256:prepared.requestSha256 });
         if (!reserved.created) {
           const hosted=hostReply(reserved.record,config.model,key);if(hosted)return json(hosted,200,cookie);const inProgress = running.get(id); if (inProgress) return json(await inProgress, 200, cookie);

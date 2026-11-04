@@ -44,6 +44,7 @@
     ".paperplay-sites",
     ".hosting-build",
     "deploy/site",
-    "dist"
+    "dist",
+    "demo-video"
   ]
 }

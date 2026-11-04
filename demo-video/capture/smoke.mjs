@@ -1,0 +1,14 @@
+import { createRequire } from 'module';
+import { startRecording, VIEWPORT } from './recorder.mjs';
+const require = createRequire('/home/manuel/.npm/_npx/420ff84f11983ee5/node_modules/');
+const { chromium } = require('playwright');
+const ctx = await chromium.launchPersistentContext('/tmp/pp-shots/profile', { executablePath: '/home/manuel/.cache/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell', viewport: VIEWPORT });
+const page = ctx.pages()[0] ?? await ctx.newPage();
+await page.goto('http://localhost:3000/', { waitUntil: 'load' }); await page.waitForTimeout(1500);
+const rec = await startRecording(page, 'smoke');
+await rec.click(page.locator('.library-trigger'), 900); await rec.wait(800);
+await rec.click(page.locator('.library-paper', { hasText: 'Curvature' }), 900); await rec.wait(1500);
+await rec.scrollTo(900, 1500); await rec.wait(500);
+const meta = await rec.stop();
+console.log(meta.frames, 'frames', meta.duration.toFixed(2), 's', meta.events.length, 'events; first event t', meta.events[0].t.toFixed(2));
+await ctx.close();

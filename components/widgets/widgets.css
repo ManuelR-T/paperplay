@@ -14,7 +14,7 @@
 .widget-header>div:first-child{flex:1 1 280px;min-width:0}.widget-header h3{font-size:24px;line-height:1.4;margin:4px 0 8px}.widget-kind{font-size:14px;line-height:1.6;color:var(--soft)}
 .widget-card .widget-reading-context{margin:12px 0 18px}.widget-card .widget-context{font:16px/1.7 var(--sans);color:var(--ink);margin:0 0 10px}.widget-card .widget-reading-context .widget-instruction{font:15px/1.7 var(--sans);margin:0;padding-left:12px;border-left:2px solid var(--olive)}
 .widget-card[data-widget-kind=custom] .widget-reading-context .widget-instruction{display:block;overflow:visible}.widget-card .widget-tabs{gap:8px}.widget-card .widget-tabs button{padding-inline:12px}
-.widget-diagram-scroll{padding:12px 8px}.widget-diagram text{font-family:var(--sans);font-variant-numeric:tabular-nums}.widget-diagram .widget-edge-label{paint-order:stroke;stroke:var(--chrome);stroke-width:5px;stroke-linejoin:round;font-weight:500}.widget-diagram .widget-node-label{paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
+.widget-diagram-scroll{padding:12px 8px}.widget-diagram text{font-family:var(--sans);font-variant-numeric:tabular-nums}.widget-diagram .widget-edge-label{paint-order:stroke;stroke:var(--chrome);stroke-width:6px;pointer-events:none;stroke-linejoin:round;font-weight:500}.widget-diagram .widget-node-label{paint-order:stroke;stroke:var(--paper);stroke-width:3px;stroke-linejoin:round}
 @media(max-width:700px){.widget-header>div:first-child{flex-basis:100%}.widget-header-actions{margin-left:auto}.widget-header h3{font-size:22px}.widget-card .widget-context{font-size:15px}.widget-card .widget-tabs button{padding-inline:6px}.widget-diagram-scroll{padding:8px 4px}}
 .widget-diagram{height:auto;min-width:520px;aspect-ratio:2/1}.widget-diagram[data-expanded-labels=true]{min-width:640px;aspect-ratio:710/390}.widget-node:focus-visible circle{stroke:var(--ink);stroke-width:4}.widget-node-label{pointer-events:none}
 .widget-diagram[data-concept-layout=true]{margin-inline:auto;aspect-ratio:auto}.widget-node:focus-visible rect{stroke:var(--ink);stroke-width:4}.widget-diagram[data-concept-layout=true] .widget-node{touch-action:pan-x pan-y}
@@ -42,3 +42,85 @@
 .widget-card .widget-more-actions summary:focus-visible,.widget-card .widget-playback-options summary:focus-visible{outline:3px solid var(--olive);outline-offset:2px}
 .widget-card .widget-footer{font-size:14px}
 @media(max-width:500px){.widget-card .widget-playback-options{margin-left:0;flex-basis:100%}.widget-card .widget-playback-options>div{left:0;right:auto}.widget-card .widget-timeline-buttons{gap:6px}.widget-card .widget-timeline-buttons>button{padding:8px 10px}}
+
+/* Equation inputs: aligned cards so wrapping definitions never stagger the fields. */
+.widget-variable-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px;align-items:stretch;min-width:0}
+.widget-variable{display:flex;flex-direction:column;gap:4px;min-width:0;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.widget-variable:focus-within{border-color:var(--olive)}
+.widget-variable .widget-number-field>span:first-child{font-weight:600;color:var(--ink)}
+.widget-variable .widget-number-field input{width:100%}
+.widget-variable small{font-size:13px;line-height:1.45;color:var(--soft)}
+.widget-variable small:first-of-type{margin-top:4px}
+.widget-variable .widget-variable-source{margin-top:auto;padding-top:4px;font-size:12px}
+.widget-variable-slider{width:100%;height:22px;margin:2px 0 0;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer}
+.widget-variable-slider::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:linear-gradient(90deg,var(--olive) var(--fill,50%),var(--line) var(--fill,50%))}
+.widget-variable-slider::-moz-range-track{height:4px;border-radius:999px;background:var(--line)}
+.widget-variable-slider::-moz-range-progress{height:4px;border-radius:999px;background:var(--olive)}
+.widget-variable-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border:2px solid var(--paper);border-radius:50%;background:var(--olive);box-shadow:0 1px 4px #172f2d40;transition:transform .12s}
+.widget-variable-slider::-moz-range-thumb{width:16px;height:16px;border:2px solid var(--paper);border-radius:50%;background:var(--olive);box-shadow:0 1px 4px #172f2d40}
+.widget-variable-slider:active::-webkit-slider-thumb{transform:scale(1.15)}
+.widget-variable-slider:focus-visible{outline:2px solid var(--olive);outline-offset:3px;border-radius:6px}
+
+/* ── Widget design pass: one consistent instrument language across every kind ── */
+/* Header: kicker, title and actions on one grid; Reset reads as a quiet tool. */
+.widget-card .widget-header{align-items:flex-start}
+.widget-card .widget-header-actions button{min-height:32px;height:auto;padding:4px 10px;border-radius:999px;font-size:13px;color:var(--soft)}
+.widget-card .widget-header-actions button:hover{color:var(--ink);background:var(--accent)}
+/* Tabs: a compact segmented control instead of three full-width slabs. */
+.widget-card .widget-tabs{display:inline-flex;gap:2px;width:auto;max-width:100%;margin:4px 0 16px;padding:3px;border:1px solid var(--line);border-bottom:1px solid var(--line);border-radius:10px;background:var(--reader-surface,var(--chrome))}
+.widget-card .widget-tabs button{flex:0 0 auto;min-height:32px;height:auto;padding:5px 16px;border-radius:7px;font-size:14px;font-weight:500;color:var(--soft);box-shadow:none}
+.widget-card .widget-tabs button[aria-selected=true]{background:var(--paper);color:var(--ink);box-shadow:0 1px 3px #172f2d1f}
+/* Result cards: calm surfaces, the number is the hero. */
+.widget-card .widget-metrics>div{border:0;border-radius:10px;background:var(--reader-surface,var(--chrome));padding:12px 14px}
+.widget-card .widget-metrics dt{font-size:12px;font-weight:600;letter-spacing:.02em;color:var(--soft)}
+.widget-card .widget-metrics dd{font-size:22px;font-weight:600;color:var(--ink);letter-spacing:-.01em}
+.widget-equation-result strong{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+/* Controls: label above field, one height, one border, one focus ring. */
+.widget-card .widget-quick-controls label:not(:has(input[type=checkbox])),.widget-card [role=tabpanel] label:not(:has(input[type=checkbox])):not(.widget-number-field){display:inline-grid;gap:5px;font:600 13px/1.3 var(--sans);color:var(--soft)}
+.widget-card .widget-number-field>span:first-child{font:600 13px/1.3 var(--sans);color:var(--soft)}
+.widget-card select,.widget-card .widget-number-field input,.widget-card input[type=text],.widget-card input[type=number],.widget-card input[type=search],.widget-card input:not([type]){min-height:40px!important;padding:7px 11px!important;border:1px solid var(--input)!important;border-radius:8px!important;background:var(--paper)!important;font:15px/1.4 var(--sans)!important;color:var(--ink)!important;transition:border-color .12s,box-shadow .12s}
+.widget-card select{padding-right:30px!important;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%)!important;background-position:calc(100% - 15px) 52%,calc(100% - 10px) 52%!important;background-size:5px 5px!important;background-repeat:no-repeat!important;cursor:pointer}
+.widget-card select:focus,.widget-card input:focus{outline:none;border-color:var(--olive)!important;box-shadow:0 0 0 3px #17685b1f}
+.widget-card label:has(> input[type=checkbox]){display:inline-flex;align-items:center;gap:8px;font-size:14px}
+.widget-card input[type=checkbox]{width:18px;height:18px;accent-color:var(--olive)}
+/* Every slider in a widget shares the variable-card slider. */
+.widget-card input[type=range]:not(.widget-variable-slider){width:100%;height:22px;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer}
+.widget-card input[type=range]:not(.widget-variable-slider)::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:var(--line)}
+.widget-card input[type=range]:not(.widget-variable-slider)::-moz-range-track{height:4px;border-radius:999px;background:var(--line)}
+.widget-card input[type=range]:not(.widget-variable-slider)::-moz-range-progress{height:4px;border-radius:999px;background:var(--olive)}
+.widget-card input[type=range]:not(.widget-variable-slider)::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border:2px solid var(--paper);border-radius:50%;background:var(--olive);box-shadow:0 1px 4px #172f2d40}
+.widget-card input[type=range]:not(.widget-variable-slider)::-moz-range-thumb{width:16px;height:16px;border:2px solid var(--paper);border-radius:50%;background:var(--olive)}
+.widget-card input[type=range]:focus-visible{outline:2px solid var(--olive);outline-offset:3px;border-radius:6px}
+/* Tables and matrices: data, not a wall of boxes. */
+.widget-card .widget-table-region th{white-space:nowrap;font-size:13px;font-weight:600;color:var(--soft);border-bottom:1px solid var(--reader-line,var(--line))}
+.widget-card .widget-table-region td{font-variant-numeric:tabular-nums}
+.widget-card .widget-table-region button{min-height:34px;height:auto;padding:4px 10px;border:1px solid transparent;border-radius:7px;background:transparent;font:inherit;font-variant-numeric:tabular-nums;color:var(--ink);cursor:pointer;transition:background .12s,border-color .12s}
+.widget-card .widget-table-region button:hover{background:var(--accent);border-color:var(--line)}
+.widget-card .widget-table-region button[aria-pressed=true]{background:var(--secondary);border-color:var(--olive)}
+.widget-card .widget-table-region th button{display:inline-flex;flex-direction:column;align-items:flex-start;padding:4px 8px;margin-left:-8px;font-weight:600;color:var(--ink)}
+.widget-card .widget-table-region th button small{font-weight:400;font-size:11px;color:var(--soft)}
+.widget-card .widget-table-region tr[data-selected=true]>*{background:#e4eee680}
+/* Charts: quiet axes, legible ticks. */
+.widget-card .widget-chart{border-radius:12px}
+.widget-card .widget-chart-label{font-size:14px;font-weight:600}
+.widget-card .widget-probe-value{font-variant-numeric:tabular-nums;font-size:14px;color:var(--soft)}
+/* Step narration and selection callouts: softer, rounded. */
+.widget-card .widget-step-description,.widget-card .widget-selection{border-radius:0 10px 10px 0}
+.widget-card label.widget-step-slider{display:grid!important;width:100%}
+/* Matrix and output cells are values you can select, not text fields. */
+.widget-card td>button{min-height:34px;padding:4px 10px!important;border:1px solid transparent!important;border-radius:7px!important;font:15px/1.4 var(--sans)!important;font-variant-numeric:tabular-nums;color:var(--ink);cursor:pointer;transition:background .12s,border-color .12s}
+.widget-card td>button:not([style*=background]){background:transparent!important}
+.widget-card td>button:not([style*=background]):hover{background:var(--accent)!important}
+.widget-card td>button:hover{border-color:var(--line)!important}
+.widget-card td>button[style*=background]{border-radius:6px!important}
+.widget-card td>button[aria-pressed=true]{border-color:var(--olive)!important}
+.widget-card td>button[aria-pressed=true]:not([style*=background]){background:var(--secondary)!important}
+.widget-card .widget-table-summary+button,.widget-card button:has(+ .widget-table-region),.widget-card .widget-table-region+button{min-height:34px;padding:4px 12px;border:1px solid var(--line);border-radius:8px;font-size:13px}
+.widget-card .widget-metrics dd[data-text=true]{font-size:15px;font-weight:500;line-height:1.5;letter-spacing:0}
+.widget-card .widget-variable-slider{border:0!important;box-shadow:none!important;padding:0!important;min-height:0!important}
+.widget-card .widget-variable-slider:focus:not(:focus-visible){outline:none}
+
+/* Reserve status space so worker completions never move the slider or page. */
+.widget-computation-status{display:flex;align-items:center;gap:8px;min-height:36px;margin:8px 0;font-size:14px;line-height:1.5;color:var(--soft);visibility:hidden}
+.widget-computation-status[data-visible=true]{visibility:visible}
+.widget-computation-status button{min-height:32px;padding:4px 8px}

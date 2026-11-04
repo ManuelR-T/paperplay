@@ -22,3 +22,38 @@
 .progressCard[data-illustration-phase=ready]{border-color:var(--reader-line);box-shadow:none;padding-block:14px}
 .progressCard[data-illustration-phase=ready] .progressHeading p{margin-bottom:6px}
 @media(max-width:620px){.stages{display:none}.progressHeading h2{font-size:17px}.progressHeading p{font-size:15px}.panel small{font-size:13px}}
+
+/* Compact progress inside the sticky reader bar while the full card is off-screen. */
+.progressChip{display:inline-flex;align-items:center;gap:6px;min-height:32px;margin-right:4px;padding:4px 11px;border:1px solid var(--reader-line,var(--line));border-radius:999px;background:var(--accent,#eaf1e8);color:var(--accent-foreground,var(--ink));font:600 13px/1.2 var(--sans);font-variant-numeric:tabular-nums;white-space:nowrap;cursor:pointer;transition:background .15s}
+.progressChip:hover{background:var(--secondary,#e4eee6)}
+.progressChip:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+.progressChip>svg{color:var(--olive)}
+.progressChip[data-waiting=true]{background:#b3812014;border-color:#b3812040}
+.progressChipCount{font-weight:500;color:var(--soft)}
+@media(max-width:620px){.progressChipLabel{display:none}.progressChip{padding-inline:8px}}
+
+/* The progress card is interface chrome: sans body text, serif title. */
+.progressCard{font-family:var(--sans)}
+.progressCard .progressHeading h2{font-family:var(--serif);font-size:1.2rem;font-weight:500}
+.progressCard .progressHeading p,.progressCard .stages,.progressCard small{font-family:var(--sans)}
+.progressCard .progressHeading p{font-size:15px;color:var(--soft)}
+.progressCard .stages{font-size:14px}
+:global(.reader-status-slot){display:flex;align-items:center}
+:global(.reader-quick-actions) button.progressChip{min-height:32px;height:auto;border-radius:999px;font-size:13px}
+
+/* A figure delivered while reading arrives visibly; restored figures stay still. */
+:global([data-arrived=true]){animation:figureArrive .75s cubic-bezier(.2,.8,.2,1) both}
+:global([data-arrived=true]) :global(.paperplay-figure){animation:figureRing 2.6s ease-out}
+:global([data-arrival-glow=true]){border-radius:6px;animation:passageGlow 2.8s ease-out}
+@keyframes figureArrive{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes figureRing{0%{box-shadow:0 0 0 0 #17685b66}25%{box-shadow:0 0 0 10px #17685b1f}100%{box-shadow:0 0 0 0 #17685b00}}
+@keyframes passageGlow{0%,20%{background:#d7edb2c0;box-shadow:0 0 0 10px #d7edb2c0}100%{background:transparent;box-shadow:0 0 0 10px transparent}}
+.arrivalNotice{display:inline-flex;align-items:center;gap:7px;max-width:min(360px,38vw);min-height:32px;margin-right:6px;padding:4px 12px;border:1px solid var(--olive);border-radius:999px;background:var(--lime,#d7edb2);color:var(--ink);font:600 13px/1.2 var(--sans);cursor:pointer;animation:noticeIn .35s cubic-bezier(.2,.8,.2,1)}
+.arrivalNotice>svg{flex-shrink:0;color:var(--olive)}
+.arrivalLabel{flex-shrink:0}
+.arrivalTitle{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:var(--soft)}
+:global(.reader-quick-actions) button.arrivalNotice{min-height:32px;height:auto;border-radius:999px;font-size:13px}
+@keyframes noticeIn{from{opacity:0;transform:translateY(-6px) scale(.96)}to{opacity:1;transform:none}}
+@media(max-width:760px){.arrivalTitle{display:none}}
+@media(prefers-reduced-motion:reduce){:global([data-arrived=true]),:global([data-arrived=true]) :global(.paperplay-figure),:global([data-arrival-glow=true]),.arrivalNotice{animation:none}}
+.elapsed{margin-left:10px;padding:2px 8px;border-radius:999px;background:var(--accent);font:600 12px/1.4 var(--sans);font-variant-numeric:tabular-nums;color:var(--soft);vertical-align:middle}

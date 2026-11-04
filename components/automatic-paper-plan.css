@@ -1,0 +1,91 @@
+/* Paper map: the real passages as a strip; scanned while Meta reads, pinned once it has chosen. */
+.paper-map{margin:16px 0 6px}
+.paper-map-strip{position:relative;height:46px;margin:18px 10px 0;overflow-x:clip;overflow-y:visible}
+.paper-map svg{display:block;width:100%;height:46px;overflow:hidden}
+.paper-map-tick{fill:#17685b2e;transition:fill .4s}
+.paper-map-tick[data-kind=heading]{fill:#17685b70}
+.paper-map-tick[data-kind=equation]{fill:#17685b48}
+.paper-map-tick[data-chosen]{fill:var(--olive)}
+.paper-map-tick[data-chosen=ready]{fill:var(--olive)}
+.paper-map-tick[data-chosen=building]{fill:#9cc45a;animation:tick-pulse 1.2s ease-in-out infinite}
+.paper-map[data-reading=true] .paper-map-tick{animation:tick-read 2.4s ease-in-out infinite}
+.paper-map-scan{position:absolute;top:0;bottom:0;left:0;width:25%;background:linear-gradient(90deg,transparent,#d7edb2f0 50%,transparent);mix-blend-mode:multiply;pointer-events:none;animation:map-scan 2.4s cubic-bezier(.45,0,.55,1) infinite}
+.paper-map-pin{position:absolute;top:-17px;display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:-9px;border:2px solid var(--paper);border-radius:50%;background:var(--olive);color:var(--paper);font:700 10px/1 var(--sans);box-shadow:0 1px 3px #172f2d40;animation:pin-drop .55s cubic-bezier(.2,1.4,.4,1) both}
+.paper-map-pin::after{content:'';position:absolute;top:16px;left:50%;height:44px;border-left:1px dashed #17685b99}
+.paper-map-pin[data-status=building]{background:#9cc45a;color:var(--ink);animation:pin-drop .55s cubic-bezier(.2,1.4,.4,1) both,pin-glow 1.2s ease-in-out .55s infinite}
+.paper-map-stats{margin:6px 0 0!important;font:13px/1.5 var(--sans)!important;color:var(--soft)!important;font-variant-numeric:tabular-nums}
+.paper-map-stats strong{color:var(--ink);font-weight:700}
+@keyframes map-scan{from{transform:translateX(-100%)}to{transform:translateX(400%)}}
+@keyframes tick-read{0%,100%{opacity:1}50%{opacity:.55}}
+@keyframes tick-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes pin-drop{from{opacity:0;transform:translateY(-14px) scale(.4)}to{opacity:1;transform:none}}
+@keyframes pin-glow{0%,100%{box-shadow:0 0 0 0 #9cc45a99}50%{box-shadow:0 0 0 5px #9cc45a33}}
+
+/* Meta's plan, as a live checklist. */
+.plan-list{display:flex;flex-direction:column;gap:4px;margin:12px 0 4px;padding:0;list-style:none}
+.plan-list li{animation:plan-in .45s cubic-bezier(.2,.8,.2,1) both}
+.plan-list button{display:flex;align-items:center;gap:10px;width:100%;padding:7px 10px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--ink);text-align:left;font:14px/1.35 var(--sans);cursor:pointer}
+.plan-list button:hover{background:var(--accent);border-color:var(--line)}
+.plan-list li[data-status=building] button{background:#d7edb24d;border-color:#9cc45a80}
+.plan-index{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--olive);font:700 11px/1 var(--sans);color:var(--olive)}
+.plan-list li[data-status=ready] .plan-index{background:var(--olive);color:var(--paper)}
+.plan-list li[data-status=building] .plan-index{background:#9cc45a;border-color:#9cc45a;color:var(--ink)}
+.plan-text{flex:1;min-width:0}
+.plan-text strong{display:block;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-text small{display:block;font-size:12px;color:var(--soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plan-status{display:inline-flex;align-items:center;gap:5px;flex-shrink:0;font:600 12px/1 var(--sans);color:var(--soft)}
+.plan-list li[data-status=ready] .plan-status{color:var(--olive)}
+.plan-list li[data-status=building] .plan-status{color:var(--ink)}
+.plan-spin{animation:plan-spin 1s linear infinite}
+@keyframes plan-spin{to{transform:rotate(360deg)}}
+@keyframes plan-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* The placeholder in the text: Meta's choice made visible before the figure exists. */
+.plan-slot{margin:22px 0}
+.plan-card{position:relative;overflow:hidden;padding:18px 20px;border:1.5px dashed #17685b80;border-radius:14px;background:repeating-linear-gradient(0deg,transparent 0 23px,#17685b0b 23px 24px),repeating-linear-gradient(90deg,transparent 0 23px,#17685b0b 23px 24px),var(--paper);font-family:var(--sans);animation:plan-card-in .6s cubic-bezier(.2,.8,.2,1) both}
+.plan-card[data-status=building]{border-style:solid;border-color:#9cc45a;box-shadow:0 0 0 4px #d7edb259}
+.plan-card[data-status=building]{animation:plan-card-in .6s cubic-bezier(.2,.8,.2,1) both,plan-breathe 2.4s ease-in-out .6s infinite}
+.plan-card-kicker{display:flex;align-items:center;gap:7px;margin:0 0 6px;font:700 11px/1.4 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--olive)}
+.plan-card-state{display:inline-flex;flex-shrink:0;white-space:nowrap;align-items:center;gap:5px;margin-left:auto;padding:3px 9px;border-radius:999px;background:var(--accent);letter-spacing:0;text-transform:none;font-size:12px;color:var(--soft)}
+.plan-card[data-status=building] .plan-card-state{background:#9cc45a;color:var(--ink)}
+.plan-card h3{margin:0 0 8px;font:400 21px/1.3 var(--serif);color:var(--ink)}
+.plan-card dl{display:grid;gap:6px;margin:4px 0 0}
+.plan-card dl>div{display:grid;grid-template-columns:118px 1fr;gap:10px;font-size:14px;line-height:1.5}
+.plan-card dt{font-weight:600;color:var(--olive)}
+.plan-card dd{margin:0;color:var(--ink)}
+.plan-sketch{display:block;width:100%;max-width:420px;height:110px;margin:6px auto 10px}
+.plan-sketch path,.plan-sketch ellipse{fill:none;stroke:#17685b8c;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.plan-sketch ellipse{stroke-dasharray:4 6;stroke-width:1.5}
+.plan-sketch circle{fill:var(--paper);stroke:var(--olive);stroke-width:2;transform-box:fill-box;transform-origin:center}
+.plan-sketch .plan-sketch-accent{stroke:var(--olive);stroke-width:3}
+.plan-sketch .plan-sketch-node-accent{fill:var(--lime)}
+.plan-sketch[data-live=true] path{stroke-dasharray:1;stroke-dashoffset:1;animation:sketch-draw 2.6s cubic-bezier(.6,0,.3,1) infinite}
+.plan-sketch[data-live=true] .plan-sketch-accent{animation-delay:.35s}
+.plan-sketch[data-live=true] circle{animation:sketch-pop 2.6s ease-in-out infinite}
+.plan-sketch[data-live=false]{opacity:.55}
+@keyframes sketch-draw{0%{stroke-dashoffset:1}55%,80%{stroke-dashoffset:0}100%{stroke-dashoffset:-1}}
+@keyframes sketch-pop{0%,25%{opacity:.35;transform:scale(.8)}45%,85%{opacity:1;transform:none}100%{opacity:.35;transform:scale(.8)}}
+@keyframes plan-breathe{0%,100%{box-shadow:0 0 0 4px #d7edb259}50%{box-shadow:0 0 0 8px #d7edb2a6,0 6px 24px #9cc45a33}}
+@keyframes plan-card-in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+
+/* The chosen passage itself, and the rail sections Meta is illustrating. */
+[data-meta-chosen=true]{box-shadow:inset 3px 0 0 #9cc45a;padding-left:14px;margin-left:-14px;transition:box-shadow .3s}
+.contents-panel nav.contents a[data-meta-figure]{position:relative;padding-right:22px}
+.contents-panel nav.contents a[data-meta-figure]::after{content:'';position:absolute;right:6px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--olive)}
+.contents-panel nav.contents a[data-meta-figure=queued]::after{background:transparent;border:1.5px solid var(--olive)}
+.contents-panel nav.contents a[data-meta-figure=building]::after{background:#9cc45a;animation:pin-glow 1.2s ease-in-out infinite;box-shadow:0 0 0 3px #d7edb299}
+:root[data-meta-reading=true] .contents-panel nav.contents a{animation:rail-read 2.4s ease-in-out infinite}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(2){animation-delay:.15s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(3){animation-delay:.3s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(4){animation-delay:.45s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(5){animation-delay:.6s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(6){animation-delay:.75s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(7){animation-delay:.9s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(8){animation-delay:1.05s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(9){animation-delay:1.2s}
+:root[data-meta-reading=true] .contents-panel nav.contents a:nth-child(n+10){animation-delay:1.35s}
+@keyframes rail-read{0%,100%{background:transparent}20%{background:#d7edb2a6;color:var(--ink)}45%{background:transparent}}
+
+@media(max-width:620px){.plan-card{padding:14px}.plan-card dl>div{grid-template-columns:1fr;gap:0}.plan-card h3{font-size:18px}.paper-map-strip,.paper-map svg{height:40px}}
+@media(prefers-reduced-motion:reduce){.paper-map-scan,.paper-map-tick,.paper-map-pin,.plan-list li,.plan-card,.plan-card[data-status=building],.plan-sketch *,.plan-spin,.contents-panel nav.contents a{animation:none!important}.plan-sketch[data-live=true] path{stroke-dashoffset:0}.plan-sketch circle{opacity:1}}
+@media print{.plan-slot,.paper-map,.plan-list{display:none}}

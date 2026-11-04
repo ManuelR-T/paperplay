@@ -55,3 +55,33 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .reader-dialog .reader-choice button{min-height:44px;border-radius:6px}
 .reader-dialog .reader-hint{font-size:14px;line-height:1.65}
 @media(max-width:620px){.reader-dialog:not(.passage-dialog)[data-slot=dialog-content]{padding:var(--ui-space-md)}.research-article .original-heading{margin-top:1.5em}}
+
+/* Header: quiet tools, one primary destination. Unlayered `a{color:inherit}` would otherwise win over the variant. */
+.header-actions .open-bundle-button,.header-actions .open-bundle-button:hover{color:var(--primary-foreground)}
+.header-actions .open-bundle-button{border-radius:8px;padding-inline:14px}
+.header-actions [data-slot=button][data-variant=ghost]{box-shadow:none;color:var(--soft)}
+.header-actions [data-slot=button][data-variant=ghost]:hover,.header-actions [data-slot=button][aria-pressed=true]{color:var(--ink);background:var(--accent)}
+
+/* Focus reading leaves only the paper: the section/notes bar goes with the rail. */
+:root[data-focus-reading=true] .reader-navigation{display:none}
+
+/* Custom Meta figures share the widget slider instead of the browser's default. */
+.paperplay-figure input[type=range]:not(.widget-variable-slider){width:100%;height:22px;appearance:none;-webkit-appearance:none;background:transparent;cursor:pointer;accent-color:var(--olive)}
+.paperplay-figure input[type=range]:not(.widget-variable-slider)::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:var(--line)}
+.paperplay-figure input[type=range]:not(.widget-variable-slider)::-moz-range-track{height:4px;border-radius:999px;background:var(--line)}
+.paperplay-figure input[type=range]:not(.widget-variable-slider)::-moz-range-progress{height:4px;border-radius:999px;background:var(--olive)}
+.paperplay-figure input[type=range]:not(.widget-variable-slider)::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border:2px solid var(--paper);border-radius:50%;background:var(--olive);box-shadow:0 1px 4px #172f2d40}
+.paperplay-figure input[type=range]:not(.widget-variable-slider)::-moz-range-thumb{width:16px;height:16px;border:2px solid var(--paper);border-radius:50%;background:var(--olive)}
+.paperplay-figure input[type=range]:not(.widget-variable-slider){border:0!important;padding:0!important;min-height:0!important;box-shadow:none!important;background:transparent!important}
+/* Primary buttons inside figures keep their light label (an inherited text colour hid it). */
+.paperplay-figure [data-slot=button][data-variant=default],.paperplay-figure [data-slot=button][data-variant=default]:hover{color:var(--primary-foreground)}
+
+/* Focus reading removes both the contents rail and the library/search chrome. */
+:root[data-focus-reading=true] .workspace-body>.sidebar,
+:root[data-focus-reading=true] .reader-navigation,
+:root[data-focus-reading=true] .library-trigger,
+:root[data-focus-reading=true] .mobile-desk-toggle,
+:root[data-focus-reading=true] .app-header .header-divider,
+:root[data-focus-reading=true] .app-header .import-paper-button,
+:root[data-focus-reading=true] .app-header .open-bundle-button,
+:root[data-focus-reading=true] .app-header .quiet-button{display:none}

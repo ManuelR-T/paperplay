@@ -83,3 +83,9 @@ test('empty input is explicit and malformed initial values are rejected before e
  const invalid={...artifact,interfaces:{...artifact.interfaces,input:[{id:'temperature',kind:'number',description:'Finite authored parameter'}]},initialInput:{temperature:'not-a-number'}};
  const failed=await checkArtifactQuality(invalid,source,{adapter:counting});assert.equal(failed.status,'unavailable');assert.equal(calls,1);assert.equal(failed.repairable,false);
 });
+
+for(const code of ['text-overlap','legend-overlap'] as const)test(`${code} measured artifact diagnostics authorize bounded layout repair`,async()=>{
+ const {built,source}=await prepared('healthy');
+ const result=await runFigureQuality(built,source,{adapter,maxFrames:1,onFrame:()=>({diagnostics:[{code,scope:'artifact',step:0,markIndex:0}]})});
+ assert.equal(result.status,'failed');assert.equal(result.repairable,true);assert.equal(result.diagnostics[0].code,code);
+});

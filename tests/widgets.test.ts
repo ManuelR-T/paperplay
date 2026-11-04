@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Worker } from 'node:worker_threads';
 import { readFileSync } from 'node:fs';
-import { executeWidget } from '../lib/widgets/worker-client';
+import { executeWidget, disposeIdleWidgetWorkers } from '../lib/widgets/worker-client';
 import { WIDGET_KINDS, expressionSchema, validateWidgetEnvelope, validateWidgetSpec, widgetEnvelopeSchema, type Expression, type WidgetSpec } from '../shared/widgets';
 import { createWidgetForSource, createWidgetPreset } from '../lib/widgets/presets';
 import { computeWidget, graphData } from '../lib/widgets/compute';
@@ -124,6 +124,6 @@ test('actual worker client cancellation and timeout terminate obsolete workers w
   postMessage(data:unknown){this.worker.postMessage(data);}terminate(){terminated++;stopped.push(this.worker.terminate());}
  }
  Object.defineProperty(globalThis,'Worker',{configurable:true,writable:true,value:BrowserWorkerAdapter});
- try{const controller=new AbortController();const old=executeWidget(get('probability'),42,{signal:controller.signal});controller.abort();await assert.rejects(old,/cancelled/i);const changed=get('equation');changed.variables[2].value=2;assert.deepEqual(await executeWidget(changed,43),computeWidget(changed,43));await assert.rejects(executeWidget(changed,43,{timeoutMs:1}),/time limit/);assert.equal(terminated,3);}
- finally{if(descriptor)Object.defineProperty(globalThis,'Worker',descriptor);else Reflect.deleteProperty(globalThis,'Worker');await Promise.all(stopped);}
+ try{const controller=new AbortController();const old=executeWidget(get('probability'),42,{signal:controller.signal});controller.abort();await assert.rejects(old,/cancelled/i);const changed=get('equation');changed.variables[2].value=2;assert.deepEqual(await executeWidget(changed,43),computeWidget(changed,43));const stochastic=get('probability');assert.deepEqual(await executeWidget(stochastic,44),computeWidget(stochastic,44));assert.deepEqual(await executeWidget(stochastic,45),computeWidget(stochastic,45));disposeIdleWidgetWorkers();BrowserWorkerAdapter.prototype.postMessage=function(){};await assert.rejects(executeWidget(changed,43,{timeoutMs:1}),/time limit/);assert.equal(terminated,3);}
+ finally{disposeIdleWidgetWorkers();if(descriptor)Object.defineProperty(globalThis,'Worker',descriptor);else Reflect.deleteProperty(globalThis,'Worker');await Promise.all(stopped);}
 });

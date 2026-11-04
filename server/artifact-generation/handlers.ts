@@ -1,3 +1,4 @@
+import {createArtifactGenerationRuntime,type ArtifactGenerationRuntime} from './runtime';
 import {readAdoptionPolicy} from '../../shared/adoption';
 import {retrieveCapabilities,generationRetrievalQuery} from '../../lib/retrieval/selection';
 import {createCapabilitySelectionReceipt,validateCapabilitySelectionReceipt} from '../../lib/retrieval/manifest';
@@ -23,7 +24,7 @@ const hash = (value: unknown) => createHash('sha256').update(canonicalArtifactJs
 const textHash = (text: string) => createHash('sha256').update(text).digest('hex');
 const providerId = /^resp_[a-zA-Z0-9_-]{1,250}$/;
 type Context = z.infer<typeof generationPrepareSchema> | z.infer<typeof generationStartSchema> | z.infer<typeof generationStatusSchema>;
-type Dependencies = { getConfig: () => MetaConfig; store?: EnrichmentStore; usage?: UsageStore; provider?: (config: MetaConfig) => ArtifactGenerationProvider; signingSecret?: string; allowedOrigin?: string; now?: () => number };
+type Dependencies = { runtime?:ArtifactGenerationRuntime; getConfig: () => MetaConfig; store?: EnrichmentStore; usage?: UsageStore; provider?: (config: MetaConfig) => ArtifactGenerationProvider; signingSecret?: string; allowedOrigin?: string; now?: () => number };
 async function readJson(request: Request) {
   const max = 2_500_000;
   if (!request.headers.get('content-type')?.includes('application/json')) throw new AnalysisHttpError(415, 'Generation requires JSON.');
@@ -36,10 +37,9 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
   const store = () => dependencies.store ?? getEnrichmentStore();
   const usage = () => dependencies.usage ?? getUsageStore();
   const provider = dependencies.provider ?? createArtifactGenerationProvider;
-  const running = new Map<string, Promise<GenerationReply>>();
+  const {running,finished}=dependencies.runtime??createArtifactGenerationRuntime();
   // Foreground Meta calls run on this host while the browser polls its durable run/attempt.
   // Store only real provider IDs in the ledger; an interrupted host call stays unresolved.
-  const finished = new Map<string, {value?:GenerationReply;error?:unknown}>();
   function remember(id:string,value:{value?:GenerationReply;error?:unknown}){finished.set(id,value);if(finished.size>32)finished.delete(finished.keys().next().value!);}
 
   const json = (body: unknown, status = 200, cookie?: string) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store', ...(cookie ? { 'Set-Cookie': cookie } : {}) } });
@@ -154,7 +154,7 @@ export function createArtifactGenerationHandlers(dependencies: Dependencies) {
             const feedback = input.feedback;
             if (['cancelled','unavailable'].includes(feedback.compiler.status) || feedback.compiler.diagnostics.some(item => ['integrity','resource','cancelled','unavailable'].includes(item.code)) || feedback.runtime.status === 'cancelled' || feedback.runtime.code && ['integrity','resource','unavailable'].includes(feedback.runtime.code)) throw new AnalysisHttpError(400, 'Infrastructure, cancellation and resource failures do not authorize paid repair.');
             if (feedback.quality && (['cancelled','unavailable'].includes(feedback.quality.status) || feedback.quality.diagnostics.some(item => item.scope === 'host'))) throw new AnalysisHttpError(400, 'Host layout, infrastructure and cancellation diagnostics do not authorize paid repair.');
-            const qualityActionable = feedback.quality?.status === 'failed' && feedback.quality.diagnostics.some(item => item.scope === 'artifact' && ['blank-scene','text-clipped','unreachable-control','invalid-input','invalid-output','execution'].includes(item.code));
+            const qualityActionable = feedback.quality?.status === 'failed' && feedback.quality.diagnostics.some(item => item.scope === 'artifact' && ['blank-scene','text-clipped','text-overlap','legend-overlap','unreachable-control','invalid-input','invalid-output','execution'].includes(item.code));
             const actionable = qualityActionable || feedback.compiler.diagnostics.some(item => ['syntax','entry','dependency','unsupported-syntax','complexity'].includes(item.code)) || feedback.runtime.status === 'failed' && feedback.runtime.code && ['invalid-input','invalid-output','execution'].includes(feedback.runtime.code);
             if (!actionable) throw new AnalysisHttpError(400, 'No actionable local failure was supplied for repair.');
           } else if (input.previous || input.feedback?.candidateSha256) throw new AnalysisHttpError(409, 'The preceding attempt produced no admitted candidate.');

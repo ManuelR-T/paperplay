@@ -484,3 +484,9 @@
   .passage-tools>.passage-note-button{width:44px;height:44px;min-height:44px}
   .passage-row:has(>.passage-tools)>.source-block{margin-right:30px}
 }
+
+.original-source-table-scroll{max-width:100%;overflow-x:auto;margin:12px 0;border:1px solid var(--line);border-radius:6px}
+.original-source-table{width:100%;border-collapse:collapse;font:15px/1.55 var(--sans);color:var(--ink)}
+.original-source-table th,.original-source-table td{padding:10px 14px;border-bottom:1px solid var(--line);text-align:start;vertical-align:middle;min-width:70px}
+.original-source-table th{font-weight:600;background:var(--chrome)}
+.original-source-table tr:last-child td{border-bottom:0}

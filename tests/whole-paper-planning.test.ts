@@ -159,3 +159,19 @@ test('Meta enrichment uses synchronous provider execution instead of the failing
  const retrieval=await retrieveCapabilities(await enrichmentRetrievalQuery({source,sectionId:WHOLE_PAPER_SECTION_ID,action:'plan',scope:'paper-outline',feedback:''}));
  const body=enrichmentProviderRequest({action:'plan',scope:'paper-outline',context:wholePaperContext(source).text,feedback:'',retrieval,existingFigures:[]});assert.equal(body.background,false);
 });
+
+test('long papers receive length-aware guidance and enough output capacity without a figure quota',async()=>{
+ const {paperIllustrationScale,paperPlanSchema}=await import('../lib/enrichment/whole-paper');
+ const source={...document(),pageCount:153};
+ const scale=paperIllustrationScale(source);
+ assert.deepEqual(scale.advisoryFigures,{from:20,to:39});
+ const input:EnrichmentInput={action:'plan',context:wholePaperContext(source).text,feedback:'',scope:'paper-outline'};
+ const body=enrichmentProviderRequest(input);
+ assert.ok(body.max_output_tokens>6000);
+ assert.equal(enrichmentPromptMetrics(input).maxOutputTokens,body.max_output_tokens);
+ assert.match(body.instructions,/not a target, quota/);
+ assert.doesNotMatch(body.instructions,/three to six/);
+ assert.equal(paperPlanSchema.parse({summary:'No useful additions.',figures:[]}).figures.length,0);
+ const html={...source,pageCount:1,source:{kind:'arxiv' as const,url:'https://arxiv.org/html/2611.00558v1'}};
+ assert.equal(paperIllustrationScale(html).basis,'estimated-text-pages');
+});

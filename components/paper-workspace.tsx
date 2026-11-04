@@ -5,9 +5,10 @@ import {SourceMath} from './reading/source-math';
 import {copySourceMathSelection} from '@/lib/reading/source-math-copy';
 import { SourceInformation } from './reading/source-information';
 
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, type MouseEvent } from 'react';
 import katex from 'katex';
-import { ArrowUpRight, BookOpen, CircleHelp, FilePlus2, FileText, GitBranch, Layers3, PanelLeft, Search, X } from 'lucide-react';
+import { ArrowUpRight, BookOpen, Check, CircleHelp, FilePlus2, FileText, GitBranch, Layers3, PanelLeft, Search, X } from 'lucide-react';
+import { LibraryMenu } from './reading/library-menu';
 import { Button } from '@/components/ui/button';
 import './reading/mobile-desk.css';
 import { Badge } from '@/components/ui/badge';
@@ -20,7 +21,7 @@ import { useImportController } from '@/lib/use-import-controller';
 import { ImportDialog, ImportProgress } from './import-tools';
 import { ImportedPaperReader } from './imported-paper';
 import { ReadingSession, useReadingSession } from './reading-session';
-import { listRecentPapers, deleteReadingState, snapshotFromPrepared, saveReadingState, type RecentPaper } from '@/lib/reading-state';
+import { listRecentPapers, deleteReadingState, snapshotFromPrepared, saveReadingState } from '@/lib/reading-state';
 import { decodePublicSnapshot, parseExperimentBundle, validatePreparedSnapshot } from '@/lib/snapshots';
 import { createImportStorage } from '@/lib/import-storage';
 import { ANALYSIS_PIPELINE_VERSION } from '@/shared/import-types';
@@ -46,7 +47,6 @@ export default function PaperWorkspace() {
   const [initialized, setInitialized] = useState(false);
   const [sessionVersion, setSessionVersion] = useState(0);
   const [transferMessage, setTransferMessage] = useState('');
-  const [recents, setRecents] = useState<RecentPaper[]>([]);
   const bundleInput = useRef<HTMLInputElement>(null);
   const [infoOpen, setInfoOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
@@ -84,7 +84,7 @@ export default function PaperWorkspace() {
       figures: [{ snapshot, stepIndex: 0, selection: '' }] }, source);
     if (saved.warning) throw new Error(saved.warning);
     try { localStorage.removeItem(`paperplay:anchor-offset:${source.id}:${source.sourceVersion}`); } catch { /* An incoming snapshot still has its own source position. */ }
-    setSessionVersion(value => value + 1); setRecents(listRecentPapers());
+    setSessionVersion(value => value + 1);
   }
   function routeWidgetHash() {
     setExplicitSnapshotId(null);
@@ -111,7 +111,7 @@ export default function PaperWorkspace() {
         window.history.replaceState(window.history.state, '', location.pathname + location.search);
         setTransferMessage('Public snapshot restored. Input, seed and method match the shared experiment. No model request was made.');
       } else {
-        const recent = listRecentPapers(); setRecents(recent);
+        const recent = listRecentPapers();
         const latest = recent[0];
         const prepared = preparedPapers.find(item => item.document.id === latest?.documentId && item.document.sourceVersion === latest.sourceVersion);
         if (prepared) { setSelected(prepared.id); if (!imports.busy) imports.select(''); }
@@ -187,7 +187,6 @@ export default function PaperWorkspace() {
     if (await createImportStorage().get(id)) return;
     try{await forgetSourceWidgets(id,localStorage);}catch{setTransferMessage('The paper was removed, but some cached widget settings could not be cleared. Personal notes remain as unresolved notebook records.');}
     const result = deleteReadingState(id); if (result.warning) setTransferMessage(result.warning);
-    setRecents(listRecentPapers());
   }
   function reopen(id: string) {
     const prepared = preparedPapers.find(item => item.document.id === id);
@@ -201,22 +200,24 @@ export default function PaperWorkspace() {
     setDiscoveryPending(true);setAutomaticSuppressed(false);setExplicitSnapshotId(null);
     const id=await start();if(id)setDiscoveryPending(false);return id;
   }
-  useEffect(() => {
-    let timer: number | undefined;
-    const update = () => { window.clearTimeout(timer); timer = window.setTimeout(() => setRecents(listRecentPapers()), 300); };
-    window.addEventListener('paperplay:reading-saved', update);
-    return () => { window.clearTimeout(timer); window.removeEventListener('paperplay:reading-saved', update); };
-  }, []);
   const [deskOpen,setDeskOpen]=useState(false);
+  const [libraryOpen,setLibraryOpen]=useState(false);
   useEffect(()=>{const media=window.matchMedia('(min-width:761px)');const close=()=>{if(media.matches)setDeskOpen(false);};media.addEventListener('change',close);return()=>media.removeEventListener('change',close);},[]);
   function choose(id: string) { setExplicitSnapshotId(null);setDiscoveryPending(false);setAutomaticSuppressed(false);imports.select(''); setSelected(id); window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' })); }
-  const desk=<aside className="sidebar" aria-label="Reading workspace" onClick={event=>{if((event.target as HTMLElement).closest('a,button'))setDeskOpen(false);}}><Link href="/explore" className="workspace-explore-link"><BookOpen size={18}/><span>Explore arXiv<small>Find your next paper</small></span><ArrowUpRight size={17}/></Link><div className="sidebar-heading">YOUR RESEARCH DESK</div><div className="workspace-link"><FileText size={16}/><span>Example papers</span><span className="count-pill">{preparedPapers.length}</span></div><div className="sidebar-section">RESEARCH PAPERS</div><div className="example-list">{preparedPapers.map(item => <Button key={item.id} className={`example-button ${!imports.current && paper.id === item.id ? 'active' : ''}`} aria-pressed={!imports.current && paper.id === item.id} onClick={() => choose(item.id)}>{item.id === 'priority-search-trees' ? <GitBranch size={17}/> : <Layers3 size={17}/>}<span>{labels[item.id]?.label ?? item.document.title}<small>{labels[item.id]?.detail}</small></span>{!imports.current && paper.id === item.id && <span className="active-indicator"/>}</Button>)}</div><div className="sidebar-section imported-heading">LOCAL PAPERS <span>{imports.records.length}</span></div><div className="imported-paper-list">{imports.records.length ? imports.records.map(record => <Button variant="ghost" key={record.id} className={`imported-paper-button ${imports.current?.id === record.id ? 'active' : ''}`} aria-pressed={imports.current?.id === record.id} title={record.source.title} onClick={() => { setExplicitSnapshotId(null);setDiscoveryPending(false);setAutomaticSuppressed(false);imports.select(record.id); window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' })); }}><FileText size={16}/><span>{record.source.title}<small>{importStageLabel[record.stage]??'Saved paper'}</small></span></Button>) : <p>Import a PDF or arXiv paper to add it here.</p>}<Button variant="outline" className="sidebar-import-button" onClick={() => setImportOpen(true)}><FilePlus2 size={16}/>Import a paper</Button></div><div className="recent-papers"><div className="sidebar-section">RECENT PAPERS</div>{recents.slice(0,4).map(recent => <Button variant="ghost" key={recent.documentId} title={recent.title} onClick={() => reopen(recent.documentId)}>{recent.title}</Button>)}</div><div className="sidebar-section contents-heading">IN THE PAPER</div><nav className="contents" aria-label="Source sections">{(imports.current?.analysis?.document ?? imports.current?.source ?? paper.document).blocks.filter(block => block.kind === 'heading').map((block, index) => <a key={block.id} href={`#source-${imports.current?.source.id ?? paper.document.id}-${block.id}`}><span>{String(index + 1).padStart(2, '0')}</span>{block.kind === 'heading' ? block.text : ''}</a>)}</nav><div className="sidebar-bottom"><div className="meta-status"><span className={`status-dot ${metaConfigured ? 'configured' : ''}`}/><span>{metaConfigured === true ? 'Meta enabled' : metaConfigured === false ? 'Meta not set up' : 'Prepared locally'}</span></div><p>Figures prepare automatically. Papers and saved results stay in this browser.</p><a href="#source-attribution">Source & attribution <ArrowUpRight size={12}/></a></div></aside>;
+  const closeOnPick=(event:MouseEvent)=>{if((event.target as HTMLElement).closest('a,button')){setDeskOpen(false);setLibraryOpen(false);}};
+  const library=<div className="library-panel" onClick={closeOnPick}>
+    <section aria-labelledby="library-examples"><h2 id="library-examples" className="library-heading">Example papers <span>{preparedPapers.length}</span></h2><div className="library-list">{preparedPapers.map(item => {const active=!imports.current && paper.id === item.id;return <button type="button" key={item.id} className="library-paper" aria-pressed={active} onClick={() => choose(item.id)}>{item.id === 'priority-search-trees' ? <GitBranch size={17}/> : <Layers3 size={17}/>}<span><strong>{labels[item.id]?.label ?? item.document.title}</strong><small>{labels[item.id]?.detail}</small></span>{active&&<Check size={16} className="library-check" aria-hidden="true"/>}</button>;})}</div></section>
+    <section aria-labelledby="library-local"><h2 id="library-local" className="library-heading">Your papers <span>{imports.records.length}</span></h2>{imports.records.length ? <div className="library-list">{imports.records.map(record => {const active=imports.current?.id === record.id;return <button type="button" key={record.id} className="library-paper" aria-pressed={active} title={record.source.title} onClick={() => { setExplicitSnapshotId(null);setDiscoveryPending(false);setAutomaticSuppressed(false);imports.select(record.id); window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search); requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: 'instant' })); }}><FileText size={17}/><span><strong>{record.source.title}</strong><small>{importStageLabel[record.stage]??'Saved paper'}</small></span>{active&&<Check size={16} className="library-check" aria-hidden="true"/>}</button>;})}</div> : <p className="library-empty">Imported PDFs and arXiv papers stay in this browser.</p>}
+      <div className="library-actions"><Button variant="outline" onClick={() => setImportOpen(true)}><FilePlus2 size={16}/>Import a paper</Button><Button variant="ghost" asChild><Link href="/explore"><Search size={16}/>Find on arXiv</Link></Button></div></section>
+  </div>;
+  const metaStatus=<div className="meta-status"><span className={`status-dot ${metaConfigured ? 'configured' : ''}`}/><span>{metaConfigured === true ? 'Meta enabled' : metaConfigured === false ? 'Meta not set up' : 'Prepared locally'}</span></div>;
+  const contents=<div className="contents-panel" onClick={closeOnPick}><h2 className="library-heading">In this paper</h2><nav className="contents" aria-label="Source sections">{activeSource.blocks.filter(block => block.kind === 'heading').map(block => <a key={block.id} href={`#source-${activeSource.id}-${block.id}`}>{block.kind === 'heading' ? block.text : ''}</a>)}</nav><div className="sidebar-bottom">{metaStatus}<a href="#source-attribution">Source & attribution <ArrowUpRight size={12}/></a></div></div>;
   return <div className="workspace m1-workspace">
     <a className="skip-link" href="#paper-content">Skip to the research paper</a>
-    <header className="app-header"><Button className="mobile-desk-toggle" variant="ghost" aria-label="Open research desk" aria-expanded={deskOpen} onClick={()=>setDeskOpen(true)}><PanelLeft size={20}/></Button><a className="wordmark" href="/" aria-label="Paperplay home"><PaperplayMark/>paperplay<span className="wordmark-period">.</span></a><div className="header-divider"/><span className="header-caption">Research, within reach.</span><div className="header-actions"><ReadingPreferences/><Button variant="outline" aria-label="Import paper" className="import-paper-button" onClick={() => setImportOpen(true)}><FilePlus2 size={17}/><span>Import paper</span></Button><Button variant="outline" className="open-bundle-button" asChild><Link href="/explore" aria-label="Find a paper"><Search size={17}/><span>Find a paper</span></Link></Button><input ref={bundleInput} className="sr-only" tabIndex={-1} aria-hidden="true" type="file" accept="application/json,.json" aria-label="Experiment bundle" onChange={event => { const file = event.target.files?.[0]; if (file) void openBundle(file); }}/><Badge variant="outline" className="version-tag">READ + EXPLORE</Badge><Button className="quiet-button" aria-label="About this workspace" onClick={() => setInfoOpen(true)}><CircleHelp size={16}/><span>About</span></Button></div></header>
-    <div className="workspace-body">{desk}
+    <header className="app-header"><Button className="mobile-desk-toggle" variant="ghost" aria-label="Open library and contents" aria-expanded={deskOpen} onClick={()=>setDeskOpen(true)}><PanelLeft size={20}/></Button><a className="wordmark" href="/" aria-label="Paperplay home"><PaperplayMark/>paperplay<span className="wordmark-period">.</span></a><div className="header-divider"/><LibraryMenu open={libraryOpen} onOpenChange={setLibraryOpen} current={imports.current ? imports.current.source.title : labels[paper.id]?.label ?? paper.document.title}>{library}</LibraryMenu><div className="header-actions"><ReadingPreferences/><Button variant="ghost" aria-label="Import paper" className="import-paper-button" onClick={() => setImportOpen(true)}><FilePlus2 size={17}/><span>Import paper</span></Button><Button className="open-bundle-button" asChild><Link href="/explore" aria-label="Find a paper"><Search size={17}/><span>Find a paper</span></Link></Button><input ref={bundleInput} className="sr-only" tabIndex={-1} aria-hidden="true" type="file" accept="application/json,.json" aria-label="Experiment bundle" onChange={event => { const file = event.target.files?.[0]; if (file) void openBundle(file); }}/><Badge variant="outline" className="version-tag">READ + EXPLORE</Badge><Button className="quiet-button" aria-label="About this workspace" onClick={() => setInfoOpen(true)}><CircleHelp size={16}/><span>About</span></Button></div></header>
+    <div className="workspace-body"><aside className="sidebar contents-rail" aria-label="Paper contents">{contents}</aside>
     <main className="main-workspace" id="paper-content" tabIndex={-1}><ReadingNavigator key={activeSource.id} source={activeSource}/><ExecutionMonitor/><ImportProgress failureExtraction={imports.failureExtraction} stage={imports.stage} progress={imports.progress} record={imports.current} busy={imports.busy} error={imports.error} warning={imports.warning} cancel={imports.cancel} resume={imports.resume} analyze={imports.analyze}/>{transferMessage && <p role="status" className="transfer-message">{transferMessage}</p>}{initialized ? <ReadingSession key={`${imports.current?.id ?? paper.id}:${sessionVersion}`} source={imports.current?.analysis?.document ?? imports.current?.source ?? paper.document}>{imports.current ? <ImportedPaperReader key={imports.current.id} snapshotFigureId={automaticSuppressed?explicitSnapshotId:null} record={imports.current} remove={removePaper} busy={imports.busy} automaticEnabled={!discoveryPending&&!automaticSuppressed} sources={allSources} openSource={reopen}/> : <ReadingArticle key={paper.id} snapshotFigureId={automaticSuppressed?explicitSnapshotId:null} paper={paper} sources={allSources} openSource={reopen} automaticEnabled={!discoveryPending&&!automaticSuppressed&&!imports.busy}/>}</ReadingSession> : <p className="transfer-message">Restoring the local reading workspace…</p>}</main></div>
-    <Dialog open={deskOpen} onOpenChange={setDeskOpen}><DialogContent className="mobile-desk-dialog"><DialogTitle>Research desk</DialogTitle><DialogDescription>Choose a paper or jump to a section.</DialogDescription>{desk}</DialogContent></Dialog>
+    <Dialog open={deskOpen} onOpenChange={setDeskOpen}><DialogContent className="mobile-desk-dialog"><DialogTitle>Library</DialogTitle><DialogDescription>Choose a paper or jump to a section.</DialogDescription>{library}{contents}</DialogContent></Dialog>
     <Dialog open={infoOpen} onOpenChange={setInfoOpen}><DialogContent className="preview-dialog" showCloseButton={false}><div className="dialog-heading"><span className="dialog-icon"><BookOpen size={22}/></span><Button className="icon-button" aria-label="Close workspace information" onClick={() => setInfoOpen(false)}><X size={19}/></Button></div><DialogTitle>Read the paper. Test the idea.</DialogTitle><DialogDescription>Original, attributed source selections are interleaved with illustrations chosen and configured by Meta.</DialogDescription><p>Meta chooses from the available figure bank or requests a custom interaction. Added teaching figures remain distinct from original paper illustrations and research evidence.</p><p>The saved example sources retain their original figures. You can also import a PDF or arXiv paper, keep its extracted source locally, and Meta automatically prepares source-linked illustrations. Extraction and model limitations remain visible. Ask contextual questions, save local experiments, and share a public snapshot or an explicit experiment bundle.</p><Button className="small-primary" onClick={() => setInfoOpen(false)}>Back to the paper</Button></DialogContent></Dialog>
     <ImportDialog open={importOpen} onOpenChange={setImportOpen} busy={imports.busy} importPdf={(file,options)=>importForReading(()=>imports.importPdf(file,options))} importArxiv={(input,options)=>importForReading(()=>imports.importArxiv(input,options))}/>
   </div>;

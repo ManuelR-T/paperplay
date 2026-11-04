@@ -3,6 +3,7 @@ import type {SourceDocument} from '../../shared/schema';
 import {EXTRACTION_LIMITS,type ExtractionEvidenceEntry} from '../../shared/extraction-evidence';
 import {createExtractionManifest} from './model';
 import {sha256} from '../import/normalize';
+import {textWithTex} from '../import/html-math';
 
 const clean=(value:string)=>value.replace(/\s+/g,' ').trim();
 function inertUrl(raw:string|undefined,base?:string):string|null{
@@ -77,7 +78,7 @@ export async function extractHtmlEvidence(html:string,source:SourceDocument,opti
   }
   if(tag==='figure'||element.hasClass('ltx_figure')){
    if(element.parents('figure,.ltx_figure').length||element.find('table').length)continue;
-   const caption=clean(element.find('figcaption,.ltx_caption').first().text()),blockId=blockFor(caption,'original-figure'),block=source.blocks.find(value=>value.id===blockId),value=entry('figure',caption||'Source figure without a retained caption',blockId);
+   const caption=textWithTex($,element.find('figcaption,.ltx_caption').first()),blockId=blockFor(caption,'original-figure'),block=source.blocks.find(value=>value.id===blockId),value=entry('figure',caption||'Source figure without a retained caption',blockId);
    value.state='partial';entryLosses.push('Only caption and approved original image references are inventoried; image bytes/pixels are not retained or checked.');value.payload={kind:'figure',imageUrls:block?.kind==='original-figure'?block.imageUrls??[]:[],pixels:'not-retained'};append(value);continue;
   }
   if(element.parents('table,figure,.ltx_figure').length)continue;

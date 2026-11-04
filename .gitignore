@@ -38,3 +38,12 @@ public/artifact-*.worker.mjs
 public/artifact-workers.json
 
 /public/discrete.worker.mjs
+
+# Demo video: dependencies, raw capture frames and renders (clips are reproducible via npm run capture)
+demo-video/node_modules/
+demo-video/.frames/
+demo-video/out/
+demo-video/public/clips/
+
+# Decoded demo footage cache
+demo-video/public/render-frames/

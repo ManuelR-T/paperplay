@@ -3,7 +3,7 @@ import type { CustomWidgetSpec } from '../../shared/custom-widget';
 
 /** The renderer and camera use the same wrapped text dimensions. */
 export function customLabelLines(mark: EvaluatedMark) {
-  const label = mark.shape === 'text' ? `${mark.label}: ${Number(mark.value?.toPrecision(6))}` : mark.label;
+  const label = mark.shape === 'text' ? `${mark.label}: ${Number(mark.value?.toPrecision(4))}` : mark.label;
   const words = label.match(/\S{1,28}/g) ?? [];
   const lines: string[] = [];
   for (const word of words) {

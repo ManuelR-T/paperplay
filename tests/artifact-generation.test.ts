@@ -5,6 +5,7 @@ import { mkdtempSync, rmSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+import {createArtifactGenerationRuntime,getHostArtifactGenerationRuntime,type ArtifactGenerationRuntime} from '../server/artifact-generation/runtime';
 import { createArtifactGenerationHandlers } from '../server/artifact-generation/handlers';
 import { createEnrichmentStore } from '../server/enrichment/store';
 import { createSqliteUsageStore } from '../server/usage/store';
@@ -22,7 +23,7 @@ import { FigureRuntimeError } from '../shared/figure-runtime';
 
 const origin = 'http://localhost:3000';
 function req(body: unknown, cookie?: string) { return new Request(`${origin}/api/artifact-generation/start`, { method: 'POST', headers: { origin, 'content-type': 'application/json', ...(cookie ? { cookie } : {}) }, body: JSON.stringify(body) }); }
-async function fixture(t: { after(fn: () => void): void }, options: { maxAttempts?: number; persistent?: boolean; host?:boolean } = {}) {
+async function fixture(t: { after(fn: () => void): void }, options: { maxAttempts?: number; persistent?: boolean; host?:boolean;runtime?:ArtifactGenerationRuntime } = {}) {
   let clock = 10_000, enabled = true, starts = 0, retrieves = 0, cancels = 0;
   const fixture = await createDynamicSequenceArtifact();
   const source = fixture.source;
@@ -37,7 +38,7 @@ async function fixture(t: { after(fn: () => void): void }, options: { maxAttempt
   const usage = createSqliteUsageStore({ path: ':memory:', now: () => clock });
   t.after(() => { store.close(); usage.close?.(); if (directory) rmSync(directory, { recursive: true, force: true }); });
   const provider: ArtifactGenerationProvider = { ...(options.host?{executionMode:'host' as const}:{}), async start() { starts++; if(startBarrier)await startBarrier; if (startError) throw startError; return { id: `resp_generation_${starts}`, ...startResponse }; }, async retrieve(id) { retrieves++; return { id, ...retrieved }; }, async cancel(id) { cancels++; return { id, status: 'cancelled' }; } };
-  const dependencies = { getConfig: () => readMetaConfig({ MODEL_API_KEY: 'fake-generation-fixture', META_ANALYSIS_ENABLED: enabled ? 'true' : 'false' }), store, usage, provider: () => provider, signingSecret: 'generation-fixture-signing', now: () => clock };
+  const dependencies = { ...(options.runtime?{runtime:options.runtime}:{}), getConfig: () => readMetaConfig({ MODEL_API_KEY: 'fake-generation-fixture', META_ANALYSIS_ENABLED: enabled ? 'true' : 'false' }), store, usage, provider: () => provider, signingSecret: 'generation-fixture-signing', now: () => clock };
   const handlers = createArtifactGenerationHandlers(dependencies);
   const prepareBody = { source, runId: randomUUID(), sectionId: buildSourceSections(source)[0].id, brief: 'Show this conceptual mechanism using a bounded sequence.', maxAttempts: options.maxAttempts ?? 3 };
   const prepared = await handlers.prepare(req(prepareBody)); assert.equal(prepared.status, 200);
@@ -184,7 +185,7 @@ test('fake provider novel polymer candidate passes actual compiler and restricte
   // Actual deadline enforcement has separate runaway-program/worker tests.
   const checked = await checkGeneratedCandidate(generated.candidate!, f.source, { compile: request => compileFigureSource(request, readFileSync('node_modules/acorn/dist/acorn.js', 'utf8')), adapter: () => ({ id: 'restricted-test-interpreter', async execute(artifact,input,state,event) { try { return await evaluateGuestFrame({...artifact,resources:{...artifact.resources,maxExecutionMs:1000}},input,state,event); } catch { throw new FigureRuntimeError('execution'); } } }) });
   assert.equal(checked.feedback.compiler.status, 'ready'); assert.equal(checked.feedback.runtime.status, 'ready'); assert.equal(checked.repairable, false, JSON.stringify(checked.feedback));
-  assert.deepEqual(checked.checks.filter(check => check.status === 'passed').map(check => check.id), ['manifest','compiler','initialize','slider-min','slider-max','button','entity','quality']);
+  assert.deepEqual(checked.checks.filter(check => check.status === 'passed').map(check => check.id), ['manifest','compiler','initialize','slider-min','slider-mid','slider-max','button','entity','slider-response','quality']);
   assert.equal(checked.checks.find(check => check.id === 'evidence')?.status, 'skipped');
   assert.equal(generated.candidate!.artifact.kind === 'generated' && generated.candidate!.artifact.provenance.evidence, 'unverified'); assert.equal(f.counts().starts, 1);
 });
@@ -276,4 +277,48 @@ test('an unexpected queued foreground response is polled through its real provid
   await new Promise(resolve=>setImmediate(resolve));
   const complete=generationReplySchema.parse(await(await f.handlers.status(req(body,f.cookie))).json());
   assert.equal(complete.status,'complete');assert.equal(f.counts().retrieves,1);assert.equal(f.counts().starts,1);
+});
+
+for(const code of ['text-overlap','legend-overlap'] as const)test(`Meta repair accepts the bounded ${code} diagnostic`,async t=>{
+ const f=await fixture(t);f.startResult({status:'completed',output_text:JSON.stringify(f.output)});
+ const first=generationReplySchema.parse(await(await f.handlers.start(req({...f.context,attempt:1},f.cookie))).json());
+ const previous=first.candidate!;
+ const feedback={candidateSha256:previous.sha256,compiler:{status:'ready',diagnostics:[]},runtime:{status:'ready'},quality:{status:'failed',diagnostics:[{code,scope:'artifact',step:0,markIndex:0}],framesChecked:1,textMeasurements:'provided'}};
+ assert.equal((await f.handlers.start(req({...f.context,attempt:2,previous,feedback},f.cookie))).status,200);
+ assert.equal(f.counts().starts,2);
+});
+
+
+test('separate route facades share same-host foreground work and completed results without another submission',async t=>{
+ const runtime=createArtifactGenerationRuntime(),f=await fixture(t,{host:true,runtime});
+ let release!:()=>void;f.holdStart(new Promise<void>(resolve=>{release=resolve;}));
+ f.startResult({status:'completed',output_text:JSON.stringify(f.output)});
+ const body={...f.context,attempt:1};
+ const first=generationReplySchema.parse(await(await f.handlers.start(req(body,f.cookie))).json());assert.equal(first.status,'queued');
+ const statusFacade=createArtifactGenerationHandlers(f.dependencies);
+ const pending=generationReplySchema.parse(await(await statusFacade.status(req(body,f.cookie))).json());assert.equal(pending.status,'analyzing');assert.equal(pending.uncertain,undefined);
+ const duplicate=generationReplySchema.parse(await(await statusFacade.start(req(body,f.cookie))).json());assert.equal(duplicate.status,'analyzing');assert.deepEqual(f.counts(),{starts:1,retrieves:0,cancels:0});
+ const other=await statusFacade.prepare(req({...f.prepareBody,runId:randomUUID()}));const otherCookie=other.headers.get('set-cookie')!.split(';')[0];
+ assert.equal((await statusFacade.status(req(body,otherCookie))).status,403);
+ release();await new Promise(resolve=>setImmediate(resolve));
+ const hotReloaded=createArtifactGenerationHandlers({...f.dependencies,runtime});
+ const done=generationReplySchema.parse(await(await hotReloaded.status(req(body,f.cookie))).json());assert.equal(done.status,'complete');assert.ok(done.candidate);
+ assert.deepEqual(f.counts(),{starts:1,retrieves:0,cancels:0});
+});
+
+test('same-host foreground failures remain available across route facades without paid retries',async t=>{
+ const runtime=createArtifactGenerationRuntime(),f=await fixture(t,{host:true,runtime});let release!:()=>void;
+ f.holdStart(new Promise<void>(resolve=>{release=resolve;}));f.failStart(new Error('Simulated connection failure after submission'));
+ const body={...f.context,attempt:1};assert.equal((await(await f.handlers.start(req(body,f.cookie))).json()).status,'queued');
+ release();await new Promise(resolve=>setImmediate(resolve));
+ const other=createArtifactGenerationHandlers(f.dependencies),failed=await other.status(req(body,f.cookie));assert.equal(failed.status,504);assert.equal((await failed.json()).uncertain,true);
+ assert.equal((await other.start(req(body,f.cookie))).status,504);assert.equal(f.counts().starts,1);
+});
+
+test('the production foreground registry survives separately evaluated route modules, while a new host runtime is empty',async()=>{
+ const moduleUrl=new URL('../server/artifact-generation/runtime.ts',import.meta.url).href;
+ const [startModule,statusModule]=await Promise.all([import(moduleUrl+'?route=start'),import(moduleUrl+'?route=status')]);
+ assert.notEqual(startModule.getHostArtifactGenerationRuntime,statusModule.getHostArtifactGenerationRuntime);
+ const first=startModule.getHostArtifactGenerationRuntime(),second=statusModule.getHostArtifactGenerationRuntime();assert.equal(first,second);assert.equal(first,getHostArtifactGenerationRuntime());
+ const isolated=createArtifactGenerationRuntime();assert.notEqual(first,isolated);assert.equal(isolated.running.size,0);assert.equal(isolated.finished.size,0);
 });
