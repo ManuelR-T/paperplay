@@ -47,6 +47,7 @@ export function Outro() {
         <span style={{ padding: '10px 22px', borderRadius: 999, background: C.ink, color: C.paper }}>Powered by Meta · muse-spark-1.3</span>
         <span style={{ padding: '10px 22px', borderRadius: 999, background: C.lime, color: C.ink }}>Meta AI Hackathon</span>
       </div>
+      <div style={{position:'absolute',bottom:30,left:160,right:160,textAlign:'center',fontFamily:sans,fontSize:19,lineHeight:1.5,color:C.soft,opacity:foot}}>Music: “Cylinder Five” · Chris Zabriskie · Cylinders · CC BY 4.0<br/>chriszabriskie.com/cylinders · creativecommons.org/licenses/by/4.0 · excerpted, mixed &amp; faded</div>
     </AbsoluteFill>
   </Stage>;
 }

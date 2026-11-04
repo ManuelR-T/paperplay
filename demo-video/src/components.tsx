@@ -25,7 +25,7 @@ export function Window({ children, style, label }: { children: ReactNode; style?
   </div>;
 }
 
-function Cursor({ x, y, size, press }: { x: number; y: number; size: number; press: { since: number; held: boolean } }) {
+export function Cursor({ x, y, size, press }: { x: number; y: number; size: number; press: { since: number; held: boolean } }) {
   const ripple = press.since < 0.5 ? press.since / 0.5 : 1;
   const squeeze = press.held ? 0.86 : 1;
   return <>

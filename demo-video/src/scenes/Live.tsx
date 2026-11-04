@@ -5,6 +5,8 @@ import { trackedRegion, clipDuration, marks, mark, type ClipMeta, type Region } 
 import { ClipView, SpeedBadge, Stage, Window } from '../components';
 import { C, FPS, sans, seconds, serif } from '../theme';
 import type {ReactNode} from 'react';
+import {tiltedReplay} from '../replay/tilted-noise';
+import {ReplayChart,ReplayControls} from '../replay/TiltedNoiseReplay';
 
 /** Captions sit in the page margin, never over a diagram, slider or result table. */
 function MarginCaption({children,duration,accent,left=1390,top=180,width=420}:{children:ReactNode;duration:number;accent?:string;left?:number;top?:number;width?:number}){
@@ -120,24 +122,23 @@ export const PLAY_DURATION = seconds((clipDuration(play) - 0.2) / PLAY_SPEED);
 export function Play() {
   const drag=marks(play,'drag')[0]/PLAY_SPEED,source=(marks(play,'source')[0]??clipDuration(play))/PLAY_SPEED,end=clipDuration(play)/PLAY_SPEED;
   const t=useCurrentFrame()/FPS;
-  const split=interpolate(t,[Math.max(0,source-.9),Math.max(.1,source-.6)],[1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
-  // Two cameras on the same real take. Keep the complete legend, all controls,
-  // and all numerical rows; no page padding is magnified into the diagram.
-  const plot:Region={x:536*play.scale,y:225.8125*play.scale,width:528*play.scale,height:408*play.scale};
-  const values:Region={x:471*play.scale,y:650*play.scale,width:657*play.scale,height:320*play.scale};
+  const replay=tiltedReplay(t);
+  const split=interpolate(t,[source,source+.35],[1,0],{extrapolateLeft:'clamp',extrapolateRight:'clamp'});
+  // Replay the unchanged Meta model synchronously; resume the real take only
+  // after its source-return click, avoiding the capture's delayed diagram.
   const full:Region={x:0,y:0,width:play.viewport.width,height:1200*play.scale};
   return <Stage>
     <div style={{position:'absolute',left:80,top:65,fontFamily:serif,fontSize:66,color:C.ink,opacity:split}}>Change the shift. Follow the distribution.</div>
-    <Window style={{left:70,top:180,width:1010,height:820,opacity:split}} label="A Meta-generated illustration · standard and tilted noise">
-      <ClipView clip={play} src="clips/live-play.mp4" rate={PLAY_SPEED} region={()=>plot} width={1010} height={786} fit="contain" cursor={false}/>
+    <Window style={{left:70,top:180,width:1010,height:820,opacity:split}} label="Meta-generated illustration · synchronized replay">
+      <ReplayChart frame={replay.frame}/>
     </Window>
-    <Window style={{left:1120,top:180,width:730,height:500,opacity:split}} label="The same live figure · controls and numerical results">
-      <ClipView clip={play} src="clips/live-play.mp4" rate={PLAY_SPEED} region={()=>values} width={730} height={466} fit="contain"/>
+    <Window style={{left:1120,top:180,width:730,height:500,opacity:split}} label="The same Meta model · shift and exact moments">
+      <ReplayControls frame={replay.frame} value={replay.value} dragging={replay.dragging}/>
     </Window>
     <div style={{opacity:1-split}}><Window style={{left:40,top:24,width:1840,height:1032}} label="Paperplay · Return to the cited passage">
       <ClipView clip={play} src="clips/live-play.mp4" rate={PLAY_SPEED} region={()=>full} width={1840} height={998} fit="contain"/>
     </Window></div>
-    <Sequence from={seconds(drag)} durationInFrames={seconds(Math.max(0,source-.6-drag))}><MarginCaption left={1120} top={730} width={730} duration={seconds(Math.max(0,source-.6-drag))}>The green curve reweights the noise. Move the shift to see which values it favors.</MarginCaption></Sequence>
+    <Sequence from={seconds(drag)} durationInFrames={seconds(Math.max(0,source-.1-drag))}><MarginCaption left={1120} top={730} width={730} duration={seconds(Math.max(0,source-.1-drag))}>The green curve reweights the noise. Move the shift to see which values it favors.</MarginCaption></Sequence>
     <Sequence from={seconds(source)} durationInFrames={seconds(end-source)}><MarginCaption duration={seconds(end-source)}>One click back to the exact passage it explains.</MarginCaption></Sequence>
   </Stage>;
 }

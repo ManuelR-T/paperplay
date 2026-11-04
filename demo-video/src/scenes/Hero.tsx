@@ -25,6 +25,7 @@ const CONTROLS:Region=betaCard?{
 
 const at = (label: string) => mark(hero, label) / SPEED;
 const opened = at('figure-open'), betaZero = at('beta-0'), betaHalf = at('beta-05'), betaHigh = at('beta-09');
+export const HERO_FIGURE_OPEN_FRAME=seconds(opened);
 const SPLIT = betaZero - 0.4;
 
 // Each explanation stays until the next one, as soon as the slider settles on its value.

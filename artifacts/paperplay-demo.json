@@ -1,0 +1,40 @@
+{
+  "title": "Paperplay \u2014 research in motion",
+  "export": "paperplay-demo-v19",
+  "updatedAt": "2026-11-04",
+  "file": "paperplay-demo.mp4",
+  "durationSeconds": 101.952,
+  "sha256": "535996ea7115ee1ed621e78514106e7d91ae562c200c2a71535b2737a064c01a",
+  "streams": [
+    {
+      "codec_type": "video",
+      "codec_name": "h264",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "codec_type": "audio",
+      "codec_name": "aac",
+      "sample_rate": "48000",
+      "channels": 2
+    }
+  ],
+  "content": [
+    "Recorded Paperplay UI and actual Meta generation on WASABI",
+    "Explanatory momentum animation with a continuous beta slider",
+    "Synchronized distribution replay from the unchanged Meta-generated source",
+    "Recorded return to the cited paper passage"
+  ],
+  "replayArtifactSha256": "8fdbb87827aab32cbe003272878cf2567dcf32eb6c831b033fb7a99be0d91cd1",
+  "replaySourceCodeSha256": "a970c74c22314da3df4e0261f2b8bca5d28425dbdc4bef68b0ff2e38cc245625",
+  "music": {
+    "title": "Cylinder Five",
+    "artist": "Chris Zabriskie",
+    "album": "Cylinders",
+    "license": "CC BY 4.0",
+    "source": "https://chriszabriskie.com/cylinders/",
+    "changes": "Excerpted, mixed and faded"
+  },
+  "sfx": "Original procedural sounds; ISC",
+  "sourceProject": "../demo-video/README.md"
+}

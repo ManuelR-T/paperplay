@@ -1,117 +1,145 @@
-<img src="assets/icon.svg" width="64" height="64" alt="">
+<p align="center">
+  <img src="assets/paperplay-logo.svg" width="88" height="88" alt="Paperplay logo">
+</p>
 
-# Paperplay
+<h1 align="center">Paperplay</h1>
 
-Read research papers with interactive figures beside the passages they explain. Change an input, replay a trusted algorithm, inspect its actual measurements, and return to the cited source.
+<p align="center">
+  <strong>Turn the hardest part of a research paper into something you can play with.</strong>
+</p>
 
-**Current development builds on 1.1.0** with Meta choosing the paper’s illustrations. Open a paper from arXiv discovery or a PDF: Meta reads the complete imported paper in one planning request, chooses a few complementary illustrations, then implements only that plan. Each figure explains why it belongs at its cited passage, what to try and what to notice. Meta can configure the existing bank, create a new isolated interaction, and curate previously saved figures to avoid repetition. There is no keyword-based insertion, four-section cutoff or manual creation panel. Hackathon mode records actual usage without application spending quotas; accepted work and cached Meta results are reused. [Automatic reading flow](docs/automatic-papers.md).
+<p align="center">
+  Interactive research papers · Powered by Meta AI · Built for the Meta AI Hackathon
+</p>
 
-[Hosted demonstration](https://paperplay-meta-lab-1027.poeticbadge1024.chatgpt.site) — owner-private, as explicitly requested. [70-second English demo](artifacts/paperplay-demo.mp4) — actual UI footage with English subtitles and no audio. Neither artifact establishes anonymous judge access or a submitted hackathon entry.
+<p align="center">
+  <a href="#demo">Watch the demo</a> ·
+  <a href="#quick-start">Run locally</a> ·
+  <a href="#how-it-works">How it works</a> ·
+  <a href="#documentation">Documentation</a>
+</p>
 
-## Product roadmap beyond the first release
+## Demo
 
-The [M6–M11 roadmap](docs/next-roadmap.md) tracks 34 GitHub issues. Thirty feature issues are implemented, technically checked and closed on GitHub. [#24](https://github.com/ManuelR-T/paperplay/issues/24) remains open: its protocol is prepared, but no real readers are available. The three Railway release issues are deferred. [Browse the interactive roadmap](docs/next-roadmap.html) or [GitHub](https://github.com/ManuelR-T/paperplay/issues).
+[![Paperplay demo: a research equation becomes an interactive momentum illustration, followed by a Meta-generated distribution model](assets/paperplay-demo.gif)](artifacts/paperplay-demo.mp4)
 
-**Release hosting:** Railway is the selected target, with provisioning and hosted checks deferred until the final release. [Railway release plan](docs/railway-release.md). The existing private Sites demonstration is a retained experiment; no Railway service is configured yet.
+**[▶ Watch the full demo with sound — 1:42, 1080p](artifacts/paperplay-demo.mp4)**
 
-## Scientific representation architecture
+Start with a momentum equation, explore how changing β reshapes its trajectory, then open **WASABI: Wasserstein Sampling via Bridge Interpolants** and watch Meta choose and build illustrations beside the paper.
 
-The [M12–M16 architecture](docs/scientific-architecture.md) implements35of36 child issues across composed views, linked selections, scientific data and bounded execution adapters, independent reference checks, isolated generated artifacts, replay/export and compatibility recovery. The remaining human study has no participants yet. The [twelve-paper scientific intake](docs/scientific-corpus.md) and [frozen evaluation](docs/frozen-evaluation-results.md) report actual source-access, grounding and layout failures; they do not establish universal scientific coverage. Generated code remains isolated and subject to local checks and the [operator policy](docs/architecture-adoption.md).
+The film combines recorded app footage, explanatory animation, and a synchronized replay of the same Meta-generated distribution model. [Recording details and music credits →](artifacts/README.md)
 
-## Original figures and new widget designs
+## Read the paper. Play with the idea.
 
-Original figures now appear in the reading flow. The four prepared PDF figures/algorithm regions use reviewed crops, with a complete-page toggle. Imported PDFs display the original page at detected captions when no reviewed crop exists. New structured arXiv imports retain same-article image assets; older saved HTML sources need reimport to gain missing asset locations.
+An equation can be precise and still be hard to picture. What changes when a parameter moves? Why does a method behave differently? Where does the intuition behind the proof come from?
 
-Meta can now propose a **custom declarative teaching program** when the standard catalog cannot express a concept: editable parameters, bounded simultaneous state updates, numerical metrics, an interactive scene and an optional plot. Its catalog gap, source quote and assumptions are inspectable before acceptance. The runtime supports arithmetic expressions and palette-controlled primitives; it does not run generated JavaScript or load packages. [Architecture, hooks and verification](docs/custom-widget-design.md). [Original-figure behavior](docs/original-figures.md).
+Paperplay keeps the original paper in view and adds interactive figures where they help. Open a paper, let Meta plan its illustrations, and explore the ideas alongside the passages that introduce them.
 
-## Run locally
+- **Find your next paper.** Search arXiv, browse research categories, preview abstracts, and save papers to your local library.
+- **Get illustrations automatically.** Opening a paper starts Meta's editorial pass over the complete imported source. Meta chooses what to explain and where to place it.
+- **Go beyond a fixed widget bank.** Meta can configure an existing figure or write a new interaction with the drawing and control SDK.
+- **Explore the mechanism.** Move a slider, inspect a trajectory, step through a diagram, or compare numerical values without leaving the paper.
+- **Keep the source close.** Original figures, mathematical notation, cited passages, notes, and focus reading stay in the same workspace.
+- **Return to your work.** Reading progress and saved figures stay in your browser. Export compatible experiments and study material to carry them elsewhere.
 
-Use Node 24.14 or later in the Node 24 line (`.nvmrc`) and npm:
+## How it works
+
+```mermaid
+flowchart LR
+    A[Find or import a paper] --> B[Meta reads the imported source]
+    B --> C[Choose useful figures and source passages]
+    C --> D[Configure a bank figure]
+    C --> E[Create a custom SDK interaction]
+    D --> F[Validate and display beside the passage]
+    E --> F
+```
+
+**Meta makes the editorial choices.** The planner receives all imported source blocks in reading order, with metadata, equations, figure captions, and extraction warnings. It selects complementary illustrations suited to the paper's length and complexity. Placement follows Meta's source anchors; keyword matching does not insert figures.
+
+**The figure bank handles familiar interactions.** Ten figure kinds cover equations, functions, step diagrams, tables, linear transforms, probability, attention, graphs, signals, and custom declarative scenes. A bank figure is useful only when its actual controls and computation fit the chosen idea.
+
+**New mechanisms can get new figures.** When the bank falls short, Meta can write an interaction against a restricted SDK. Generated code runs inside an isolated QuickJS interpreter with bounded resources. Compilation, source binding, layout checks, and interaction checks run before insertion; actionable failures can go back to Meta for repair.
+
+**Saved work is reused.** Figures appear progressively, and accepted results are retained so returning to a paper can reopen its existing illustrations.
+
+## Quick start
+
+Use **Node.js 24.14+**; the pinned version is in [`.nvmrc`](.nvmrc).
 
 ```sh
+git clone git@github.com:ManuelR-T/paperplay.git
+cd paperplay
 npm ci
+cp .env.example .env.local
+```
+
+To enable automatic figure generation, edit `.env.local` and set your server-side Meta key:
+
+```dotenv
+MODEL_API_KEY=your_meta_api_key
+META_MODEL=muse-spark-1.3
+```
+
+```sh
 npm run dev
 ```
 
-Open http://localhost:3000. Prepared papers and local computations work without an API key. Installation rebuilds the pinned PDF.js resources and trusted engine-worker asset; runtime parsing does not depend on a worker CDN.
+Open **[localhost:3000](http://localhost:3000)**. Go to **Explore** to find an arXiv paper, or import a supported PDF.
 
-For production:
+Prepared examples and saved local interactions remain available without an API key. New Meta generation requires a configured key. Keep it server-side; use `.env.local`, never a `NEXT_PUBLIC_` variable.
 
-```sh
-npm run check
-npm run start
-```
+### Useful commands
 
-`check` runs strict TypeScript, provider-free tests and the optimized Next build. CI runs those checks without private credentials. [Clean-install evidence](docs/clean-install-report.md) records an isolated source installation and prepared numeric-browser run without credentials. Optional container packaging is provided by [Dockerfile](Dockerfile) and [compose.yml](compose.yml); use the [deployment guide](docs/deployment.md) for persistent storage and environment handling.
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the local development server |
+| `npm run check` | Run TypeScript, provider-free tests, and the production build |
+| `npm run start` | Serve the production build |
+| `npm run meta:check` | Check Meta configuration without inference |
+| `npm run meta:check -- --live` | Make an explicit live provider probe |
+| `npm run usage:summary` | Inspect recorded model usage |
 
-## Enable Meta and control usage
+The demo has its own [Remotion project](demo-video/README.md), including the edit, soundtrack, capture tools, and replay exporter.
 
-Copy `.env.example` to `.env.local`, set server-only `MODEL_API_KEY`, and restart the server. Never use a `NEXT_PUBLIC_` key variable. The official Meta endpoint and configured `muse-spark-1.3` model are documented in [Meta setup](docs/meta-setup.md).
+## Built with
 
-```sh
-npm run meta:check           # configuration only; no inference
-npm run meta:check -- --live # explicit bounded provider probe
-npm run usage:summary        # local Node operator aggregate; no inference
-```
+| Layer | Technology |
+| --- | --- |
+| App | Next.js App Router, React, TypeScript |
+| Interface | Tailwind CSS, shadcn/ui, Lucide |
+| AI | Official Meta API · `muse-spark-1.3` by default |
+| Source import | arXiv HTML, PDF.js, Cheerio, KaTeX |
+| Figure contracts | Zod schemas, source anchors, versioned manifests |
+| Computation | Browser workers and an isolated QuickJS runtime for generated code |
+| Persistence | IndexedDB for local reading data; SQLite for the default Node server's durable accounting |
+| Demo | Remotion, FFmpeg, original procedural SFX |
 
-The default import prepares a local source without inference. Only an explicitly selected immediate guide, analysis, question, plan, repair or settings proposal creates inference. Reading, changing parameters, playback, worker execution, reopening saved analyses and sharing experiments do not. Source text is sent to Meta for those explicit inference actions; this flow does not upload the original local PDF to Meta. `/api/health` reports configuration/creation availability, not remaining credit or proven provider connectivity.
+## Source, privacy, and scientific scope
 
-For LAN/hosted API access, set the exact `ANALYSIS_APP_ORIGIN`. Preserve signing configuration to keep accepted job capabilities valid. Request/token limits are enforced before paid work through one shared durable store:
+Papers, notes, and saved reading data are stored locally in the browser. Automatic preparation sends the **imported source text** to Meta, including equations, available figure captions, and image references. The planner does not receive the original image pixels, and this flow does not upload the local PDF binary to Meta.
 
-| Runtime | Quotas | Optional short links |
-| --- | --- | --- |
-| Local or one persistent Node host | SQLite on the shared persistent volume | SQLite |
-| Distributed Next/Node replicas | Configured shared Redis REST | Unavailable until a shared link adapter is supplied |
-| Hosted Sites artifact | Injected shared D1 database | Same D1 database, separate tables |
+Added figures are teaching models. Local checks establish that an interaction fits its contract and can run; they do not verify a paper's scientific claims or reproduce its experiments. Original research content keeps its authorship and attribution.
 
-Missing shared infrastructure fails closed rather than falling back to process memory. Defaults are 20 requests/hour globally, 5/session/ten minutes, 100/UTC day and 2,000,000 accounted tokens/day. Pending or unknown work retains a conservative reservation. These are application allowances, not a dollar cap or credit balance; Meta billing remains authoritative.
+Structured arXiv HTML gives the richest import when available. Local PDFs must be text-based, at most **10 MiB and 50 pages**; imported sources have a **200,000-character** text limit. There is no OCR. Unsupported content retains its original-source reference.
 
-Set `META_ANALYSIS_ENABLED=false` or an operator-selected `META_CREDITS_EXPIRE_AT` timestamp to stop **new** paid work after the event. Keep the provider/signing configuration while accepted jobs still need retrieval or cancellation. Prepared sources, local simulations and saved results remain usable. See [operations](docs/operations.md) and [usage controls](docs/usage-controls.md).
+Hackathon mode records usage with application request/token quotas **off by default**. Provider charges and limits still apply. See [Meta setup](docs/meta-setup.md), [operations](docs/operations.md), and [security](SECURITY.md) for configuration and trust boundaries.
 
-## Read, interact and transfer an experiment
+## Documentation
 
-**Import paper** first opens a readable source and its section planner; it does not automatically create a model response. It accepts a text PDF up to 10 MiB/50 pages or a supported versioned arXiv link. Structured arXiv HTML is preferred; PDF fallback retains physical page references. HTML references are logical locations, not invented PDF page numbers. Original PDFs, extracted sources and validated analyses stay in this browser's IndexedDB. Source hashes prevent silent reuse after parser/version changes.
+| Topic | Guide |
+| --- | --- |
+| Automatic illustration workflow | [Automatic papers](docs/automatic-papers.md) |
+| arXiv discovery | [Explore](docs/explore.md) |
+| Original figures and source assets | [Original figures](docs/original-figures.md) |
+| Generated interactions | [Generation architecture](docs/artifact-generation-design.md) · [Quality checks](docs/artifact-quality.md) |
+| Scientific representation architecture | [Architecture](docs/scientific-architecture.md) |
+| Add a computation engine | [Extension guide](docs/engine-extension.md) |
+| Evaluation and evidence | [Acceptance matrix](docs/acceptance-matrix.md) · [Frozen evaluation](docs/frozen-evaluation-results.md) |
+| Hosting | [Deployment](docs/deployment.md) · [Deferred Railway release plan](docs/railway-release.md) |
+| Product roadmap | [Roadmap](docs/next-roadmap.md) · [GitHub issues](https://github.com/ManuelR-T/paperplay/issues) |
 
-Prepared examples cover graph shortest distances, adaptive stable sorting, and SPD-quadratic optimization. The engine registry declares input domains, parameter bounds, metric units and compatible comparisons. New renderers consume generic input/trace state rather than choosing algorithms by name in the reader. [The extension guide](docs/engine-extension.md) documents the third-family implementation and independent references.
+## License and credits
 
-**Ask about this passage/figure** provides a bounded, cited interpretation. The server recomputes supported current inputs and parameters; it does not trust submitted metrics. Changing context clears unrelated answers. Matching a quote proves its location, not the scientific truth of an explanation.
+Project code is [ISC-licensed](LICENSE). Research sources retain their [own licenses and attribution](public/papers/ATTRIBUTION.md); dependency details are in [the notices](docs/dependency-notices.md).
 
-Reading position, selected figure, input, method, seed, parameters and playback/step selection restore locally. There are no accounts or cross-device synchronization. **Share snapshot** transfers a small compatible public example through a URL. **Export experiment** and **Open bundle** move larger/private experiments, with explicit source-text and original-PDF inclusion. Source authorship/permission is retained, not inferred from importing a file. A URL never transfers a PDF stored only on the sender's device.
-
-**Create 7-day link** optionally stores only a bounded public prepared snapshot after its disclosure. Anyone with access to this site and that link can read it until expiry. Its separate deletion capability stays private in this browser. Private paper text/PDFs are not accepted by that endpoint. [Short-link design](docs/short-links.md) explains retention, deletion, quotas and cost bounds.
-
-## Limits and scientific evidence
-
-- The legacy full-source guide is capped at 70,000 characters. Section planning keeps the full source readable while sending bounded selected passages and limited neighbors, with visible analyzed/unanalyzed coverage. It does not claim complete-paper analysis.
-- PDF extraction is heuristic. `source-v3` adds conservative paragraph joining, witnessed dehyphenation and heuristic headings with retained raw fragments/coordinates. It does not invent missing images, tables, equations or scanned text. Older saved versions stay unchanged. There is no OCR. Check the original source.
-- Unknown mechanisms receive conceptual explanations or an explicit failure. The held-out baseline produced useful cited conceptual figures and rejected an invalid computed one; it did **not** establish reliable automatic executable-figure selection or learning effectiveness.
-- Numeric inputs are small SPD matrices (up to 8×8), at most 200 iterations, with explicit stable-setting restrictions. A finite completed trajectory need not have reached convergence tolerance. Matrix/plot values are labeled computed or illustrative, never invented paper measurements.
-- Worker requests/results are bounded; cancellation terminates the old worker, and stale results cannot overwrite newer settings. There is no blocking UI-thread fallback when workers are unavailable.
-- Legacy URL snapshots allow 8,000 decoded bytes/12,000 encoded characters; separately validated version-2 widget URLs allow 64 KiB of decoded data. Bundles allow 20 MiB, with a PDF up to 10 MiB. Engine/source/schema incompatibility produces an error rather than silently changing the experiment.
-
-Browser labels distinguish conceptual illustrations and checked mechanisms. The graph example does not implement the paper's functional priority search tree or Isabelle proof. Powersort and numeric recurrences have bounded independent reference checks. [A restricted original-author Java merge-cost replay](docs/reproduction-audit.md) measured a result consistent with one qualitative paper finding; the complete hardware runtime study was not reproduced, and this evidence does not promote the browser engines to original-experiment reproduction.
-
-## Architecture and evidence
-
-The authored app uses Next.js App Router, React, TypeScript, Tailwind and shadcn/ui. The normal Node target and hosted static-frontend/Cloudflare-Worker packaging share UI, source/figure contracts and inference handlers. The hosted adapter does not replace the frontend framework.
-
-- `app/`, `components/`: reading, import, contextual questions, accessible figures and controls.
-- `data/`, `public/papers/`: attributed prepared selections and two unchanged licensed publisher PDFs.
-- `shared/`: strict versioned source/figure/trace/snapshot contracts.
-- `lib/engines/`, `lib/execution/`: trusted deterministic computations and worker protocol.
-- `lib/import/`: bounded source extraction, normalization and provenance.
-- `lib/reading/`, `lib/reading-state.ts`, `lib/snapshots.ts`: preferences, local notes/search, study packs and portable experiments.
-- `shared/widgets.ts`, `lib/widgets/`, `lib/experiments/`: bounded catalog, trusted worker computations, source-linked authoring and experiments.
-- `server/analysis/`, `server/questions/`, `server/enrichment/`: bounded official Meta integration, inspectable section plans, repairs/settings proposals and validation.
-- `server/usage/`, `server/short-links/`: durable accounting and optional public snapshots.
-- `deploy/`: hosted API adapter and D1 migrations; `scripts/`: build, evaluation and operator tools.
-
-Start with the [release notes](docs/release-v1.1.0.md), [acceptance matrix](docs/acceptance-matrix.md), [M5 report](docs/m5-report.md), [deployment guide](docs/deployment.md), [evaluation](docs/evaluation-report.md), [worker measurements](docs/performance-worker.md) and [PDF reconstruction evidence](docs/pdf-reconstruction.md). Earlier [M0](docs/m0-report.md), [M1](docs/m1-report.md), [M2](docs/m2-report.md) and [M3](docs/m3-report.md) reports preserve their original verification scope. [The backlog](docs/backlog.md) and [roadmap](docs/roadmap.html) track completion and external handoff limits.
-
-Project source is [ISC-licensed](LICENSE). Research sources retain their separate [attribution and CC licenses](public/papers/ATTRIBUTION.md). [Dependency notices](docs/dependency-notices.md) inventory the locked installed tree; upstream license files remain authoritative. See [SECURITY.md](SECURITY.md) for trust and disclosure boundaries.
-
-Created in [T3 Code](https://t3.codes).
-
-## Explore arXiv
-
-Open `/explore` to search arXiv, preview abstracts, save a local reading list and open exact paper versions in the reader. Discovery and source import use no Meta inference; interactive figure generation remains an explicit choice. See [the exploration flow and server limits](docs/explore.md) and [local validation evidence](docs/explore-qa.json).
+Demo music: **“Cylinder Five” by Chris Zabriskie**, from *Cylinders*, under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). [Source and audio credits](demo-video/public/audio/CREDITS.md).
