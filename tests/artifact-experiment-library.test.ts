@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { IDBFactory } from 'fake-indexeddb';
-import { createDynamicSequenceArtifact } from '../lib/artifacts/fixtures/dynamic-sequence';
+import { createDynamicSequenceArtifact as createReferenceArtifact } from '../lib/artifacts/fixtures/dynamic-sequence';
 import { createArtifactExperimentStorage } from '../lib/artifacts/experiment-storage';
 import { saveArtifactExperiment,listSavedArtifactExperiments,removeSavedArtifactExperiment } from '../lib/artifacts/experiment-library';
 import { createArtifactCacheRecord,createArtifactExperimentIdentity,artifactExperimentOwner } from '../shared/artifact-experiment';
@@ -9,6 +9,9 @@ import { sealScientificAsset,hasCheckedAssetIntegrity } from '../lib/assets/loca
 import { createArtifactExperimentBundle } from '../lib/artifacts/experiment-bundle';
 import { evaluateGuestFrame } from '../lib/artifacts/guest-engine';
 import { sha256Text } from '../lib/artifacts/sdk-source';
+
+// These tests verify persisted evidence, not wall-clock execution budgets.
+async function createDynamicSequenceArtifact(){const fixture=await createReferenceArtifact();fixture.artifact.resources.maxExecutionMs=1000;return fixture;}
 
 test('only explicit Save enters generic accepted library; reopen retains exact manifest/seed without invented plan',async()=>{
   const f=await createDynamicSequenceArtifact(),indexedDB=new IDBFactory(),storage=createArtifactExperimentStorage({indexedDB}),identity=await createArtifactExperimentIdentity(f);

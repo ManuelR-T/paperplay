@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createDynamicSequenceArtifact } from '../lib/artifacts/fixtures/dynamic-sequence';
+import { createDynamicSequenceArtifact as createReferenceArtifact } from '../lib/artifacts/fixtures/dynamic-sequence';
 import { createArtifactExperimentBundle, parseArtifactExperimentBundle } from '../lib/artifacts/experiment-bundle';
 import { createArtifactExperimentIdentity, createArtifactCacheRecord } from '../shared/artifact-experiment';
 import { hasCheckedAssetIntegrity, sealScientificAsset } from '../lib/assets/local';
 import { evaluateGuestFrame } from '../lib/artifacts/guest-engine';
 import { sha256Text } from '../lib/artifacts/sdk-source';
+
+// These tests verify persisted evidence, not wall-clock execution budgets.
+async function createDynamicSequenceArtifact(){const fixture=await createReferenceArtifact();fixture.artifact.resources.maxExecutionMs=1000;return fixture;}
 
 test('default artifact export omits source/assets/jobs and restores source-bound recorded replay without inference',async()=>{
   const f=await createDynamicSequenceArtifact(),identity=await createArtifactExperimentIdentity(f),frame=await evaluateGuestFrame(f.artifact,{},null,{kind:'initialize'});
